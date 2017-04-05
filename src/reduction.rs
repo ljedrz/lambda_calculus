@@ -51,6 +51,7 @@ fn nf(depth: usize, term: Term, env: Environment) -> Term {
 	reduce(depth, whnf(term, env))
 }
 
+/// Returns a term reduced to its normal form. Consumes its argument.
 pub fn normalize(term: Term) -> Term {
 	nf(0, term, VecDeque::new())
 }

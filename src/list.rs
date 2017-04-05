@@ -4,8 +4,9 @@ use term::Error::*;
 use booleans::*;
 use reduction::*;
 
-/// Produces a Church-encoded pair (λλλ132); applying it to two other terms puts them inside it.
+/// Produces a Church-encoded pair; applying it to two other terms puts them inside it.
 ///
+/// pair := λλλ132
 /// # Example
 ///
 /// ```
@@ -19,8 +20,9 @@ use reduction::*;
 /// ```
 pub fn pair() -> Term { abs(abs(abs(Var(1).app(Var(3)).app(Var(2))))) }
 
-/// Produces a Church-encoded first (λ1(λλ2)); applying it to a Church-encoded pair (a, b) yields a.
+/// Applied to a Church-encoded pair (a, b) it yields a.
 ///
+/// first := λ1(λλ2)
 /// # Example
 ///
 /// ```
@@ -34,8 +36,9 @@ pub fn pair() -> Term { abs(abs(abs(Var(1).app(Var(3)).app(Var(2))))) }
 /// ```
 pub fn first() -> Term { abs(Var(1).app(tru())) }
 
-/// Produces a Church-encoded second (λ1(λλ1)); applying it to a Church-encoded pair (a, b) yields b.
+/// Applied to a Church-encoded pair (a, b) it yields b.
 ///
+/// second := λ1(λλ1)
 /// # Example
 ///
 /// ```
@@ -49,19 +52,29 @@ pub fn first() -> Term { abs(Var(1).app(tru())) }
 /// ```
 pub fn second() -> Term { abs(Var(1).app(fls())) }
 
-/// Produces a Church-encoded nil (λ(λλ2)), the ending of a Church-encoded list
-pub fn nil() -> Term { abs(tru()) } // TODO: add example; consider the PAIR TRUE TRUE nil variant
+/// Produces a Church-encoded nil, the last link of a Church-encoded list.
+///
+/// nil := λ(λλ2)
+pub fn nil() -> Term { abs(tru()) } // TODO: consider the PAIR TRUE TRUE nil variant
 
-/// Equivalent to first(); applied to a Church-encoded list determines if it is empty
-pub fn is_nil() -> Term { first() } // TODO: add example; this probably only works with the other nil variant
+/// Equivalent to first(); applied to a Church-encoded list it determines if it is empty.
+///
+/// is_nil := first
+pub fn is_nil() -> Term { first() } // TODO: this probably only works with the other nil variant
 
-// CONS := λht.PAIR FALSE (PAIR h t)
+/// Applied to two terms it returns them encoded as a list.
+///
+/// cons := λλpair false (pair21)
 pub fn cons() -> Term { abs(abs(pair().app(fls()).app(pair().app(Var(2)).app(Var(1))))) }
 
-// HEAD := λz.FIRST (SECOND z)
+/// Applied to a Church-encoded list it returns its first element.
+///
+/// head := λfirst (second1)
 pub fn head() -> Term { abs(first().app(second().app(Var(1)))) }
 
-// TAIL := λz.SECOND (SECOND z)
+/// Applied to a Church-encoded list it returns a new list with all its elements but the first one.
+///
+/// tail := λsecond(first1)
 pub fn tail() -> Term { abs(second().app(second().app(Var(1)))) }
 
 impl Term {

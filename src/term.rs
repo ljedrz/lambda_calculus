@@ -113,7 +113,7 @@ impl Term {
 }
 
 /// Wraps a term in an abstraction. Consumes its argument.
-pub fn abs(t: Term) -> Term { Abs(Box::new(t)) }
+pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 
 /// Produces an application of its arguments, consuming them in the process.
 pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
