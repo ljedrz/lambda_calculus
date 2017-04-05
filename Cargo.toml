@@ -3,8 +3,9 @@ name = "lambda_calculus"
 version = "0.1.0"
 description = "an implementation of the untyped lambda calculus in Rust"
 repository = "https://github.com/ljedrz/lambda_calculus"
-readme = "../README.md"
-keywords = ["lambda-calculus", "lambda"]
+readme = "README.md"
+license = "CC0"
+keywords = ["lambda", "calculus", "functional"]
 authors = ["ljedrz <ljedrz@gmail.com>"]
 
 [dependencies]
