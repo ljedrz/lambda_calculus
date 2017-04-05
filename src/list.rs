@@ -19,8 +19,7 @@ use reduction::*;
 /// ```
 pub fn pair() -> Term { abs(abs(abs(Var(1).app(Var(3)).app(Var(2))))) }
 
-/// Produces a Church-encoded first (λ1(λλ2)); applying it to a Church-encoded pair (a, b) yields
-/// a.
+/// Produces a Church-encoded first (λ1(λλ2)); applying it to a Church-encoded pair (a, b) yields a.
 ///
 /// # Example
 ///
@@ -35,8 +34,7 @@ pub fn pair() -> Term { abs(abs(abs(Var(1).app(Var(3)).app(Var(2))))) }
 /// ```
 pub fn first() -> Term { abs(Var(1).app(tru())) }
 
-/// Produces a Church-encoded second (λ1(λλ1)); applying it to a Church-encoded pair (a, b) yields
-/// b.
+/// Produces a Church-encoded second (λ1(λλ1)); applying it to a Church-encoded pair (a, b) yields b.
 ///
 /// # Example
 ///

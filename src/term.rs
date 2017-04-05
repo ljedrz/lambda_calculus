@@ -1,6 +1,8 @@
 use self::Term::*;
 use self::Error::*;
 
+/// A lambda term that is either a variable with a De Bruijn index, an abstraction over a term or
+/// an applicaction of one term to another.
 #[derive(Debug, PartialEq, Clone)]
 pub enum Term {
 	Var(usize),
@@ -8,6 +10,7 @@ pub enum Term {
 	App(Box<Term>, Box<Term>)
 }
 
+/// An error that can be returned when an inapplicable function is applied to a term.
 #[derive(Debug, PartialEq, Clone)]
 pub enum Error {
 	NotAVar,
@@ -19,8 +22,10 @@ pub enum Error {
 }
 
 impl Term {
-	pub fn app(self, term: Term) -> Term { App(Box::new(self), Box::new(term)) }
+	/// Applies self to another term
+	pub fn app(self, argument: Term) -> Term { App(Box::new(self), Box::new(argument)) }
 
+	/// Consumes a lambda variable and returns its De Bruijn index.
 	pub fn unvar(self) -> Result<usize, Error> {
 		match self {
 			Var(n) => Ok(n),
@@ -28,6 +33,7 @@ impl Term {
 		}
 	}
 
+	/// Consumes an abstraction and returns its underlying term.
 	pub fn unabs(self) -> Result<Term, Error> {
 		match self {
 			Abs(x) => Ok(*x),
@@ -35,6 +41,7 @@ impl Term {
 		}
 	}
 
+	/// Returns a reference to an abstraction's underlying term.
 	pub fn unabs_ref(&self) -> Result<&Term, Error> {
 		match *self {
 			Abs(ref x) => Ok(&*x),
@@ -42,6 +49,7 @@ impl Term {
 		}
 	}
 
+	/// Returns a mutable reference to an abstraction's underlying term.
 	pub fn unabs_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		match *self {
 			Abs(ref mut x) => Ok(&mut *x),
@@ -49,6 +57,7 @@ impl Term {
 		}
 	}
 
+	/// Consumes an application and returns a pair containing its underlying terms.
 	pub fn unapp(self) -> Result<(Term, Term), Error> {
 		match self {
 			App(lhs, rhs) => Ok((*lhs, *rhs)),
@@ -56,6 +65,7 @@ impl Term {
 		}
 	}
 
+	/// Returns a pair containing references to an application's underlying terms.
 	pub fn unapp_ref(&self) -> Result<(&Term, &Term), Error> {
 		match *self {
 			App(ref lhs, ref rhs) => Ok((&*lhs, &*rhs)),
@@ -63,6 +73,7 @@ impl Term {
 		}
 	}
 
+	/// Returns a pair containing mutable references to an application's underlying terms.
 	pub fn unapp_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
 		match *self {
 			App(ref mut lhs, ref mut rhs) => Ok((&mut *lhs, &mut *rhs)),
@@ -70,30 +81,39 @@ impl Term {
 		}
 	}
 
+	/// Returns the left-hand side term of an application. Consumes its argument.
 	pub fn lhs(self) -> Result<Term, Error> {
 		if let Ok((lhs, _)) = self.unapp() { Ok(lhs) } else { Err(NotAnApp) }
 	}
 
+	/// Returns a reference to the left-hand side term of an application.
 	pub fn lhs_ref(&self) -> Result<&Term, Error> {
 		if let Ok((lhs, _)) = self.unapp_ref() { Ok(lhs) } else { Err(NotAnApp) }
 	}
 
+	/// Returns a mutable reference to the left-hand side term of an application.
 	pub fn lhs_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		if let Ok((lhs, _)) = self.unapp_ref_mut() { Ok(lhs) } else { Err(NotAnApp) }
 	}
 
+	/// Returns the right-hand side term of an application. Consumes its argument.
 	pub fn rhs(self) -> Result<Term, Error> {
 		if let Ok((_, rhs)) = self.unapp() { Ok(rhs) } else { Err(NotAnApp) }
 	}
 
+	/// Returns a reference to the right-hand side term of an application.
 	pub fn rhs_ref(&self) -> Result<&Term, Error> {
 		if let Ok((_, rhs)) = self.unapp_ref() { Ok(rhs) } else { Err(NotAnApp) }
 	}
 
+	/// Returns a mutable reference to the right-hand side term of an application.
 	pub fn rhs_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		if let Ok((_, rhs)) = self.unapp_ref_mut() { Ok(rhs) } else { Err(NotAnApp) }
 	}
 }
 
-pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
+/// Wraps a term in an abstraction. Consumes its argument.
+pub fn abs(t: Term) -> Term { Abs(Box::new(t)) }
+
+/// Produces an application of its arguments, consuming them in the process.
 pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
