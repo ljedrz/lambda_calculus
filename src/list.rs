@@ -4,20 +4,58 @@ use term::Error::*;
 use booleans::*;
 use reduction::*;
 
-// PAIR := λxyf.f x y
+/// Produces a Church-encoded pair (λλλ132); applying it to two other terms puts them inside it.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::list::pair;
+/// use lambda_calculus::arithmetic::{zero, one};
+///
+/// let pair_0_1 = pair().app(zero()).app(one());
+///
+/// assert_eq!(pair_0_1.fst_ref(), Ok(&zero()));
+///	assert_eq!(pair_0_1.snd_ref(), Ok(&one()));
+/// ```
 pub fn pair() -> Term { abs(abs(abs(Var(1).app(Var(3)).app(Var(2))))) }
 
-// FIRST := λp.p TRUE
+/// Produces a Church-encoded first (λ1(λλ2)); applying it to a Church-encoded pair (a, b) yields
+/// a.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::list::{pair, first};
+/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::reduction::normalize;
+///
+/// let pair_0_1 = pair().app(zero()).app(one());
+///
+/// assert_eq!(normalize(first().app(pair_0_1)), zero());
+/// ```
 pub fn first() -> Term { abs(Var(1).app(tru())) }
 
-// SECOND := λp.p FALSE
+/// Produces a Church-encoded second (λ1(λλ1)); applying it to a Church-encoded pair (a, b) yields
+/// b.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::list::{pair, second};
+/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::reduction::normalize;
+///
+/// let pair_0_1 = pair().app(zero()).app(one());
+///
+/// assert_eq!(normalize(second().app(pair_0_1)), one());
+/// ```
 pub fn second() -> Term { abs(Var(1).app(fls())) }
 
-// NIL := λx.TRUE
-pub fn nil() -> Term { abs(tru()) }
+/// Produces a Church-encoded nil (λ(λλ2)), the ending of a Church-encoded list
+pub fn nil() -> Term { abs(tru()) } // TODO: add example; consider the PAIR TRUE TRUE nil variant
 
-// NULL := λp.p (λxy.FALSE)
-pub fn null() -> Term { abs(Var(1).app(abs(abs(fls())))) }
+/// Equivalent to first(); applied to a Church-encoded list determines if it is empty
+pub fn is_nil() -> Term { first() } // TODO: add example; this probably only works with the other nil variant
 
 // CONS := λht.PAIR FALSE (PAIR h t)
 pub fn cons() -> Term { abs(abs(pair().app(fls()).app(pair().app(Var(2)).app(Var(1))))) }
