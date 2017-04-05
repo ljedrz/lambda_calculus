@@ -1,25 +1,40 @@
 use term::*;
 use term::Term::*;
 
-// TRUE := λxy.x
+/// A Church-encoded boolean true.
+///
+/// true := λab.a = λ λ 2
 pub fn tru() -> Term { abs(abs(Var(2))) }
 
-// FALSE := λxy.y
+/// A Church-encoded boolean false.
+///
+/// false := λab.b = λ λ 1
 pub fn fls() -> Term { abs(abs(Var(1))) }
 
-// AND := λpq.p q p
+/// Applied to two Church-encoded booleans it returns their Church-encoded conjunction.
+///
+/// and := λpq.p q p = λ λ 2 1 2
 pub fn and() -> Term { abs(abs(Var(2).app(Var(1)).app(Var(2)))) }
 
-// OR := λpq.p p q
+/// Applied to two Church-encoded booleans it returns their Church-encoded disjunction.
+///
+/// or := λpq.p p q = λ λ 2 2 1
 pub fn or() -> Term { abs(abs(Var(2).app(Var(2)).app(Var(1)))) }
 
-// NOT := λp.p FALSE TRUE
+/// Applied to a Church-encoded boolean it returns its Church-encoded negation.
+///
+/// not := λp.p false true = λ 1 false true
 pub fn not() -> Term { abs(Var(1).app(fls()).app(tru())) }
 
-// XOR := λpab.p a b
+/// Applied to a Church-encoded boolean it returns its Church-encoded exclusive disjunction.
+///
+/// xor := λab.a (not b) b = λ λ 2 (not 1) 1
 pub fn xor() -> Term { abs(abs(Var(2).app(not().app(Var(1))).app(Var(1)))) }
 
-// IFELSE := λpab.p a b
+/// Applied to a Church encoded predicate and two terms it returns the first one if the predicate is
+/// true or the second one if the predicate is false.
+///
+/// if_else := λpab.p a b = λ λ λ 3 2 1
 pub fn if_else() -> Term { abs(abs(abs(Var(3).app(Var(2)).app(Var(1))))) }
 
 #[cfg(test)]

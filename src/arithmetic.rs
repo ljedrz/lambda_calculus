@@ -5,60 +5,60 @@ use booleans::*;
 
 /// Produces a Church-encoded zero.
 ///
-/// zero := λλ1
+/// zero := λfx.x = λ λ 1
 pub fn zero() -> Term { abs(abs(Var(1))) }
 
 /// Applied to a Church-encoded number it produces a Church-encoded boolean, indicating whether its
 /// argument is equal to zero.
 ///
-/// is_zero := λ1(λfalse)true
+/// is_zero := λn.n (λx.false) true =  λ 1 (λ false) true
 pub fn is_zero() -> Term { abs(Var(1).app(abs(fls())).app(tru())) }
 
 /// Produces a Church-encoded one.
 ///
-/// one := λλ21
+/// one := λfx.f x = λ λ 2 1
 pub fn one() -> Term { abs(abs(Var(2).app(Var(1)))) }
 
 /// Applied to a Church-encoded number it produces its successor.
 ///
-/// succ := λλλ2(321)
+/// succ := λnfx.f (n f x) = λ λ λ 2 (3 2 1)
 pub fn succ() -> Term { abs(abs(abs(Var(2).app(Var(3).app(Var(2)).app(Var(1)))))) }
 
 /// Applied to two Church-encoded numbers it produces their sum.
 ///
-/// plus := λλλλ42(321) or λλ2succ1
+/// plus := λmnfx.m f (n f x) = λ λ λ λ 4 2 (3 2 1)
 pub fn plus() -> Term { abs(abs(abs(abs(Var(4).app(Var(2)).app(Var(3).app(Var(2)).app(Var(1))))))) }
 
 /// Applied to two Church-encoded numbers it produces their product.
 ///
-/// mult := λλλ3(21) or λλ2(plus1)zero
+/// mult := λm.λn.λf.m (n f) = λ λ λ 3 (2 1)
 pub fn mult() -> Term { abs(abs(abs(Var(3).app(Var(2).app(Var(1)))))) }
 
 /// Applied to two Church-encoded numbers it raises the first one to the power of the second one.
 ///
-/// pow := λλ12
+/// pow := λb.λe.e b = λ λ 1 2
 pub fn pow() -> Term { abs(abs(Var(1).app(Var(2)))) }
 
 /// Applied to a Church-encoded number it produces its predecessor.
 ///
-/// pred := λλλ3(λλ1(24))(λ2)(λ1)
+/// pred := λn.λf.λx.n (λg.λh.h (g f)) (λu.x) (λu.u) = λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1)
 pub fn pred() -> Term { abs(abs(abs(Var(3).app(abs(abs(Var(1).app(Var(2).app(Var(4)))))).app(abs(Var(2))).app(abs(Var(1)))))) }
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
 ///
-/// sub := λλ1pred2
+/// sub := λm.λn.n pred m = λ λ 1 pred 2
 pub fn sub() -> Term { abs(abs(Var(1).app(pred()).app(Var(2)))) }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
 /// first argument is less or egual to the second one.
 ///
-/// leq := λλis_zero(sub21)
+/// leq := λm.λn.is_zero (sub m n) = λ λ is_zero (sub 2 1)
 pub fn leq() -> Term { abs(abs(is_zero().app(sub().app(Var(2)).app(Var(1))))) }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
 /// first argument is egual to the second one.
 ///
-/// eq := λλand(leq21)(leq12)
+/// eq := λmn.and (leq m n) (leq n m) = λ λ and (leq 2 1)(leq 1 2)
 pub fn eq() -> Term { abs(abs(and().app(leq().app(Var(2)).app(Var(1))).app(leq().app(Var(1)).app(Var(2))))) }
 
 impl Term {

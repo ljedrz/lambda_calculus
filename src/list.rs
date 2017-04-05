@@ -6,7 +6,7 @@ use reduction::*;
 
 /// Produces a Church-encoded pair; applying it to two other terms puts them inside it.
 ///
-/// pair := λλλ132
+/// pair := λxyz.z x y = λ λ λ 1 3 2
 /// # Example
 ///
 /// ```
@@ -22,7 +22,7 @@ pub fn pair() -> Term { abs(abs(abs(Var(1).app(Var(3)).app(Var(2))))) }
 
 /// Applied to a Church-encoded pair (a, b) it yields a.
 ///
-/// first := λ1(λλ2)
+/// first := λp.p (λxy.x) = λ 1 (λ λ 2)
 /// # Example
 ///
 /// ```
@@ -38,7 +38,7 @@ pub fn first() -> Term { abs(Var(1).app(tru())) }
 
 /// Applied to a Church-encoded pair (a, b) it yields b.
 ///
-/// second := λ1(λλ1)
+/// second := λp.p (λxy.y) = λ 1 (λ λ 1)
 /// # Example
 ///
 /// ```
@@ -54,7 +54,7 @@ pub fn second() -> Term { abs(Var(1).app(fls())) }
 
 /// Produces a Church-encoded nil, the last link of a Church-encoded list.
 ///
-/// nil := λ(λλ2)
+/// nil := λx.true = λ true
 pub fn nil() -> Term { abs(tru()) } // TODO: consider the PAIR TRUE TRUE nil variant
 
 /// Equivalent to first(); applied to a Church-encoded list it determines if it is empty.
@@ -64,17 +64,17 @@ pub fn is_nil() -> Term { first() } // TODO: this probably only works with the o
 
 /// Applied to two terms it returns them encoded as a list.
 ///
-/// cons := λλpair false (pair21)
+/// cons := λht.pair false (pair h t) = λ λ pair false (pair 2 1)
 pub fn cons() -> Term { abs(abs(pair().app(fls()).app(pair().app(Var(2)).app(Var(1))))) }
 
 /// Applied to a Church-encoded list it returns its first element.
 ///
-/// head := λfirst (second1)
+/// head := λz.first (second z) = λfirst (second 1)
 pub fn head() -> Term { abs(first().app(second().app(Var(1)))) }
 
 /// Applied to a Church-encoded list it returns a new list with all its elements but the first one.
 ///
-/// tail := λsecond(first1)
+/// tail := λz.second (second z) = λ second (first 1)
 pub fn tail() -> Term { abs(second().app(second().app(Var(1)))) }
 
 impl Term {
