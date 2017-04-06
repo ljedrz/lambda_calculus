@@ -69,7 +69,7 @@ pub fn cons() -> Term { abs(abs(pair().app(fls()).app(pair().app(Var(2)).app(Var
 
 /// Applied to a Church-encoded list it returns its first element.
 ///
-/// head := λz.first (second z) = λfirst (second 1)
+/// head := λz.first (second z) = λ first (second 1)
 pub fn head() -> Term { abs(first().app(second().app(Var(1)))) }
 
 /// Applied to a Church-encoded list it returns a new list with all its elements but the first one.

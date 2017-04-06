@@ -70,7 +70,7 @@ pub fn plus() -> Term { abs(abs(abs(abs(Var(4).app(Var(2)).app(Var(3).app(Var(2)
 
 /// Applied to two Church-encoded numbers it produces their product.
 ///
-/// mult := λm.λn.λf.m (n f) = λ λ λ 3 (2 1)
+/// mult := λmnf.m (n f) = λ λ λ 3 (2 1)
 ///
 /// # Example
 /// ```
@@ -83,7 +83,7 @@ pub fn mult() -> Term { abs(abs(abs(Var(3).app(Var(2).app(Var(1)))))) }
 
 /// Applied to two Church-encoded numbers it raises the first one to the power of the second one.
 ///
-/// pow := λb.λe.e b = λ λ 1 2
+/// pow := λbe.e b = λ λ 1 2
 ///
 /// # Example
 /// ```
@@ -96,7 +96,7 @@ pub fn pow() -> Term { abs(abs(Var(1).app(Var(2)))) }
 
 /// Applied to a Church-encoded number it produces its predecessor.
 ///
-/// pred := λn.λf.λx.n (λg.λh.h (g f)) (λu.x) (λu.u) = λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1)
+/// pred := λnfx.n (λgh.h (g f)) (λu.x) (λu.u) = λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1)
 ///
 /// # Example
 /// ```
@@ -109,7 +109,7 @@ pub fn pred() -> Term { abs(abs(abs(Var(3).app(abs(abs(Var(1).app(Var(2).app(Var
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
 ///
-/// sub := λm.λn.n pred m = λ λ 1 pred 2
+/// sub := λmn.n pred m = λ λ 1 pred 2
 ///
 /// # Example
 /// ```
@@ -123,7 +123,7 @@ pub fn sub() -> Term { abs(abs(Var(1).app(pred()).app(Var(2)))) }
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
 /// first argument is less or egual to the second one.
 ///
-/// leq := λm.λn.is_zero (sub m n) = λ λ is_zero (sub 2 1)
+/// leq := λmn.is_zero (sub m n) = λ λ is_zero (sub 2 1)
 ///
 /// # Example
 /// ```
@@ -138,7 +138,7 @@ pub fn leq() -> Term { abs(abs(is_zero().app(sub().app(Var(2)).app(Var(1))))) }
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
 /// first argument is egual to the second one.
 ///
-/// eq := λmn.and (leq m n) (leq n m) = λ λ and (leq 2 1)(leq 1 2)
+/// eq := λmn.and (leq m n) (leq n m) = λ λ and (leq 2 1) (leq 1 2)
 ///
 /// # Example
 /// ```
