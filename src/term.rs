@@ -20,7 +20,8 @@ pub enum Error {
 	NotAnApp,
 	NotANum,
 	NotAPair,
-	NotAList
+	NotAList,
+	EmptyList
 }
 
 impl Term {

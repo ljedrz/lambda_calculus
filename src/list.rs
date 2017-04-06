@@ -7,13 +7,29 @@ use reduction::*;
 
 /// Produces a Church-encoded nil, the last link of a Church-encoded list.
 ///
-/// nil := λx.true = λ true
-pub fn nil() -> Term { abs(tru()) } // TODO: consider the PAIR TRUE TRUE nil variant
+/// nil := pair true true
+///
+/// # Example
+/// ```
+/// use lambda_calculus::list::nil;
+///
+/// assert!(nil().is_empty());
+/// ```
+pub fn nil() -> Term { normalize(pair().app(tru()).app(tru())) }
 
 /// Equivalent to first(); applied to a Church-encoded list it determines if it is empty.
 ///
 /// is_nil := first
-pub fn is_nil() -> Term { first() } // TODO: this probably only works with the other nil variant
+///
+/// # Example
+/// ```
+/// use lambda_calculus::list::{nil, is_nil};
+/// use lambda_calculus::booleans::tru;
+/// use lambda_calculus::reduction::normalize;
+///
+/// assert_eq!(normalize(is_nil().app(nil())), tru());
+/// ```
+pub fn is_nil() -> Term { first() }
 
 /// Applied to two terms it returns them encoded as a list.
 ///
@@ -68,15 +84,15 @@ pub fn head() -> Term { abs(first().app(second().app(Var(1)))) }
 pub fn tail() -> Term { abs(second().app(second().app(Var(1)))) }
 
 impl Term {
-	/// Checks whether self is a Church-encoded nil.
+	/// Checks whether self is a Church-encoded empty list, i.e. nil().
 	///
 	/// # Example
 	/// ```
 	/// use lambda_calculus::list::nil;
 	///
-	/// assert!(nil().is_nil());
+	/// assert!(nil().is_empty());
 	/// ```
-	pub fn is_nil(&self) -> bool {
+	pub fn is_empty(&self) -> bool {
 		*self == nil()
 	}
 
@@ -103,7 +119,7 @@ impl Term {
 	/// assert!(list_110.is_list());
 	/// ```
 	pub fn is_list(&self) -> bool {
-		self.is_pair() && self.last_ref() == Ok(&nil())
+		self.last_ref().is_ok()
 	}
 
 	/// Splits a Church-encoded list into a pair containing its first term and a list of all the other terms, consuming self.
@@ -120,6 +136,8 @@ impl Term {
 	pub fn uncons(self) -> Result<(Term, Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
+		} else if self.is_empty() {
+			Err(EmptyList)
 		} else {
 			self.unabs()
 				.and_then(|t| t.snd())
@@ -141,6 +159,8 @@ impl Term {
 	pub fn uncons_ref(&self) -> Result<(&Term, &Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
+		} else if self.is_empty() {
+			Err(EmptyList)
 		} else {
 			self.unabs_ref()
 				.and_then(|t| t.snd_ref())
@@ -162,6 +182,8 @@ impl Term {
 	pub fn uncons_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
+		} else if self.is_empty() {
+			Err(EmptyList)
 		} else {
 			self.unabs_ref_mut()
 				.and_then(|t| t.snd_ref_mut())
@@ -333,7 +355,7 @@ impl Iterator for Term {
 	type Item = Term;
 
 	fn next(&mut self) -> Option<Term> {
-		if self.is_nil() {
+		if self.is_empty() {
 			None
 		} else {
 			Some(self.pop().unwrap())
@@ -350,9 +372,9 @@ mod test {
 	fn empty_list() {
 		let nil = nil();
 
-		assert!(nil.is_nil());
-		assert!(!nil.is_list());
-		assert_eq!(nil.uncons(), Err(NotAList));
+		assert!(nil.is_list());
+		assert!(nil.is_empty());
+		assert_eq!(nil.uncons(), Err(EmptyList));
 	}
 
 	#[test]
@@ -407,7 +429,7 @@ mod test {
 		assert_eq!(list_poppable.pop(), Ok(one()));
 		assert_eq!(list_poppable.pop(), Ok(zero()));
 		assert_eq!(list_poppable.pop(), Ok(zero()));
-		assert_eq!(list_poppable.pop(), Err(NotAList));
+		assert_eq!(list_poppable.pop(), Err(EmptyList));
 	}
 
 	#[test]
