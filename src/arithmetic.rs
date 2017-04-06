@@ -186,7 +186,6 @@ impl Term {
 	/// # Example
 	/// ```
 	/// use lambda_calculus::arithmetic::one;
-	/// use lambda_calculus::booleans::tru;
 	///
 	/// assert!(one().is_number());
 	/// ```

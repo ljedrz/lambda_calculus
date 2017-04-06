@@ -6,7 +6,7 @@ repository = "https://github.com/ljedrz/lambda_calculus"
 documentation = "https://ljedrz.github.io/lambda_calculus/doc/lambda_calculus/index.html"
 readme = "README.md"
 license = "CC0-1.0"
-keywords = ["lambda", "calculus", "functional"]
+keywords = ["lambda", "calculus", "church", "functional"]
 authors = ["ljedrz <ljedrz@gmail.com>"]
 
 [dependencies]

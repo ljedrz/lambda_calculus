@@ -65,25 +65,82 @@ pub fn is_nil() -> Term { first() } // TODO: this probably only works with the o
 /// Applied to two terms it returns them encoded as a list.
 ///
 /// cons := λht.pair false (pair h t) = λ λ pair false (pair 2 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::list::{nil, cons};
+/// use lambda_calculus::reduction::normalize;
+///
+/// let list_110_consed = normalize(cons().app(one()).app(cons().app(one()).app(cons().app(zero()).app(nil()))));
+/// let list_110_from_vec = Term::from(vec![one(), one(), zero()]);
+///
+/// assert_eq!(list_110_consed, list_110_from_vec);
+/// ```
 pub fn cons() -> Term { abs(abs(pair().app(fls()).app(pair().app(Var(2)).app(Var(1))))) }
 
 /// Applied to a Church-encoded list it returns its first element.
 ///
 /// head := λz.first (second z) = λ first (second 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::head;
+/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::reduction::normalize;
+///
+/// let list_110 = Term::from(vec![one(), one(), zero()]);
+///
+/// assert_eq!(normalize(head().app(list_110)), one());
+/// ```
 pub fn head() -> Term { abs(first().app(second().app(Var(1)))) }
 
 /// Applied to a Church-encoded list it returns a new list with all its elements but the first one.
 ///
 /// tail := λz.second (second z) = λ second (first 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::tail;
+/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::reduction::normalize;
+///
+/// let list_110 = Term::from(vec![one(), one(), zero()]);
+///
+/// assert_eq!(normalize(tail().app(list_110)), Term::from(vec![one(), zero()]));
+/// ```
 pub fn tail() -> Term { abs(second().app(second().app(Var(1)))) }
 
 impl Term {
 	/// Checks whether self is a Church-encoded pair.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::pair;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let pair01 = pair().app(zero()).app(one());
+	///
+	/// assert!(pair01.is_pair());
+	/// ```
 	pub fn is_pair(&self) -> bool {
 		self.fst_ref().is_ok() && self.snd_ref().is_ok()
 	}
 
-	/// Splits a Church-encoded pair into a pair of terms, consuming its argument.
+	/// Splits a Church-encoded pair into a pair of terms, consuming self.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::pair;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let pair01 = pair().app(zero()).app(one());
+	///
+	/// assert_eq!(pair01.unpair(), Ok((zero(), one())));
+	/// ```
 	pub fn unpair(self) -> Result<(Term, Term), Error> {
 		if let Abs(_) = self {
 			if let Ok((wrapped_a, b)) = self.unabs().and_then(|t| t.unapp()) {
@@ -101,6 +158,16 @@ impl Term {
 	}
 
 	/// Splits a Church-encoded pair into a pair of references to its underlying terms.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::pair;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let pair01 = pair().app(zero()).app(one());
+	///
+	/// assert_eq!(pair01.unpair_ref(), Ok((&zero(), &one())));
+	/// ```
 	pub fn unpair_ref(&self) -> Result<(&Term, &Term), Error> {
 		if let Abs(_) = *self {
 			if let Ok((wrapped_a, b)) = self.unabs_ref().and_then(|t| t.unapp_ref()) {
@@ -118,6 +185,16 @@ impl Term {
 	}
 
 	/// Splits a Church-encoded pair into a pair of mutable references to its underlying terms.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::pair;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let mut pair01 = pair().app(zero()).app(one());
+	///
+	/// assert_eq!(pair01.unpair_ref_mut(), Ok((&mut zero(), &mut one())));
+	/// ```
 	pub fn unpair_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
 		if let Abs(_) = *self {
 			if let Ok((wrapped_a, b)) = self.unabs_ref_mut().and_then(|t| t.unapp_ref_mut()) {
@@ -134,38 +211,111 @@ impl Term {
 		}
 	}
 
-	/// Returns the first term from a Church-encoded pair, consuming its argument.
+	/// Returns the first term from a Church-encoded pair, consuming self.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::pair;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let pair01 = pair().app(zero()).app(one());
+	///
+	/// assert_eq!(pair01.fst(), Ok(zero()));
+	/// ```
 	pub fn fst(self) -> Result<Term, Error> {
 		Ok(try!(self.unpair()).0)
 	}
 
 	/// Returns a reference to the first term of a Church-encoded pair.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::pair;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let pair01 = pair().app(zero()).app(one());
+	///
+	/// assert_eq!(pair01.fst_ref(), Ok(&zero()));
+	/// ```
 	pub fn fst_ref(&self) -> Result<&Term, Error> {
 		Ok(try!(self.unpair_ref()).0)
 	}
 
 	/// Returns a mutable reference to the first term of a Church-encoded pair.
+	/// Returns a reference to the first term of a Church-encoded pair.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::pair;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let mut pair01 = pair().app(zero()).app(one());
+	///
+	/// assert_eq!(pair01.fst_ref_mut(), Ok(&mut zero()));
+	/// ```
 	pub fn fst_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		Ok(try!(self.unpair_ref_mut()).0)
 	}
 
-	/// Returns the second term from a Church-encoded pair, consuming its argument.
+	/// Returns the second term from a Church-encoded pair, consuming self.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::pair;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let pair01 = pair().app(zero()).app(one());
+	///
+	/// assert_eq!(pair01.snd(), Ok(one()));
+	/// ```
 	pub fn snd(self) -> Result<Term, Error> {
 		Ok(try!(self.unpair()).1)
 	}
 
 	/// Returns a reference to the second term of a Church-encoded pair.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::pair;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let pair01 = pair().app(zero()).app(one());
+	///
+	/// assert_eq!(pair01.snd_ref(), Ok(&one()));
+	/// ```
 	pub fn snd_ref(&self) -> Result<&Term, Error> {
 		Ok(try!(self.unpair_ref()).1)
 	}
 
 	/// Returns a mutable reference to the second term of a Church-encoded pair.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::pair;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let mut pair01 = pair().app(zero()).app(one());
+	///
+	/// assert_eq!(pair01.snd_ref_mut(), Ok(&mut one()));
+	/// ```
 	pub fn snd_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		Ok(try!(self.unpair_ref_mut()).1)
 	}
 
-	/// Returns a reference to the last term of a Church-encoded list.
-	pub fn last_ref(&self) -> Result<&Term, Error> {
+	/// Checks whether self is a Church-encoded nil.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::list::nil;
+	///
+	/// assert!(nil().is_nil());
+	/// ```
+	pub fn is_nil(&self) -> bool {
+		*self == nil()
+	}
+
+	// Returns a reference to the last term of a Church-encoded list.
+	fn last_ref(&self) -> Result<&Term, Error> {
 		let mut last_candidate = try!(self.snd_ref());
 
 		while let Ok(ref second) = last_candidate.snd_ref() {
@@ -175,17 +325,32 @@ impl Term {
 		Ok(last_candidate)
 	}
 
-	/// Checks whether self is a Church-encoded nil.
-	pub fn is_nil(&self) -> bool {
-		*self == nil()
-	}
-
 	/// Checks whether self is a Church-encoded list.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert!(list_110.is_list());
+	/// ```
 	pub fn is_list(&self) -> bool {
 		self.is_pair() && self.last_ref() == Ok(&nil())
 	}
 
-	/// Splits a Church-encoded list into a pair containing its first term and a list of all the other terms, consuming its argument.
+	/// Splits a Church-encoded list into a pair containing its first term and a list of all the other terms, consuming self.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.uncons(), Ok((one(), Term::from(vec![one(), zero()]))));
+	/// ```
 	pub fn uncons(self) -> Result<(Term, Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
@@ -197,6 +362,16 @@ impl Term {
 	}
 
 	/// Splits a Church-encoded list into a pair containing references to its first term and a to list of all the other terms.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.uncons_ref(), Ok((&one(), &Term::from(vec![one(), zero()]))));
+	/// ```
 	pub fn uncons_ref(&self) -> Result<(&Term, &Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
@@ -208,6 +383,16 @@ impl Term {
 	}
 
 	/// Splits a Church-encoded list into a pair containing mutable references to its first term and a to list of all the other terms.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let mut list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.uncons_ref_mut(), Ok((&mut one(), &mut Term::from(vec![one(), zero()]))));
+	/// ```
 	pub fn uncons_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
@@ -218,37 +403,107 @@ impl Term {
 		}
 	}
 
-	/// Returns the first term from a Church-encoded list, consuming its argument.
+	/// Returns the first term from a Church-encoded list, consuming self.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.head(), Ok(one()));
+	/// ```
 	pub fn head(self) -> Result<Term, Error> {
 		Ok(try!(self.uncons()).0)
 	}
 
 	/// Returns a reference to the first term of a Church-encoded list.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.head_ref(), Ok(&one()));
+	/// ```
 	pub fn head_ref(&self) -> Result<&Term, Error> {
 		Ok(try!(self.uncons_ref()).0)
 	}
 
 	/// Returns a mutable reference to the first term of a Church-encoded list.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let mut list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.head_ref_mut(), Ok(&mut one()));
+	/// ```
 	pub fn head_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		Ok(try!(self.uncons_ref_mut()).0)
 	}
 
-	/// Returns a list of all the terms of a Church-encoded list but the first one, consuming its argument.
+	/// Returns a list of all the terms of a Church-encoded list but the first one, consuming self.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.tail(), Ok(Term::from(vec![one(), zero()])));
+	/// ```
 	pub fn tail(self) -> Result<Term, Error> {
 		Ok(try!(self.uncons()).1)
 	}
 
 	/// Returns a reference to a list of all the terms of a Church-encoded list but the first one.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.tail_ref(), Ok(&Term::from(vec![one(), zero()])));
+	/// ```
 	pub fn tail_ref(&self) -> Result<&Term, Error> {
 		Ok(try!(self.uncons_ref()).1)
 	}
 
 	/// Returns a mutable reference to a list of all the terms of a Church-encoded list but the first one.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let mut list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.tail_ref_mut(), Ok(&mut Term::from(vec![one(), zero()])));
+	/// ```
 	pub fn tail_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		Ok(try!(self.uncons_ref_mut()).1)
 	}
 
 	/// Returns the length of a Church-encoded list
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.len(), Ok(3));
+	/// ```
 	pub fn len(&self) -> Result<usize, Error> {
 		let mut inner = self;
 		let mut n = 0;
@@ -261,12 +516,33 @@ impl Term {
 		Ok(n)
 	}
 
-	/// Adds a term to the beginning of a Church-encoded list and returns the new list. Consumes its arguments.
+	/// Adds a term to the beginning of a Church-encoded list and returns the new list. Consumes self and the argument.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.push(zero()), Term::from(vec![zero(), one(), one(), zero()]));
+	/// ```
 	pub fn push(self, term: Term) -> Term {
 		normalize(cons().app(term).app(self))
 	}
 
 	/// Removes the first element from a Church-encoded list and returns it.
+	///
+	/// # Example
+	/// ```
+	/// use lambda_calculus::term::Term;
+	/// use lambda_calculus::arithmetic::{zero, one};
+	///
+	/// let mut list_110 = Term::from(vec![one(), one(), zero()]);
+	///
+	/// assert_eq!(list_110.pop(), Ok(one()));
+	/// assert_eq!(list_110, Term::from(vec![one(), zero()]));
+	/// ```
 	pub fn pop(&mut self) -> Result<Term, Error> {
 		let (head, tail) = try!(self.clone().uncons());
 		*self = tail;
@@ -329,9 +605,9 @@ mod test {
 	#[test]
 	fn list_push() {
 		let list_pushed = nil().push(zero()).push(one()).push(one());
-		let list_manual = normalize(cons().app(one()).app(cons().app(one()).app(cons().app(zero()).app(nil()))));
+		let list_consed = normalize(cons().app(one()).app(cons().app(one()).app(cons().app(zero()).app(nil()))));
 
-		assert_eq!(list_pushed, list_manual);
+		assert_eq!(list_pushed, list_consed);
 	}
 
 	#[test]
