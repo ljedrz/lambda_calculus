@@ -1,3 +1,6 @@
+//! A `module` containing the implementation of a lambda term, `Term`, that can contain any lambda
+//! expression.
+
 use self::Term::*;
 use self::Error::*;
 use std::fmt;

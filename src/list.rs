@@ -1,3 +1,5 @@
+//! A `module` with a Church-encoded list and related functions.
+
 use term::*;
 use term::Term::*;
 use term::Error::*;

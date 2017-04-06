@@ -1,3 +1,5 @@
+//! A `module` with Church-encoded boolean values and operators.
+
 use term::*;
 use term::Term::*;
 

@@ -1,3 +1,5 @@
+//! A `module` with Church-encoded numbers and arithmetic operators.
+
 use term::*;
 use term::Term::*;
 use term::Error::*;

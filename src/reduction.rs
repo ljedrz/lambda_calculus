@@ -1,3 +1,5 @@
+//! A `module` with the `normalize` function that reduces lambda expressions to their normal form.
+
 use term::*;
 use term::Term::*;
 use self::Closure::*;
@@ -52,6 +54,18 @@ fn nf(depth: usize, term: Term, env: Environment) -> Term {
 }
 
 /// Returns a term reduced to its normal form. Consumes its argument.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::booleans::{if_else, tru, fls};
+/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::reduction::normalize;
+///
+/// let if_true_then_one_else_zero = if_else().app(tru()).app(one()).app(zero());
+///
+/// assert_eq!(normalize(if_true_then_one_else_zero), one());
+/// ```
 pub fn normalize(term: Term) -> Term {
 	nf(0, term, VecDeque::new())
 }
