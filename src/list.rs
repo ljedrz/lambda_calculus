@@ -78,10 +78,12 @@ pub fn head() -> Term { abs(first().app(second().app(Var(1)))) }
 pub fn tail() -> Term { abs(second().app(second().app(Var(1)))) }
 
 impl Term {
+	/// Checks whether self is a Church-encoded pair.
 	pub fn is_pair(&self) -> bool {
 		self.fst_ref().is_ok() && self.snd_ref().is_ok()
 	}
 
+	/// Splits a Church-encoded pair into a pair of terms, consuming its argument.
 	pub fn unpair(self) -> Result<(Term, Term), Error> {
 		if let Abs(_) = self {
 			if let Ok((wrapped_a, b)) = self.unabs().and_then(|t| t.unapp()) {
@@ -98,6 +100,7 @@ impl Term {
 		}
 	}
 
+	/// Splits a Church-encoded pair into a pair of references to its underlying terms.
 	pub fn unpair_ref(&self) -> Result<(&Term, &Term), Error> {
 		if let Abs(_) = *self {
 			if let Ok((wrapped_a, b)) = self.unabs_ref().and_then(|t| t.unapp_ref()) {
@@ -114,6 +117,7 @@ impl Term {
 		}
 	}
 
+	/// Splits a Church-encoded pair into a pair of mutable references to its underlying terms.
 	pub fn unpair_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
 		if let Abs(_) = *self {
 			if let Ok((wrapped_a, b)) = self.unabs_ref_mut().and_then(|t| t.unapp_ref_mut()) {
@@ -130,30 +134,37 @@ impl Term {
 		}
 	}
 
+	/// Returns the first term from a Church-encoded pair, consuming its argument.
 	pub fn fst(self) -> Result<Term, Error> {
 		Ok(try!(self.unpair()).0)
 	}
 
+	/// Returns a reference to the first term of a Church-encoded pair.
 	pub fn fst_ref(&self) -> Result<&Term, Error> {
 		Ok(try!(self.unpair_ref()).0)
 	}
 
+	/// Returns a mutable reference to the first term of a Church-encoded pair.
 	pub fn fst_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		Ok(try!(self.unpair_ref_mut()).0)
 	}
 
+	/// Returns the second term from a Church-encoded pair, consuming its argument.
 	pub fn snd(self) -> Result<Term, Error> {
 		Ok(try!(self.unpair()).1)
 	}
 
+	/// Returns a reference to the second term of a Church-encoded pair.
 	pub fn snd_ref(&self) -> Result<&Term, Error> {
 		Ok(try!(self.unpair_ref()).1)
 	}
 
+	/// Returns a mutable reference to the second term of a Church-encoded pair.
 	pub fn snd_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		Ok(try!(self.unpair_ref_mut()).1)
 	}
 
+	/// Returns a reference to the last term of a Church-encoded list.
 	pub fn last_ref(&self) -> Result<&Term, Error> {
 		let mut last_candidate = try!(self.snd_ref());
 
@@ -164,14 +175,17 @@ impl Term {
 		Ok(last_candidate)
 	}
 
+	/// Checks whether self is a Church-encoded nil.
 	pub fn is_nil(&self) -> bool {
 		*self == nil()
 	}
 
+	/// Checks whether self is a Church-encoded list.
 	pub fn is_list(&self) -> bool {
 		self.is_pair() && self.last_ref() == Ok(&nil())
 	}
 
+	/// Splits a Church-encoded list into a pair containing its first term and a list of all the other terms, consuming its argument.
 	pub fn uncons(self) -> Result<(Term, Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
@@ -182,6 +196,7 @@ impl Term {
 		}
 	}
 
+	/// Splits a Church-encoded list into a pair containing references to its first term and a to list of all the other terms.
 	pub fn uncons_ref(&self) -> Result<(&Term, &Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
@@ -192,6 +207,7 @@ impl Term {
 		}
 	}
 
+	/// Splits a Church-encoded list into a pair containing mutable references to its first term and a to list of all the other terms.
 	pub fn uncons_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
@@ -202,30 +218,37 @@ impl Term {
 		}
 	}
 
+	/// Returns the first term from a Church-encoded list, consuming its argument.
 	pub fn head(self) -> Result<Term, Error> {
 		Ok(try!(self.uncons()).0)
 	}
 
+	/// Returns a reference to the first term of a Church-encoded list.
 	pub fn head_ref(&self) -> Result<&Term, Error> {
 		Ok(try!(self.uncons_ref()).0)
 	}
 
+	/// Returns a mutable reference to the first term of a Church-encoded list.
 	pub fn head_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		Ok(try!(self.uncons_ref_mut()).0)
 	}
 
+	/// Returns a list of all the terms of a Church-encoded list but the first one, consuming its argument.
 	pub fn tail(self) -> Result<Term, Error> {
 		Ok(try!(self.uncons()).1)
 	}
 
+	/// Returns a reference to a list of all the terms of a Church-encoded list but the first one.
 	pub fn tail_ref(&self) -> Result<&Term, Error> {
 		Ok(try!(self.uncons_ref()).1)
 	}
 
+	/// Returns a mutable reference to a list of all the terms of a Church-encoded list but the first one.
 	pub fn tail_ref_mut(&mut self) -> Result<&mut Term, Error> {
 		Ok(try!(self.uncons_ref_mut()).1)
 	}
 
+	/// Returns the length of a Church-encoded list
 	pub fn len(&self) -> Result<usize, Error> {
 		let mut inner = self;
 		let mut n = 0;
@@ -238,10 +261,12 @@ impl Term {
 		Ok(n)
 	}
 
-	pub fn push(self, t: Term) -> Term {
-		normalize(cons().app(t).app(self))
+	/// Adds a term to the beginning of a Church-encoded list and returns the new list. Consumes its arguments.
+	pub fn push(self, term: Term) -> Term {
+		normalize(cons().app(term).app(self))
 	}
 
+	/// Removes the first element from a Church-encoded list and returns it.
 	pub fn pop(&mut self) -> Result<Term, Error> {
 		let (head, tail) = try!(self.clone().uncons());
 		*self = tail;
