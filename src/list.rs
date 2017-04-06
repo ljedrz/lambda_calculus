@@ -7,8 +7,8 @@ use reduction::*;
 /// Produces a Church-encoded pair; applying it to two other terms puts them inside it.
 ///
 /// pair := λxyz.z x y = λ λ λ 1 3 2
-/// # Example
 ///
+/// # Example
 /// ```
 /// use lambda_calculus::list::pair;
 /// use lambda_calculus::arithmetic::{zero, one};
@@ -23,8 +23,8 @@ pub fn pair() -> Term { abs(abs(abs(Var(1).app(Var(3)).app(Var(2))))) }
 /// Applied to a Church-encoded pair (a, b) it yields a.
 ///
 /// first := λp.p (λxy.x) = λ 1 (λ λ 2)
-/// # Example
 ///
+/// # Example
 /// ```
 /// use lambda_calculus::list::{pair, first};
 /// use lambda_calculus::arithmetic::{zero, one};
@@ -39,8 +39,8 @@ pub fn first() -> Term { abs(Var(1).app(tru())) }
 /// Applied to a Church-encoded pair (a, b) it yields b.
 ///
 /// second := λp.p (λxy.y) = λ 1 (λ λ 1)
-/// # Example
 ///
+/// # Example
 /// ```
 /// use lambda_calculus::list::{pair, second};
 /// use lambda_calculus::arithmetic::{zero, one};
