@@ -58,7 +58,7 @@ fn nf(depth: usize, term: Term, env: Environment) -> Term {
 /// # Example
 ///
 /// ```
-/// use lambda_calculus::booleans::{if_else, tru, fls};
+/// use lambda_calculus::booleans::{if_else, tru};
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::normalize;
 ///

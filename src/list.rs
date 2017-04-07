@@ -1,5 +1,3 @@
-//! A `module` with a Church-encoded list and related functions.
-
 use term::*;
 use term::Term::*;
 use term::Error::*;
@@ -7,21 +5,22 @@ use booleans::*;
 use pair::*;
 use reduction::*;
 
-/// Produces a Church-encoded nil, the last link of a Church-encoded list.
+/// Equivalent to fls(); produces a Church-encoded nil, the last link of a Church-encoded list.
 ///
-/// nil := pair true true
+/// nil := false
 ///
 /// # Example
 /// ```
 /// use lambda_calculus::list::nil;
+/// use lambda_calculus::booleans::fls;
 ///
-/// assert!(nil().is_empty());
+/// assert_eq!(nil(), fls());
 /// ```
-pub fn nil() -> Term { normalize(pair().app(tru()).app(tru())) }
+pub fn nil() -> Term { fls() }
 
-/// Equivalent to first(); applied to a Church-encoded list it determines if it is empty.
+/// Applied to a Church-encoded list it determines if it is empty.
 ///
-/// is_nil := first
+/// is_nil := λl.l (λhtd.false) true = λ 1 (λ λ λ false) true
 ///
 /// # Example
 /// ```
@@ -31,11 +30,11 @@ pub fn nil() -> Term { normalize(pair().app(tru()).app(tru())) }
 ///
 /// assert_eq!(normalize(is_nil().app(nil())), tru());
 /// ```
-pub fn is_nil() -> Term { first() }
+pub fn is_nil() -> Term { abs(Var(1).app(abs(abs(abs(fls())))).app(tru())) }
 
-/// Applied to two terms it returns them encoded as a list.
+/// Equivalent to pair(); applied to two terms it returns them encoded as a list.
 ///
-/// cons := λht.pair false (pair h t) = λ λ pair false (pair 2 1)
+/// cons := pair
 ///
 /// # Example
 /// ```
@@ -49,11 +48,11 @@ pub fn is_nil() -> Term { first() }
 ///
 /// assert_eq!(list_110_consed, list_110_from_vec);
 /// ```
-pub fn cons() -> Term { abs(abs(pair().app(fls()).app(pair().app(Var(2)).app(Var(1))))) }
+pub fn cons() -> Term { pair() }
 
-/// Applied to a Church-encoded list it returns its first element.
+/// Equivalent to first(); applied to a Church-encoded list it returns its first element.
 ///
-/// head := λz.first (second z) = λ first (second 1)
+/// head := first
 ///
 /// # Example
 /// ```
@@ -66,11 +65,11 @@ pub fn cons() -> Term { abs(abs(pair().app(fls()).app(pair().app(Var(2)).app(Var
 ///
 /// assert_eq!(normalize(head().app(list_110)), one());
 /// ```
-pub fn head() -> Term { abs(first().app(second().app(Var(1)))) }
+pub fn head() -> Term { first() }
 
-/// Applied to a Church-encoded list it returns a new list with all its elements but the first one.
+/// Equivalent to second(); applied to a Church-encoded list it returns a new list with all its elements but the first one.
 ///
-/// tail := λz.second (second z) = λ second (first 1)
+/// tail := second
 ///
 /// # Example
 /// ```
@@ -83,7 +82,7 @@ pub fn head() -> Term { abs(first().app(second().app(Var(1)))) }
 ///
 /// assert_eq!(normalize(tail().app(list_110)), Term::from(vec![one(), zero()]));
 /// ```
-pub fn tail() -> Term { abs(second().app(second().app(Var(1)))) }
+pub fn tail() -> Term { second() }
 
 impl Term {
 	/// Checks whether self is a Church-encoded empty list, i.e. nil().
@@ -121,7 +120,7 @@ impl Term {
 	/// assert!(list_110.is_list());
 	/// ```
 	pub fn is_list(&self) -> bool {
-		self.last_ref().is_ok()
+		self.last_ref() == Ok(&nil())
 	}
 
 	/// Splits a Church-encoded list into a pair containing its first term and a list of all the other terms, consuming self.
@@ -138,12 +137,8 @@ impl Term {
 	pub fn uncons(self) -> Result<(Term, Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
-		} else if self.is_empty() {
-			Err(EmptyList)
 		} else {
-			self.unabs()
-				.and_then(|t| t.snd())
-				.and_then(|t| t.unpair())
+			self.unpair()
 		}
 	}
 
@@ -161,12 +156,8 @@ impl Term {
 	pub fn uncons_ref(&self) -> Result<(&Term, &Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
-		} else if self.is_empty() {
-			Err(EmptyList)
 		} else {
-			self.unabs_ref()
-				.and_then(|t| t.snd_ref())
-				.and_then(|t| t.unpair_ref())
+			self.unpair_ref()
 		}
 	}
 
@@ -184,12 +175,8 @@ impl Term {
 	pub fn uncons_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
 		if !self.is_list() {
 			Err(NotAList)
-		} else if self.is_empty() {
-			Err(EmptyList)
 		} else {
-			self.unabs_ref_mut()
-				.and_then(|t| t.snd_ref_mut())
-				.and_then(|t| t.unpair_ref_mut())
+			self.unpair_ref_mut()
 		}
 	}
 
@@ -374,9 +361,8 @@ mod test {
 	fn empty_list() {
 		let nil = nil();
 
-		assert!(nil.is_list());
+		assert!(!nil.is_list());
 		assert!(nil.is_empty());
-		assert_eq!(nil.uncons(), Err(EmptyList));
 	}
 
 	#[test]
@@ -431,7 +417,7 @@ mod test {
 		assert_eq!(list_poppable.pop(), Ok(one()));
 		assert_eq!(list_poppable.pop(), Ok(zero()));
 		assert_eq!(list_poppable.pop(), Ok(zero()));
-		assert_eq!(list_poppable.pop(), Err(EmptyList));
+		assert_eq!(list_poppable.pop(), Err(NotAList));
 	}
 
 	#[test]
@@ -444,5 +430,4 @@ mod test {
 		assert_eq!(iter.next(), Some(zero()));
 		assert_eq!(iter.next(), None);
 	}
-
 }
