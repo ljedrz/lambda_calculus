@@ -1,4 +1,4 @@
-//! A `module` with a Church-encoded pair and related functions.
+//! [Church pairs](https://en.wikipedia.org/wiki/Church_encoding#Church_pairs)
 
 use term::*;
 use term::Term::*;

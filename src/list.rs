@@ -1,3 +1,5 @@
+//! [Church single-pair list](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
+
 use term::*;
 use term::Term::*;
 use term::Error::*;

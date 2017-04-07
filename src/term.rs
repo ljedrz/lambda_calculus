@@ -1,5 +1,4 @@
-//! A `module` containing the implementation of a lambda term, `Term`, that can contain any lambda
-//! expression.
+//! [Lambda terms](https://en.wikipedia.org/wiki/Lambda_calculus#Lambda_terms)
 
 use self::Term::*;
 use self::Error::*;

@@ -1,4 +1,4 @@
-//! A `module` with Church-encoded boolean values and operators.
+//! [Church booleans](https://en.wikipedia.org/wiki/Church_encoding#Church_Booleans)
 
 use term::*;
 use term::Term::*;

@@ -1,4 +1,4 @@
-//! A `module` with the `normalize` function that reduces lambda expressions to their normal form.
+//! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form)
 
 use term::*;
 use term::Term::*;

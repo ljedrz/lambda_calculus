@@ -1,4 +1,4 @@
-//! A `module` with Church-encoded numbers and arithmetic operators.
+//! [Church-encoded numerals](https://en.wikipedia.org/wiki/Church_encoding#Church_numerals)
 
 use term::*;
 use term::Term::*;
