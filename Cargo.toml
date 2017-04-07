@@ -8,5 +8,6 @@ readme = "README.md"
 license = "CC0-1.0"
 keywords = ["lambda", "calculus", "church", "functional"]
 authors = ["ljedrz <ljedrz@gmail.com>"]
+exclude = [".cargo/*"]
 
 [dependencies]
