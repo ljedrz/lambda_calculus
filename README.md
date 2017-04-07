@@ -12,7 +12,6 @@ The library is already usable, but it is still a work in progress.
 
 ## Roadmap
 
-- change the implementation of a list from double pairs to single pairs
 - additional test cases and examples
 - a module with SKI combinators
 - a parser for lambda expressions with De Bruijn indices
