@@ -248,11 +248,14 @@ fn parenthesize_if(condition: bool, input: &str) -> Cow<str> {
 	}
 }
 
+/// Set to `true` for λ or `false` for \ when displaying lambda terms. The default is `true`.
+pub const DISPLAY_PRETTY: bool = true;
+
 fn show_precedence(context_precedence: usize, term: &Term) -> String {
 	match *term {
 		Var(i) => format!("{:X}", i), // max. index = 15
 		Abs(ref t) => {
-			let ret = format!("λ{}", t);
+			let ret = format!("{}{}", if DISPLAY_PRETTY { 'λ' } else { '\\' }, t);
 			parenthesize_if(context_precedence > 1, &ret).into()
 		},
 		App(ref t1, ref t2) => {
