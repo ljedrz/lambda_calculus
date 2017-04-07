@@ -4,7 +4,7 @@
 
 The data and operators follow the Church encoding and the terms are displayed using De Bruijn indices.
 
-## [Documentation](https://ljedrz.github.io/lambda_calculus/doc/lambda_calculus/index.html)
+## [Documentation](https://docs.rs/lambda_calculus)
 
 ## Status
 
