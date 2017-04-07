@@ -23,7 +23,7 @@ pub fn pair() -> Term { abs(abs(abs(Var(1).app(Var(3)).app(Var(2))))) }
 
 /// Applied to a Church-encoded pair (a, b) it yields a.
 ///
-/// first := λp.p (λxy.x) = λ 1 (λ λ 2)
+/// first := λp.p true = λ 1 true
 ///
 /// # Example
 /// ```
@@ -39,7 +39,7 @@ pub fn first() -> Term { abs(Var(1).app(tru())) }
 
 /// Applied to a Church-encoded pair (a, b) it yields b.
 ///
-/// second := λp.p (λxy.y) = λ 1 (λ λ 1)
+/// second := λp.p false = λ 1 false
 ///
 /// # Example
 /// ```

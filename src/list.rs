@@ -5,7 +5,6 @@ use term::Term::*;
 use term::Error::*;
 use booleans::*;
 use pair::*;
-use reduction::*;
 
 /// Equivalent to fls(); produces a Church-encoded nil, the last link of a Church-encoded list.
 ///
@@ -307,7 +306,7 @@ impl Term {
 	/// assert_eq!(list_110.push(zero()), Term::from(vec![zero(), one(), one(), zero()]));
 	/// ```
 	pub fn push(self, term: Term) -> Term {
-		normalize(cons().app(term).app(self))
+		abs(Var(1).app(term).app(self))
 	}
 
 	/// Removes the first element from a Church-encoded list and returns it.
@@ -334,11 +333,11 @@ impl From<Vec<Term>> for Term {
 	fn from(terms: Vec<Term>) -> Self {
 		let mut output = nil();
 
-		for t in terms.into_iter().rev() {
-			output = cons().app(t).app(output);
+		for term in terms.into_iter().rev() {
+			output = output.push(term);
 		}
 
-		normalize(output)
+		output
 	}
 }
 
