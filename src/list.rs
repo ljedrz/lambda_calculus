@@ -356,7 +356,8 @@ impl Iterator for Term {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use arithmetic::*;
+	use arithmetic::{zero, one, to_cnum};
+	use reduction::normalize;
 
 	#[test]
 	fn empty_list() {

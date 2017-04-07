@@ -221,7 +221,8 @@ mod test {
 
 	#[test]
 	fn church_zero() {
-		assert_eq!(normalize(is_zero().app(zero())), tru())
+		assert_eq!(normalize(is_zero().app(zero())), tru());
+		assert_eq!(normalize(is_zero().app(one())), fls());
 	}
 
 	#[test]
@@ -247,8 +248,9 @@ mod test {
 	fn church_number_values() {
 		for n in 0..10 { assert_eq!(to_cnum(n).value(), Ok(n)) }
 
-		assert_eq!(abs(Var(1)).value(),      Err(NotANum));
-		assert_eq!(abs(abs(Var(2))).value(), Err(NotANum));
+		assert_eq!(tru().value(),		Err(NotANum));
+		assert_eq!(Var(1).value(),		Err(NotANum));
+		assert_eq!(abs(Var(1)).value(),	Err(NotANum));
 	}
 
 	#[test]
@@ -276,7 +278,19 @@ mod test {
 		assert_eq!(normalize(pow().app(to_cnum(2)).app(to_cnum(4))), to_cnum(16));
 		assert_eq!(normalize(pow().app(to_cnum(1)).app(to_cnum(6))), to_cnum(1));
 		assert_eq!(normalize(pow().app(to_cnum(3)).app(to_cnum(2))), to_cnum(9));
-//		assert_eq!(normalize(pow().app(to_cnum(5)).app(zero())), to_cnum(1)); // n^0 fails - why?
+		assert_eq!(normalize(pow().app(to_cnum(4)).app(to_cnum(1))), to_cnum(4));
+//		assert_eq!(normalize(pow().app(to_cnum(5)).app(zero())),	 to_cnum(1)); // n^0 fails - why?
+	}
+
+	#[test]
+	fn church_subtraction() {
+		assert_eq!(normalize(sub().app(zero()).app(zero())),	zero());
+		assert_eq!(normalize(sub().app(zero()).app(one())),		zero());
+		assert_eq!(normalize(sub().app(one()).app(zero())),		one());
+		assert_eq!(normalize(sub().app(to_cnum(2)).app(one())), one());
+
+		assert_eq!(normalize(sub().app(to_cnum(5)).app(to_cnum(3))), to_cnum(2));
+		assert_eq!(normalize(sub().app(to_cnum(8)).app(to_cnum(4))), to_cnum(4));
 	}
 
 	#[test]
@@ -289,11 +303,12 @@ mod test {
 	#[test]
 	fn church_comparison() {
 		assert_eq!(normalize(leq().app(zero()).app(zero())), tru());
-		assert_eq!(normalize(leq().app(zero()).app(one())), tru());
+		assert_eq!(normalize(leq().app(zero()).app(one())),  tru());
+		assert_eq!(normalize(leq().app(one()).app(zero())),  fls());
 
 		assert_eq!(normalize(eq().app(zero()).app(zero())), tru());
-		assert_eq!(normalize(eq().app(zero()).app(one())), fls());
-		assert_eq!(normalize(eq().app(one()).app(zero())), fls());
+		assert_eq!(normalize(eq().app(zero()).app(one())),  fls());
+		assert_eq!(normalize(eq().app(one()).app(zero())),  fls());
 		// TODO: add lt, gt, geq
 	}
 }
