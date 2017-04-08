@@ -1,5 +1,5 @@
 //! [Standard terms](https://en.wikipedia.org/wiki/Lambda_calculus#Standard_terms) and
-//! [combinators](https://en.wikipedia.org/wiki/Combinatory_logic#Combinatory_calculi):
+//! [combinators](https://en.wikipedia.org/wiki/Combinatory_logic#Combinatory_calculi)
 //!
 //! * [SKI](https://en.wikipedia.org/wiki/SKI_combinator_calculus)
 //! * [Iota](https://en.wikipedia.org/wiki/Iota_and_Jot)
