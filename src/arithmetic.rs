@@ -7,7 +7,7 @@ use booleans::*;
 
 /// Produces a Church-encoded zero.
 ///
-/// zero := λfx.x = λ λ 1
+/// ZERO := λfx.x = λ λ 1
 /// # Example
 ///
 /// ```
@@ -20,7 +20,7 @@ pub fn zero() -> Term { abs(abs(Var(1))) }
 /// Applied to a Church-encoded number it produces a Church-encoded boolean, indicating whether its
 /// argument is equal to zero.
 ///
-/// is_zero := λn.n (λx.false) true =  λ 1 (λ false) true
+/// IS_ZERO := λn.n (λx.FALSE) TRUE =  λ 1 (λ FALSE) TRUE
 ///
 /// # Example
 /// ```
@@ -34,7 +34,7 @@ pub fn is_zero() -> Term { abs(Var(1).app(abs(fls())).app(tru())) }
 
 /// Produces a Church-encoded one.
 ///
-/// one := λfx.f x = λ λ 2 1
+/// ONE := λfx.f x = λ λ 2 1
 ///
 /// # Example
 /// ```
@@ -46,7 +46,7 @@ pub fn one() -> Term { abs(abs(Var(2).app(Var(1)))) }
 
 /// Applied to a Church-encoded number it produces its successor.
 ///
-/// succ := λnfx.f (n f x) = λ λ λ 2 (3 2 1)
+/// SUCC := λnfx.f (n f x) = λ λ λ 2 (3 2 1)
 ///
 /// # Example
 /// ```
@@ -59,7 +59,7 @@ pub fn succ() -> Term { abs(abs(abs(Var(2).app(Var(3).app(Var(2)).app(Var(1)))))
 
 /// Applied to two Church-encoded numbers it produces their sum.
 ///
-/// plus := λmnfx.m f (n f x) = λ λ λ λ 4 2 (3 2 1)
+/// PLUS := λmnfx.m f (n f x) = λ λ λ λ 4 2 (3 2 1)
 ///
 /// # Example
 /// ```
@@ -72,7 +72,7 @@ pub fn plus() -> Term { abs(abs(abs(abs(Var(4).app(Var(2)).app(Var(3).app(Var(2)
 
 /// Applied to two Church-encoded numbers it produces their product.
 ///
-/// mult := λmnf.m (n f) = λ λ λ 3 (2 1)
+/// MULT := λmnf.m (n f) = λ λ λ 3 (2 1)
 ///
 /// # Example
 /// ```
@@ -85,7 +85,7 @@ pub fn mult() -> Term { abs(abs(abs(Var(3).app(Var(2).app(Var(1)))))) }
 
 /// Applied to two Church-encoded numbers it raises the first one to the power of the second one.
 ///
-/// pow := λbe.e b = λ λ 1 2
+/// POW := λbe.e b = λ λ 1 2
 ///
 /// # Example
 /// ```
@@ -98,7 +98,7 @@ pub fn pow() -> Term { abs(abs(Var(1).app(Var(2)))) }
 
 /// Applied to a Church-encoded number it produces its predecessor.
 ///
-/// pred := λnfx.n (λgh.h (g f)) (λu.x) (λu.u) = λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1)
+/// PRED := λnfx.n (λgh.h (g f)) (λu.x) (λu.u) = λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1)
 ///
 /// # Example
 /// ```
@@ -111,7 +111,7 @@ pub fn pred() -> Term { abs(abs(abs(Var(3).app(abs(abs(Var(1).app(Var(2).app(Var
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
 ///
-/// sub := λmn.n pred m = λ λ 1 pred 2
+/// SUB := λmn.n PRED m = λ λ 1 PRED 2
 ///
 /// # Example
 /// ```
@@ -125,7 +125,7 @@ pub fn sub() -> Term { abs(abs(Var(1).app(pred()).app(Var(2)))) }
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
 /// first argument is less or egual to the second one.
 ///
-/// leq := λmn.is_zero (sub m n) = λ λ is_zero (sub 2 1)
+/// LEQ := λmn.IS_ZERO (SUB m n) = λ λ IS_ZERO (SUB 2 1)
 ///
 /// # Example
 /// ```
@@ -140,7 +140,7 @@ pub fn leq() -> Term { abs(abs(is_zero().app(sub().app(Var(2)).app(Var(1))))) }
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
 /// first argument is egual to the second one.
 ///
-/// eq := λmn.and (leq m n) (leq n m) = λ λ and (leq 2 1) (leq 1 2)
+/// EQ := λmn.AND (LEQ m n) (LEQ n m) = λ λ AND (LEQ 2 1) (LEQ 1 2)
 ///
 /// # Example
 /// ```

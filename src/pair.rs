@@ -7,7 +7,7 @@ use booleans::*;
 
 /// Produces a Church-encoded pair; applying it to two other terms puts them inside it.
 ///
-/// pair := λxyz.z x y = λ λ λ 1 3 2
+/// PAIR := λxyz.z x y = λ λ λ 1 3 2
 ///
 /// # Example
 /// ```
@@ -22,7 +22,7 @@ pub fn pair() -> Term { abs(abs(abs(Var(1).app(Var(3)).app(Var(2))))) }
 
 /// Applied to a Church-encoded pair (a, b) it yields a.
 ///
-/// first := λp.p true = λ 1 true
+/// FIRST := λp.p TRUE = λ 1 TRUE
 ///
 /// # Example
 /// ```
@@ -38,7 +38,7 @@ pub fn first() -> Term { abs(Var(1).app(tru())) }
 
 /// Applied to a Church-encoded pair (a, b) it yields b.
 ///
-/// second := λp.p false = λ 1 false
+/// SECOND := λp.p FALSE = λ 1 FALSE
 ///
 /// # Example
 /// ```

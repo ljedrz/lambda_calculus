@@ -8,7 +8,7 @@ use pair::*;
 
 /// Equivalent to fls(); produces a Church-encoded nil, the last link of a Church-encoded list.
 ///
-/// nil := false
+/// NIL := FALSE
 ///
 /// # Example
 /// ```
@@ -21,7 +21,7 @@ pub fn nil() -> Term { fls() }
 
 /// Applied to a Church-encoded list it determines if it is empty.
 ///
-/// is_nil := λl.l (λhtd.false) true = λ 1 (λ λ λ false) true
+/// IS_NIL := λl.l (λhtd.FALSE) TRUE = λ 1 (λ λ λ FALSE) TRUE
 ///
 /// # Example
 /// ```
@@ -35,7 +35,7 @@ pub fn is_nil() -> Term { abs(Var(1).app(abs(abs(abs(fls())))).app(tru())) }
 
 /// Equivalent to pair(); applied to two terms it returns them encoded as a list.
 ///
-/// cons := pair
+/// CONS := PAIR
 ///
 /// # Example
 /// ```
@@ -53,7 +53,7 @@ pub fn cons() -> Term { pair() }
 
 /// Equivalent to first(); applied to a Church-encoded list it returns its first element.
 ///
-/// head := first
+/// HEAD := FIRST
 ///
 /// # Example
 /// ```
@@ -70,7 +70,7 @@ pub fn head() -> Term { first() }
 
 /// Equivalent to second(); applied to a Church-encoded list it returns a new list with all its elements but the first one.
 ///
-/// tail := second
+/// TAIL := SECOND
 ///
 /// # Example
 /// ```
