@@ -8,8 +8,8 @@ use booleans::*;
 /// Produces a Church-encoded zero.
 ///
 /// ZERO := λfx.x = λ λ 1
-/// # Example
 ///
+/// # Example
 /// ```
 /// use lambda_calculus::arithmetic::zero;
 ///
