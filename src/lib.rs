@@ -6,3 +6,4 @@ pub mod arithmetic;
 pub mod booleans;
 pub mod pair;
 pub mod list;
+pub mod combinators;
