@@ -13,8 +13,7 @@ use booleans::*;
 /// ```
 /// use lambda_calculus::pair::pair;
 /// use lambda_calculus::arithmetic::{zero, one};
-///
-/// let pair_0_1 = pair().app(zero()).app(one());
+////// let pair_0_1 = pair().app(zero()).app(one());
 ///
 /// assert_eq!(pair_0_1.fst_ref(), Ok(&zero()));
 ///	assert_eq!(pair_0_1.snd_ref(), Ok(&one()));
