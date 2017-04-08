@@ -107,7 +107,14 @@ pub fn pow() -> Term { abs(abs(Var(1).app(Var(2)))) }
 ///
 /// assert_eq!(normalize(pred().app(one())), zero());
 /// ```
-pub fn pred() -> Term { abs(abs(abs(Var(3).app(abs(abs(Var(1).app(Var(2).app(Var(4)))))).app(abs(Var(2))).app(abs(Var(1)))))) }
+pub fn pred() -> Term {
+	abs(abs(abs(
+		Var(3)
+		.app(abs(abs(Var(1).app(Var(2).app(Var(4))))))
+		.app(abs(Var(2)))
+		.app(abs(Var(1)))
+	)))
+}
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
 ///
@@ -165,7 +172,34 @@ pub fn leq() -> Term { abs(abs(is_zero().app(sub().app(Var(2)).app(Var(1))))) }
 ///
 /// assert_eq!(normalize(eq().app(one()).app(one())), tru());
 /// ```
-pub fn eq() -> Term { abs(abs(and().app(leq().app(Var(2)).app(Var(1))).app(leq().app(Var(1)).app(Var(2))))) }
+pub fn eq() -> Term {
+	abs(abs(
+		and()
+		.app(leq().app(Var(2)).app(Var(1)))
+		.app(leq().app(Var(1)).app(Var(2)))
+	))
+}
+
+/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
+/// first argument is not egual to the second one.
+///
+/// NEQ := λab.OR (NOT (LEQ a b)) (NOT (LEQ b a)) = λ λ OR (NOT (LEQ 2 1)) (NOT (LEQ 1 2))
+///
+/// # Example
+/// ```
+/// use lambda_calculus::arithmetic::{one, neq};
+/// use lambda_calculus::booleans::tru;
+/// use lambda_calculus::reduction::normalize;
+///
+/// assert_eq!(normalize(neq().app(zero()).app(one())), tru());
+/// ```
+pub fn neq() -> Term {
+	abs(abs(
+		or()
+		.app(not().app(leq().app(Var(2)).app(Var(1))))
+		.app(not().app(leq().app(Var(1)).app(Var(2))))
+	))
+}
 
 impl Term {
 	/// Returns the value of a Church-encoded number.
@@ -316,7 +350,7 @@ mod test {
 	}
 
 	#[test]
-	fn church_comparison() {
+	fn church_comparisons() {
 		assert_eq!(normalize(lt().app(zero()).app(zero())), fls());
 		assert_eq!(normalize(lt().app(one()).app(zero())),  fls());
 		assert_eq!(normalize(lt().app(zero()).app(one())),  tru());
@@ -328,6 +362,10 @@ mod test {
 		assert_eq!(normalize(eq().app(zero()).app(zero())), tru());
 		assert_eq!(normalize(eq().app(zero()).app(one())),  fls());
 		assert_eq!(normalize(eq().app(one()).app(zero())),  fls());
-		// TODO: add lt, gt, geq
+
+		assert_eq!(normalize(neq().app(zero()).app(zero())), fls());
+		assert_eq!(normalize(neq().app(zero()).app(one())),  tru());
+		assert_eq!(normalize(neq().app(one()).app(zero())),  tru());
+		// TODO: add gt, geq
 	}
 }
