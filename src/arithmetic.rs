@@ -137,25 +137,31 @@ pub fn sub() -> Term { abs(abs(Var(1).app(pred()).app(Var(2)))) }
 /// # Example
 /// ```
 /// use lambda_calculus::arithmetic::{zero, one, lt};
-/// use lambda_calculus::booleans::tru;
+/// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// assert_eq!(normalize(lt().app(zero()).app(one())), tru());
+/// assert_eq!(normalize(lt().app(zero()).app(zero())), fls());
+/// assert_eq!(normalize(lt().app(one()).app(one())),   fls());
+/// assert_eq!(normalize(lt().app(zero()).app(one())),  tru());
+/// assert_eq!(normalize(lt().app(one()).app(zero())),  fls());
 /// ```
 pub fn lt() -> Term { abs(abs(not().app(leq().app(Var(1)).app(Var(2))))) }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
-/// first argument is less or egual to the second one.
+/// first argument is less than or egual to the second one.
 ///
 /// LEQ := λmn.IS_ZERO (SUB m n) = λ λ IS_ZERO (SUB 2 1)
 ///
 /// # Example
 /// ```
 /// use lambda_calculus::arithmetic::{zero, one, leq};
-/// use lambda_calculus::booleans::tru;
+/// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// assert_eq!(normalize(leq().app(zero()).app(one())), tru());
+/// assert_eq!(normalize(leq().app(zero()).app(zero())), tru());
+/// assert_eq!(normalize(leq().app(one()).app(one())),   tru());
+/// assert_eq!(normalize(leq().app(zero()).app(one())),  tru());
+/// assert_eq!(normalize(leq().app(one()).app(zero())),  fls());
 /// ```
 pub fn leq() -> Term { abs(abs(is_zero().app(sub().app(Var(2)).app(Var(1))))) }
 
@@ -166,11 +172,14 @@ pub fn leq() -> Term { abs(abs(is_zero().app(sub().app(Var(2)).app(Var(1))))) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{one, eq};
-/// use lambda_calculus::booleans::tru;
+/// use lambda_calculus::arithmetic::{zero, one, eq};
+/// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// assert_eq!(normalize(eq().app(one()).app(one())), tru());
+/// assert_eq!(normalize(eq().app(zero()).app(zero())), tru());
+/// assert_eq!(normalize(eq().app(one()).app(one())),   tru());
+/// assert_eq!(normalize(eq().app(zero()).app(one())),  fls());
+/// assert_eq!(normalize(eq().app(one()).app(zero())),  fls());
 /// ```
 pub fn eq() -> Term {
 	abs(abs(
@@ -187,11 +196,14 @@ pub fn eq() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{one, neq};
-/// use lambda_calculus::booleans::tru;
+/// use lambda_calculus::arithmetic::{zero, one, neq};
+/// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// assert_eq!(normalize(neq().app(zero()).app(one())), tru());
+/// assert_eq!(normalize(neq().app(zero()).app(zero())), fls());
+/// assert_eq!(normalize(neq().app(one()).app(one())),   fls());
+/// assert_eq!(normalize(neq().app(zero()).app(one())),  tru());
+/// assert_eq!(normalize(neq().app(one()).app(zero())),  tru());
 /// ```
 pub fn neq() -> Term {
 	abs(abs(
@@ -200,6 +212,42 @@ pub fn neq() -> Term {
 		.app(not().app(leq().app(Var(1)).app(Var(2))))
 	))
 }
+
+/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
+/// first argument is greater than or egual to the second one.
+///
+/// GEQ := λab.LEQ b a = λ λ LEQ 1 2
+///
+/// # Example
+/// ```
+/// use lambda_calculus::arithmetic::{zero, one, geq};
+/// use lambda_calculus::booleans::{tru, fls};
+/// use lambda_calculus::reduction::normalize;
+///
+/// assert_eq!(normalize(geq().app(zero()).app(zero())), tru());
+/// assert_eq!(normalize(geq().app(one()).app(one())),   tru());
+/// assert_eq!(normalize(geq().app(zero()).app(one())),  fls());
+/// assert_eq!(normalize(geq().app(one()).app(zero())),  tru());
+/// ```
+pub fn geq() -> Term { abs(abs(leq().app(Var(1)).app(Var(2)))) }
+
+/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
+/// first argument is greater than the second one.
+///
+/// GT := λab.NOT (LEQ a b) = λ λ NOT (LEQ 2 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::arithmetic::{zero, one, gt};
+/// use lambda_calculus::booleans::{tru, fls};
+/// use lambda_calculus::reduction::normalize;
+///
+/// assert_eq!(normalize(gt().app(zero()).app(zero())), fls());
+/// assert_eq!(normalize(gt().app(one()).app(one())),   fls());
+/// assert_eq!(normalize(gt().app(zero()).app(one())),  fls());
+/// assert_eq!(normalize(gt().app(one()).app(zero())),  tru());
+/// ```
+pub fn gt() -> Term { abs(abs(not().app(leq().app(Var(2)).app(Var(1))))) }
 
 impl Term {
 	/// Returns the value of a Church-encoded number.
@@ -347,25 +395,5 @@ mod test {
 		assert_eq!(normalize(pred().app(zero())), zero());
 		assert_eq!(normalize(pred().app(one())), zero());
 		assert_eq!(normalize(pred().app(to_cnum(5))), to_cnum(4));
-	}
-
-	#[test]
-	fn church_comparisons() {
-		assert_eq!(normalize(lt().app(zero()).app(zero())), fls());
-		assert_eq!(normalize(lt().app(one()).app(zero())),  fls());
-		assert_eq!(normalize(lt().app(zero()).app(one())),  tru());
-
-		assert_eq!(normalize(leq().app(zero()).app(zero())), tru());
-		assert_eq!(normalize(leq().app(zero()).app(one())),  tru());
-		assert_eq!(normalize(leq().app(one()).app(zero())),  fls());
-
-		assert_eq!(normalize(eq().app(zero()).app(zero())), tru());
-		assert_eq!(normalize(eq().app(zero()).app(one())),  fls());
-		assert_eq!(normalize(eq().app(one()).app(zero())),  fls());
-
-		assert_eq!(normalize(neq().app(zero()).app(zero())), fls());
-		assert_eq!(normalize(neq().app(zero()).app(one())),  tru());
-		assert_eq!(normalize(neq().app(one()).app(zero())),  tru());
-		// TODO: add gt, geq
 	}
 }
