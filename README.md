@@ -13,5 +13,4 @@ The library is already usable, but it is still a work in progress.
 ## Roadmap
 
 - additional test cases and examples
-- a module with SKI combinators
 - a parser for lambda expressions with De Bruijn indices
