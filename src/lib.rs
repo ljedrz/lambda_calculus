@@ -7,3 +7,4 @@ pub mod booleans;
 pub mod pair;
 pub mod list;
 pub mod combinators;
+pub mod parser;
