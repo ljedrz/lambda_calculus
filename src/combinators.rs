@@ -62,7 +62,6 @@ pub fn s() -> Term { abs(abs(abs(Var(3).app(Var(1)).app(Var(2).app(Var(1)))))) }
 /// # Example
 /// ```
 /// use lambda_calculus::combinators::{iota, i, k, s};
-/// use lambda_calculus::arithmetic::{zero, one, to_cnum};
 /// use lambda_calculus::reduction::normalize;
 ///
 /// assert_eq!(normalize(iota().app(iota())), i());
@@ -108,7 +107,7 @@ pub fn c() -> Term { abs(abs(abs(Var(3).app(Var(1)).app(Var(2))))) }
 /// # Example
 /// ```
 /// use lambda_calculus::combinators::w;
-/// use lambda_calculus::arithmetic::{zero, one, to_cnum};
+/// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::normalize;
 ///
 /// assert_eq!(normalize(w().app(zero()).app(one())),
