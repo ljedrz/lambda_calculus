@@ -108,12 +108,12 @@ pub fn pow() -> Term { abs(abs(Var(1).app(Var(2)))) }
 /// assert_eq!(normalize(pred().app(one())), zero());
 /// ```
 pub fn pred() -> Term {
-	abs(abs(abs(
-		Var(3)
-		.app(abs(abs(Var(1).app(Var(2).app(Var(4))))))
-		.app(abs(Var(2)))
-		.app(abs(Var(1)))
-	)))
+    abs(abs(abs(
+        Var(3)
+        .app(abs(abs(Var(1).app(Var(2).app(Var(4))))))
+        .app(abs(Var(2)))
+        .app(abs(Var(1)))
+    )))
 }
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
@@ -182,11 +182,11 @@ pub fn leq() -> Term { abs(abs(is_zero().app(sub().app(Var(2)).app(Var(1))))) }
 /// assert_eq!(normalize(eq().app(one()).app(zero())),  fls());
 /// ```
 pub fn eq() -> Term {
-	abs(abs(
-		and()
-		.app(leq().app(Var(2)).app(Var(1)))
-		.app(leq().app(Var(1)).app(Var(2)))
-	))
+    abs(abs(
+        and()
+        .app(leq().app(Var(2)).app(Var(1)))
+        .app(leq().app(Var(1)).app(Var(2)))
+    ))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
@@ -206,11 +206,11 @@ pub fn eq() -> Term {
 /// assert_eq!(normalize(neq().app(one()).app(zero())),  tru());
 /// ```
 pub fn neq() -> Term {
-	abs(abs(
-		or()
-		.app(not().app(leq().app(Var(2)).app(Var(1))))
-		.app(not().app(leq().app(Var(1)).app(Var(2))))
-	))
+    abs(abs(
+        or()
+        .app(not().app(leq().app(Var(2)).app(Var(1))))
+        .app(not().app(leq().app(Var(1)).app(Var(2))))
+    ))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
@@ -250,45 +250,45 @@ pub fn geq() -> Term { abs(abs(leq().app(Var(1)).app(Var(2)))) }
 pub fn gt() -> Term { abs(abs(not().app(leq().app(Var(2)).app(Var(1))))) }
 
 impl Term {
-	/// Returns the value of a Church-encoded number.
-	///
-	/// # Example
-	/// ```
-	/// use lambda_calculus::arithmetic::one;
-	///
-	/// assert_eq!(one().value(), Ok(1));
-	/// ```
-	pub fn value(&self) -> Result<usize, Error> {
-		if let Ok(ref inner) = self.unabs_ref().and_then(|t| t.unabs_ref()) {
-			Ok(try!(inner._value()))
-		} else {
-			Err(NotANum)
-		}
-	}
+    /// Returns the value of a Church-encoded number.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::arithmetic::one;
+    ///
+    /// assert_eq!(one().value(), Ok(1));
+    /// ```
+    pub fn value(&self) -> Result<usize, Error> {
+        if let Ok(ref inner) = self.unabs_ref().and_then(|t| t.unabs_ref()) {
+            Ok(try!(inner._value()))
+        } else {
+            Err(NotANum)
+        }
+    }
 
-	fn _value(&self) -> Result<usize, Error> {
-		if let Ok(ref rhs) = self.rhs_ref() {
-			Ok(1 + try!(rhs._value()))
-		} else if let Var(n) = *self {
-			if n == 1 {
-				Ok(0)
-			} else {
-				Err(NotANum)
-			}
-		} else {
-			Err(NotANum)
-		}
-	}
+    fn _value(&self) -> Result<usize, Error> {
+        if let Ok(ref rhs) = self.rhs_ref() {
+            Ok(1 + try!(rhs._value()))
+        } else if let Var(n) = *self {
+            if n == 1 {
+                Ok(0)
+            } else {
+                Err(NotANum)
+            }
+        } else {
+            Err(NotANum)
+        }
+    }
 
-	/// Checks whether a term is a Church-encoded number.
-	///
-	/// # Example
-	/// ```
-	/// use lambda_calculus::arithmetic::one;
-	///
-	/// assert!(one().is_number());
-	/// ```
-	pub fn is_number(&self) -> bool { self.value().is_ok() }
+    /// Checks whether a term is a Church-encoded number.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::arithmetic::one;
+    ///
+    /// assert!(one().is_number());
+    /// ```
+    pub fn is_number(&self) -> bool { self.value().is_ok() }
 }
 
 /// Produces a Church-encoded term with a value of the given natural number.
@@ -300,100 +300,100 @@ impl Term {
 /// assert_eq!(to_cnum(1), one());
 /// ```
 pub fn to_cnum(n: usize) -> Term {
-	let mut inner = Var(1);
-	let mut count = n;
+    let mut inner = Var(1);
+    let mut count = n;
 
-	while count > 0 {
-		inner = Var(2).app(inner);
-		count -= 1;
-	}
+    while count > 0 {
+        inner = Var(2).app(inner);
+        count -= 1;
+    }
 
-	abs(abs(inner))
+    abs(abs(inner))
 }
 
 #[cfg(test)]
 mod test {
-	use super::*;
-	use reduction::*;
+    use super::*;
+    use reduction::*;
 
-	#[test]
-	fn church_zero() {
-		assert_eq!(normalize(is_zero().app(zero())), tru());
-		assert_eq!(normalize(is_zero().app(one())), fls());
-	}
+    #[test]
+    fn church_zero() {
+        assert_eq!(normalize(is_zero().app(zero())), tru());
+        assert_eq!(normalize(is_zero().app(one())), fls());
+    }
 
-	#[test]
-	fn church_successor() {
-		assert_eq!(normalize(succ().app(zero())), one());
-		assert_eq!(normalize(succ().app(one())), abs(abs(Var(2).app(Var(2).app(Var(1))))));
-		assert_eq!(normalize(succ().app(succ().app(succ().app(zero())))), abs(abs(Var(2).app(Var(2).app(Var(2).app(Var(1)))))));
-	}
+    #[test]
+    fn church_successor() {
+        assert_eq!(normalize(succ().app(zero())), one());
+        assert_eq!(normalize(succ().app(one())), abs(abs(Var(2).app(Var(2).app(Var(1))))));
+        assert_eq!(normalize(succ().app(succ().app(succ().app(zero())))), abs(abs(Var(2).app(Var(2).app(Var(2).app(Var(1)))))));
+    }
 
-	#[test]
-	fn church_number_identification() {
-		for n in 0..5 { assert!(to_cnum(n).is_number()) }
-	}
+    #[test]
+    fn church_number_identification() {
+        for n in 0..5 { assert!(to_cnum(n).is_number()) }
+    }
 
-	#[test]
-	fn church_number_creation() {
-		assert_eq!(to_cnum(0), zero());
-		assert_eq!(to_cnum(1), one());
-		assert_eq!(to_cnum(2), normalize(succ().app(one())));
-	}
+    #[test]
+    fn church_number_creation() {
+        assert_eq!(to_cnum(0), zero());
+        assert_eq!(to_cnum(1), one());
+        assert_eq!(to_cnum(2), normalize(succ().app(one())));
+    }
 
-	#[test]
-	fn church_number_values() {
-		for n in 0..10 { assert_eq!(to_cnum(n).value(), Ok(n)) }
+    #[test]
+    fn church_number_values() {
+        for n in 0..10 { assert_eq!(to_cnum(n).value(), Ok(n)) }
 
-		assert_eq!(tru().value(),		Err(NotANum));
-		assert_eq!(Var(1).value(),		Err(NotANum));
-		assert_eq!(abs(Var(1)).value(),	Err(NotANum));
-	}
+        assert_eq!(tru().value(),       Err(NotANum));
+        assert_eq!(Var(1).value(),      Err(NotANum));
+        assert_eq!(abs(Var(1)).value(), Err(NotANum));
+    }
 
-	#[test]
-	fn church_addition() {
-		assert_eq!(normalize(plus().app(one())), succ()); // PLUS 1 → SUCC
+    #[test]
+    fn church_addition() {
+        assert_eq!(normalize(plus().app(one())), succ()); // PLUS 1 → SUCC
 
-		assert_eq!(normalize(plus().app(zero()).app(zero())), zero());
-		assert_eq!(normalize(plus().app(zero()).app(one())),  one());
-		assert_eq!(normalize(plus().app(one()).app(zero())),  one());
-		assert_eq!(normalize(plus().app(one()).app(one())),   to_cnum(2));
+        assert_eq!(normalize(plus().app(zero()).app(zero())), zero());
+        assert_eq!(normalize(plus().app(zero()).app(one())),  one());
+        assert_eq!(normalize(plus().app(one()).app(zero())),  one());
+        assert_eq!(normalize(plus().app(one()).app(one())),   to_cnum(2));
 
-		assert_eq!(normalize(plus().app(to_cnum(2)).app(to_cnum(3))), to_cnum(5));
-		assert_eq!(normalize(plus().app(to_cnum(4)).app(to_cnum(4))), to_cnum(8));
-	}
+        assert_eq!(normalize(plus().app(to_cnum(2)).app(to_cnum(3))), to_cnum(5));
+        assert_eq!(normalize(plus().app(to_cnum(4)).app(to_cnum(4))), to_cnum(8));
+    }
 
-	#[test]
-	fn church_multiplication() {
-		assert_eq!(normalize(mult().app(to_cnum(3)).app(to_cnum(4))), to_cnum(12));
-		assert_eq!(normalize(mult().app(to_cnum(1)).app(to_cnum(3))), to_cnum(3));
-		assert_eq!(normalize(mult().app(to_cnum(5)).app(to_cnum(0))), to_cnum(0));
-	}
+    #[test]
+    fn church_multiplication() {
+        assert_eq!(normalize(mult().app(to_cnum(3)).app(to_cnum(4))), to_cnum(12));
+        assert_eq!(normalize(mult().app(to_cnum(1)).app(to_cnum(3))), to_cnum(3));
+        assert_eq!(normalize(mult().app(to_cnum(5)).app(to_cnum(0))), to_cnum(0));
+    }
 
-	#[test]
-	fn church_exponentiation() {
-		assert_eq!(normalize(pow().app(to_cnum(2)).app(to_cnum(4))), to_cnum(16));
-		assert_eq!(normalize(pow().app(to_cnum(1)).app(to_cnum(6))), to_cnum(1));
-		assert_eq!(normalize(pow().app(to_cnum(3)).app(to_cnum(2))), to_cnum(9));
-		assert_eq!(normalize(pow().app(to_cnum(4)).app(to_cnum(1))), to_cnum(4));
-//		assert_eq!(normalize(pow().app(to_cnum(5)).app(zero())),	 to_cnum(1)); // n^0 fails - why?
-	}
+    #[test]
+    fn church_exponentiation() {
+        assert_eq!(normalize(pow().app(to_cnum(2)).app(to_cnum(4))), to_cnum(16));
+        assert_eq!(normalize(pow().app(to_cnum(1)).app(to_cnum(6))), to_cnum(1));
+        assert_eq!(normalize(pow().app(to_cnum(3)).app(to_cnum(2))), to_cnum(9));
+        assert_eq!(normalize(pow().app(to_cnum(4)).app(to_cnum(1))), to_cnum(4));
+//      assert_eq!(normalize(pow().app(to_cnum(5)).app(zero())),     to_cnum(1)); // n^0 fails - why?
+    }
 
-	#[test]
-	fn church_subtraction() {
-		assert_eq!(normalize(sub().app(zero()).app(zero())),	zero());
-		assert_eq!(normalize(sub().app(zero()).app(one())),		zero());
-		assert_eq!(normalize(sub().app(one()).app(zero())),		one());
-		assert_eq!(normalize(sub().app(to_cnum(2)).app(one())), one());
+    #[test]
+    fn church_subtraction() {
+        assert_eq!(normalize(sub().app(zero()).app(zero())),    zero());
+        assert_eq!(normalize(sub().app(zero()).app(one())),     zero());
+        assert_eq!(normalize(sub().app(one()).app(zero())),     one());
+        assert_eq!(normalize(sub().app(to_cnum(2)).app(one())), one());
 
-		assert_eq!(normalize(sub().app(to_cnum(5)).app(to_cnum(3))), to_cnum(2));
-		assert_eq!(normalize(sub().app(to_cnum(8)).app(to_cnum(4))), to_cnum(4));
-	}
+        assert_eq!(normalize(sub().app(to_cnum(5)).app(to_cnum(3))), to_cnum(2));
+        assert_eq!(normalize(sub().app(to_cnum(8)).app(to_cnum(4))), to_cnum(4));
+    }
 
-	#[test]
-	fn church_predecessor() {
-		assert_eq!(normalize(pred().app(zero())), zero());
-		assert_eq!(normalize(pred().app(one())), zero());
-		assert_eq!(normalize(pred().app(to_cnum(5))), to_cnum(4));
-	}
+    #[test]
+    fn church_predecessor() {
+        assert_eq!(normalize(pred().app(zero())), zero());
+        assert_eq!(normalize(pred().app(one())), zero());
+        assert_eq!(normalize(pred().app(to_cnum(5))), to_cnum(4));
+    }
 }
