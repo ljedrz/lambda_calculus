@@ -10,7 +10,7 @@ The data and operators follow the Church encoding and the terms are displayed us
 
 The library is already usable, but it is still a work in progress.
 
-## Roadmap
+## TODO
 
 - additional test cases and examples
 - a parser for lambda expressions with De Bruijn indices
