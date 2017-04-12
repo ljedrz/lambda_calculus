@@ -7,7 +7,8 @@ use self::Error::*;
 
 #[derive(Debug, PartialEq)]
 enum Error {
-    InvalidCharacter((usize, char))
+    InvalidCharacter((usize, char)),
+    UnmatchedParentheses
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -70,7 +71,6 @@ impl Parser {
         let mut iter = tokens.iter();
 
         while let Some(&token) = iter.next() {
-            println!("stack: {:?}; output: {:?}; temp: {:?}", self.stack, self.output, self.temp);
             match token {
                 Lambda => {
                     self.stack.push(token)
@@ -83,17 +83,29 @@ impl Parser {
                 },
                 Rparen => {
                     if !self.temp.is_empty() {
-
-                        let mut ret = fold_terms(self.temp.clone());
-                        while self.stack.last() == Some(&Lambda) {
-                            ret = abs(ret);
-                        }
-                        self.output.push(ret);
-
-//                        self.output.push(fold_terms(self.temp.clone())); // TODO: some swap or other smartery
+                        let ret = if !self.output.is_empty() {
+                            fold_terms(vec![self.output.pop().unwrap(), fold_terms(self.temp.clone())])
+                        } else {
+                            fold_terms(self.temp.clone())
+                        };
+                        self.output.push(ret); // TODO: some swap or other smartery
                         self.temp.clear();
                     }
-                    self.stack.pop(); // drop Lparen; TODO: check if Lparen
+
+                    if self.stack.last() == Some(&Lambda) {
+                        let mut ret = self.output.pop().unwrap();
+                        while self.stack.last() == Some(&Lambda) {
+                            ret = abs(ret);
+                            self.stack.pop();
+                        }
+                        self.output.push(ret);
+                    }
+
+                    if self.stack.last() == Some(&Lparen) {
+                        self.stack.pop(); // drop matching Lparen
+                    } else {
+                        return Err(UnmatchedParentheses)
+                    }
                 },
                 Index(i) => {
                     if self.stack.contains(&Lparen) {
@@ -103,6 +115,7 @@ impl Parser {
                     }
                 }
             }
+            println!("s: {:?}; o: {:?}; t: {:?}", self.stack, self.output, self.temp);
         }
 
         let mut ret = fold_terms(self.output.clone());
@@ -111,7 +124,7 @@ impl Parser {
             ret = abs(ret);
         }
 
-        println!("{:?}", self);
+//        println!("{:?}", self);
 
         Ok(ret)
     }
@@ -135,26 +148,7 @@ fn fold_terms(mut terms: Vec<Term>) -> Term {
         terms.pop().unwrap()
     }
 }
-/*
-pub fn split_parenthesized(input: &str) -> (&str, &str) {
-    let mut pos = 1;
-    let mut depth = 1;
-    let mut chars = input.chars().skip(1);
 
-    while let Some(c) = chars.next() {
-        if depth == 0 {
-            break;
-        } else if c == '(' {
-            depth += 1;
-        } else if c == ')' {
-            depth -= 1;
-        }
-        if c == 'λ' { pos += 2 } else { pos += 1 }
-    }
-//    println!("input has a parens \"{}\" and rest \"{}\"", &input[1..pos-1], &input[pos..]);
-    (&input[1..pos-1], &input[pos..])
-}
-*/
 #[cfg(test)]
 mod test {
     use super::*;
@@ -178,20 +172,37 @@ mod test {
                                       Index(5), Rparen, Index(2), Rparen, Rparen, Rparen, Index(1)]
         )
     }
-/*
+
     #[test]
     fn parse_succ() {
         let succ = "λλλ2(321)";
         let mut parser = Parser::new();
 
-        assert_eq!(&*format!("{}", parser.parse(&succ).unwrap()), "λλλ2(321)");
+        assert_eq!(&*format!("{}", parser.parse(&succ).unwrap()), succ);
     }
-*/
+
     #[test]
     fn parse_y() {
         let y = "λ(λ2(11))(λ2(11))";
         let mut parser = Parser::new();
 
-        assert_eq!(&*format!("{}", parser.parse(&y).unwrap()), "λ(λ2(11))(λ2(11))");
+        assert_eq!(&*format!("{}", parser.parse(&y).unwrap()), y);
     }
+
+    #[test]
+    fn parse_quine() {
+        let quine = "λ1((λ11)(λλλλλ14(3(55)2)))1";
+        let mut parser = Parser::new();
+
+        assert_eq!(&*format!("{}", parser.parse(&quine).unwrap()), quine);
+    }
+/*
+    #[test]
+    fn parse_blc() {
+        let blc = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))(λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
+        let mut parser = Parser::new();
+
+        assert_eq!(&*format!("{}", parser.parse(&blc).unwrap()), blc);
+    }
+    */
 }
