@@ -5,6 +5,8 @@ use term::*;
 use term::Term::*;
 use term::Error::*;
 use booleans::*;
+//use pair::pair;
+//use combinators::y;
 
 /// Produces a Church-encoded zero.
 ///
@@ -301,27 +303,78 @@ pub fn gt() -> Term {
         not().app(leq().app(Var(2)).app(Var(1)))
     ))
 }
-
 /*
-// FIXME: Y blows up RAM
+// FIXME: blows up RAM
+/// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
+/// division - the quotient and the remainder.
+///
+/// DIV := Y (λgqab.LT a b (PAIR q a) (g (SUCC q) (SUB a b) b)) ZERO =
+/// Y (λ λ λ λ LT 2 1 (PAIR 3 2) (4 (SUCC 3) (SUB 2 1) 1)) ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::arithmetic::{div, one, to_cnum};
+/// use lambda_calculus::pair::pair;
+/// use lambda_calculus::reduction::normalize;
+///
+/// assert_eq!(normalize(div().app(to_cnum(5)).app(to_cnum(2))),
+///            normalize(pair().app(to_cnum(2)).app(one())));
+/// ```
 pub fn div() -> Term {
     y()
-    .app(abs(abs(abs(abs(
-        lt()
-        .app(Var(2))
-        .app(Var(1))
-        .app(pair().app(Var(3)).app(Var(2)))
-        .app(
-            Var(4)
-            .app(succ().app(Var(3)))
-            .app(sub().app(Var(2)).app(Var(1)))
+    .app(
+        abs(abs(abs(abs(
+            lt()
+            .app(Var(2))
             .app(Var(1))
-        )
-    )))))
+            .app(pair().app(Var(3)).app(Var(2)))
+            .app(
+                Var(4)
+                .app(succ().app(Var(3)))
+                .app(sub().app(Var(2)).app(Var(1)))
+                .app(Var(1))
+            )
+        ))))
+    )
     .app(zero())
 }
 */
 
+/*
+// FIXME: blows up RAM
+/// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
+///
+/// QUOT := y (λrab.LT a b ZERO (SUCC (r (SUB a b) b)))
+///
+/// # Example
+/// ```
+/// use lambda_calculus::arithmetic::{quot, to_cnum};
+/// use lambda_calculus::reduction::normalize;
+///
+/// assert_eq!(normalize(quot().app(to_cnum(6)).app(to_cnum(2))), to_cnum(3));
+/// ```
+pub fn quot() -> Term {
+    y().app(
+        abs(abs(abs(
+            lt()
+            .app(Var(2))
+            .app(Var(1))
+            .app(zero())
+            .app(
+                succ().app(
+                    Var(3)
+                    .app(
+                        sub()
+                        .app(Var(2))
+                        .app(Var(1))
+                    )
+                    .app(Var(1))
+                )
+            )
+        )))
+    )
+}
+*/
 impl Term {
     /// Returns the value of a Church-encoded number.
     ///

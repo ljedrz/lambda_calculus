@@ -178,7 +178,7 @@ pub fn reverse() -> Term {
     .app(nil())
 }
 
-/// Applied to a Church-encoded number `n` and `n`-many `Term`s it creates a Church-encoded list of
+/// Applied to a Church-encoded number `n` and `n` `Term`s it creates a Church-encoded list of
 /// those terms.
 ///
 /// LIST := λn.n (λfax.f (PAIR x a)) REVERSE NIL = λ 1 (λ λ λ 3 (PAIR 1 2)) REVERSE NIL
