@@ -109,7 +109,7 @@ pub fn tail() -> Term { second() }
 
 /// Applied to a Church-encoded list it returns its Church-encoded length.
 ///
-/// LENGTH := Y (λgcx.NULL x c (g (SUCC c) (CDR x))) ZERO
+/// LENGTH := Y (λgcx.NULL x c (g (SUCC c) (SECOND x))) ZERO
 /// = Y (λλλ NULL 1 2 (3 (SUCC 2) (SECOND 1))) ZERO
 ///
 /// # Example
@@ -139,6 +139,43 @@ pub fn length() -> Term {
         )))
     )
     .app(zero())
+}
+
+/// Reverses a Church-encoded list.
+///
+/// Y (λgal.NULL l a (g (PAIR (FIRST l) a) (SECOND l))) NIL =
+/// Y (λ λ λ NULL 1 2 (3 (PAIR (FIRST 1) 2) (SECOND 1))) NIL
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::{reverse};
+/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::reduction::normalize;
+///
+/// let list = Term::from(vec![one(), one(), zero()]);
+///
+/// assert_eq!(normalize(reverse().app(list)), Term::from(vec![zero(), one(), one()]));
+/// ```
+pub fn reverse() -> Term {
+    y()
+    .app(
+        abs(abs(abs(
+            null()
+            .app(Var(1))
+            .app(Var(2))
+            .app(
+                Var(3)
+                .app(
+                    pair()
+                    .app(first().app(Var(1)))
+                    .app(Var(2))
+                )
+                .app(second().app(Var(1)))
+            )
+        )))
+    )
+    .app(nil())
 }
 
 impl Term {
