@@ -21,17 +21,17 @@ pub fn nil() -> Term { fls() }
 
 /// Applied to a Church-encoded list it determines if it is empty.
 ///
-/// IS_NIL := λl.l (λhtd.FALSE) TRUE = λ 1 (λ λ λ FALSE) TRUE
+/// NULL := λl.l (λhtd.FALSE) TRUE = λ 1 (λ λ λ FALSE) TRUE
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::list::{nil, is_nil};
+/// use lambda_calculus::list::{nil, null};
 /// use lambda_calculus::booleans::tru;
 /// use lambda_calculus::reduction::normalize;
 ///
-/// assert_eq!(normalize(is_nil().app(nil())), tru());
+/// assert_eq!(normalize(null().app(nil())), tru());
 /// ```
-pub fn is_nil() -> Term {
+pub fn null() -> Term {
     abs(
         Var(1)
         .app(abs(abs(abs(fls()))))
