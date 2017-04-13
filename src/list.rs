@@ -143,13 +143,13 @@ pub fn length() -> Term {
 
 /// Reverses a Church-encoded list.
 ///
-/// Y (λgal.NULL l a (g (PAIR (FIRST l) a) (SECOND l))) NIL =
+/// REVERSE := Y (λgal.NULL l a (g (PAIR (FIRST l) a) (SECOND l))) NIL =
 /// Y (λ λ λ NULL 1 2 (3 (PAIR (FIRST 1) 2) (SECOND 1))) NIL
 ///
 /// # Example
 /// ```
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::{reverse};
+/// use lambda_calculus::list::reverse;
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::normalize;
 ///
@@ -176,6 +176,38 @@ pub fn reverse() -> Term {
         )))
     )
     .app(nil())
+}
+
+/// Applied to a Church-encoded number `n` and `n`-many `Term`s it creates a Church-encoded list of
+/// those terms.
+///
+/// LIST := λn.n (λfax.f (PAIR x a)) REVERSE NIL = λ 1 (λ λ λ 3 (PAIR 1 2)) REVERSE NIL
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::list;
+/// use lambda_calculus::arithmetic::{zero, one, to_cnum};
+/// use lambda_calculus::reduction::normalize;
+///
+/// assert_eq!(normalize(list().app(to_cnum(3)).app(zero()).app(one()).app(one())),
+///            Term::from(vec![zero(), one(), one()]));
+/// ```
+pub fn list() -> Term {
+    abs(
+        Var(1)
+        .app(
+            abs(abs(abs(
+                Var(3).app(
+                    pair()
+                    .app(Var(1))
+                    .app(Var(2))
+                )
+            )))
+        )
+        .app(reverse())
+        .app(nil())
+    )
 }
 
 impl Term {
