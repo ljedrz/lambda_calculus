@@ -5,6 +5,8 @@ use term::Term::*;
 use term::Error::*;
 use booleans::*;
 use pair::*;
+use arithmetic::{zero, succ};
+use combinators::y;
 
 /// Equivalent to fls(); produces a Church-encoded nil, the last link of a Church-encoded list.
 ///
@@ -50,7 +52,19 @@ pub fn null() -> Term {
 /// use lambda_calculus::list::{nil, cons};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// let list_110_consed = normalize(cons().app(one()).app(cons().app(one()).app(cons().app(zero()).app(nil()))));
+/// let list_110_consed = normalize(
+///    cons()
+///    .app(one())
+///    .app(
+///        cons()
+///        .app(one())
+///        .app(
+///            cons()
+///            .app(zero())
+///            .app(nil())
+///           )
+///      )
+/// );
 /// let list_110_from_vec = Term::from(vec![one(), one(), zero()]);
 ///
 /// assert_eq!(list_110_consed, list_110_from_vec);
@@ -74,7 +88,8 @@ pub fn cons() -> Term { pair() }
 /// ```
 pub fn head() -> Term { first() }
 
-/// Equivalent to second(); applied to a Church-encoded list it returns a new list with all its elements but the first one.
+/// Equivalent to second(); applied to a Church-encoded list it returns a new list with all its
+/// elements but the first one.
 ///
 /// TAIL := SECOND
 ///
@@ -90,6 +105,40 @@ pub fn head() -> Term { first() }
 /// assert_eq!(normalize(tail().app(list_110)), Term::from(vec![one(), zero()]));
 /// ```
 pub fn tail() -> Term { second() }
+
+/// Applied to a Church-encoded list it returns its Church-encoded length.
+///
+/// LENGTH := Y (λgcx.NULL x c (g (SUCC c) (CDR x))) ZERO
+/// = Y (λλλ NULL 1 2 (3 (SUCC 2) (SECOND 1))) ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::{length, nil};
+/// use lambda_calculus::arithmetic::{zero, one, to_cnum};
+/// use lambda_calculus::reduction::normalize;
+///
+/// let list_4 = Term::from(vec![one(), one(), zero(), one()]);
+///
+/// assert_eq!(normalize(length().app(nil())),  zero());
+/// assert_eq!(normalize(length().app(list_4)), to_cnum(4));
+/// ```
+pub fn length() -> Term {
+    y()
+    .app(
+        abs(abs(abs(
+            null()
+            .app(Var(1))
+            .app(Var(2))
+            .app(
+                Var(3)
+                .app(succ().app(Var(2)))
+                .app(second().app(Var(1)))
+            )
+        )))
+    )
+    .app(zero())
+}
 
 impl Term {
     /// Checks whether self is a Church-encoded empty list, i.e. nil().
@@ -130,7 +179,8 @@ impl Term {
         self.last_ref() == Ok(&nil())
     }
 
-    /// Splits a Church-encoded list into a pair containing its first term and a list of all the other terms, consuming self.
+    /// Splits a Church-encoded list into a pair containing its first term and a list of all the
+    /// other terms, consuming self.
     ///
     /// # Example
     /// ```
@@ -149,7 +199,8 @@ impl Term {
         }
     }
 
-    /// Splits a Church-encoded list into a pair containing references to its first term and a to list of all the other terms.
+    /// Splits a Church-encoded list into a pair containing references to its first term and a to
+    /// list of all the other terms.
     ///
     /// # Example
     /// ```
@@ -168,7 +219,8 @@ impl Term {
         }
     }
 
-    /// Splits a Church-encoded list into a pair containing mutable references to its first term and a to list of all the other terms.
+    /// Splits a Church-encoded list into a pair containing mutable references to its first term
+    /// and a to list of all the other terms.
     ///
     /// # Example
     /// ```
@@ -177,7 +229,8 @@ impl Term {
     ///
     /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
     ///
-    /// assert_eq!(list_110.uncons_ref_mut(), Ok((&mut one(), &mut Term::from(vec![one(), zero()]))));
+    /// assert_eq!(list_110.uncons_ref_mut(),
+    ///            Ok((&mut one(), &mut Term::from(vec![one(), zero()]))));
     /// ```
     pub fn uncons_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
         if !self.is_list() {
@@ -262,7 +315,8 @@ impl Term {
         Ok(try!(self.uncons_ref()).1)
     }
 
-    /// Returns a mutable reference to a list of all the terms of a Church-encoded list but the first one.
+    /// Returns a mutable reference to a list of all the terms of a Church-encoded list but the
+    /// first one.
     ///
     /// # Example
     /// ```
@@ -300,7 +354,8 @@ impl Term {
         Ok(n)
     }
 
-    /// Adds a term to the beginning of a Church-encoded list and returns the new list. Consumes self and the argument.
+    /// Adds a term to the beginning of a Church-encoded list and returns the new list. Consumes
+    /// self and the argument.
     ///
     /// # Example
     /// ```
@@ -376,7 +431,9 @@ mod test {
     #[test]
     fn list_push() {
         let list_pushed = nil().push(zero()).push(one()).push(one());
-        let list_consed = normalize(cons().app(one()).app(cons().app(one()).app(cons().app(zero()).app(nil()))));
+        let list_consed = normalize(
+            cons().app(one()).app(cons().app(one()).app(cons().app(zero()).app(nil())))
+        );
 
         assert_eq!(list_pushed, list_consed);
     }
@@ -403,17 +460,19 @@ mod test {
 
     #[test]
     fn list_operations() {
-        let list_three_five_four = Term::from(vec![to_cnum(3), to_cnum(5), to_cnum(4)]);
+        let list_354 = Term::from(vec![to_cnum(3), to_cnum(5), to_cnum(4)]);
 
-        assert!(list_three_five_four.is_list());
+        assert!(list_354.is_list());
 
-        assert_eq!(list_three_five_four.head_ref(), Ok(&to_cnum(3)));
-        assert_eq!(list_three_five_four.tail_ref(), Ok(&Term::from(vec![to_cnum(5), to_cnum(4)])));
+        assert_eq!(list_354.head_ref(), Ok(&to_cnum(3)));
+        assert_eq!(list_354.tail_ref(), Ok(&Term::from(vec![to_cnum(5), to_cnum(4)])));
 
-        assert_eq!(list_three_five_four.tail_ref().and_then(|t| t.head_ref()), Ok(&to_cnum(5)));
-        assert_eq!(list_three_five_four.tail_ref().and_then(|t| t.tail_ref()).and_then(|t| t.head_ref()), Ok(&to_cnum(4)));
+        assert_eq!(list_354.tail_ref().and_then(|t| t.head_ref()), Ok(&to_cnum(5)));
+        assert_eq!(list_354.tail_ref()
+                   .and_then(|t| t.tail_ref())
+                   .and_then(|t| t.head_ref()), Ok(&to_cnum(4)));
 
-        let unconsed = list_three_five_four.uncons();
+        let unconsed = list_354.uncons();
         assert_eq!(unconsed, Ok((to_cnum(3), Term::from(vec![to_cnum(5), to_cnum(4)]))));
     }
 
