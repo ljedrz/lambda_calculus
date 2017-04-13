@@ -1,4 +1,4 @@
-//! [Church-encoded numerals](https://en.wikipedia.org/wiki/Church_encoding#Church_numerals)
+//! [Church-encoded numerals](https://en.wikipedia.org/wiki/Church_encoding#Church_numerals) and arithmetic operations
 
 use term::*;
 use term::Term::*;

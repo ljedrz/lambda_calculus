@@ -1,4 +1,4 @@
-//! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form)
+//! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form) for lambda `Term`s
 
 use term::*;
 use term::Term::*;

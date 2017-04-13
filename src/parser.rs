@@ -1,4 +1,4 @@
-//! A parser for lambda expressions with [De Bruijn indices](https://en.wikipedia.org/wiki/De_Bruijn_index).
+//! A parser for lambda expressions with [De Bruijn indices](https://en.wikipedia.org/wiki/De_Bruijn_index)
 
 use term::*;
 use term::Term::*;
