@@ -1,4 +1,5 @@
-//! A parser for lambda expressions with [De Bruijn indices](https://en.wikipedia.org/wiki/De_Bruijn_index)
+//! A parser for lambda expressions with
+//! [De Bruijn indices](https://en.wikipedia.org/wiki/De_Bruijn_index)
 
 use term::*;
 use term::Term::*;
@@ -112,7 +113,9 @@ pub fn parse(input: &str) -> Result<Term, Error> {
     term
 }
 
-fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Vec<Term>) -> Result<Term, Error> {
+fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Vec<Term>)
+    -> Result<Term, Error>
+{
     let mut iter = exprs.iter();
 
     while let Some(ref expr) = iter.next() {
@@ -165,8 +168,10 @@ mod test {
         let tokens = tokenize(&quine);
 
         assert!(tokens.is_ok());
-        assert_eq!(tokens.unwrap(), vec![Lambda, Number(1), Lparen, Lparen, Lambda, Number(1), Number(1), Rparen, Lparen, Lambda, Lambda, Lambda, Lambda,
-            Lambda, Number(1), Number(4), Lparen, Number(3), Lparen, Number(5), Number(5), Rparen, Number(2), Rparen, Rparen, Rparen, Number(1)]);
+        assert_eq!(tokens.unwrap(), vec![Lambda, Number(1), Lparen, Lparen, Lambda, Number(1),
+            Number(1), Rparen, Lparen, Lambda, Lambda, Lambda, Lambda, Lambda, Number(1),
+            Number(4), Lparen, Number(3), Lparen, Number(5), Number(5), Rparen, Number(2),
+            Rparen, Rparen, Rparen, Number(1)]);
     }
 
     #[test]
@@ -203,7 +208,8 @@ mod test {
 
     #[test]
     fn parse_blc() {
-        let blc = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))(λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
+        let blc = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
+                   (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
         assert_eq!(&*format!("{}", parse(&blc).expect("parsing BLC failed!")), blc);
     }
 }

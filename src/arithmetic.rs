@@ -1,4 +1,5 @@
-//! [Church-encoded numerals](https://en.wikipedia.org/wiki/Church_encoding#Church_numerals) and arithmetic operations
+//! [Church-encoded numerals](https://en.wikipedia.org/wiki/Church_encoding#Church_numerals) and
+//! arithmetic operations
 
 use term::*;
 use term::Term::*;
@@ -165,8 +166,8 @@ pub fn sub() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
-/// first argument is less than the second one.
+/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// its first argument is less than the second one.
 ///
 /// LT := λab.NOT (LEQ b a) = λ λ NOT (LEQ 1 2)
 ///
@@ -187,8 +188,8 @@ pub fn lt() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
-/// first argument is less than or egual to the second one.
+/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// its first argument is less than or egual to the second one.
 ///
 /// LEQ := λmn.IS_ZERO (SUB m n) = λ λ IS_ZERO (SUB 2 1)
 ///
@@ -209,8 +210,8 @@ pub fn leq() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
-/// first argument is egual to the second one.
+/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// its first argument is egual to the second one.
 ///
 /// EQ := λmn.AND (LEQ m n) (LEQ n m) = λ λ AND (LEQ 2 1) (LEQ 1 2)
 ///
@@ -233,8 +234,8 @@ pub fn eq() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
-/// first argument is not egual to the second one.
+/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// its first argument is not egual to the second one.
 ///
 /// NEQ := λab.OR (NOT (LEQ a b)) (NOT (LEQ b a)) = λ λ OR (NOT (LEQ 2 1)) (NOT (LEQ 1 2))
 ///
@@ -257,8 +258,8 @@ pub fn neq() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
-/// first argument is greater than or egual to the second one.
+/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// its first argument is greater than or egual to the second one.
 ///
 /// GEQ := λab.LEQ b a = λ λ LEQ 1 2
 ///
@@ -279,8 +280,8 @@ pub fn geq() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
-/// first argument is greater than the second one.
+/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// its first argument is greater than the second one.
 ///
 /// GT := λab.NOT (LEQ a b) = λ λ NOT (LEQ 2 1)
 ///
@@ -378,7 +379,8 @@ mod test {
     fn church_successor() {
         assert_eq!(normalize(succ().app(zero())), one());
         assert_eq!(normalize(succ().app(one())), abs(abs(Var(2).app(Var(2).app(Var(1))))));
-        assert_eq!(normalize(succ().app(succ().app(succ().app(zero())))), abs(abs(Var(2).app(Var(2).app(Var(2).app(Var(1)))))));
+        assert_eq!(normalize(succ().app(succ().app(succ().app(zero())))),
+                   abs(abs(Var(2).app(Var(2).app(Var(2).app(Var(1)))))));
     }
 
     #[test]
@@ -428,7 +430,7 @@ mod test {
         assert_eq!(normalize(pow().app(to_cnum(1)).app(to_cnum(6))), to_cnum(1));
         assert_eq!(normalize(pow().app(to_cnum(3)).app(to_cnum(2))), to_cnum(9));
         assert_eq!(normalize(pow().app(to_cnum(4)).app(to_cnum(1))), to_cnum(4));
-//      assert_eq!(normalize(pow().app(to_cnum(5)).app(zero())),     to_cnum(1)); // n^0 fails - why?
+//      assert_eq!(normalize(pow().app(to_cnum(5)).app(zero())),     to_cnum(1)); // n^0 fails
     }
 
     #[test]

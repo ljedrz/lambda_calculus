@@ -99,8 +99,8 @@ pub fn xor() -> Term {
     ))
 }
 
-/// Applied to a Church encoded predicate and two terms it returns the first one if the predicate is
-/// true or the second one if the predicate is false.
+/// Applied to a Church encoded predicate and two terms it returns the first one if the predicate
+/// is true or the second one if the predicate is false.
 ///
 /// IF_ELSE := λpab.p a b = λ λ λ 3 2 1
 ///
