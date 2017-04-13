@@ -13,7 +13,7 @@ pub enum Error {
     InvalidExpression
 }
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq)]
 enum Token {
     Lambda,
     Lparen,
@@ -47,7 +47,7 @@ fn tokenize(input: &str) -> Result<Vec<Token>, Error> {
     Ok(tokens)
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq)]
 enum Expression {
     Abstraction,
     Sequence(Vec<Expression>),
@@ -123,7 +123,7 @@ fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Ve
         }
     }
 
-    let mut ret = fold_terms(output.clone());
+    let mut ret = fold_terms(output.drain(..).collect());
 
     while let Some(Abstraction) = stack.pop() {
         ret = abs(ret);
