@@ -13,4 +13,4 @@ The library is already usable, but it is still a work in progress.
 ## TODO
 
 - additional test cases and examples
-- a parser for lambda expressions with De Bruijn indices
+- better error-handling
