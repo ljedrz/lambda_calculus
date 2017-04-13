@@ -339,9 +339,9 @@ impl Term {
     /// ```
     /// use lambda_calculus::arithmetic::one;
     ///
-    /// assert!(one().is_number());
+    /// assert!(one().is_cnum());
     /// ```
-    pub fn is_number(&self) -> bool { self.value().is_ok() }
+    pub fn is_cnum(&self) -> bool { self.value().is_ok() }
 }
 
 /// Produces a Church-encoded term with a value of the given natural number.
@@ -385,7 +385,7 @@ mod test {
 
     #[test]
     fn church_number_identification() {
-        for n in 0..5 { assert!(to_cnum(n).is_number()) }
+        for n in 0..5 { assert!(to_cnum(n).is_cnum()) }
     }
 
     #[test]
