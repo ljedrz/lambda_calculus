@@ -139,7 +139,7 @@ fn fold_terms(mut terms: Vec<Term>) -> Term {
         terms.reverse();
         terms.into_iter().fold(fst, |acc, t| app(acc, t))
     } else {
-        terms.pop().expect("attempted to fold an empty term list")
+        terms.pop().expect("attempted to fold an empty term vector")
     }
 }
 

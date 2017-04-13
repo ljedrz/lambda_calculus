@@ -31,7 +31,13 @@ pub fn nil() -> Term { fls() }
 ///
 /// assert_eq!(normalize(is_nil().app(nil())), tru());
 /// ```
-pub fn is_nil() -> Term { abs(Var(1).app(abs(abs(abs(fls())))).app(tru())) }
+pub fn is_nil() -> Term {
+    abs(
+        Var(1)
+        .app(abs(abs(abs(fls()))))
+        .app(tru())
+    )
+}
 
 /// Equivalent to pair(); applied to two terms it returns them encoded as a list.
 ///

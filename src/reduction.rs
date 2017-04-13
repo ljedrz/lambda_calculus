@@ -59,12 +59,11 @@ fn nf(depth: usize, term: Term, env: Environment) -> Term {
 ///
 /// ```
 /// use lambda_calculus::booleans::{if_else, tru};
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::arithmetic::{zero, one, succ};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// let if_true_then_one_else_zero = if_else().app(tru()).app(one()).app(zero());
-///
-/// assert_eq!(normalize(if_true_then_one_else_zero), one());
+/// assert_eq!(normalize(succ().app(zero())), one());
+/// assert_eq!(normalize(if_else().app(tru()).app(one()).app(zero())), one());
 /// ```
 pub fn normalize(term: Term) -> Term {
     nf(0, term, VecDeque::new())
@@ -78,11 +77,5 @@ mod test {
     #[test]
     fn weak_head_normal_form() {
         // TODO
-    }
-
-    #[test]
-    fn normal_form() {
-        // TODO: more tests, esp. generic ones
-        assert_eq!(normalize(succ().app(zero())), one());
     }
 }

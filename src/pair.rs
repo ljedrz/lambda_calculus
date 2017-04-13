@@ -18,7 +18,13 @@ use booleans::*;
 /// assert_eq!(pair01.fst_ref(), Ok(&zero()));
 /// assert_eq!(pair01.snd_ref(), Ok(&one()));
 /// ```
-pub fn pair() -> Term { abs(abs(abs(Var(1).app(Var(3)).app(Var(2))))) }
+pub fn pair() -> Term {
+    abs(abs(abs(
+        Var(1)
+        .app(Var(3))
+        .app(Var(2))
+    )))
+}
 
 /// Applied to a Church-encoded pair (a, b) it yields a.
 ///
