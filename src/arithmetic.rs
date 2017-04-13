@@ -134,7 +134,7 @@ pub fn sub() -> Term { abs(abs(Var(1).app(pred()).app(Var(2)))) }
 ///
 /// LT := λab.NOT (LEQ b a) = λ λ NOT (LEQ 1 2)
 ///
-/// # Example
+/// # Examples
 /// ```
 /// use lambda_calculus::arithmetic::{zero, one, lt};
 /// use lambda_calculus::booleans::{tru, fls};
@@ -152,7 +152,7 @@ pub fn lt() -> Term { abs(abs(not().app(leq().app(Var(1)).app(Var(2))))) }
 ///
 /// LEQ := λmn.IS_ZERO (SUB m n) = λ λ IS_ZERO (SUB 2 1)
 ///
-/// # Example
+/// # Examples
 /// ```
 /// use lambda_calculus::arithmetic::{zero, one, leq};
 /// use lambda_calculus::booleans::{tru, fls};
@@ -170,7 +170,7 @@ pub fn leq() -> Term { abs(abs(is_zero().app(sub().app(Var(2)).app(Var(1))))) }
 ///
 /// EQ := λmn.AND (LEQ m n) (LEQ n m) = λ λ AND (LEQ 2 1) (LEQ 1 2)
 ///
-/// # Example
+/// # Examples
 /// ```
 /// use lambda_calculus::arithmetic::{zero, one, eq};
 /// use lambda_calculus::booleans::{tru, fls};
@@ -194,7 +194,7 @@ pub fn eq() -> Term {
 ///
 /// NEQ := λab.OR (NOT (LEQ a b)) (NOT (LEQ b a)) = λ λ OR (NOT (LEQ 2 1)) (NOT (LEQ 1 2))
 ///
-/// # Example
+/// # Examples
 /// ```
 /// use lambda_calculus::arithmetic::{zero, one, neq};
 /// use lambda_calculus::booleans::{tru, fls};
@@ -218,7 +218,7 @@ pub fn neq() -> Term {
 ///
 /// GEQ := λab.LEQ b a = λ λ LEQ 1 2
 ///
-/// # Example
+/// # Examples
 /// ```
 /// use lambda_calculus::arithmetic::{zero, one, geq};
 /// use lambda_calculus::booleans::{tru, fls};
@@ -236,7 +236,7 @@ pub fn geq() -> Term { abs(abs(leq().app(Var(1)).app(Var(2)))) }
 ///
 /// GT := λab.NOT (LEQ a b) = λ λ NOT (LEQ 2 1)
 ///
-/// # Example
+/// # Examples
 /// ```
 /// use lambda_calculus::arithmetic::{zero, one, gt};
 /// use lambda_calculus::booleans::{tru, fls};
