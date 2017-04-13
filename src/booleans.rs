@@ -83,6 +83,7 @@ pub fn xor() -> Term { abs(abs(Var(2).app(not().app(Var(1))).app(Var(1)))) }
 /// # Examples
 /// ```
 /// use lambda_calculus::booleans::{if_else, tru, fls};
+/// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::normalize;
 ///
 /// assert_eq!(normalize(if_else().app(tru()).app(one()).app(zero())), one());
