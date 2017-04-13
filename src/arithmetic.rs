@@ -302,6 +302,26 @@ pub fn gt() -> Term {
     ))
 }
 
+/*
+// FIXME: Y blows up RAM
+pub fn div() -> Term {
+    y()
+    .app(abs(abs(abs(abs(
+        lt()
+        .app(Var(2))
+        .app(Var(1))
+        .app(pair().app(Var(3)).app(Var(2)))
+        .app(
+            Var(4)
+            .app(succ().app(Var(3)))
+            .app(sub().app(Var(2)).app(Var(1)))
+            .app(Var(1))
+        )
+    )))))
+    .app(zero())
+}
+*/
+
 impl Term {
     /// Returns the value of a Church-encoded number.
     ///

@@ -328,7 +328,7 @@ impl Term {
     /// assert_eq!(list_110, Term::from(vec![one(), zero()]));
     /// ```
     pub fn pop(&mut self) -> Result<Term, Error> {
-        let (head, tail) = try!(self.clone().uncons());
+        let (head, tail) = try!(self.clone().uncons()); // TODO: drop clone()
         *self = tail;
 
         Ok(head)

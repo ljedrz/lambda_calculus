@@ -181,33 +181,3 @@ pub fn y() -> Term {
         abs(Var(2).app(Var(1).app(Var(1))))
     ))
 }
-
-#[cfg(test)]
-mod test {
-//  use super::*;
-//  use arithmetic::*;
-//  use pair::*;
-//  use reduction::*;
-/*
-    #[test]
-    fn fixed_test() {
-        // Y (λgqab. LT a b (PAIR q a) (g (SUCC q) (SUB a b) b)) 0
-        let div = y().app(
-            abs(abs(abs(abs(
-                lt()
-                .app(Var(2))
-                .app(Var(1))
-                .app(pair().app(Var(3)).app(Var(2)))
-                .app(
-                    Var(4)
-                    .app(succ().app(Var(3)))
-                    .app(sub().app(Var(2)).app(Var(1)))
-                    .app(Var(1))
-                )
-            ))))
-        ).app(zero());
-
-        assert_eq!(normalize(div.app(to_cnum(6)).app(to_cnum(3))),
-                   normalize(pair().app(to_cnum(2)).app(zero())));
-    }*/
-}
