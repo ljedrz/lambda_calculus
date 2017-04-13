@@ -27,7 +27,13 @@ pub fn fls() -> Term { abs(abs(Var(1))) }
 /// assert_eq!(normalize(and().app(fls()).app(tru())), fls());
 /// assert_eq!(normalize(and().app(fls()).app(fls())), fls());
 /// ```
-pub fn and() -> Term { abs(abs(Var(2).app(Var(1)).app(Var(2)))) }
+pub fn and() -> Term {
+    abs(abs(
+        Var(2)
+        .app(Var(1))
+        .app(Var(2))
+    ))
+}
 
 /// Applied to two Church-encoded booleans it returns their Church-encoded disjunction.
 ///
@@ -43,7 +49,13 @@ pub fn and() -> Term { abs(abs(Var(2).app(Var(1)).app(Var(2)))) }
 /// assert_eq!(normalize(or().app(fls()).app(tru())), tru());
 /// assert_eq!(normalize(or().app(fls()).app(fls())), fls());
 /// ```
-pub fn or() -> Term { abs(abs(Var(2).app(Var(2)).app(Var(1)))) }
+pub fn or() -> Term {
+    abs(abs(
+        Var(2)
+        .app(Var(2))
+        .app(Var(1))
+    ))
+}
 
 /// Applied to a Church-encoded boolean it returns its Church-encoded negation.
 ///
@@ -57,7 +69,13 @@ pub fn or() -> Term { abs(abs(Var(2).app(Var(2)).app(Var(1)))) }
 /// assert_eq!(normalize(not().app(tru())), fls());
 /// assert_eq!(normalize(not().app(fls())), tru());
 /// ```
-pub fn not() -> Term { abs(Var(1).app(fls()).app(tru())) }
+pub fn not() -> Term {
+    abs(
+        Var(1)
+        .app(fls())
+        .app(tru())
+    )
+}
 
 /// Applied to a Church-encoded boolean it returns its Church-encoded exclusive disjunction.
 ///
@@ -73,7 +91,13 @@ pub fn not() -> Term { abs(Var(1).app(fls()).app(tru())) }
 /// assert_eq!(normalize(xor().app(fls()).app(tru())), tru());
 /// assert_eq!(normalize(xor().app(fls()).app(fls())), fls());
 /// ```
-pub fn xor() -> Term { abs(abs(Var(2).app(not().app(Var(1))).app(Var(1)))) }
+pub fn xor() -> Term {
+    abs(abs(
+        Var(2)
+        .app(not().app(Var(1)))
+        .app(Var(1))
+    ))
+}
 
 /// Applied to a Church encoded predicate and two terms it returns the first one if the predicate is
 /// true or the second one if the predicate is false.
@@ -89,4 +113,10 @@ pub fn xor() -> Term { abs(abs(Var(2).app(not().app(Var(1))).app(Var(1)))) }
 /// assert_eq!(normalize(if_else().app(tru()).app(one()).app(zero())), one());
 /// assert_eq!(normalize(if_else().app(fls()).app(one()).app(zero())), zero());
 /// ```
-pub fn if_else() -> Term { abs(abs(abs(Var(3).app(Var(2)).app(Var(1))))) }
+pub fn if_else() -> Term {
+    abs(abs(abs(
+        Var(3)
+        .app(Var(2))
+        .app(Var(1))
+    )))
+}

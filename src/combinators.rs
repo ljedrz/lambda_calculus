@@ -53,7 +53,13 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 /// assert_eq!(normalize(s().app(zero()).app(one()).app(to_cnum(2))),
 ///            normalize(zero().app(to_cnum(2)).app(one().app(to_cnum(2)))));
 /// ```
-pub fn s() -> Term { abs(abs(abs(Var(3).app(Var(1)).app(Var(2).app(Var(1)))))) }
+pub fn s() -> Term {
+    abs(abs(abs(
+        Var(3)
+        .app(Var(1))
+        .app(Var(2).app(Var(1)))
+    )))
+}
 
 /// Iota - the universal combinator.
 ///
@@ -83,7 +89,12 @@ pub fn iota() -> Term { abs(Var(1).app(s()).app(k())) }
 /// assert_eq!(normalize(b().app(zero()).app(one()).app(to_cnum(2))),
 ///            normalize(zero().app(one().app(to_cnum(2)))));
 /// ```
-pub fn b() -> Term { abs(abs(abs(Var(3).app(Var(2).app(Var(1)))))) }
+pub fn b() -> Term {
+    abs(abs(abs(
+        Var(3)
+        .app(Var(2).app(Var(1)))
+    )))
+}
 
 /// C - the swapping combinator.
 ///
@@ -98,7 +109,13 @@ pub fn b() -> Term { abs(abs(abs(Var(3).app(Var(2).app(Var(1)))))) }
 /// assert_eq!(normalize(c().app(zero()).app(one()).app(to_cnum(2))),
 ///            normalize(zero().app(to_cnum(2)).app(one())));
 /// ```
-pub fn c() -> Term { abs(abs(abs(Var(3).app(Var(1)).app(Var(2))))) }
+pub fn c() -> Term {
+    abs(abs(abs(
+        Var(3)
+        .app(Var(1))
+        .app(Var(2))
+    )))
+}
 
 /// W - the duplicating combinator.
 ///
@@ -113,7 +130,13 @@ pub fn c() -> Term { abs(abs(abs(Var(3).app(Var(1)).app(Var(2))))) }
 /// assert_eq!(normalize(w().app(zero()).app(one())),
 ///            normalize(zero().app(one()).app(one())));
 /// ```
-pub fn w() -> Term { abs(abs(Var(2).app(Var(1)).app(Var(1)))) }
+pub fn w() -> Term {
+    abs(abs(
+        Var(2)
+        .app(Var(1))
+        .app(Var(1))
+    ))
+}
 /*
 /// U - the recursion combinator.
 ///

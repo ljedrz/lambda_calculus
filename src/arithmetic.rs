@@ -30,7 +30,13 @@ pub fn zero() -> Term { abs(abs(Var(1))) }
 ///
 /// assert_eq!(normalize(is_zero().app(zero())), tru());
 /// ```
-pub fn is_zero() -> Term { abs(Var(1).app(abs(fls())).app(tru())) }
+pub fn is_zero() -> Term {
+    abs(
+        Var(1)
+        .app(abs(fls()))
+        .app(tru())
+    )
+}
 
 /// Produces a Church-encoded one.
 ///
@@ -42,7 +48,11 @@ pub fn is_zero() -> Term { abs(Var(1).app(abs(fls())).app(tru())) }
 ///
 /// assert_eq!(format!("{}", one()), "λλ21");
 /// ```
-pub fn one() -> Term { abs(abs(Var(2).app(Var(1)))) }
+pub fn one() -> Term {
+    abs(abs(
+        Var(2).app(Var(1))
+    ))
+}
 
 /// Applied to a Church-encoded number it produces its successor.
 ///
@@ -55,7 +65,15 @@ pub fn one() -> Term { abs(abs(Var(2).app(Var(1)))) }
 ///
 /// assert_eq!(normalize(succ().app(zero())), one());
 /// ```
-pub fn succ() -> Term { abs(abs(abs(Var(2).app(Var(3).app(Var(2)).app(Var(1)))))) }
+pub fn succ() -> Term {
+    abs(abs(abs(
+        Var(2).app(
+            Var(3)
+            .app(Var(2))
+            .app(Var(1))
+        )
+    )))
+}
 
 /// Applied to two Church-encoded numbers it produces their sum.
 ///
@@ -68,7 +86,13 @@ pub fn succ() -> Term { abs(abs(abs(Var(2).app(Var(3).app(Var(2)).app(Var(1)))))
 ///
 /// assert_eq!(normalize(plus().app(zero()).app(one())), one());
 /// ```
-pub fn plus() -> Term { abs(abs(abs(abs(Var(4).app(Var(2)).app(Var(3).app(Var(2)).app(Var(1))))))) }
+pub fn plus() -> Term {
+    abs(abs(abs(abs(
+        Var(4)
+        .app(Var(2))
+        .app(Var(3).app(Var(2)).app(Var(1)))
+    ))))
+}
 
 /// Applied to two Church-encoded numbers it produces their product.
 ///
@@ -81,7 +105,11 @@ pub fn plus() -> Term { abs(abs(abs(abs(Var(4).app(Var(2)).app(Var(3).app(Var(2)
 ///
 /// assert_eq!(normalize(mult().app(one()).app(one())), one());
 /// ```
-pub fn mult() -> Term { abs(abs(abs(Var(3).app(Var(2).app(Var(1)))))) }
+pub fn mult() -> Term {
+    abs(abs(abs(
+        Var(3).app(Var(2).app(Var(1)))
+    )))
+}
 
 /// Applied to two Church-encoded numbers it raises the first one to the power of the second one.
 ///
@@ -94,7 +122,11 @@ pub fn mult() -> Term { abs(abs(abs(Var(3).app(Var(2).app(Var(1)))))) }
 ///
 /// assert_eq!(normalize(pow().app(one()).app(one())), one());
 /// ```
-pub fn pow() -> Term { abs(abs(Var(1).app(Var(2)))) }
+pub fn pow() -> Term {
+    abs(abs(
+        Var(1).app(Var(2))
+    ))
+}
 
 /// Applied to a Church-encoded number it produces its predecessor.
 ///
@@ -127,7 +159,11 @@ pub fn pred() -> Term {
 ///
 /// assert_eq!(normalize(sub().app(one()).app(zero())), one());
 /// ```
-pub fn sub() -> Term { abs(abs(Var(1).app(pred()).app(Var(2)))) }
+pub fn sub() -> Term {
+    abs(abs(
+        Var(1).app(pred()).app(Var(2))
+    ))
+}
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
 /// first argument is less than the second one.
@@ -145,7 +181,11 @@ pub fn sub() -> Term { abs(abs(Var(1).app(pred()).app(Var(2)))) }
 /// assert_eq!(normalize(lt().app(zero()).app(one())),  tru());
 /// assert_eq!(normalize(lt().app(one()).app(zero())),  fls());
 /// ```
-pub fn lt() -> Term { abs(abs(not().app(leq().app(Var(1)).app(Var(2))))) }
+pub fn lt() -> Term {
+    abs(abs(
+        not().app(leq().app(Var(1)).app(Var(2)))
+    ))
+}
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
 /// first argument is less than or egual to the second one.
@@ -163,7 +203,11 @@ pub fn lt() -> Term { abs(abs(not().app(leq().app(Var(1)).app(Var(2))))) }
 /// assert_eq!(normalize(leq().app(zero()).app(one())),  tru());
 /// assert_eq!(normalize(leq().app(one()).app(zero())),  fls());
 /// ```
-pub fn leq() -> Term { abs(abs(is_zero().app(sub().app(Var(2)).app(Var(1))))) }
+pub fn leq() -> Term {
+    abs(abs(
+        is_zero().app(sub().app(Var(2)).app(Var(1)))
+    ))
+}
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
 /// first argument is egual to the second one.
@@ -229,7 +273,11 @@ pub fn neq() -> Term {
 /// assert_eq!(normalize(geq().app(zero()).app(one())),  fls());
 /// assert_eq!(normalize(geq().app(one()).app(zero())),  tru());
 /// ```
-pub fn geq() -> Term { abs(abs(leq().app(Var(1)).app(Var(2)))) }
+pub fn geq() -> Term {
+    abs(abs(
+        leq().app(Var(1)).app(Var(2))
+    ))
+}
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether its
 /// first argument is greater than the second one.
@@ -247,7 +295,11 @@ pub fn geq() -> Term { abs(abs(leq().app(Var(1)).app(Var(2)))) }
 /// assert_eq!(normalize(gt().app(zero()).app(one())),  fls());
 /// assert_eq!(normalize(gt().app(one()).app(zero())),  tru());
 /// ```
-pub fn gt() -> Term { abs(abs(not().app(leq().app(Var(2)).app(Var(1))))) }
+pub fn gt() -> Term {
+    abs(abs(
+        not().app(leq().app(Var(2)).app(Var(1)))
+    ))
+}
 
 impl Term {
     /// Returns the value of a Church-encoded number.
