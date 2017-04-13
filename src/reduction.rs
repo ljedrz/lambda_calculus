@@ -71,8 +71,8 @@ pub fn normalize(term: Term) -> Term {
 
 #[cfg(test)]
 mod test {
-    use arithmetic::*;
-    use super::*;
+//    use arithmetic::*;
+//    use super::*;
 
     #[test]
     fn weak_head_normal_form() {

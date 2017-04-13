@@ -10,7 +10,8 @@ use self::Expression::*;
 #[derive(Debug, PartialEq)]
 pub enum Error {
     InvalidCharacter((usize, char)),
-    InvalidExpression
+    InvalidExpression,
+    EmptyExpression
 }
 
 #[derive(Debug, PartialEq)]
@@ -54,8 +55,10 @@ enum Expression {
     Variable(usize)
 }
 
-fn _get_ast(tokens: &[Token], pos: &mut usize) -> Expression {
+fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
     let mut expr = Vec::new();
+
+    if tokens.is_empty() { return Err(EmptyExpression) }
 
     while *pos < tokens.len() {
         match tokens[*pos] {
@@ -67,19 +70,20 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Expression {
             },
             Lparen => {
                 *pos += 1;
-                expr.push(_get_ast(&tokens, pos));
+                let subtree = try!(_get_ast(&tokens, pos));
+                expr.push(subtree);
             },
             Rparen => {
-                return Sequence(expr)
+                return Ok(Sequence(expr))
             }
         }
         *pos += 1;
     }
 
-    Sequence(expr)
+    Ok(Sequence(expr))
 }
 
-fn get_ast(tokens: &[Token]) -> Expression {
+fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
     let mut pos = 0;
 
     _get_ast(tokens, &mut pos)
@@ -97,18 +101,18 @@ fn get_ast(tokens: &[Token]) -> Expression {
 /// ```
 pub fn parse(input: &str) -> Result<Term, Error> {
     let tokens = try!(tokenize(input));
-    let ast = get_ast(&tokens);
+    let ast = try!(get_ast(&tokens));
 
-    let exprs = if let Sequence(exprs) = ast { Ok(exprs) } else { Err(InvalidExpression) };
+    let exprs = try!(if let Sequence(exprs) = ast { Ok(exprs) } else { Err(InvalidExpression) });
 
     let mut stack = Vec::new();
     let mut output = Vec::new();
-    let term = fold_exprs(&exprs.unwrap(), &mut stack, &mut output);
+    let term = fold_exprs(&exprs, &mut stack, &mut output);
 
-    Ok(term)
+    term
 }
 
-fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Vec<Term>) -> Term {
+fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Vec<Term>) -> Result<Term, Error> {
     let mut iter = exprs.iter();
 
     while let Some(ref expr) = iter.next() {
@@ -118,28 +122,31 @@ fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Ve
             Sequence(ref exprs) => {
                 let mut stack2 = Vec::new();
                 let mut output2 = Vec::new();
-                output.push(fold_exprs(&exprs, &mut stack2, &mut output2))
+                let subexpr = try!(fold_exprs(&exprs, &mut stack2, &mut output2));
+                output.push(subexpr)
             }
         }
     }
 
-    let mut ret = fold_terms(output.drain(..).collect());
+    let mut ret = try!(fold_terms(output.drain(..).collect()));
 
     while let Some(Abstraction) = stack.pop() {
         ret = abs(ret);
     }
 
-    ret
+    Ok(ret)
 }
 
-fn fold_terms(mut terms: Vec<Term>) -> Term {
+fn fold_terms(mut terms: Vec<Term>) -> Result<Term, Error> {
     if terms.len() > 1 {
         terms.reverse();
         let fst = terms.pop().unwrap();
         terms.reverse();
-        terms.into_iter().fold(fst, |acc, t| app(acc, t))
+        Ok( terms.into_iter().fold(fst, |acc, t| app(acc, t)) )
+    } else if terms.len() == 1 {
+        Ok( terms.pop().unwrap() )
     } else {
-        terms.pop().expect("attempted to fold an empty term vector")
+        Err(EmptyExpression)
     }
 }
 
@@ -168,7 +175,7 @@ mod test {
         let ast = get_ast(&tokens);
 
         assert_eq!(ast,
-            Sequence(vec![
+            Ok(Sequence(vec![
                 Abstraction,
                 Abstraction,
                 Abstraction,
@@ -179,24 +186,24 @@ mod test {
                     Variable(1)
                 ])
             ])
-        );
+        ));
     }
 
     #[test]
     fn parse_y() {
         let y = "λ(λ2(11))(λ2(11))";
-        assert_eq!(&*format!("{}", parse(&y).unwrap()), y);
+        assert_eq!(&*format!("{}", parse(&y).expect("parsing Y failed!")), y);
     }
 
     #[test]
     fn parse_quine() {
         let quine = "λ1((λ11)(λλλλλ14(3(55)2)))1";
-        assert_eq!(&*format!("{}", parse(&quine).unwrap()), quine);
+        assert_eq!(&*format!("{}", parse(&quine).expect("parsing QUINE failed!")), quine);
     }
 
     #[test]
     fn parse_blc() {
         let blc = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))(λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
-        assert_eq!(&*format!("{}", parse(&blc).unwrap()), blc);
+        assert_eq!(&*format!("{}", parse(&blc).expect("parsing BLC failed!")), blc);
     }
 }
