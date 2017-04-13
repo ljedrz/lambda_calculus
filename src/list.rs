@@ -7,6 +7,7 @@ use booleans::*;
 use pair::*;
 use arithmetic::{zero, succ};
 use combinators::y;
+use std::ops::Index;
 
 /// Equivalent to fls(); produces a Church-encoded nil, the last link of a Church-encoded list.
 ///
@@ -155,6 +156,8 @@ impl Term {
 
     // Returns a reference to the last term of a Church-encoded list.
     fn last_ref(&self) -> Result<&Term, Error> {
+        if !self.is_pair() { return Err(NotAList) }
+
         let mut last_candidate = try!(self.snd_ref());
 
         while let Ok(ref second) = last_candidate.snd_ref() {
@@ -414,6 +417,24 @@ impl Iterator for Term {
     }
 }
 
+impl Index<usize> for Term {
+    type Output = Term;
+
+    fn index(&self, i: usize) -> &Self::Output {
+        if !self.is_list() { panic!("attempting to index something that is not a list!") }
+
+        if i == 0 { return self.head_ref().unwrap() } // safe - checked above
+
+        let mut candidate = self.snd_ref().expect("index out of bounds!");
+
+        for _ in 1..i {
+            candidate = candidate.snd_ref().expect("index out of bounds!")
+        }
+
+        candidate.head_ref().unwrap()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -496,5 +517,16 @@ mod test {
         assert_eq!(iter.next(), Some(one()));
         assert_eq!(iter.next(), Some(zero()));
         assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn indexing_list() {
+        let list = Term::from(vec![zero(), one(), to_cnum(2), to_cnum(3), to_cnum(4)]);
+
+        assert_eq!(list[0], zero());
+        assert_eq!(list[1], one());
+        assert_eq!(list[2], to_cnum(2));
+        assert_eq!(list[3], to_cnum(3));
+        assert_eq!(list[4], to_cnum(4));
     }
 }
