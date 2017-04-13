@@ -20,14 +20,15 @@ enum Expression {
 
 type Environment = VecDeque<Closure>;
 
-fn whnf(term: Term, env: Environment) -> Expression {
+fn whnf(term: Term, mut env: Environment) -> Expression {
     match term {
-        Var(i) => match env[i - 1].clone() {
-            Depth(i) => Evaluation(Depth(i)),
-            TermInEnv(t, e) => whnf(t, e)
+        Var(i) => match env.remove(i - 1) {
+            Some(Depth(i)) => Evaluation(Depth(i)),
+            Some(TermInEnv(t, e)) => whnf(t, e),
+            None => unreachable!()
         },
         Abs(t) => Evaluation(TermInEnv(Abs(t), env)),
-        App(lhs, rhs) => match whnf(*lhs, env.clone()) {
+        App(lhs, rhs) => match whnf(*lhs, env.clone()) { // TODO: try to remove this clone()
             Evaluation(TermInEnv(Abs(lhs2), mut env2)) => {
                 env2.push_front(TermInEnv(*rhs, env));
                 whnf(*lhs2, env2)
