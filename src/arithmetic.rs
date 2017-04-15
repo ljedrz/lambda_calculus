@@ -8,7 +8,7 @@ use booleans::*;
 //use pair::pair;
 //use combinators::y;
 
-/// Produces a Church-encoded zero.
+/// Produces a Church-encoded number zero.
 ///
 /// ZERO := λfx.x = λ λ 1
 ///
@@ -41,7 +41,7 @@ pub fn is_zero() -> Term {
     )
 }
 
-/// Produces a Church-encoded one.
+/// Produces a Church-encoded number one.
 ///
 /// ONE := λfx.f x = λ λ 2 1
 ///
@@ -376,7 +376,7 @@ pub fn quot() -> Term {
 }
 */
 impl Term {
-    /// Returns the value of a Church-encoded number.
+    /// Returns the value of `self` if it's a Church-encoded number.
     ///
     /// # Example
     /// ```
@@ -406,7 +406,7 @@ impl Term {
         }
     }
 
-    /// Checks whether a term is a Church-encoded number.
+    /// Checks whether `self` is a Church-encoded number.
     ///
     /// # Example
     /// ```

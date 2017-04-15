@@ -3,12 +3,12 @@
 use term::*;
 use term::Term::*;
 
-/// A Church-encoded boolean true.
+/// A Church-encoded boolean `true`.
 ///
 /// TRUE := λab.a = λ λ 2
 pub fn tru() -> Term { abs(abs(Var(2))) }
 
-/// A Church-encoded boolean false.
+/// A Church-encoded boolean `false`.
 ///
 /// FALSE := λab.b = λ λ 1
 pub fn fls() -> Term { abs(abs(Var(1))) }

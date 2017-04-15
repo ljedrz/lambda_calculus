@@ -59,7 +59,7 @@ pub fn first() -> Term { abs(Var(1).app(tru())) }
 pub fn second() -> Term { abs(Var(1).app(fls())) }
 
 impl Term {
-    /// Checks whether self is a Church-encoded pair.
+    /// Checks whether `self` is a Church-encoded pair.
     ///
     /// # Example
     /// ```
@@ -74,7 +74,7 @@ impl Term {
         self.fst_ref().is_ok() && self.snd_ref().is_ok()
     }
 
-    /// Splits a Church-encoded pair into a pair of terms, consuming self.
+    /// Splits a Church-encoded pair into a pair of terms, consuming `self`.
     ///
     /// # Example
     /// ```
@@ -155,7 +155,7 @@ impl Term {
         }
     }
 
-    /// Returns the first term from a Church-encoded pair, consuming self.
+    /// Returns the first term from a Church-encoded pair, consuming `self`.
     ///
     /// # Example
     /// ```
@@ -201,7 +201,7 @@ impl Term {
         Ok(try!(self.unpair_ref_mut()).0)
     }
 
-    /// Returns the second term from a Church-encoded pair, consuming self.
+    /// Returns the second term from a Church-encoded pair, consuming `self`.
     ///
     /// # Example
     /// ```

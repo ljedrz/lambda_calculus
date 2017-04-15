@@ -9,7 +9,7 @@ use arithmetic::{zero, succ};
 use combinators::y;
 use std::ops::Index;
 
-/// Equivalent to fls(); produces a Church-encoded nil, the last link of a Church-encoded list.
+/// Equivalent to `fls()`; produces a Church-encoded `nil`, the last link of a Church-encoded list.
 ///
 /// NIL := FALSE
 ///
@@ -42,7 +42,7 @@ pub fn null() -> Term {
     )
 }
 
-/// Equivalent to pair(); applied to two terms it returns them encoded as a list.
+/// Equivalent to `pair()`; applied to two terms it returns them contained in a Church-encoded list.
 ///
 /// CONS := PAIR
 ///
@@ -72,7 +72,7 @@ pub fn null() -> Term {
 /// ```
 pub fn cons() -> Term { pair() }
 
-/// Equivalent to first(); applied to a Church-encoded list it returns its first element.
+/// Equivalent to `first()`; applied to a Church-encoded list it returns its first element.
 ///
 /// HEAD := FIRST
 ///
@@ -89,7 +89,7 @@ pub fn cons() -> Term { pair() }
 /// ```
 pub fn head() -> Term { first() }
 
-/// Equivalent to second(); applied to a Church-encoded list it returns a new list with all its
+/// Equivalent to `second()`; applied to a Church-encoded list it returns a new list with all its
 /// elements but the first one.
 ///
 /// TAIL := SECOND
@@ -211,7 +211,7 @@ pub fn list() -> Term {
 }
 
 impl Term {
-    /// Checks whether self is a Church-encoded empty list, i.e. nil().
+    /// Checks whether self is a Church-encoded empty list, i.e. `nil()`.
     ///
     /// # Example
     /// ```
@@ -236,7 +236,7 @@ impl Term {
         Ok(last_candidate)
     }
 
-    /// Checks whether self is a Church-encoded list.
+    /// Checks whether `self` is a Church-encoded list.
     ///
     /// # Example
     /// ```
@@ -252,7 +252,7 @@ impl Term {
     }
 
     /// Splits a Church-encoded list into a pair containing its first term and a list of all the
-    /// other terms, consuming self.
+    /// other terms, consuming `self`.
     ///
     /// # Example
     /// ```
@@ -312,7 +312,7 @@ impl Term {
         }
     }
 
-    /// Returns the first term from a Church-encoded list, consuming self.
+    /// Returns the first term from a Church-encoded list, consuming `self`.
     ///
     /// # Example
     /// ```
@@ -357,7 +357,7 @@ impl Term {
         Ok(try!(self.uncons_ref_mut()).0)
     }
 
-    /// Returns a list of all the terms of a Church-encoded list but the first one, consuming self.
+    /// Returns a list of all the terms of a Church-encoded list but the first one, consuming `self`.
     ///
     /// # Example
     /// ```
@@ -427,7 +427,7 @@ impl Term {
     }
 
     /// Adds a term to the beginning of a Church-encoded list and returns the new list. Consumes
-    /// self and the argument.
+    /// `self` and the argument.
     ///
     /// # Example
     /// ```

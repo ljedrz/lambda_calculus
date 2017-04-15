@@ -26,7 +26,7 @@ pub enum Error {
 }
 
 impl Term {
-    /// Applies self to another term.
+    /// Applies `self` to another term.
     ///
     /// # Example
     /// ```
@@ -145,7 +145,7 @@ impl Term {
         }
     }
 
-    /// Returns the left-hand side term of an application. Consumes self.
+    /// Returns the left-hand side term of an application. Consumes `self`.
     ///
     /// # Example
     /// ```
@@ -181,7 +181,7 @@ impl Term {
         if let Ok((lhs, _)) = self.unapp_ref_mut() { Ok(lhs) } else { Err(NotAnApp) }
     }
 
-    /// Returns the right-hand side term of an application. Consumes self.
+    /// Returns the right-hand side term of an application. Consumes `self`.
     ///
     /// # Example
     /// ```
