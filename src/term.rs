@@ -229,7 +229,20 @@ impl Term {
 /// ```
 pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 
-/// Applies `self` to another term with substitution and variable update, but without reduction.
+/// Produces an application of its arguments without substitution or reduction, consuming them in
+/// the process.
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::Term::*;
+/// use lambda_calculus::term::app;
+///
+/// assert_eq!(app(Var(0), Var(1)), App(Box::new(Var(0)), Box::new(Var(1))));
+/// ```
+pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
+
+/// Applies two terms with substitution and variable update (but without reduction), consuming them
+/// in the process.
 ///
 /// # Example
 /// ```

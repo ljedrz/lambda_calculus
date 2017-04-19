@@ -40,7 +40,7 @@ fn whnf(term: Term, mut env: Environment) -> Expression {
 
 fn reduce(depth: usize, exp: Expression) -> Term {
     match exp {
-        Application(lhs, rhs, env) => reduce(depth, *lhs).app(nf(depth, rhs, env)),
+        Application(lhs, rhs, env) => app(reduce(depth, *lhs), nf(depth, rhs, env)),
         Evaluation(TermInEnv(Abs(term), mut env)) => {
             env.push_front(Depth(depth));
             abs(nf(depth + 1, *term, env))
