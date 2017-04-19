@@ -255,12 +255,10 @@ pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
 ///
 /// assert_eq!(apply(lhs, rhs), Ok(result));
 /// ```
-pub fn apply(lhs: Term, rhs: Term) -> Result<Term, Error> {
-    let mut lhs = try!(lhs.unabs());
+pub fn apply(mut lhs: Term, rhs: Term) -> Result<Term, Error> {
+    _apply(&mut lhs, rhs, 0);
 
-    _apply(&mut lhs, rhs, 1);
-
-    Ok(lhs)
+    Ok(lhs.unabs().unwrap())
 }
 
 fn _apply(lhs: &mut Term, rhs: Term, depth: usize) {
@@ -327,9 +325,50 @@ fn parenthesize_if(condition: bool, input: &str) -> Cow<str> {
     }
 }
 
+// WIP
+/*
+fn beta_reduce(mut term: Term) -> Result<Term, Error> {
+    match term {
+        App(lhs, rhs) => term = try!(apply(*lhs, *rhs)),
+        Abs(t) => try!(beta_reduce(*t)),
+        _ => ()
+    }
+
+    Ok(term)
+}
+*/
+fn _beta_reduce(term: &mut Term) {
+    match *term {
+        App(_, _) => {
+            let (lhs, rhs) = term.clone().unapp().unwrap();
+            println!("attempting to reduce {}...", *term);
+            if let Ok(reduced) = apply(lhs, rhs) {
+                println!("\tattempt successful: {}", reduced);
+                *term = reduced;
+            } else {
+                println!("\tfailed; trying to reduce the inner terms");
+                let (mut lhs, mut rhs) = term.clone().unapp().unwrap();
+                _beta_reduce(&mut lhs);
+                _beta_reduce(&mut rhs);
+            }
+        },
+        Abs(ref mut t) => _beta_reduce(t),
+        _ => ()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use arithmetic::*;
+    use term::{apply, _beta_reduce};
+
+    #[test]
+    fn applying() {
+        let mut unreduced = apply(succ(), zero()).unwrap();
+        println!("before: {}", unreduced);
+        let _ = _beta_reduce(&mut unreduced);
+        println!("after: {}", unreduced);
+    }
 
     #[test]
     fn displaying_terms() {
