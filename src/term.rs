@@ -26,7 +26,7 @@ pub enum Error {
 }
 
 impl Term {
-    /// Applies `self` to another term.
+    /// Applies `self` to another term without substitution or reduction.
     ///
     /// # Example
     /// ```
@@ -229,16 +229,70 @@ impl Term {
 /// ```
 pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 
-fn parenthesize_if(condition: bool, input: &str) -> Cow<str> {
-    if condition {
-        format!("({})", input).into()
-    } else {
-        input.into()
+/// Applies `self` to another term with substitution and variable update, but without reduction.
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::apply;
+/// use lambda_calculus::parser::parse;
+///
+/// let lhs    = parse(&"λλ42(λ13)").unwrap();
+/// let rhs    = parse(&"λ51").unwrap();
+/// let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
+///
+/// assert_eq!(apply(lhs, rhs), Ok(result));
+/// ```
+pub fn apply(lhs: Term, rhs: Term) -> Result<Term, Error> {
+    let mut depth = 1;
+    let mut lhs = try!(lhs.unabs());
+
+    _apply(&mut lhs, rhs, &mut depth);
+
+    Ok(lhs)
+}
+
+fn _apply(lhs: &mut Term, rhs: Term, depth: &mut usize) {
+    match *lhs {
+        Var(i) => if i == *depth {
+            *lhs = rhs.clone(); // substitute top-level variables in lhs
+            update_free_variables(lhs, *depth - 2)
+        } else if i > *depth {
+            *lhs = Var(i - 1) // decrement free variables
+        },
+        Abs(_) => {
+            *depth += 1;
+            _apply(lhs.unabs_ref_mut().unwrap(), rhs, depth)
+        },
+        App(_, _) => {
+            _apply(lhs.lhs_ref_mut().unwrap(), rhs.clone(), depth);
+            _apply(lhs.rhs_ref_mut().unwrap(), rhs, depth);
+        }
+    }
+}
+
+fn update_free_variables(term: &mut Term, depth: usize) {
+    match *term {
+        Var(i) => if i > depth {
+            *term = Var(i + depth)
+        },
+        Abs(_) => {
+            update_free_variables(term.unabs_ref_mut().unwrap(), depth + 1)
+        },
+        App(_, _) => {
+            update_free_variables(term.lhs_ref_mut().unwrap(), depth);
+            update_free_variables(term.rhs_ref_mut().unwrap(), depth);
+        }
     }
 }
 
 /// Set to `true` for λ or `false` for \ when displaying lambda terms. The default is `true`.
 pub const DISPLAY_PRETTY: bool = true;
+
+impl fmt::Display for Term {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", show_precedence(0, self))
+    }
+}
 
 fn show_precedence(context_precedence: usize, term: &Term) -> String {
     match *term {
@@ -254,9 +308,11 @@ fn show_precedence(context_precedence: usize, term: &Term) -> String {
     }
 }
 
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", show_precedence(0, self))
+fn parenthesize_if(condition: bool, input: &str) -> Cow<str> {
+    if condition {
+        format!("({})", input).into()
+    } else {
+        input.into()
     }
 }
 
