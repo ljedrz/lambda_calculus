@@ -30,7 +30,7 @@ fn tokenize(input: &str) -> Result<Vec<Token>, Error> {
 
     while let Some(c) = chars.next() {
         match c {
-            'λ' => { tokens.push(Lambda) },
+     '\\' | 'λ' => { tokens.push(Lambda) },
             '(' => { tokens.push(Lparen) },
             ')' => { tokens.push(Rparen) },
              x  => {
@@ -172,6 +172,11 @@ mod test {
             Number(1), Rparen, Lparen, Lambda, Lambda, Lambda, Lambda, Lambda, Number(1),
             Number(4), Lparen, Number(3), Lparen, Number(5), Number(5), Rparen, Number(2),
             Rparen, Rparen, Rparen, Number(1)]);
+    }
+
+    #[test]
+    fn alternative_lambda_parsing() {
+        assert_eq!(parse(&"\\\\\\2(321)"), parse(&"λλλ2(321)"))
     }
 
     #[test]
