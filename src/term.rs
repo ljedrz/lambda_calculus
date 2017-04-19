@@ -256,25 +256,23 @@ pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
 /// assert_eq!(apply(lhs, rhs), Ok(result));
 /// ```
 pub fn apply(lhs: Term, rhs: Term) -> Result<Term, Error> {
-    let mut depth = 1;
     let mut lhs = try!(lhs.unabs());
 
-    _apply(&mut lhs, rhs, &mut depth);
+    _apply(&mut lhs, rhs, 1);
 
     Ok(lhs)
 }
 
-fn _apply(lhs: &mut Term, rhs: Term, depth: &mut usize) {
+fn _apply(lhs: &mut Term, rhs: Term, depth: usize) {
     match *lhs {
-        Var(i) => if i == *depth {
-            *lhs = rhs.clone(); // substitute top-level variables in lhs
-            update_free_variables(lhs, *depth - 2)
-        } else if i > *depth {
-            *lhs = Var(i - 1) // decrement free variables
+        Var(i) => if i == depth {
+            *lhs = rhs; // substitute a top-level variable from lhs with rhs
+            update_free_variables(lhs, depth - 2) // update free variables' indices from rhs
+        } else if i > depth {
+            *lhs = Var(i - 1) // decrement a free variable's index
         },
         Abs(_) => {
-            *depth += 1;
-            _apply(lhs.unabs_ref_mut().unwrap(), rhs, depth)
+            _apply(lhs.unabs_ref_mut().unwrap(), rhs, depth + 1)
         },
         App(_, _) => {
             _apply(lhs.lhs_ref_mut().unwrap(), rhs.clone(), depth);
