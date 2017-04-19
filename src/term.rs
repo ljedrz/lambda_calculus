@@ -229,17 +229,6 @@ impl Term {
 /// ```
 pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 
-/// Produces an application of its arguments, consuming them in the process.
-///
-/// # Example
-/// ```
-/// use lambda_calculus::term::Term::*;
-/// use lambda_calculus::term::app;
-///
-/// assert_eq!(app(Var(0), Var(1)), App(Box::new(Var(0)), Box::new(Var(1))));
-/// ```
-pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
-
 fn parenthesize_if(condition: bool, input: &str) -> Cow<str> {
     if condition {
         format!("({})", input).into()

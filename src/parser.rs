@@ -145,7 +145,7 @@ fn fold_terms(mut terms: Vec<Term>) -> Result<Term, Error> {
         terms.reverse();
         let fst = terms.pop().unwrap();
         terms.reverse();
-        Ok( terms.into_iter().fold(fst, |acc, t| app(acc, t)) )
+        Ok( terms.into_iter().fold(fst, |acc, t| acc.app(t)) )
     } else if terms.len() == 1 {
         Ok( terms.pop().unwrap() )
     } else {

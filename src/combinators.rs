@@ -176,8 +176,8 @@ pub fn omm() -> Term { om().app(om()) }
 /// assert_eq!(normalize(y().app(zero())), normalize(zero().app(y().app(zero()))));
 /// ```
 pub fn y() -> Term {
-    abs(app(
-        abs(Var(2).app(Var(1).app(Var(1)))),
+    abs(
         abs(Var(2).app(Var(1).app(Var(1))))
-    ))
+        .app(abs(Var(2).app(Var(1).app(Var(1)))))
+    )
 }
