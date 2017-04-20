@@ -344,42 +344,13 @@ fn parenthesize_if(condition: bool, input: &str) -> Cow<str> {
     }
 }
 
-// WIP
-/*
-fn beta_reduce(mut term: Term) -> Result<Term, Error> {
-    match term {
-        App(lhs, rhs) => term = try!(apply(*lhs, *rhs)),
-        Abs(t) => try!(beta_reduce(*t)),
-        _ => ()
-    }
-
-    Ok(term)
-}
-*/
-fn _beta_reduce(term: &mut Term) {
-    match *term {
-        App(_, _) => {
-            let (lhs, rhs) = term.clone().unapp().unwrap();
-            println!("attempting to reduce {}...", *term);
-            if let Ok(reduced) = apply(lhs, rhs) {
-                println!("\tattempt successful: {}", reduced);
-                *term = reduced;
-            } else {
-                println!("\tfailed; trying to reduce the inner terms");
-                let (mut lhs, mut rhs) = term.clone().unapp().unwrap();
-                _beta_reduce(&mut lhs);
-                _beta_reduce(&mut rhs);
-            }
-        },
-        Abs(ref mut t) => _beta_reduce(t),
-        _ => ()
-    }
-}
-
 #[cfg(test)]
 mod test {
-    use arithmetic::*;
-    use term::{apply, _beta_reduce};
+    use arithmetic::{zero, succ, pred};
+    use combinators::i;
+    use parser::parse;
+    use term::{apply, abs};
+    use term::Term::Var;
 
     #[test]
     fn applying() {
@@ -389,11 +360,6 @@ mod test {
         assert_eq!(apply(lhs, rhs), Ok(result));
 
         assert_eq!(apply(i(), zero()).unwrap(), abs(abs(Var(1))));
-    }
-        let mut unreduced = apply(succ(), zero()).unwrap();
-        println!("before: {}", unreduced);
-        let _ = _beta_reduce(&mut unreduced);
-        println!("after: {}", unreduced);
     }
 
     #[test]
