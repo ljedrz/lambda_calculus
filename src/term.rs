@@ -216,6 +216,25 @@ impl Term {
     pub fn rhs_ref_mut(&mut self) -> Result<&mut Term, Error> {
         if let Ok((_, rhs)) = self.unapp_ref_mut() { Ok(rhs) } else { Err(NotAnApp) }
     }
+
+    /// Performs an `App`lication by substitution and variable update.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::term::{app, abs};
+    /// use lambda_calculus::term::Term::Var;
+    /// use lambda_calculus::arithmetic::zero;
+    /// use lambda_calculus::combinators::i;
+    ///
+    /// assert_eq!(app(i(), zero()).evaluate(), Ok(abs(abs(Var(1)))));
+    /// ```
+    pub fn evaluate(self) -> Result<Term, Error> {
+        let (mut lhs, rhs) = try!(self.unapp());
+
+        _apply(&mut lhs, rhs, 0);
+
+        Ok(try!(lhs.unabs()))
+    }
 }
 
 /// Wraps a term in an abstraction. Consumes its argument.
@@ -364,6 +383,13 @@ mod test {
 
     #[test]
     fn applying() {
+        let lhs    = parse(&"λλ42(λ13)").unwrap();
+        let rhs    = parse(&"λ51").unwrap();
+        let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
+        assert_eq!(apply(lhs, rhs), Ok(result));
+
+        assert_eq!(apply(i(), zero()).unwrap(), abs(abs(Var(1))));
+    }
         let mut unreduced = apply(succ(), zero()).unwrap();
         println!("before: {}", unreduced);
         let _ = _beta_reduce(&mut unreduced);
