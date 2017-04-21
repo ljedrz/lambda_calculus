@@ -226,9 +226,9 @@ impl Term {
     /// use lambda_calculus::arithmetic::zero;
     /// use lambda_calculus::combinators::i;
     ///
-    /// assert_eq!(app(i(), zero()).evaluate(), Ok(abs(abs(Var(1)))));
+    /// assert_eq!(app(i(), zero()).apply(), Ok(abs(abs(Var(1)))));
     /// ```
-    pub fn evaluate(self) -> Result<Term, Error> {
+    pub fn apply(self) -> Result<Term, Error> {
         let (mut lhs, rhs) = try!(self.unapp());
 
         _apply(&mut lhs, rhs, 0);
