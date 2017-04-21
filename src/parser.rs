@@ -90,7 +90,8 @@ fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
     _get_ast(tokens, &mut pos)
 }
 
-/// Parses the input lambda expression to a `Term`.
+/// Parses the input lambda expression to a `Term`; the lambda can be represented either with the
+/// greek letter (λ) or a backslash (\\ - less aesthetic, but only one byte in size).
 ///
 /// # Example
 /// ```
@@ -98,6 +99,7 @@ fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
 /// use lambda_calculus::arithmetic::{succ, pred};
 ///
 /// assert_eq!(parse(&"λ λ λ 2 (3 2 1)"), Ok(succ()));
+/// assert_eq!(parse(&r#"\ \ \ 2 (3 2 1)"#), Ok(succ()));
 /// assert_eq!(parse(&"λλλ3(λλ1(24))(λ2)(λ1)"), Ok(pred()));
 /// ```
 pub fn parse(input: &str) -> Result<Term, Error> {
