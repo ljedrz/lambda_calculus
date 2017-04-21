@@ -8,6 +8,7 @@ use pair::*;
 use arithmetic::{zero, succ};
 use combinators::y;
 use std::ops::Index;
+use reduction::normalize;
 
 /// Equivalent to `fls()`; produces a Church-encoded `nil`, the last link of a Church-encoded list.
 ///
@@ -468,7 +469,7 @@ impl From<Vec<Term>> for Term {
             output = output.push(term);
         }
 
-        output
+        normalize(output)
     }
 }
 
