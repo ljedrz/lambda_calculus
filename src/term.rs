@@ -303,16 +303,16 @@ fn _apply(lhs: &mut Term, rhs: Term, depth: usize) {
     match *lhs {
         Var(i) => if i == depth {
             *lhs = rhs; // substitute a top-level variable from lhs with rhs
-            update_free_variables(lhs, depth - 1) // update free variables' indices from rhs
+            update_free_variables(lhs, depth - 1); // update free variables' indices from rhs
         } else if i > depth {
             *lhs = Var(i - 1) // decrement a free variable's index
         },
         Abs(_) => {
-            _apply(lhs.unabs_ref_mut().unwrap(), rhs, depth + 1)
+            _apply(lhs.unabs_ref_mut().unwrap(), rhs, depth + 1) // safe
         },
         App(_, _) => {
-            _apply(lhs.lhs_ref_mut().unwrap(), rhs.clone(), depth);
-            _apply(lhs.rhs_ref_mut().unwrap(), rhs, depth);
+            _apply(lhs.lhs_ref_mut().unwrap(), rhs.clone(), depth); // safe
+            _apply(lhs.rhs_ref_mut().unwrap(), rhs, depth) // safe
         }
     }
 }
@@ -323,11 +323,11 @@ fn update_free_variables(term: &mut Term, depth: usize) {
             *term = Var(i + depth)
         },
         Abs(_) => {
-            update_free_variables(term.unabs_ref_mut().unwrap(), depth)
+            update_free_variables(term.unabs_ref_mut().unwrap(), depth) // safe
         },
         App(_, _) => {
-            update_free_variables(term.lhs_ref_mut().unwrap(), depth);
-            update_free_variables(term.rhs_ref_mut().unwrap(), depth);
+            update_free_variables(term.lhs_ref_mut().unwrap(), depth); // safe
+            update_free_variables(term.rhs_ref_mut().unwrap(), depth) // safe
         }
     }
 }
@@ -368,8 +368,8 @@ mod test {
     use arithmetic::{zero, succ, pred};
     use combinators::i;
     use parser::parse;
-    use term::{apply, abs};
-    use term::Term::Var;
+    use super::{apply, abs};
+    use super::Term::Var;
 
     #[test]
     fn applying() {

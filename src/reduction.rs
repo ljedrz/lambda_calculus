@@ -70,13 +70,78 @@ pub fn normalize(term: Term) -> Term {
     nf(0, term, VecDeque::new())
 }
 
+// TODO: untested; check if works, add tests
+pub fn beta_reduce_once(term: &mut Term) {
+    let mut done = false;
+
+    _beta_reduce_once(term, &mut done)
+}
+
+fn _beta_reduce_once(term: &mut Term, done: &mut bool) {
+    if *done == true { return }
+
+    match *term {
+        Var(_) => (),
+        Abs(_) => {
+            beta_reduce(term.unabs_ref_mut().unwrap()) // safe
+        },
+        App(_, _) => {
+            beta_reduce(term.lhs_ref_mut().unwrap()); // safe
+            beta_reduce(term.rhs_ref_mut().unwrap()); // safe
+
+            let copy = term.clone();
+            if let Ok(result) = copy.eval() {
+                *term = result;
+                *done = true
+            }
+        }
+    }
+}
+
+// TODO: sometimes needs to be applied a few times; test more
+pub fn beta_reduce(term: &mut Term) {
+    match *term {
+        Var(_) => (),
+        Abs(_) => {
+            beta_reduce(term.unabs_ref_mut().unwrap()) // safe
+        },
+        App(_, _) => {
+            beta_reduce(term.lhs_ref_mut().unwrap()); // safe
+            beta_reduce(term.rhs_ref_mut().unwrap()); // safe
+
+            let copy = term.clone();
+            if let Ok(result) = copy.eval() {
+                *term = result;
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
-//    use arithmetic::*;
-//    use super::*;
+    use arithmetic::{succ, pred};
+    use super::beta_reduce;
 
     #[test]
     fn weak_head_normal_form() {
         // TODO
+    }
+
+    #[test]
+    fn beta_reduction() {
+        let mut succ = succ().apply(0.into()).unwrap();
+        let mut pred = pred().apply(1.into()).unwrap();
+        beta_reduce(&mut succ);
+
+        println!("{}", pred);
+        beta_reduce(&mut pred);
+        println!("{}", pred);
+        beta_reduce(&mut pred);
+        println!("{}", pred);
+        beta_reduce(&mut pred);
+        println!("{}", pred);
+
+        assert_eq!(succ, 1.into());
+        assert_eq!(pred, 0.into());
     }
 }
