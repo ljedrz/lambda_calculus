@@ -26,7 +26,7 @@ pub fn pair() -> Term {
     )))
 }
 
-/// Applied to a Church-encoded pair (a, b) it yields a.
+/// Applied to a Church-encoded pair `(a, b)` it yields `a`.
 ///
 /// FIRST := λp.p TRUE = λ 1 TRUE
 ///
@@ -42,7 +42,7 @@ pub fn pair() -> Term {
 /// ```
 pub fn first() -> Term { abs(Var(1).app(tru())) }
 
-/// Applied to a Church-encoded pair (a, b) it yields b.
+/// Applied to a Church-encoded pair `(a, b)` it yields `b`.
 ///
 /// SECOND := λp.p FALSE = λ 1 FALSE
 ///
