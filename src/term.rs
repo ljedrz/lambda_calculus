@@ -359,7 +359,7 @@ mod test {
         let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
         assert_eq!(apply(lhs, rhs), Ok(result));
 
-        assert_eq!(apply(i(), zero()).unwrap(), abs(abs(Var(1))));
+        assert_eq!(i().app(zero()).apply().unwrap(), abs(abs(Var(1))));
     }
 
     #[test]
