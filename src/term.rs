@@ -217,7 +217,7 @@ impl Term {
         if let Ok((_, rhs)) = self.unapp_ref_mut() { Ok(rhs) } else { Err(NotAnApp) }
     }
 
-    /// Performs an `App`lication by substitution and variable update.
+    /// Reduces an `App`lication by substitution and variable update.
     ///
     /// # Example
     /// ```
@@ -226,9 +226,9 @@ impl Term {
     /// use lambda_calculus::arithmetic::zero;
     /// use lambda_calculus::combinators::i;
     ///
-    /// assert_eq!(app(i(), zero()).apply(), Ok(abs(abs(Var(1)))));
+    /// assert_eq!(app(i(), zero()).eval(), Ok(abs(abs(Var(1)))));
     /// ```
-    pub fn apply(self) -> Result<Term, Error> {
+    pub fn eval(self) -> Result<Term, Error> {
         let (mut lhs, rhs) = try!(self.unapp());
 
         _apply(&mut lhs, rhs, 0);
