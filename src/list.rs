@@ -116,13 +116,12 @@ pub fn tail() -> Term { second() }
 /// ```
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::{length, nil};
-/// use lambda_calculus::arithmetic::{zero, one, to_cnum};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// let list_4 = Term::from(vec![one(), one(), zero(), one()]);
+/// let list_4 = Term::from(vec![1.into(), 1.into(), 0.into(), 1.into()]);
 ///
-/// assert_eq!(normalize(length().app(nil())),  zero());
-/// assert_eq!(normalize(length().app(list_4)), to_cnum(4));
+/// assert_eq!(normalize(length().app(nil())),  0.into());
+/// assert_eq!(normalize(length().app(list_4)), 4.into());
 /// ```
 pub fn length() -> Term {
     y()
@@ -187,11 +186,10 @@ pub fn reverse() -> Term {
 /// ```
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::list;
-/// use lambda_calculus::arithmetic::{zero, one, to_cnum};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// assert_eq!(normalize(list().app(to_cnum(3)).app(zero()).app(one()).app(one())),
-///            Term::from(vec![zero(), one(), one()]));
+/// assert_eq!(normalize(list().app(3.into()).app(0.into()).app(1.into()).app(1.into())),
+///            Term::from(vec![0.into(), 1.into(), 1.into()]));
 /// ```
 pub fn list() -> Term {
     abs(
@@ -507,7 +505,6 @@ impl Index<usize> for Term {
 #[cfg(test)]
 mod test {
     use super::*;
-    use arithmetic::{zero, one, to_cnum};
     use reduction::normalize;
 
     #[test]
@@ -520,9 +517,9 @@ mod test {
 
     #[test]
     fn list_push() {
-        let list_pushed = nil().push(zero()).push(one()).push(one());
+        let list_pushed = nil().push(0.into()).push(1.into()).push(1.into());
         let list_consed = normalize(
-            cons().app(one()).app(cons().app(one()).app(cons().app(zero()).app(nil())))
+            cons().app(1.into()).app(cons().app(1.into()).app(cons().app(0.into()).app(nil())))
         );
 
         assert_eq!(list_pushed, list_consed);
@@ -530,8 +527,8 @@ mod test {
 
     #[test]
     fn list_from_vector() {
-        let list_from_vec = Term::from(vec![one(), one(), zero()]);
-        let list_pushed = nil().push(zero()).push(one()).push(one());
+        let list_from_vec = Term::from(vec![1.into(), 1.into(), 0.into()]);
+        let list_pushed = nil().push(0.into()).push(1.into()).push(1.into());
 
         assert_eq!(list_from_vec, list_pushed);
     }
@@ -540,62 +537,62 @@ mod test {
     fn list_length() {
         let list0 = nil();
         assert_eq!(list0.len(), Ok(0));
-        let list1 = list0.push(one());
+        let list1 = list0.push(1.into());
         assert_eq!(list1.len(), Ok(1));
-        let list2 = list1.push(one());
+        let list2 = list1.push(1.into());
         assert_eq!(list2.len(), Ok(2));
-        let list3 = list2.push(one());
+        let list3 = list2.push(1.into());
         assert_eq!(list3.len(), Ok(3));
     }
 
     #[test]
     fn list_operations() {
-        let list_354 = Term::from(vec![to_cnum(3), to_cnum(5), to_cnum(4)]);
+        let list_354 = Term::from(vec![3.into(), 5.into(), 4.into()]);
 
         assert!(list_354.is_list());
 
-        assert_eq!(list_354.head_ref(), Ok(&to_cnum(3)));
-        assert_eq!(list_354.tail_ref(), Ok(&Term::from(vec![to_cnum(5), to_cnum(4)])));
+        assert_eq!(list_354.head_ref(), Ok(&3.into()));
+        assert_eq!(list_354.tail_ref(), Ok(&Term::from(vec![5.into(), 4.into()])));
 
-        assert_eq!(list_354.tail_ref().and_then(|t| t.head_ref()), Ok(&to_cnum(5)));
+        assert_eq!(list_354.tail_ref().and_then(|t| t.head_ref()), Ok(&5.into()));
         assert_eq!(list_354.tail_ref()
                    .and_then(|t| t.tail_ref())
-                   .and_then(|t| t.head_ref()), Ok(&to_cnum(4)));
+                   .and_then(|t| t.head_ref()), Ok(&4.into()));
 
         let unconsed = list_354.uncons();
-        assert_eq!(unconsed, Ok((to_cnum(3), Term::from(vec![to_cnum(5), to_cnum(4)]))));
+        assert_eq!(unconsed, Ok((3.into(), Term::from(vec![5.into(), 4.into()]))));
     }
 
 
     #[test]
     fn list_pop() {
-        let mut list_poppable = Term::from(vec![one(), zero(), zero()]);
+        let mut list_poppable = Term::from(vec![1.into(), 0.into(), 0.into()]);
 
-        assert_eq!(list_poppable.pop(), Ok(one()));
-        assert_eq!(list_poppable.pop(), Ok(zero()));
-        assert_eq!(list_poppable.pop(), Ok(zero()));
+        assert_eq!(list_poppable.pop(), Ok(1.into()));
+        assert_eq!(list_poppable.pop(), Ok(0.into()));
+        assert_eq!(list_poppable.pop(), Ok(0.into()));
         assert_eq!(list_poppable.pop(), Err(NotAList));
     }
 
     #[test]
     fn iterating_list() {
-        let list010 = Term::from(vec![zero(), one(), zero()]);
+        let list010 = Term::from(vec![0.into(), 1.into(), 0.into()]);
         let mut iter = list010.into_iter();
 
-        assert_eq!(iter.next(), Some(zero()));
-        assert_eq!(iter.next(), Some(one()));
-        assert_eq!(iter.next(), Some(zero()));
+        assert_eq!(iter.next(), Some(0.into()));
+        assert_eq!(iter.next(), Some(1.into()));
+        assert_eq!(iter.next(), Some(0.into()));
         assert_eq!(iter.next(), None);
     }
 
     #[test]
     fn indexing_list() {
-        let list = Term::from(vec![zero(), one(), to_cnum(2), to_cnum(3), to_cnum(4)]);
+        let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into(), 4.into()]);
 
-        assert_eq!(list[0], zero());
-        assert_eq!(list[1], one());
-        assert_eq!(list[2], to_cnum(2));
-        assert_eq!(list[3], to_cnum(3));
-        assert_eq!(list[4], to_cnum(4));
+        assert_eq!(list[0], 0.into());
+        assert_eq!(list[1], 1.into());
+        assert_eq!(list[2], 2.into());
+        assert_eq!(list[3], 3.into());
+        assert_eq!(list[4], 4.into());
     }
 }

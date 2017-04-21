@@ -251,19 +251,18 @@ impl Term {
 #[cfg(test)]
 mod test {
     use super::*;
-    use arithmetic::*;
-    use reduction::*;
+    use reduction::normalize;
 
     #[test]
     fn pair_operations() {
-        let pair_four_three = normalize(pair().app(to_cnum(4)).app(to_cnum(3)));
+        let pair_four_three = normalize(pair().app(4.into()).app(3.into()));
 
         assert!(pair_four_three.is_pair());
 
-        assert_eq!(pair_four_three.fst_ref(), Ok(&to_cnum(4)));
-        assert_eq!(pair_four_three.snd_ref(), Ok(&to_cnum(3)));
+        assert_eq!(pair_four_three.fst_ref(), Ok(&4.into()));
+        assert_eq!(pair_four_three.snd_ref(), Ok(&3.into()));
 
         let unpaired = pair_four_three.unpair();
-        assert_eq!(unpaired, Ok((to_cnum(4), to_cnum(3))));
+        assert_eq!(unpaired, Ok((4.into(), 3.into())));
     }
 }

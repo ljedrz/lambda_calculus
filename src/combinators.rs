@@ -46,12 +46,12 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 ///
 /// # Example
 /// ```
+/// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::s;
-/// use lambda_calculus::arithmetic::{zero, one, to_cnum};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// assert_eq!(normalize(s().app(zero()).app(one()).app(to_cnum(2))),
-///            normalize(zero().app(to_cnum(2)).app(one().app(to_cnum(2)))));
+/// assert_eq!(normalize(s().app(0.into()).app(1.into()).app(2.into())),
+///            normalize(Term::from(0).app(2.into()).app(Term::from(1).app(2.into()))));
 /// ```
 pub fn s() -> Term {
     abs(abs(abs(
@@ -82,12 +82,12 @@ pub fn iota() -> Term { abs(Var(1).app(s()).app(k())) }
 ///
 /// # Example
 /// ```
+/// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::b;
-/// use lambda_calculus::arithmetic::{zero, one, to_cnum};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// assert_eq!(normalize(b().app(zero()).app(one()).app(to_cnum(2))),
-///            normalize(zero().app(one().app(to_cnum(2)))));
+/// assert_eq!(normalize(b().app(0.into()).app(1.into()).app(2.into())),
+///            normalize(Term::from(0).app(Term::from(1).app(2.into()))));
 /// ```
 pub fn b() -> Term {
     abs(abs(abs(
@@ -102,12 +102,12 @@ pub fn b() -> Term {
 ///
 /// # Example
 /// ```
+/// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::c;
-/// use lambda_calculus::arithmetic::{zero, one, to_cnum};
 /// use lambda_calculus::reduction::normalize;
 ///
-/// assert_eq!(normalize(c().app(zero()).app(one()).app(to_cnum(2))),
-///            normalize(zero().app(to_cnum(2)).app(one())));
+/// assert_eq!(normalize(c().app(0.into()).app(1.into()).app(2.into())),
+///            normalize(Term::from(0).app(2.into()).app(1.into())));
 /// ```
 pub fn c() -> Term {
     abs(abs(abs(
