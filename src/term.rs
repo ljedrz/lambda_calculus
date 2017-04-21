@@ -217,7 +217,7 @@ impl Term {
         if let Ok((_, rhs)) = self.unapp_ref_mut() { Ok(rhs) } else { Err(NotAnApp) }
     }
 
-    /// Applies two terms with substitution and variable update (but without reduction), consuming them
+    /// Applies `self` to another term with substitution and variable update, consuming them
     /// in the process.
     ///
     /// # Example
@@ -280,8 +280,7 @@ pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 /// ```
 pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
 
-/// Applies two terms with substitution and variable update (but without reduction), consuming them
-/// in the process.
+/// Applies two terms with substitution and variable update, consuming them in the process.
 ///
 /// # Example
 /// ```
