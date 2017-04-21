@@ -247,11 +247,25 @@ impl Term {
     }
 }
 
+impl From<(Term, Term)> for Term {
+    fn from((t1, t2): (Term, Term)) -> Self {
+        abs(
+            Var(1)
+            .app(t1)
+            .app(t2)
+        )
+    }
+}
 
 #[cfg(test)]
 mod test {
     use super::*;
     use reduction::normalize;
+
+    #[test]
+    fn pair_from_pair() {
+        assert_eq!(Term::from((0.into(), 1.into())), normalize(pair().app(0.into()).app(1.into())));
+    }
 
     #[test]
     fn pair_operations() {
