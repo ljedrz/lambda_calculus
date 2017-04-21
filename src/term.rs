@@ -217,6 +217,26 @@ impl Term {
         if let Ok((_, rhs)) = self.unapp_ref_mut() { Ok(rhs) } else { Err(NotAnApp) }
     }
 
+    /// Applies two terms with substitution and variable update (but without reduction), consuming them
+    /// in the process.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::term::apply;
+    /// use lambda_calculus::parser::parse;
+    ///
+    /// let lhs    = parse(&"λλ42(λ13)").unwrap();
+    /// let rhs    = parse(&"λ51").unwrap();
+    /// let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
+    ///
+    /// assert_eq!(lhs.apply(rhs), Ok(result));
+    /// ```
+    pub fn apply(mut self, rhs: Term) -> Result<Term, Error> {
+        _apply(&mut self, rhs, 0);
+
+        Ok(try!(self.unabs()))
+    }
+
     /// Reduces an `App`lication by substitution and variable update.
     ///
     /// # Example
