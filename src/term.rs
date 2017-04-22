@@ -52,6 +52,14 @@ impl Term {
         }
     }
 
+    // WIP
+    pub fn unvar_ref(&self) -> Result<&usize, Error> {
+        match *self {
+            Var(ref n) => Ok(&n),
+            _ => Err(NotAVar)
+        }
+    }
+
     /// Consumes an abstraction and returns its underlying term.
     ///
     /// # Example
@@ -222,7 +230,6 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::apply;
     /// use lambda_calculus::parser::parse;
     ///
     /// let lhs    = parse(&"λλ42(λ13)").unwrap();

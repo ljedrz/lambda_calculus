@@ -86,30 +86,24 @@ pub fn normalize(term: Term) -> Term {
 /// assert_eq!(&*format!("{}", pred_one), "λλ(λ(λλ1(35))1)(λ2)(λ1)");
 /// ```
 pub fn beta_reduce_once(term: &mut Term) {
-    _beta_reduce_once(term, false)
-
-
-}
-
-fn _beta_reduce_once(term: &mut Term, in_abs: bool) {
-    println!("beta reducing {}", term);
+    println!("reducing {}", term);
 
     match *term {
         Var(_) => (),
         Abs(_) => {
-            _beta_reduce_once(term.unabs_ref_mut().unwrap(), true) // safe
+            beta_reduce_once(term.unabs_ref_mut().unwrap()) // safe
         },
         App(_, _) => {
             let copy = term.clone();
             if let Ok(result) = copy.eval() {
-                println!("successfully reduced {} to {}", term, result);
+                println!("\treduced {} to {}", term, result);
                 *term = result;
                 return
             }
             if term.lhs_ref().unwrap().unvar_ref().is_err() {
-                _beta_reduce_once(term.lhs_ref_mut().unwrap(), false) // safe
+                beta_reduce_once(term.lhs_ref_mut().unwrap()) // safe
             } else if term.rhs_ref().unwrap().unvar_ref().is_err() {
-                _beta_reduce_once(term.rhs_ref_mut().unwrap(), false) // safe
+                beta_reduce_once(term.rhs_ref_mut().unwrap()) // safe
             }
         }
     }
@@ -146,18 +140,23 @@ mod test {
     }
 
     #[test]
-    fn single_beta_reduction() {
-        println!("({})({})", succ(), Term::from(1));
+    fn succ_beta_reduction() {
+        //println!("({})({})", succ(), Term::from(1));
         let mut succ_one = succ().apply(1.into()).unwrap();
-        println!("{}", succ_one);
-        beta_reduce_once(&mut succ_one);
-        println!("{}", succ_one);
-        beta_reduce_once(&mut succ_one);
-        println!("{}", succ_one);
-        beta_reduce_once(&mut succ_one);
-        println!("{}", succ_one);
-        beta_reduce_once(&mut succ_one);
-        println!("{}", succ_one);
+        for _ in 0..3 {
+            beta_reduce_once(&mut succ_one);
+        }
+        assert_eq!(&*format!("{}", succ_one), "λλ2(21)")
+    }
+
+    #[test]
+    fn pred_beta_reduction() {
+        //println!("({})({})", pred(), Term::from(1));
+        let mut pred_one = pred().apply(1.into()).unwrap();
+        for _ in 0..6 {
+            beta_reduce_once(&mut pred_one);
+        }
+        assert_eq!(&*format!("{}", pred_one), "λλ1")
     }
 /*
     #[test]
