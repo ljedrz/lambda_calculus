@@ -160,7 +160,19 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// Ω - the divergent combinator.
 ///
 /// Ω := ω ω
-// TODO: add example
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::combinators::omm;
+/// use lambda_calculus::reduction::beta_reduce_once;
+///
+/// let mut doesnt_reduce = omm();
+///
+/// beta_reduce_once(&mut doesnt_reduce);
+///
+/// assert_eq!(doesnt_reduce, omm());
+/// ```
 pub fn omm() -> Term { om().app(om()) }
 
 /// Y - the fixed-point combinator.
