@@ -87,24 +87,45 @@ impl Term {
     /// ```
     pub fn beta_reduce(&mut self) {
         println!("reducing {}", self);
+        let mut is_under_abs = false;
+        self._beta_reduce(&mut is_under_abs);
+
+        if is_under_abs {
+            let copy = self.clone();
+            *self = copy.unabs().unwrap();
+        }
+        println!("the result is {}\n", self);
+    }
+
+    // indicates whether the reduced term was under an abstraction
+    fn _beta_reduce(&mut self, is_under_abs: &mut bool) {
 
         match *self {
-            Var(_) => (),
+            Var(_) => {
+                *is_under_abs = false;
+            },
             Abs(_) => {
-                self.unabs_ref_mut().unwrap().beta_reduce() // safe
+                *is_under_abs = true;
+                self.unabs_ref_mut().unwrap()._beta_reduce(is_under_abs); // safe
             },
             App(_, _) => {
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    *is_under_abs = false;
+                }
+
                 let copy = self.clone();
                 if let Ok(result) = copy.eval() {
-                    println!("\treduced {} to {}", self, result);
+                    println!("{} reduces to {}", self, result);
                     *self = result;
                     return
                 }
 
+                *is_under_abs = false;
+
                 if self.lhs_ref().unwrap().unvar_ref().is_err() {
-                    self.lhs_ref_mut().unwrap().beta_reduce() // safe
+                    self.lhs_ref_mut().unwrap()._beta_reduce(is_under_abs) // safe
                 } else if self.rhs_ref().unwrap().unvar_ref().is_err() {
-                    self.rhs_ref_mut().unwrap().beta_reduce() // safe
+                    self.rhs_ref_mut().unwrap()._beta_reduce(is_under_abs) // safe
                 }
             }
         }
@@ -143,18 +164,6 @@ mod test {
     #[test]
     fn weak_head_normal_form() {
         // TODO
-    }
-
-    #[test]
-    fn test_beta_reduction() {
-        println!("({})({})", is_zero(), one());
-        let mut to_reduce = is_zero().app(one());
-        to_reduce.beta_reduce();
-        to_reduce.beta_reduce();
-        to_reduce.beta_reduce();
-        to_reduce.beta_reduce();
-
-        assert_eq!(to_reduce, abs(abs(Var(1))));
     }
 
     #[test]
