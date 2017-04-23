@@ -165,11 +165,10 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 ///
 /// ```
 /// use lambda_calculus::combinators::omm;
-/// use lambda_calculus::reduction::beta_reduce_once;
 ///
 /// let mut doesnt_reduce = omm();
 ///
-/// beta_reduce_once(&mut doesnt_reduce);
+/// doesnt_reduce.beta_reduce();
 ///
 /// assert_eq!(doesnt_reduce, omm());
 /// ```

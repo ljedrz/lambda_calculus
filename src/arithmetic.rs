@@ -434,7 +434,7 @@ impl From<usize> for Term {
 #[cfg(test)]
 mod test {
     use super::*;
-    use reduction::*;
+    use reduction::normalize;
 
     #[test]
     fn church_zero() {
