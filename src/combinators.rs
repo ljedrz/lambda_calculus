@@ -168,7 +168,7 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 ///
 /// let mut doesnt_reduce = omm();
 ///
-/// doesnt_reduce.beta_reduce();
+/// doesnt_reduce.beta_once();
 ///
 /// assert_eq!(doesnt_reduce, omm());
 /// ```
