@@ -78,11 +78,11 @@ impl Term {
     /// ```
     /// use lambda_calculus::arithmetic::succ;
     ///
-    /// // SUCC := λ λ λ 2 (3 2 1)
-    /// let mut succ_one = succ().apply(1.into()).unwrap();
+    /// // SUCC := λ λ λ 2 (3 2 1), ONE := λ λ 2 1
+    /// let mut succ_one = succ().app(1.into());
     /// succ_one.beta_once();
     ///
-    /// assert_eq!(&*format!("{}", succ_one), "λλ2((λ31)1)");
+    /// assert_eq!(&*format!("{}", succ_one), "λλ2((λλ21)21)");
     /// ```
     pub fn beta_once(&mut self) {
         match *self {
@@ -110,8 +110,8 @@ impl Term {
     /// ```
     /// use lambda_calculus::arithmetic::pred;
     ///
-    /// // PRED := λλλ3(λλ1(24))(λ2)(λ1)
-    /// let mut pred_one = pred().apply(1.into()).unwrap();
+    /// // PRED := λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1), ONE := λ λ 2 1
+    /// let mut pred_one = pred().app(1.into());
     /// pred_one.beta_full();
     ///
     /// assert_eq!(&*format!("{}", pred_one), "λλ1");
