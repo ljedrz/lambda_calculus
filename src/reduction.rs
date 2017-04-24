@@ -71,67 +71,39 @@ pub fn normalize(term: Term) -> Term {
 }
 
 impl Term {
-    // WIP; doesn't reduce one last abstraction
-    /// Performs a single β-reduction on `self`
+    /// Performs a single normal-order β-reduction on `self`.
     ///
     /// # Example
     ///
     /// ```
-    /// use lambda_calculus::arithmetic::pred;
+    /// use lambda_calculus::arithmetic::succ;
     ///
-    /// // PRED := λλλ3(λλ1(24))(λ2)(λ1)
-    /// let mut pred_one = pred().apply(1.into()).unwrap();
-    /// pred_one.beta_reduce();
+    /// // SUCC := λ λ λ 2 (3 2 1)
+    /// let mut succ_one = succ().apply(1.into()).unwrap();
+    /// succ_one.beta_once();
     ///
-    /// assert_eq!(&*format!("{}", pred_one), "λλ(λ(λλ1(35))1)(λ2)(λ1)");
+    /// assert_eq!(&*format!("{}", succ_one), "λλ2((λ31)1)");
     /// ```
-    pub fn beta_reduce(&mut self) {
-        println!("reducing {}", self);
-        let mut is_under_abs = false;
-        self._beta_reduce(&mut is_under_abs);
-
-        if is_under_abs {
-            let copy = self.clone();
-            *self = copy.unabs().unwrap();
-        }
-        println!("the result is {}\n", self);
-    }
-
-    // indicates whether the reduced term was under an abstraction
-    fn _beta_reduce(&mut self, is_under_abs: &mut bool) {
-
+    pub fn beta_once(&mut self) {
         match *self {
-            Var(_) => {
-                *is_under_abs = false;
-            },
-            Abs(_) => {
-                *is_under_abs = true;
-                self.unabs_ref_mut().unwrap()._beta_reduce(is_under_abs); // safe
-            },
+            Var(_) => (),
+            Abs(_) => self.unabs_ref_mut().unwrap().beta_once(), // safe
             App(_, _) => {
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    *is_under_abs = false;
-                }
-
                 let copy = self.clone();
                 if let Ok(result) = copy.eval() {
-                    println!("{} reduces to {}", self, result);
-                    *self = result;
-                    return
-                }
-
-                *is_under_abs = false;
-
-                if self.lhs_ref().unwrap().unvar_ref().is_err() {
-                    self.lhs_ref_mut().unwrap()._beta_reduce(is_under_abs) // safe
-                } else if self.rhs_ref().unwrap().unvar_ref().is_err() {
-                    self.rhs_ref_mut().unwrap()._beta_reduce(is_under_abs) // safe
+                    // println!("{} reduces to {}", self, result);
+                    *self = result
+                } else if self.lhs_ref().unwrap().unvar_ref().is_err() {
+                    self.lhs_ref_mut().unwrap().beta_once() // safe
+                } else {
+                    self.rhs_ref_mut().unwrap().beta_once() // safe
                 }
             }
         }
     }
 
-    /// Performs full β-reduction on `self`
+    // FIXME: doesn't reduce one last abstraction in PRED ONE
+    /// Performs full normal-order β-reduction on `self`.
     ///
     /// # Example
     ///
@@ -140,17 +112,17 @@ impl Term {
     ///
     /// // PRED := λλλ3(λλ1(24))(λ2)(λ1)
     /// let mut pred_one = pred().apply(1.into()).unwrap();
-    /// pred_one.beta_reduce_full();
+    /// pred_one.beta_full();
     ///
     /// assert_eq!(&*format!("{}", pred_one), "λλ1");
     /// ```
-    pub fn beta_reduce_full(&mut self) {
+    pub fn beta_full(&mut self) {
         let mut tmp = self.clone();
-        self.beta_reduce();
+        self.beta_once();
 
         while tmp != *self {
             tmp = self.clone();
-            self.beta_reduce();
+            self.beta_once();
         }
     }
 }
@@ -160,17 +132,27 @@ mod test {
     use arithmetic::{succ, pred, is_zero, one};
     use term::*;
     use term::Term::*;
+    use parser::parse;
 
     #[test]
     fn weak_head_normal_form() {
         // TODO
     }
+/*
+    #[test]
+    fn beta_reduce_tmp() {
+        let term = parse(&*"").unwrap();
 
+        term.beta_full();
+
+        assert_eq!(format!("{}", ret), "(λλ1(35))(λ2)")
+    }
+*/
     #[test]
     fn succ_beta_reduction() {
         //println!("({})({})", succ(), Term::from(1));
         let mut succ_one = succ().apply(1.into()).unwrap();
-        succ_one.beta_reduce_full();
+        succ_one.beta_full();
 
         assert_eq!(&*format!("{}", succ_one), "λλ2(21)")
     }
@@ -179,7 +161,7 @@ mod test {
     fn pred_beta_reduction() {
         //println!("({})({})", pred(), Term::from(1));
         let mut pred_one = pred().apply(1.into()).unwrap();
-        pred_one.beta_reduce_full();
+        pred_one.beta_full();
 
         assert_eq!(&*format!("{}", pred_one), "λλ1")
     }
