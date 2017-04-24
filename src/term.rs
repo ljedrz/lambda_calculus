@@ -238,10 +238,8 @@ impl Term {
     ///
     /// assert_eq!(lhs.apply(rhs), Ok(result));
     /// ```
-    pub fn apply(mut self, rhs: Term) -> Result<Term, Error> {
-        _apply(&mut self, rhs, 0);
-
-        self.unabs()
+    pub fn apply(self, rhs: Term) -> Result<Term, Error> {
+        apply(self, rhs)
     }
 
     /// Reduces an `App`lication by substitution and variable update.
@@ -301,7 +299,7 @@ pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
 pub fn apply(mut lhs: Term, rhs: Term) -> Result<Term, Error> {
     _apply(&mut lhs, rhs, 0);
 
-    Ok(try!(lhs.unabs()))
+    lhs.unabs()
 }
 
 fn _apply(lhs: &mut Term, rhs: Term, depth: usize) {
