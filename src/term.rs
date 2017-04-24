@@ -241,7 +241,7 @@ impl Term {
     pub fn apply(mut self, rhs: Term) -> Result<Term, Error> {
         _apply(&mut self, rhs, 0);
 
-        Ok(try!(self.unabs()))
+        self.unabs()
     }
 
     /// Reduces an `App`lication by substitution and variable update.
@@ -256,11 +256,9 @@ impl Term {
     /// assert_eq!(app(i(), zero()).eval(), Ok(abs(abs(Var(1)))));
     /// ```
     pub fn eval(self) -> Result<Term, Error> {
-        let (mut lhs, rhs) = try!(self.unapp());
+        let (lhs, rhs) = try!(self.unapp());
 
-        _apply(&mut lhs, rhs, 0);
-
-        Ok(try!(lhs.unabs()))
+        apply(lhs, rhs)
     }
 }
 
