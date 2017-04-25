@@ -52,7 +52,14 @@ impl Term {
         }
     }
 
-    // WIP
+    /// Returns a reference to a variable's index.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::term::Term::*;
+    ///
+    /// assert_eq!(Var(1).unvar_ref(), Ok(&1));
+    /// ```
     pub fn unvar_ref(&self) -> Result<&usize, Error> {
         match *self {
             Var(ref n) => Ok(&n),
