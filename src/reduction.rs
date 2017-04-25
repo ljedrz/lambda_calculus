@@ -117,14 +117,11 @@ impl Term {
     /// assert_eq!(pred_one, 0.into());
     /// ```
     pub fn beta_full(&mut self) {
-        if SHOW_REDUCTIONS { println!("reducing {}", self) }
-        let mut tmp = self.clone();
-        self.beta_once();
-
-        while tmp != *self {
-            tmp = self.clone();
+        loop {
             if SHOW_REDUCTIONS { println!("reducing {}", self) }
+            let tmp = self.clone();
             self.beta_once();
+            if *self == tmp { break }
         }
 
         if SHOW_REDUCTIONS { println!("    doesn't reduce") }
