@@ -6,7 +6,7 @@ use term::Term::*;
 use term::Error::*;
 use booleans::*;
 //use pair::pair;
-//use combinators::y;
+use combinators::y;
 
 /// Produces a Church-encoded number zero.
 ///
@@ -29,9 +29,11 @@ pub fn zero() -> Term { abs(abs(Var(1))) }
 /// ```
 /// use lambda_calculus::arithmetic::{zero, is_zero};
 /// use lambda_calculus::booleans::tru;
-/// use lambda_calculus::reduction::normalize;
 ///
-/// assert_eq!(normalize(is_zero().app(zero())), tru());
+/// let mut expr = is_zero().app(zero());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, tru());
 /// ```
 pub fn is_zero() -> Term {
     abs(
@@ -63,10 +65,12 @@ pub fn one() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{zero, one, succ};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::arithmetic::succ;
 ///
-/// assert_eq!(normalize(succ().app(zero())), one());
+/// let mut expr = succ().app(0.into());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, 1.into());
 /// ```
 pub fn succ() -> Term {
     abs(abs(abs(
@@ -84,10 +88,12 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{zero, one, plus};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::arithmetic::plus;
 ///
-/// assert_eq!(normalize(plus().app(zero()).app(one())), one());
+/// let mut expr = plus().app(3.into()).app(2.into());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, 5.into());
 /// ```
 pub fn plus() -> Term {
     abs(abs(abs(abs(
@@ -103,10 +109,12 @@ pub fn plus() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{one, mult};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::arithmetic::mult;
 ///
-/// assert_eq!(normalize(mult().app(one()).app(one())), one());
+/// let mut expr = mult().app(2.into()).app(3.into());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, 6.into());
 /// ```
 pub fn mult() -> Term {
     abs(abs(abs(
@@ -120,10 +128,12 @@ pub fn mult() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{one, pow};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::arithmetic::pow;
 ///
-/// assert_eq!(normalize(pow().app(one()).app(one())), one());
+/// let mut expr = pow().app(2.into()).app(3.into());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, 8.into());
 /// ```
 pub fn pow() -> Term {
     abs(abs(
@@ -137,10 +147,12 @@ pub fn pow() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{zero, one, pred};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::arithmetic::pred;
 ///
-/// assert_eq!(normalize(pred().app(one())), zero());
+/// let mut expr = pred().app(3.into());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, 2.into());
 /// ```
 pub fn pred() -> Term {
     abs(abs(abs(
@@ -157,10 +169,12 @@ pub fn pred() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{zero, one, sub};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::arithmetic::sub;
 ///
-/// assert_eq!(normalize(sub().app(one()).app(zero())), one());
+/// let mut expr = sub().app(5.into()).app(3.into());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, 2.into());
 /// ```
 pub fn sub() -> Term {
     abs(abs(
@@ -175,14 +189,14 @@ pub fn sub() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::arithmetic::{zero, one, lt};
+/// use lambda_calculus::arithmetic::lt;
 /// use lambda_calculus::booleans::{tru, fls};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(lt().app(zero()).app(zero())), fls());
-/// assert_eq!(normalize(lt().app(one()).app(one())),   fls());
-/// assert_eq!(normalize(lt().app(zero()).app(one())),  tru());
-/// assert_eq!(normalize(lt().app(one()).app(zero())),  fls());
+/// assert_eq!(beta_full(lt().app(0.into()).app(0.into())), fls());
+/// assert_eq!(beta_full(lt().app(1.into()).app(1.into())), fls());
+/// assert_eq!(beta_full(lt().app(0.into()).app(1.into())), tru());
+/// assert_eq!(beta_full(lt().app(1.into()).app(0.into())), fls());
 /// ```
 pub fn lt() -> Term {
     abs(abs(
@@ -197,14 +211,14 @@ pub fn lt() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::arithmetic::{zero, one, leq};
+/// use lambda_calculus::arithmetic::leq;
 /// use lambda_calculus::booleans::{tru, fls};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(leq().app(zero()).app(zero())), tru());
-/// assert_eq!(normalize(leq().app(one()).app(one())),   tru());
-/// assert_eq!(normalize(leq().app(zero()).app(one())),  tru());
-/// assert_eq!(normalize(leq().app(one()).app(zero())),  fls());
+/// assert_eq!(beta_full(leq().app(0.into()).app(0.into())), tru());
+/// assert_eq!(beta_full(leq().app(1.into()).app(1.into())), tru());
+/// assert_eq!(beta_full(leq().app(0.into()).app(1.into())), tru());
+/// assert_eq!(beta_full(leq().app(1.into()).app(0.into())), fls());
 /// ```
 pub fn leq() -> Term {
     abs(abs(
@@ -219,14 +233,14 @@ pub fn leq() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::arithmetic::{zero, one, eq};
+/// use lambda_calculus::arithmetic::eq;
 /// use lambda_calculus::booleans::{tru, fls};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(eq().app(zero()).app(zero())), tru());
-/// assert_eq!(normalize(eq().app(one()).app(one())),   tru());
-/// assert_eq!(normalize(eq().app(zero()).app(one())),  fls());
-/// assert_eq!(normalize(eq().app(one()).app(zero())),  fls());
+/// assert_eq!(beta_full(eq().app(0.into()).app(0.into())), tru());
+/// assert_eq!(beta_full(eq().app(1.into()).app(1.into())), tru());
+/// assert_eq!(beta_full(eq().app(0.into()).app(1.into())), fls());
+/// assert_eq!(beta_full(eq().app(1.into()).app(0.into())), fls());
 /// ```
 pub fn eq() -> Term {
     abs(abs(
@@ -243,14 +257,14 @@ pub fn eq() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::arithmetic::{zero, one, neq};
+/// use lambda_calculus::arithmetic::neq;
 /// use lambda_calculus::booleans::{tru, fls};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(neq().app(zero()).app(zero())), fls());
-/// assert_eq!(normalize(neq().app(one()).app(one())),   fls());
-/// assert_eq!(normalize(neq().app(zero()).app(one())),  tru());
-/// assert_eq!(normalize(neq().app(one()).app(zero())),  tru());
+/// assert_eq!(beta_full(neq().app(0.into()).app(0.into())), fls());
+/// assert_eq!(beta_full(neq().app(1.into()).app(1.into())), fls());
+/// assert_eq!(beta_full(neq().app(0.into()).app(1.into())), tru());
+/// assert_eq!(beta_full(neq().app(1.into()).app(0.into())), tru());
 /// ```
 pub fn neq() -> Term {
     abs(abs(
@@ -267,14 +281,14 @@ pub fn neq() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::arithmetic::{zero, one, geq};
+/// use lambda_calculus::arithmetic::geq;
 /// use lambda_calculus::booleans::{tru, fls};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(geq().app(zero()).app(zero())), tru());
-/// assert_eq!(normalize(geq().app(one()).app(one())),   tru());
-/// assert_eq!(normalize(geq().app(zero()).app(one())),  fls());
-/// assert_eq!(normalize(geq().app(one()).app(zero())),  tru());
+/// assert_eq!(beta_full(geq().app(0.into()).app(0.into())), tru());
+/// assert_eq!(beta_full(geq().app(1.into()).app(1.into())), tru());
+/// assert_eq!(beta_full(geq().app(0.into()).app(1.into())), fls());
+/// assert_eq!(beta_full(geq().app(1.into()).app(0.into())), tru());
 /// ```
 pub fn geq() -> Term {
     abs(abs(
@@ -291,20 +305,19 @@ pub fn geq() -> Term {
 /// ```
 /// use lambda_calculus::arithmetic::{zero, one, gt};
 /// use lambda_calculus::booleans::{tru, fls};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(gt().app(zero()).app(zero())), fls());
-/// assert_eq!(normalize(gt().app(one()).app(one())),   fls());
-/// assert_eq!(normalize(gt().app(zero()).app(one())),  fls());
-/// assert_eq!(normalize(gt().app(one()).app(zero())),  tru());
+/// assert_eq!(beta_full(gt().app(0.into()).app(0.into())), fls());
+/// assert_eq!(beta_full(gt().app(1.into()).app(1.into())), fls());
+/// assert_eq!(beta_full(gt().app(0.into()).app(1.into())), fls());
+/// assert_eq!(beta_full(gt().app(1.into()).app(0.into())), tru());
 /// ```
 pub fn gt() -> Term {
     abs(abs(
         not().app(leq().app(Var(2)).app(Var(1)))
     ))
 }
-/*
-// FIXME: blows up RAM
+/* FIXME
 /// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
 /// division - the quotient and the remainder.
 ///
@@ -313,12 +326,12 @@ pub fn gt() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{div, one, to_cnum};
-/// use lambda_calculus::pair::pair;
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::arithmetic::div;
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(div().app(to_cnum(5)).app(to_cnum(2))),
-///            normalize(pair().app(to_cnum(2)).app(one())));
+/// assert_eq!(beta_full(div().app(3.into()).app(2.into())),
+///            Term::from((1.into(), 1.into())));
 /// ```
 pub fn div() -> Term {
     y()
@@ -340,18 +353,16 @@ pub fn div() -> Term {
 }
 */
 
-/*
-// FIXME: blows up RAM
 /// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
 ///
 /// QUOT := y (λrab.LT a b ZERO (SUCC (r (SUB a b) b)))
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{quot, to_cnum};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::arithmetic::quot;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(quot().app(to_cnum(6)).app(to_cnum(2))), to_cnum(3));
+/// assert_eq!(beta_full(quot().app(6.into()).app(2.into())), 3.into());
 /// ```
 pub fn quot() -> Term {
     y().app(
@@ -374,7 +385,7 @@ pub fn quot() -> Term {
         )))
     )
 }
-*/
+
 impl Term {
     /// Returns the value of `self` if it's a Church-encoded number.
     ///
@@ -434,19 +445,19 @@ impl From<usize> for Term {
 #[cfg(test)]
 mod test {
     use super::*;
-    use reduction::normalize;
+    use reduction::beta_full;
 
     #[test]
     fn church_zero() {
-        assert_eq!(normalize(is_zero().app(zero())), tru());
-        assert_eq!(normalize(is_zero().app(one())), fls());
+        assert_eq!(beta_full(is_zero().app(zero())), tru());
+        assert_eq!(beta_full(is_zero().app(one())), fls());
     }
 
     #[test]
     fn church_successor() {
-        assert_eq!(normalize(succ().app(zero())), one());
-        assert_eq!(normalize(succ().app(one())), abs(abs(Var(2).app(Var(2).app(Var(1))))));
-        assert_eq!(normalize(succ().app(succ().app(succ().app(zero())))),
+        assert_eq!(beta_full(succ().app(zero())), one());
+        assert_eq!(beta_full(succ().app(one())), abs(abs(Var(2).app(Var(2).app(Var(1))))));
+        assert_eq!(beta_full(succ().app(succ().app(succ().app(zero())))),
                    abs(abs(Var(2).app(Var(2).app(Var(2).app(Var(1)))))));
     }
 
@@ -459,7 +470,7 @@ mod test {
     fn church_number_creation() {
         assert_eq!(Term::from(0), zero());
         assert_eq!(Term::from(1), one());
-        assert_eq!(Term::from(2), normalize(succ().app(one())));
+        assert_eq!(Term::from(2), beta_full(succ().app(one())));
     }
 
     #[test]
@@ -473,48 +484,48 @@ mod test {
 
     #[test]
     fn church_addition() {
-        assert_eq!(normalize(plus().app(1.into())), succ()); // PLUS 1 → SUCC
+        assert_eq!(beta_full(plus().app(1.into())), succ()); // PLUS 1 → SUCC
 
-        assert_eq!(normalize(plus().app(0.into()).app(0.into())), 0.into());
-        assert_eq!(normalize(plus().app(0.into()).app(1.into())), 1.into());
-        assert_eq!(normalize(plus().app(1.into()).app(0.into())), 1.into());
-        assert_eq!(normalize(plus().app(1.into()).app(1.into())), 2.into());
+        assert_eq!(beta_full(plus().app(0.into()).app(0.into())), 0.into());
+        assert_eq!(beta_full(plus().app(0.into()).app(1.into())), 1.into());
+        assert_eq!(beta_full(plus().app(1.into()).app(0.into())), 1.into());
+        assert_eq!(beta_full(plus().app(1.into()).app(1.into())), 2.into());
 
-        assert_eq!(normalize(plus().app(2.into()).app(3.into())), 5.into());
-        assert_eq!(normalize(plus().app(4.into()).app(4.into())), 8.into());
+        assert_eq!(beta_full(plus().app(2.into()).app(3.into())), 5.into());
+        assert_eq!(beta_full(plus().app(4.into()).app(4.into())), 8.into());
     }
 
     #[test]
     fn church_multiplication() {
-        assert_eq!(normalize(mult().app(3.into()).app(4.into())), 12.into());
-        assert_eq!(normalize(mult().app(1.into()).app(3.into())), 3.into());
-        assert_eq!(normalize(mult().app(5.into()).app(0.into())), 0.into());
+        assert_eq!(beta_full(mult().app(3.into()).app(4.into())), 12.into());
+        assert_eq!(beta_full(mult().app(1.into()).app(3.into())), 3.into());
+        assert_eq!(beta_full(mult().app(5.into()).app(0.into())), 0.into());
     }
 
     #[test]
     fn church_exponentiation() {
-        assert_eq!(normalize(pow().app(2.into()).app(4.into())), 16.into());
-        assert_eq!(normalize(pow().app(1.into()).app(6.into())), 1.into());
-        assert_eq!(normalize(pow().app(3.into()).app(2.into())), 9.into());
-        assert_eq!(normalize(pow().app(4.into()).app(1.into())), 4.into());
-//      assert_eq!(normalize(pow().app(5.into()).app(0.into())), 1.into()); // n^0 fails
+        assert_eq!(beta_full(pow().app(2.into()).app(4.into())), 16.into());
+        assert_eq!(beta_full(pow().app(1.into()).app(6.into())), 1.into());
+        assert_eq!(beta_full(pow().app(3.into()).app(2.into())), 9.into());
+        assert_eq!(beta_full(pow().app(4.into()).app(1.into())), 4.into());
+//      assert_eq!(beta_full(pow().app(5.into()).app(0.into())), 1.into()); // n^0 fails
     }
 
     #[test]
     fn church_subtraction() {
-        assert_eq!(normalize(sub().app(0.into()).app(0.into())), 0.into());
-        assert_eq!(normalize(sub().app(0.into()).app(1.into())), 0.into());
-        assert_eq!(normalize(sub().app(1.into()).app(0.into())), 1.into());
-        assert_eq!(normalize(sub().app(2.into()).app(1.into())), 1.into());
+        assert_eq!(beta_full(sub().app(0.into()).app(0.into())), 0.into());
+        assert_eq!(beta_full(sub().app(0.into()).app(1.into())), 0.into());
+        assert_eq!(beta_full(sub().app(1.into()).app(0.into())), 1.into());
+        assert_eq!(beta_full(sub().app(2.into()).app(1.into())), 1.into());
 
-        assert_eq!(normalize(sub().app(5.into()).app(3.into())), 2.into());
-        assert_eq!(normalize(sub().app(8.into()).app(4.into())), 4.into());
+        assert_eq!(beta_full(sub().app(5.into()).app(3.into())), 2.into());
+        assert_eq!(beta_full(sub().app(8.into()).app(4.into())), 4.into());
     }
 
     #[test]
     fn church_predecessor() {
-        assert_eq!(normalize(pred().app(0.into())), 0.into());
-        assert_eq!(normalize(pred().app(1.into())), 0.into());
-        assert_eq!(normalize(pred().app(5.into())), 4.into());
+        assert_eq!(beta_full(pred().app(0.into())), 0.into());
+        assert_eq!(beta_full(pred().app(1.into())), 0.into());
+        assert_eq!(beta_full(pred().app(5.into())), 4.into());
     }
 }
