@@ -8,7 +8,6 @@ use pair::*;
 use arithmetic::{zero, succ};
 use combinators::y;
 use std::ops::Index;
-use reduction::beta_full;
 
 /// Equivalent to `fls()`; produces a Church-encoded `nil`, the last link of a Church-encoded list.
 ///
