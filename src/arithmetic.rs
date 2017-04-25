@@ -5,7 +5,7 @@ use term::*;
 use term::Term::*;
 use term::Error::*;
 use booleans::*;
-//use pair::pair;
+use pair::pair;
 use combinators::y;
 
 /// Produces a Church-encoded number zero.
@@ -317,7 +317,8 @@ pub fn gt() -> Term {
         not().app(leq().app(Var(2)).app(Var(1)))
     ))
 }
-/* FIXME
+
+// FIXME: slow
 /// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
 /// division - the quotient and the remainder.
 ///
@@ -351,8 +352,8 @@ pub fn div() -> Term {
     )
     .app(zero())
 }
-*/
 
+// FIXME: slow
 /// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
 ///
 /// QUOT := y (λrab.LT a b ZERO (SUCC (r (SUB a b) b)))
