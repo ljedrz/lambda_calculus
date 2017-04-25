@@ -313,7 +313,7 @@ fn _apply(lhs: &mut Term, rhs: Term, depth: usize) {
     match *lhs {
         Var(i) => if i == depth {
             *lhs = rhs; // substitute a top-level variable from lhs with rhs
-            update_free_variables(lhs, depth - 1); // update free variables' indices from rhs
+            update_free_variables(lhs, depth - 1, 0); // update free variables' indices from rhs
         } else if i > depth {
             *lhs = Var(i - 1) // decrement a free variable's index
         },
@@ -327,17 +327,17 @@ fn _apply(lhs: &mut Term, rhs: Term, depth: usize) {
     }
 }
 
-fn update_free_variables(term: &mut Term, depth: usize) {
+fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) {
     match *term {
-        Var(i) => if i > depth {
-            *term = Var(i + depth)
+        Var(i) => if i > own_depth {
+            *term = Var(i + added_depth)
         },
         Abs(_) => {
-            update_free_variables(term.unabs_ref_mut().unwrap(), depth) // safe
+            update_free_variables(term.unabs_ref_mut().unwrap(), added_depth, own_depth + 1) // safe
         },
         App(_, _) => {
-            update_free_variables(term.lhs_ref_mut().unwrap(), depth); // safe
-            update_free_variables(term.rhs_ref_mut().unwrap(), depth) // safe
+            update_free_variables(term.lhs_ref_mut().unwrap(), added_depth, own_depth); // safe
+            update_free_variables(term.rhs_ref_mut().unwrap(), added_depth, own_depth) // safe
         }
     }
 }
