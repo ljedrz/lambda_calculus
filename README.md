@@ -28,6 +28,8 @@ The library is already usable, but it is still a work in progress.
 
 ## TODO
 
-- classic notation mode ( variable names instead of De Bruijn indices )
+- classic notation display mode ( variable names instead of De Bruijn indices )
 - additional reduction strategies
-- function optimization
+- β-reduction parallelization?
+- optimizations
+- a macro for more readable chain application
