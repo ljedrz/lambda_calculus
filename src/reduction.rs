@@ -90,22 +90,21 @@ impl Term {
     pub fn beta_once(&mut self) {
         match *self {
             Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap().beta_once(), // safe
+            Abs(_) => self.unabs_ref_mut().unwrap().beta_once(),
             App(_, _) => {
                 let copy = self.clone();
                 if let Ok(result) = copy.eval() {
                     if SHOW_REDUCTIONS { println!("    {} reduces to {}", self, result) }
                     *self = result
                 } else if self.lhs_ref().unwrap().unvar_ref().is_err() {
-                    self.lhs_ref_mut().unwrap().beta_once() // safe
+                    self.lhs_ref_mut().unwrap().beta_once()
                 } else {
-                    self.rhs_ref_mut().unwrap().beta_once() // safe
+                    self.rhs_ref_mut().unwrap().beta_once()
                 }
             }
         }
     }
 
-    // FIXME: doesn't reduce one last abstraction in PRED ONE
     /// Performs full normal-order β-reduction on `self`.
     ///
     /// # Example
@@ -120,15 +119,17 @@ impl Term {
     /// assert_eq!(&*format!("{}", pred_one), "λλ1");
     /// ```
     pub fn beta_full(&mut self) {
-        if SHOW_REDUCTIONS { println!("reducing {}:", self) }
+        if SHOW_REDUCTIONS { println!("reducing {}", self) }
         let mut tmp = self.clone();
         self.beta_once();
 
         while tmp != *self {
             tmp = self.clone();
-            if SHOW_REDUCTIONS { println!("reducing {}:", self) }
+            if SHOW_REDUCTIONS { println!("reducing {}", self) }
             self.beta_once();
         }
+
+        if SHOW_REDUCTIONS { println!("    doesn't reduce") }
     }
 }
 
