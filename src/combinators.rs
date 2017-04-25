@@ -20,9 +20,9 @@ use term::Term::*;
 /// ```
 /// use lambda_calculus::combinators::i;
 /// use lambda_calculus::arithmetic::zero;
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(i().app(zero())), zero());
+/// assert_eq!(beta_full(i().app(zero())), zero());
 /// ```
 pub fn i() -> Term { abs(Var(1)) }
 
@@ -34,9 +34,9 @@ pub fn i() -> Term { abs(Var(1)) }
 /// ```
 /// use lambda_calculus::combinators::k;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(k().app(zero()).app(one())), zero());
+/// assert_eq!(beta_full(k().app(zero()).app(one())), zero());
 /// ```
 pub fn k() -> Term { abs(abs(Var(2))) }
 
@@ -48,10 +48,10 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 /// ```
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::s;
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(s().app(0.into()).app(1.into()).app(2.into())),
-///            normalize(Term::from(0).app(2.into()).app(Term::from(1).app(2.into()))));
+/// assert_eq!(beta_full(s().app(0.into()).app(1.into()).app(2.into())),
+///            beta_full(Term::from(0).app(2.into()).app(Term::from(1).app(2.into()))));
 /// ```
 pub fn s() -> Term {
     abs(abs(abs(
@@ -68,11 +68,11 @@ pub fn s() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::combinators::{iota, i, k, s};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(iota().app(iota())), i());
-/// assert_eq!(normalize(iota().app(iota().app(iota().app(iota())))), k());
-/// assert_eq!(normalize(iota().app(iota().app(iota().app(iota().app(iota()))))), s());
+/// assert_eq!(beta_full(iota().app(iota())), i());
+/// assert_eq!(beta_full(iota().app(iota().app(iota().app(iota())))), k());
+/// assert_eq!(beta_full(iota().app(iota().app(iota().app(iota().app(iota()))))), s());
 /// ```
 pub fn iota() -> Term { abs(Var(1).app(s()).app(k())) }
 
@@ -84,10 +84,10 @@ pub fn iota() -> Term { abs(Var(1).app(s()).app(k())) }
 /// ```
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::b;
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(b().app(0.into()).app(1.into()).app(2.into())),
-///            normalize(Term::from(0).app(Term::from(1).app(2.into()))));
+/// assert_eq!(beta_full(b().app(0.into()).app(1.into()).app(2.into())),
+///            beta_full(Term::from(0).app(Term::from(1).app(2.into()))));
 /// ```
 pub fn b() -> Term {
     abs(abs(abs(
@@ -104,10 +104,10 @@ pub fn b() -> Term {
 /// ```
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::c;
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(c().app(0.into()).app(1.into()).app(2.into())),
-///            normalize(Term::from(0).app(2.into()).app(1.into())));
+/// assert_eq!(beta_full(c().app(0.into()).app(1.into()).app(2.into())),
+///            beta_full(Term::from(0).app(2.into()).app(1.into())));
 /// ```
 pub fn c() -> Term {
     abs(abs(abs(
@@ -125,10 +125,10 @@ pub fn c() -> Term {
 /// ```
 /// use lambda_calculus::combinators::w;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(w().app(zero()).app(one())),
-///            normalize(zero().app(one()).app(one())));
+/// assert_eq!(beta_full(w().app(zero()).app(one())),
+///            beta_full(zero().app(one()).app(one())));
 /// ```
 pub fn w() -> Term {
     abs(abs(
@@ -151,9 +151,9 @@ pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
 /// ```
 /// use lambda_calculus::combinators::om;
 /// use lambda_calculus::arithmetic::zero;
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(om().app(zero())), normalize(zero().app(zero())));
+/// assert_eq!(beta_full(om().app(zero())), beta_full(zero().app(zero())));
 /// ```
 pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 
@@ -182,9 +182,9 @@ pub fn omm() -> Term { om().app(om()) }
 /// ```
 /// use lambda_calculus::combinators::y;
 /// use lambda_calculus::arithmetic::zero;
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(y().app(zero())), normalize(zero().app(y().app(zero()))));
+/// assert_eq!(beta_full(y().app(zero())), beta_full(zero().app(y().app(zero()))));
 /// ```
 pub fn y() -> Term {
     abs(app(
