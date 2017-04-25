@@ -96,9 +96,8 @@ impl Term {
                 if let Ok(result) = copy.eval() {
                     if SHOW_REDUCTIONS { println!("    {} reduces to {}", self, result) }
                     *self = result
-                } else if self.lhs_ref().unwrap().unvar_ref().is_err() {
-                    self.lhs_ref_mut().unwrap().beta_once()
                 } else {
+                    self.lhs_ref_mut().unwrap().beta_once();
                     self.rhs_ref_mut().unwrap().beta_once()
                 }
             }
