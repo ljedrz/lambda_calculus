@@ -5,7 +5,7 @@ use term::*;
 use term::Term::*;
 use term::Error::*;
 use booleans::*;
-use pair::pair;
+use pair::{pair, second};
 use combinators::y;
 
 /// Produces a Church-encoded number zero.
@@ -384,6 +384,28 @@ pub fn quot() -> Term {
             )
         )))
     )
+}
+
+// TODO: find an independent variant, like with quot()
+/// Applied to two Church-encoded numbers it returns a Church-encoded remainder of their division.
+///
+/// REM :=
+///
+/// # Example
+/// ```
+/// use lambda_calculus::arithmetic::rem;
+/// use lambda_calculus::reduction::beta_full;
+///
+/// assert_eq!(beta_full(rem().app(3.into()).app(2.into())), 1.into());
+/// ```
+pub fn rem() -> Term {
+    abs(abs(
+        second().app(
+            div()
+            .app(Var(2))
+            .app(Var(1))
+        )
+    ))
 }
 
 impl Term {
