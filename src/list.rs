@@ -8,7 +8,7 @@ use pair::*;
 use arithmetic::{zero, succ};
 use combinators::y;
 use std::ops::Index;
-use reduction::normalize;
+use reduction::beta_full;
 
 /// Equivalent to `fls()`; produces a Church-encoded `nil`, the last link of a Church-encoded list.
 ///
@@ -31,9 +31,9 @@ pub fn nil() -> Term { fls() }
 /// ```
 /// use lambda_calculus::list::{nil, null};
 /// use lambda_calculus::booleans::tru;
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(null().app(nil())), tru());
+/// assert_eq!(beta_full(null().app(nil())), tru());
 /// ```
 pub fn null() -> Term {
     abs(
@@ -52,9 +52,9 @@ pub fn null() -> Term {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::list::{nil, cons};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// let list_110_consed = normalize(
+/// let list_110_consed = beta_full(
 ///    cons()
 ///    .app(one())
 ///    .app(
@@ -82,11 +82,11 @@ pub fn cons() -> Term { pair() }
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::head;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
 /// let list_110 = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(normalize(head().app(list_110)), one());
+/// assert_eq!(beta_full(head().app(list_110)), one());
 /// ```
 pub fn head() -> Term { first() }
 
@@ -100,11 +100,11 @@ pub fn head() -> Term { first() }
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::tail;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
 /// let list_110 = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(normalize(tail().app(list_110)), Term::from(vec![one(), zero()]));
+/// assert_eq!(beta_full(tail().app(list_110)), Term::from(vec![one(), zero()]));
 /// ```
 pub fn tail() -> Term { second() }
 
@@ -117,12 +117,12 @@ pub fn tail() -> Term { second() }
 /// ```
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::{length, nil};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
 /// let list_4 = Term::from(vec![1.into(), 1.into(), 0.into(), 1.into()]);
 ///
-/// assert_eq!(normalize(length().app(nil())),  0.into());
-/// assert_eq!(normalize(length().app(list_4)), 4.into());
+/// assert_eq!(beta_full(length().app(nil())),  0.into());
+/// assert_eq!(beta_full(length().app(list_4)), 4.into());
 /// ```
 pub fn length() -> Term {
     y()
@@ -151,11 +151,11 @@ pub fn length() -> Term {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::reverse;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
 /// let list = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(normalize(reverse().app(list)), Term::from(vec![zero(), one(), one()]));
+/// assert_eq!(beta_full(reverse().app(list)), Term::from(vec![zero(), one(), one()]));
 /// ```
 pub fn reverse() -> Term {
     y()
@@ -187,9 +187,9 @@ pub fn reverse() -> Term {
 /// ```
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::list;
-/// use lambda_calculus::reduction::normalize;
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(normalize(list().app(3.into()).app(0.into()).app(1.into()).app(1.into())),
+/// assert_eq!(beta_full(list().app(3.into()).app(0.into()).app(1.into()).app(1.into())),
 ///            Term::from(vec![0.into(), 1.into(), 1.into()]));
 /// ```
 pub fn list() -> Term {
@@ -469,7 +469,7 @@ impl From<Vec<Term>> for Term {
             output = output.push(term);
         }
 
-        normalize(output)
+        output
     }
 }
 
@@ -506,7 +506,7 @@ impl Index<usize> for Term {
 #[cfg(test)]
 mod test {
     use super::*;
-    use reduction::normalize;
+    use reduction::beta_full;
 
     #[test]
     fn empty_list() {
@@ -519,7 +519,7 @@ mod test {
     #[test]
     fn list_push() {
         let list_pushed = nil().push(0.into()).push(1.into()).push(1.into());
-        let list_consed = normalize(
+        let list_consed = beta_full(
             cons().app(1.into()).app(cons().app(1.into()).app(cons().app(0.into()).app(nil())))
         );
 
