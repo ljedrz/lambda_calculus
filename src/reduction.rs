@@ -135,41 +135,9 @@ impl Term {
 
 #[cfg(test)]
 mod test {
-    use arithmetic::{succ, pred, is_zero, one};
-    use term::*;
-    use term::Term::*;
-    use parser::parse;
 
     #[test]
     fn weak_head_normal_form() {
         // TODO
     }
-/*
-    #[test]
-    fn beta_reduce_tmp() {
-        let term = parse(&*"").unwrap();
-
-        term.beta_full();
-
-        assert_eq!(format!("{}", ret), "(λλ1(35))(λ2)")
-    }
-*/
-    #[test]
-    fn succ_beta_reduction() {
-        //println!("({})({})", succ(), Term::from(1));
-        let mut succ_one = succ().apply(1.into()).unwrap();
-        succ_one.beta_full();
-
-        assert_eq!(&*format!("{}", succ_one), "λλ2(21)")
-    }
-/*
-    #[test]
-    fn pred_beta_reduction() {
-        //println!("({})({})", pred(), Term::from(1));
-        let mut pred_one = pred().apply(1.into()).unwrap();
-        pred_one.beta_full();
-
-        assert_eq!(&*format!("{}", pred_one), "λλ1")
-    }
-*/
 }
