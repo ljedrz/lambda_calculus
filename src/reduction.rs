@@ -71,7 +71,7 @@ pub fn normalize(term: Term) -> Term {
 }
 
 /// Set to `true` to see all the steps of β-reductions. The default is `false`.
-pub const SHOW_REDUCTIONS: bool = true;
+pub const SHOW_REDUCTIONS: bool = false;
 
 impl Term {
     /// Performs a single normal-order β-reduction on `self`.
@@ -112,11 +112,10 @@ impl Term {
     /// ```
     /// use lambda_calculus::arithmetic::pred;
     ///
-    /// // PRED := λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1), ONE := λ λ 2 1
     /// let mut pred_one = pred().app(1.into());
     /// pred_one.beta_full();
     ///
-    /// assert_eq!(&*format!("{}", pred_one), "λλ1");
+    /// assert_eq!(pred_one, 0.into());
     /// ```
     pub fn beta_full(&mut self) {
         if SHOW_REDUCTIONS { println!("reducing {}", self) }
@@ -131,6 +130,41 @@ impl Term {
 
         if SHOW_REDUCTIONS { println!("    doesn't reduce") }
     }
+}
+
+/// Performs full normal-order β-reduction on a `Term`, consuming it in the process.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::arithmetic::pred;
+/// use lambda_calculus::reduction::beta_full;
+///
+/// let pred_one = pred().app(1.into());
+///
+/// assert_eq!(beta_full(pred_one), 0.into());
+/// ```
+pub fn beta_full(mut term: Term) -> Term {
+    term.beta_full();
+    term
+}
+
+/// Performs a single normal-order β-reduction on `self`.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::arithmetic::succ;
+/// use lambda_calculus::reduction::beta_once;
+///
+/// // SUCC := λ λ λ 2 (3 2 1), ONE := λ λ 2 1
+/// let succ_one = succ().app(1.into());
+///
+/// assert_eq!(&*format!("{}", beta_once(succ_one)), "λλ2((λλ21)21)");
+/// ```
+pub fn beta_once(mut term: Term) -> Term {
+    term.beta_once();
+    term
 }
 
 #[cfg(test)]
