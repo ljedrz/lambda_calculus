@@ -356,7 +356,8 @@ pub fn div() -> Term {
 // FIXME: slow
 /// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
 ///
-/// QUOT := y (λrab.LT a b ZERO (SUCC (r (SUB a b) b)))
+/// QUOT := Y (λrab.LT a b ZERO (SUCC (r (SUB a b) b))) =
+/// Y (λ λ λ LT 2 1 ZERO (SUCC (3 (SUB 2 1) 1)))
 ///
 /// # Example
 /// ```
