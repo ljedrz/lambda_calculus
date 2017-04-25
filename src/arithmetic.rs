@@ -318,7 +318,6 @@ pub fn gt() -> Term {
     ))
 }
 
-// FIXME: slow
 /// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
 /// division - the quotient and the remainder.
 ///
@@ -331,8 +330,8 @@ pub fn gt() -> Term {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(div().app(3.into()).app(2.into())),
-///            Term::from((1.into(), 1.into())));
+/// assert_eq!(beta_full(div().app(5.into()).app(2.into())),
+///            Term::from((2.into(), 1.into())));
 /// ```
 pub fn div() -> Term {
     y()
@@ -353,7 +352,6 @@ pub fn div() -> Term {
     .app(zero())
 }
 
-// FIXME: slow
 /// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
 ///
 /// QUOT := Y (λrab.LT a b ZERO (SUCC (r (SUB a b) b))) =

@@ -92,10 +92,11 @@ impl Term {
             Var(_) => (),
             Abs(_) => self.unabs_ref_mut().unwrap().beta_once(),
             App(_, _) => {
-                let copy = self.clone();
-                if let Ok(result) = copy.eval() {
-                    if SHOW_REDUCTIONS { println!("    {} reduces to {}", self, result) }
-                    *self = result
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    let copy = self.clone();
+                    let reduced = copy.eval().unwrap();
+                    if SHOW_REDUCTIONS { println!("    {} reduces to {}", self, reduced) };
+                    *self = reduced;
                 } else {
                     self.lhs_ref_mut().unwrap().beta_once();
                     self.rhs_ref_mut().unwrap().beta_once()
