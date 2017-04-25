@@ -70,6 +70,9 @@ pub fn normalize(term: Term) -> Term {
     nf(0, term, VecDeque::new())
 }
 
+/// Set to `true` to see all the steps of β-reductions. The default is `false`.
+pub const SHOW_REDUCTIONS: bool = true;
+
 impl Term {
     /// Performs a single normal-order β-reduction on `self`.
     ///
@@ -91,7 +94,7 @@ impl Term {
             App(_, _) => {
                 let copy = self.clone();
                 if let Ok(result) = copy.eval() {
-                    // println!("{} reduces to {}", self, result);
+                    if SHOW_REDUCTIONS { println!("    {} reduces to {}", self, result) }
                     *self = result
                 } else if self.lhs_ref().unwrap().unvar_ref().is_err() {
                     self.lhs_ref_mut().unwrap().beta_once() // safe
@@ -117,11 +120,13 @@ impl Term {
     /// assert_eq!(&*format!("{}", pred_one), "λλ1");
     /// ```
     pub fn beta_full(&mut self) {
+        if SHOW_REDUCTIONS { println!("reducing {}:", self) }
         let mut tmp = self.clone();
         self.beta_once();
 
         while tmp != *self {
             tmp = self.clone();
+            if SHOW_REDUCTIONS { println!("reducing {}:", self) }
             self.beta_once();
         }
     }
