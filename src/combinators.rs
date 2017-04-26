@@ -201,7 +201,6 @@ pub fn y() -> Term {
 /// ```
 /// use lambda_calculus::combinators::t;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// //use lambda_calculus::reduction::beta_full;
 ///
 /// assert_eq!(t().apply(zero()).and_then(|t| t.apply(one())), Ok(one().app(zero())));
 /// ```

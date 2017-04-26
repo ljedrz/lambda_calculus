@@ -389,7 +389,7 @@ pub fn quot() -> Term {
 // TODO: find an independent variant, like with quot()
 /// Applied to two Church-encoded numbers it returns a Church-encoded remainder of their division.
 ///
-/// REM :=
+/// REM := λab. SECOND (DIV a b) = λ λ SECOND (DIV 2 1)
 ///
 /// # Example
 /// ```
