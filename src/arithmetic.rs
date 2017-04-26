@@ -137,7 +137,10 @@ pub fn mult() -> Term {
 /// ```
 pub fn pow() -> Term {
     abs(abs(
-        Var(1).app(Var(2))
+        if_else()
+        .app(is_zero().app(Var(1)))
+        .app(one())
+        .app(Var(1).app(Var(2)))
     ))
 }
 
@@ -530,7 +533,7 @@ mod test {
         assert_eq!(beta_full(pow().app(1.into()).app(6.into())), 1.into());
         assert_eq!(beta_full(pow().app(3.into()).app(2.into())), 9.into());
         assert_eq!(beta_full(pow().app(4.into()).app(1.into())), 4.into());
-//      assert_eq!(beta_full(pow().app(5.into()).app(0.into())), 1.into()); // n^0 fails
+        assert_eq!(beta_full(pow().app(5.into()).app(0.into())), 1.into());
     }
 
     #[test]
