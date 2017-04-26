@@ -1,5 +1,7 @@
 //! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form) for lambda `Term`s
 
+#![allow(dead_code)]
+
 use term::*;
 use term::Term::*;
 use self::Closure::*;
@@ -66,7 +68,7 @@ fn nf(depth: usize, term: Term, env: Environment) -> Term {
 /// assert_eq!(normalize(succ().app(zero())), one());
 /// assert_eq!(normalize(if_else().app(tru()).app(one()).app(zero())), one());
 /// ```
-pub fn normalize(term: Term) -> Term {
+fn normalize(term: Term) -> Term {
     nf(0, term, VecDeque::new())
 }
 
