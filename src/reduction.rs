@@ -4,6 +4,7 @@
 
 use term::*;
 use term::Term::*;
+/*
 use self::Closure::*;
 use self::Expression::*;
 use std::collections::VecDeque;
@@ -71,12 +72,12 @@ fn nf(depth: usize, term: Term, env: Environment) -> Term {
 fn normalize(term: Term) -> Term {
     nf(0, term, VecDeque::new())
 }
-
+*/
 /// Applies two terms with substitution and variable update, consuming them in the process.
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::term::apply;
+/// use lambda_calculus::reduction::apply;
 /// use lambda_calculus::parser::parse;
 ///
 /// let lhs    = parse(&"λλ42(λ13)").unwrap();
