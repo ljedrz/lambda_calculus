@@ -124,7 +124,7 @@ pub fn mult() -> Term {
 
 /// Applied to two Church-encoded numbers it raises the first one to the power of the second one.
 ///
-/// POW := λbe.e b = λ λ 1 2
+/// POW := λbe.IF_ELSE (IS_ZERO e) ONE (e b) = λ λ IF_ELSE (IS_ZERO 1) ONE (1 2)
 ///
 /// # Example
 /// ```
