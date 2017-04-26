@@ -255,9 +255,19 @@ pub fn beta_once(mut term: Term) -> Term {
 
 #[cfg(test)]
 mod test {
+    use combinators::i;
+    use parser::parse;
+    use super::{apply, abs};
+    use super::Term::Var;
+    use arithmetic::zero;
 
     #[test]
-    fn weak_head_normal_form() {
-        // TODO
+    fn applying() {
+        let lhs    = parse(&"λλ42(λ13)").unwrap();
+        let rhs    = parse(&"λ51").unwrap();
+        let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
+        assert_eq!(apply(lhs, rhs), Ok(result));
+
+        assert_eq!(i().app(zero()).eval().unwrap(), abs(abs(Var(1))));
     }
 }

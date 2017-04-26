@@ -290,20 +290,6 @@ fn parenthesize_if(condition: bool, input: &str) -> Cow<str> {
 #[cfg(test)]
 mod test {
     use arithmetic::{zero, succ, pred};
-    use combinators::i;
-    use parser::parse;
-    use super::{apply, abs};
-    use super::Term::Var;
-
-    #[test]
-    fn applying() {
-        let lhs    = parse(&"λλ42(λ13)").unwrap();
-        let rhs    = parse(&"λ51").unwrap();
-        let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
-        assert_eq!(apply(lhs, rhs), Ok(result));
-
-        assert_eq!(i().app(zero()).eval().unwrap(), abs(abs(Var(1))));
-    }
 
     #[test]
     fn displaying_terms() {
