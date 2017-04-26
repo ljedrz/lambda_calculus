@@ -465,15 +465,9 @@ impl From<usize> for Term {
 }
 
 #[cfg(test)]
-mod tests {
+mod test {
     use super::*;
     use reduction::beta_full;
-    use test::Bencher;
-
-    #[bench]
-    fn bench_quot(b: &mut Bencher) {
-        b.iter(|| beta_full(quot().app(1.into()).app(1.into())));
-    }
 
     #[test]
     fn church_zero() {
