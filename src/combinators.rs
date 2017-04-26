@@ -8,6 +8,7 @@
 //! * the looping combinator ω
 //! * the divergent combinator Ω
 //! * [the fixed-point combinator Y](https://en.wikipedia.org/wiki/Fixed-point_combinator)
+//! * the thrush (reverse application) combinator T
 
 use term::*;
 use term::Term::*;
@@ -146,8 +147,8 @@ pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
 /// ω - the looping combinator.
 ///
 /// ω := λx.x x = λ 1 1
-/// # Example
 ///
+/// # Example
 /// ```
 /// use lambda_calculus::combinators::om;
 /// use lambda_calculus::arithmetic::zero;
@@ -162,7 +163,6 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// Ω := ω ω
 ///
 /// # Example
-///
 /// ```
 /// use lambda_calculus::combinators::omm;
 ///
@@ -177,8 +177,8 @@ pub fn omm() -> Term { om().app(om()) }
 /// Y - the fixed-point combinator.
 ///
 /// Y := λg.(λx.g (x x)) (λx.g (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
-/// # Example
 ///
+/// # Example
 /// ```
 /// use lambda_calculus::combinators::y;
 /// use lambda_calculus::arithmetic::zero;
@@ -190,5 +190,23 @@ pub fn y() -> Term {
     abs(app(
         abs(Var(2).app(Var(1).app(Var(1)))),
         abs(Var(2).app(Var(1).app(Var(1))))
+    ))
+}
+
+/// T - the thrush combinator
+///
+/// T := λxf. f x = λ λ 1 2
+///
+/// # Example
+/// ```
+/// use lambda_calculus::combinators::t;
+/// use lambda_calculus::arithmetic::{zero, one};
+/// //use lambda_calculus::reduction::beta_full;
+///
+/// assert_eq!(t().apply(zero()).and_then(|t| t.apply(one())), Ok(one().app(zero())));
+/// ```
+pub fn t() -> Term {
+    abs(abs(
+        app(Var(1), Var(2))
     ))
 }
