@@ -28,7 +28,7 @@ pub fn i() -> Term { abs(Var(1)) }
 
 /// K - the constant / discarding combinator.
 ///
-/// K := λxy.x = λ λ 2 = true
+/// K := λxy.x = λ λ 2 = TRUE
 ///
 /// # Example
 /// ```
@@ -145,7 +145,7 @@ pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
 */
 /// ω - the looping combinator.
 ///
-/// ω := λx.x x
+/// ω := λx.x x = λ 1 1
 /// # Example
 ///
 /// ```
