@@ -27,13 +27,12 @@ pub fn zero() -> Term { abs(abs(Var(1))) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::{zero, is_zero};
-/// use lambda_calculus::booleans::tru;
+/// use lambda_calculus::arithmetic::is_zero;
+/// use lambda_calculus::booleans::{tru, fls};
+/// use lambda_calculus::reduction::beta_full;
 ///
-/// let mut expr = is_zero().app(zero());
-/// expr.beta_full();
-///
-/// assert_eq!(expr, tru());
+/// assert_eq!(beta_full(is_zero().app(0.into())), tru());
+/// assert_eq!(beta_full(is_zero().app(1.into())), fls());
 /// ```
 pub fn is_zero() -> Term {
     abs(
@@ -331,10 +330,11 @@ pub fn gt() -> Term {
 /// ```
 /// use lambda_calculus::arithmetic::div;
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(div().app(5.into()).app(2.into())),
-///            Term::from((2.into(), 1.into())));
+/// let mut expr = div().app(5.into()).app(2.into());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, Term::from((2.into(), 1.into())));
 /// ```
 pub fn div() -> Term {
     y()
@@ -363,9 +363,11 @@ pub fn div() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::arithmetic::quot;
-/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(quot().app(6.into()).app(2.into())), 3.into());
+/// let mut expr = quot().app(6.into()).app(2.into());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, 3.into());
 /// ```
 pub fn quot() -> Term {
     y().app(
@@ -397,9 +399,11 @@ pub fn quot() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::arithmetic::rem;
-/// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(rem().app(3.into()).app(2.into())), 1.into());
+/// let mut expr = rem().app(3.into()).app(2.into());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, 1.into());
 /// ```
 pub fn rem() -> Term {
     abs(abs(
@@ -471,12 +475,6 @@ impl From<usize> for Term {
 mod test {
     use super::*;
     use reduction::beta_full;
-
-    #[test]
-    fn church_zero() {
-        assert_eq!(beta_full(is_zero().app(zero())), tru());
-        assert_eq!(beta_full(is_zero().app(one())), fls());
-    }
 
     #[test]
     fn church_successor() {
