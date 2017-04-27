@@ -90,8 +90,9 @@ fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
     _get_ast(tokens, &mut pos)
 }
 
-/// Parses the input lambda expression to a `Term`; the lambda can be represented either with the
-/// greek letter (λ) or a backslash (\\ - less aesthetic, but only one byte in size).
+/// Parses the input `&str` as a lambda `Term`. The lambdas can be represented either with the
+/// greek letter (λ) or a backslash (\\ - less aesthetic, but only one byte in size), the De Bruijn
+/// indices start with 1 and are hexadecimal digits, and whitespaces are ignored.
 ///
 /// # Example
 /// ```
