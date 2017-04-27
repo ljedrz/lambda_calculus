@@ -73,7 +73,7 @@ fn normalize(term: Term) -> Term {
     nf(0, term, VecDeque::new())
 }
 */
-/// Applies two terms with substitution and variable update, consuming them in the process.
+/// Applies two terms with substitution and variable update, consuming the first one in the process.
 ///
 /// # Example
 /// ```
@@ -84,18 +84,18 @@ fn normalize(term: Term) -> Term {
 /// let rhs    = parse(&"λ51").unwrap();
 /// let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
 ///
-/// assert_eq!(apply(lhs, rhs), Ok(result));
+/// assert_eq!(apply(lhs, &rhs), Ok(result));
 /// ```
-pub fn apply(mut lhs: Term, rhs: Term) -> Result<Term, Error> {
+pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, Error> {
     _apply(&mut lhs, rhs, 0);
 
     lhs.unabs()
 }
 
-fn _apply(lhs: &mut Term, rhs: Term, depth: usize) {
+fn _apply(lhs: &mut Term, rhs: &Term, depth: usize) {
     match *lhs {
         Var(i) => if i == depth {
-            *lhs = rhs; // substitute a top-level variable from lhs with rhs
+            *lhs = rhs.clone(); // substitute a top-level variable from lhs with rhs
             update_free_variables(lhs, depth - 1, 0); // update indices of free variables from rhs
         } else if i > depth {
             *lhs = Var(i - 1) // decrement a free variable's index
@@ -104,7 +104,7 @@ fn _apply(lhs: &mut Term, rhs: Term, depth: usize) {
             _apply(lhs.unabs_ref_mut().unwrap(), rhs, depth + 1)
         },
         App(_, _) => {
-            _apply(lhs.lhs_ref_mut().unwrap(), rhs.clone(), depth);
+            _apply(lhs.lhs_ref_mut().unwrap(), rhs, depth);
             _apply(lhs.rhs_ref_mut().unwrap(), rhs, depth)
         }
     }
@@ -129,7 +129,7 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
 pub const SHOW_REDUCTIONS: bool = false;
 
 impl Term {
-    /// Applies `self` to another term with substitution and variable update, consuming them
+    /// Applies `self` to another term with substitution and variable update, consuming it
     /// in the process.
     ///
     /// # Example
@@ -140,9 +140,9 @@ impl Term {
     /// let rhs    = parse(&"λ51").unwrap();
     /// let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
     ///
-    /// assert_eq!(lhs.apply(rhs), Ok(result));
+    /// assert_eq!(lhs.apply(&rhs), Ok(result));
     /// ```
-    pub fn apply(self, rhs: Term) -> Result<Term, Error> {
+    pub fn apply(self, rhs: &Term) -> Result<Term, Error> {
         apply(self, rhs)
     }
 
@@ -160,7 +160,7 @@ impl Term {
     pub fn eval(self) -> Result<Term, Error> {
         let (lhs, rhs) = try!(self.unapp());
 
-        apply(lhs, rhs)
+        apply(lhs, &rhs)
     }
 
     /// Performs a single normal-order β-reduction on `self`.
@@ -266,7 +266,7 @@ mod test {
         let lhs    = parse(&"λλ42(λ13)").unwrap();
         let rhs    = parse(&"λ51").unwrap();
         let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
-        assert_eq!(apply(lhs, rhs), Ok(result));
+        assert_eq!(apply(lhs, &rhs), Ok(result));
 
         assert_eq!(i().app(zero()).eval().unwrap(), abs(abs(Var(1))));
     }

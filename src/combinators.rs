@@ -202,7 +202,7 @@ pub fn y() -> Term {
 /// use lambda_calculus::combinators::t;
 /// use lambda_calculus::arithmetic::{zero, one};
 ///
-/// assert_eq!(t().apply(zero()).and_then(|t| t.apply(one())), Ok(one().app(zero())));
+/// assert_eq!(t().apply(&zero()).and_then(|t| t.apply(&one())), Ok(one().app(zero())));
 /// ```
 pub fn t() -> Term {
     abs(abs(
