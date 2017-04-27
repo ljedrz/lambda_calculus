@@ -120,3 +120,9 @@ pub fn if_else() -> Term {
         .app(Var(1))
     )))
 }
+
+impl From<bool> for Term {
+    fn from(b: bool) -> Self {
+        if b { tru() } else { fls() }
+    }
+}
