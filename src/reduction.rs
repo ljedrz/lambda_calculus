@@ -183,9 +183,9 @@ impl Term {
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     let copy = self.clone();
-                    let reduced = copy.eval().unwrap();
-                    if SHOW_REDUCTIONS { println!("    {} reduces to {}", self, reduced) };
-                    *self = reduced;
+                    if SHOW_REDUCTIONS { print!("    {} reduces to ", self) };
+                    *self = copy.eval().unwrap();
+                    if SHOW_REDUCTIONS { println!("{}", self) }
                 } else {
                     self.lhs_ref_mut().unwrap().beta_once();
                     self.rhs_ref_mut().unwrap().beta_once()
@@ -207,9 +207,10 @@ impl Term {
     /// assert_eq!(pred_one, 0.into());
     /// ```
     pub fn beta_full(&mut self) {
+        let mut tmp;
         loop {
             if SHOW_REDUCTIONS { println!("reducing {}", self) }
-            let tmp = self.clone();
+            tmp = self.clone();
             self.beta_once();
             if *self == tmp { break }
         }
