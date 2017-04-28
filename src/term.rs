@@ -275,11 +275,7 @@ impl fmt::Display for Term {
 pub fn show_precedence(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
         Var(i) => if DISPLAY_CLASSIC {
-            format!("{}", if i <= depth as usize {
-                from_u32(depth + 97 - i as u32).unwrap()
-            } else {
-                from_u32(depth + 96 + i as u32).unwrap()
-            })
+            format!("{}", from_u32(depth + 97 - i as u32).unwrap())
         } else {
             format!("{:X}", i)
         },
