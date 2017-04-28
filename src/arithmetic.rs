@@ -475,26 +475,7 @@ impl From<usize> for Term {
 mod test {
     use super::*;
     use reduction::beta_full;
-
-    #[test]
-    fn church_successor() {
-        assert_eq!(beta_full(succ().app(zero())), one());
-        assert_eq!(beta_full(succ().app(one())), abs(abs(Var(2).app(Var(2).app(Var(1))))));
-        assert_eq!(beta_full(succ().app(succ().app(succ().app(zero())))),
-                   abs(abs(Var(2).app(Var(2).app(Var(2).app(Var(1)))))));
-    }
-
-    #[test]
-    fn church_number_identification() {
-        for n in 0..5 { assert!(Term::from(n).is_cnum()) }
-    }
-
-    #[test]
-    fn church_number_creation() {
-        assert_eq!(Term::from(0), zero());
-        assert_eq!(Term::from(1), one());
-        assert_eq!(Term::from(2), beta_full(succ().app(one())));
-    }
+    use combinators::c;
 
     #[test]
     fn church_number_values() {
@@ -506,16 +487,24 @@ mod test {
     }
 
     #[test]
-    fn church_addition() {
+    fn church_successor() {
+        assert_eq!(Term::from(0), zero());
+        assert_eq!(Term::from(1), beta_full(succ().app(0.into())));
+        assert_eq!(Term::from(2), beta_full(succ().app(1.into())));
+        assert_eq!(Term::from(3), beta_full(succ().app(2.into())));
+    }
+
+    #[test]
+    fn church_predecessor() {
+        assert_eq!(beta_full(pred().app(0.into())), 0.into());
+        assert_eq!(beta_full(pred().app(1.into())), 0.into());
+        assert_eq!(beta_full(pred().app(5.into())), 4.into());
+    }
+
+    #[test]
+    fn church_plus_sub_equivalents() {
         assert_eq!(beta_full(plus().app(1.into())), succ()); // PLUS 1 → SUCC
-
-        assert_eq!(beta_full(plus().app(0.into()).app(0.into())), 0.into());
-        assert_eq!(beta_full(plus().app(0.into()).app(1.into())), 1.into());
-        assert_eq!(beta_full(plus().app(1.into()).app(0.into())), 1.into());
-        assert_eq!(beta_full(plus().app(1.into()).app(1.into())), 2.into());
-
-        assert_eq!(beta_full(plus().app(2.into()).app(3.into())), 5.into());
-        assert_eq!(beta_full(plus().app(4.into()).app(4.into())), 8.into());
+        assert_eq!(beta_full(c().app(sub()).app(1.into())), pred()); // C SUB 1 → PRED
     }
 
     #[test]
@@ -532,23 +521,5 @@ mod test {
         assert_eq!(beta_full(pow().app(3.into()).app(2.into())), 9.into());
         assert_eq!(beta_full(pow().app(4.into()).app(1.into())), 4.into());
         assert_eq!(beta_full(pow().app(5.into()).app(0.into())), 1.into());
-    }
-
-    #[test]
-    fn church_subtraction() {
-        assert_eq!(beta_full(sub().app(0.into()).app(0.into())), 0.into());
-        assert_eq!(beta_full(sub().app(0.into()).app(1.into())), 0.into());
-        assert_eq!(beta_full(sub().app(1.into()).app(0.into())), 1.into());
-        assert_eq!(beta_full(sub().app(2.into()).app(1.into())), 1.into());
-
-        assert_eq!(beta_full(sub().app(5.into()).app(3.into())), 2.into());
-        assert_eq!(beta_full(sub().app(8.into()).app(4.into())), 4.into());
-    }
-
-    #[test]
-    fn church_predecessor() {
-        assert_eq!(beta_full(pred().app(0.into())), 0.into());
-        assert_eq!(beta_full(pred().app(1.into())), 0.into());
-        assert_eq!(beta_full(pred().app(5.into())), 4.into());
     }
 }
