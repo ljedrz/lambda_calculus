@@ -155,7 +155,7 @@ impl Term {
     /// use lambda_calculus::arithmetic::zero;
     /// use lambda_calculus::combinators::i;
     ///
-    /// assert_eq!(app(i(), zero()).eval(), Ok(abs(abs(Var(1)))));
+    /// assert_eq!(app(i(), zero()).eval(), Ok(zero()));
     /// ```
     pub fn eval(self) -> Result<Term, Error> {
         let (lhs, rhs) = try!(self.unapp());
