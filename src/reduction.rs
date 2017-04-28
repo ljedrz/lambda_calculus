@@ -107,25 +107,24 @@ impl Term {
     /// ```
     pub fn beta_once(&mut self) {
         let mut done = false;
-        self._beta_once(&mut done);
+        self._beta_once(&mut done, 0);
     }
 
-    fn _beta_once(&mut self, done: &mut bool) {
+    fn _beta_once(&mut self, done: &mut bool, depth: u32) {
         if *done { return }
 
         match *self {
             Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once(done),
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once(done, depth + 1),
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     let copy = self.clone();
-                    if SHOW_REDUCTIONS { print!("    {} reduces to ", self) };
+                    if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
                     *self = copy.eval().unwrap();
-                    if SHOW_REDUCTIONS { println!("{}", self) }
                     *done = true;
                 } else {
-                    self.lhs_ref_mut().unwrap()._beta_once(done);
-                    self.rhs_ref_mut().unwrap()._beta_once(done)
+                    self.lhs_ref_mut().unwrap()._beta_once(done, depth);
+                    self.rhs_ref_mut().unwrap()._beta_once(done, depth)
                 }
             }
         }
