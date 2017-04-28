@@ -261,25 +261,25 @@ pub const DISPLAY_PRETTY: bool = true;
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", show_precedence(0, self))
+        write!(f, "{}", show_precedence(self, 0))
     }
 }
 
-fn show_precedence(context_precedence: usize, term: &Term) -> String {
+fn show_precedence(term: &Term, context_precedence: usize) -> String {
     match *term {
         Var(i) => format!("{:X}", i), // max. index = 15
         Abs(ref t) => {
             let ret = format!("{}{}", if DISPLAY_PRETTY { 'λ' } else { '\\' }, t);
-            parenthesize_if(context_precedence > 1, &ret).into()
+            parenthesize_if(&ret, context_precedence > 1).into()
         },
         App(ref t1, ref t2) => {
-            let ret = format!("{}{}", show_precedence(2, t1), show_precedence(3, t2));
-            parenthesize_if(context_precedence == 3, &ret).into()
+            let ret = format!("{}{}", show_precedence(t1, 2), show_precedence(t2, 3));
+            parenthesize_if(&ret, context_precedence == 3).into()
         }
     }
 }
 
-fn parenthesize_if(condition: bool, input: &str) -> Cow<str> {
+fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
     if condition {
         format!("({})", input).into()
     } else {
