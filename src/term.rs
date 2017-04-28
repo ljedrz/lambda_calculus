@@ -4,6 +4,7 @@ use self::Term::*;
 use self::Error::*;
 use std::fmt;
 use std::borrow::Cow;
+use std::char::from_u32;
 
 /// A lambda term that is either a variable with a De Bruijn index, an abstraction over a term or
 /// an applicaction of one term to another.
@@ -259,21 +260,38 @@ pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
 /// Set to `true` for λ or `false` for \ when displaying lambda terms. The default is `true`.
 pub const DISPLAY_PRETTY: bool = true;
 
+/// Set to `true` for classic lambda mode or `false` for the De Bruijn index display mode when
+/// displaying lambda terms. The default is `false`.
+pub const DISPLAY_CLASSIC: bool = false;
+
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", show_precedence(self, 0))
+        write!(f, "{}", show_precedence(self, 0, 0))
     }
 }
 
-fn show_precedence(term: &Term, context_precedence: usize) -> String {
+// TODO: make it safer (unwraps)
+fn show_precedence(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
-        Var(i) => format!("{:X}", i), // max. index = 15
+        Var(i) => if DISPLAY_CLASSIC {
+            format!("{}", from_u32(depth + 97 - i as u32).unwrap())
+        } else {
+            format!("{:X}", i)
+        },
         Abs(ref t) => {
-            let ret = format!("{}{}", if DISPLAY_PRETTY { 'λ' } else { '\\' }, t);
+            let ret = if DISPLAY_CLASSIC {
+                format!("{}{}. {}", if DISPLAY_PRETTY { 'λ' } else { '\\' }, from_u32(depth + 97).unwrap(), show_precedence(t, 0, depth + 1))
+            } else {
+                format!("{}{}", if DISPLAY_PRETTY { 'λ' } else { '\\' }, t)
+            };
             parenthesize_if(&ret, context_precedence > 1).into()
         },
         App(ref t1, ref t2) => {
-            let ret = format!("{}{}", show_precedence(t1, 2), show_precedence(t2, 3));
+            let ret = if DISPLAY_CLASSIC {
+                format!("{} {}", show_precedence(t1, 2, depth), show_precedence(t2, 3, depth))
+            } else {
+                format!("{}{}", show_precedence(t1, 2, depth), show_precedence(t2, 3, depth))
+            };
             parenthesize_if(&ret, context_precedence == 3).into()
         }
     }
@@ -289,12 +307,19 @@ fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
 
 #[cfg(test)]
 mod test {
+    use super::DISPLAY_CLASSIC;
     use arithmetic::{zero, succ, pred};
 
     #[test]
-    fn displaying_terms() {
-        assert_eq!(&format!("{}", zero()), "λλ1");
-        assert_eq!(&format!("{}", succ()), "λλλ2(321)");
-        assert_eq!(&format!("{}", pred()), "λλλ3(λλ1(24))(λ2)(λ1)");
+    fn display_modes() {
+        if DISPLAY_CLASSIC {
+            assert_eq!(&format!("{}", zero()), "λa. λb. b");
+            assert_eq!(&format!("{}", succ()), "λa. λb. λc. b (a b c)");
+            assert_eq!(&format!("{}", pred()), "λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)");
+        } else {
+            assert_eq!(&format!("{}", zero()), "λλ1");
+            assert_eq!(&format!("{}", succ()), "λλλ2(321)");
+            assert_eq!(&format!("{}", pred()), "λλλ3(λλ1(24))(λ2)(λ1)");
+        }
     }
 }
