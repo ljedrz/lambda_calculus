@@ -3,6 +3,9 @@
 use term::*;
 use term::Term::*;
 
+/// Set to `true` to see all the steps of β-reductions. The default is `false`.
+pub const SHOW_REDUCTIONS: bool = false;
+
 /// Applies two terms with substitution and variable update, consuming the first one in the process.
 ///
 /// # Example
@@ -54,9 +57,6 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
         }
     }
 }
-
-/// Set to `true` to see all the steps of β-reductions. The default is `false`.
-pub const SHOW_REDUCTIONS: bool = false;
 
 impl Term {
     /// Applies `self` to another term with substitution and variable update, consuming it

@@ -6,6 +6,13 @@ use std::fmt;
 use std::borrow::Cow;
 use std::char::from_u32;
 
+/// Set to `true` for λ or `false` for \ when displaying lambda terms. The default is `true`.
+pub const DISPLAY_PRETTY: bool = true;
+
+/// Set to `true` for classic lambda mode or `false` for the De Bruijn index display mode when
+/// displaying lambda terms. The default is `false`.
+pub const DISPLAY_CLASSIC: bool = false;
+
 /// A lambda term that is either a variable with a De Bruijn index, an abstraction over a term or
 /// an applicaction of one term to another.
 #[derive(Debug, PartialEq, Clone)]
@@ -256,13 +263,6 @@ pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 /// assert_eq!(app(Var(0), Var(1)), App(Box::new(Var(0)), Box::new(Var(1))));
 /// ```
 pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
-
-/// Set to `true` for λ or `false` for \ when displaying lambda terms. The default is `true`.
-pub const DISPLAY_PRETTY: bool = true;
-
-/// Set to `true` for classic lambda mode or `false` for the De Bruijn index display mode when
-/// displaying lambda terms. The default is `false`.
-pub const DISPLAY_CLASSIC: bool = false;
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
