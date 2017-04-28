@@ -121,6 +121,7 @@ impl Term {
                     let copy = self.clone();
                     if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
                     *self = copy.eval().unwrap();
+                    if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth + 1)) }
                     *done = true;
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once(done, depth);
