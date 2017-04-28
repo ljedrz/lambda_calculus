@@ -170,11 +170,10 @@ impl Term {
     /// ```
     /// use lambda_calculus::arithmetic::succ;
     ///
-    /// // SUCC := λ λ λ 2 (3 2 1), ONE := λ λ 2 1
     /// let mut succ_one = succ().app(1.into());
     /// succ_one.beta_once();
     ///
-    /// assert_eq!(&*format!("{}", succ_one), "λλ2((λλ21)21)");
+    /// assert_eq!(succ_one, succ().apply(&1.into()).unwrap());
     /// ```
     pub fn beta_once(&mut self) {
         let mut done = false;
@@ -252,10 +251,9 @@ pub fn beta_full(mut term: Term) -> Term {
 /// use lambda_calculus::arithmetic::succ;
 /// use lambda_calculus::reduction::beta_once;
 ///
-/// // SUCC := λ λ λ 2 (3 2 1), ONE := λ λ 2 1
 /// let succ_one = succ().app(1.into());
 ///
-/// assert_eq!(&*format!("{}", beta_once(succ_one)), "λλ2((λλ21)21)");
+/// assert_eq!(beta_once(succ_one), succ().apply(&1.into()).unwrap());
 /// ```
 pub fn beta_once(mut term: Term) -> Term {
     term.beta_once();
