@@ -15,8 +15,9 @@ use combinators::y;
 /// # Example
 /// ```
 /// use lambda_calculus::arithmetic::zero;
+/// use lambda_calculus::term::Term;
 ///
-/// assert_eq!(format!("{}", zero()), "λλ1");
+/// assert_eq!(zero(), Term::from(0));
 /// ```
 pub fn zero() -> Term { abs(abs(Var(1))) }
 
@@ -49,8 +50,9 @@ pub fn is_zero() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::arithmetic::one;
+/// use lambda_calculus::term::Term;
 ///
-/// assert_eq!(format!("{}", one()), "λλ21");
+/// assert_eq!(one(), Term::from(1));
 /// ```
 pub fn one() -> Term {
     abs(abs(
