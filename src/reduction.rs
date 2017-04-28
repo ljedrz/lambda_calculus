@@ -177,18 +177,26 @@ impl Term {
     /// assert_eq!(&*format!("{}", succ_one), "λλ2((λλ21)21)");
     /// ```
     pub fn beta_once(&mut self) {
+        let mut done = false;
+        self._beta_once(&mut done);
+    }
+
+    fn _beta_once(&mut self, done: &mut bool) {
+        if *done { return }
+
         match *self {
             Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap().beta_once(),
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once(done),
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     let copy = self.clone();
                     if SHOW_REDUCTIONS { print!("    {} reduces to ", self) };
                     *self = copy.eval().unwrap();
                     if SHOW_REDUCTIONS { println!("{}", self) }
+                    *done = true;
                 } else {
-                    self.lhs_ref_mut().unwrap().beta_once();
-                    self.rhs_ref_mut().unwrap().beta_once()
+                    self.lhs_ref_mut().unwrap()._beta_once(done);
+                    self.rhs_ref_mut().unwrap()._beta_once(done)
                 }
             }
         }
