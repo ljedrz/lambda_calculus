@@ -2,8 +2,8 @@
 
 **lambda_calculus** is a simple implementation of the untyped lambda calculus in Rust.
 
-The data and operators follow the Church encoding and the terms are displayed using De Bruijn
-indices.
+The data and operators follow the Church encoding. The terms are implemented using De Bruijn
+indices, but can also be displayed using the classic lambda notation.
 
 The library contains:
 
@@ -28,8 +28,7 @@ The library is already usable, but it is still a work in progress.
 
 ## TODO
 
-- classic notation display mode ( variable names instead of De Bruijn indices )
 - additional reduction strategies
-- β-reduction parallelization?
-- optimizations
+- β-reduction parallelization (at least to some extent)?
+- further optimizations
 - a macro for more readable chain application
