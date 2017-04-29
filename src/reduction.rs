@@ -270,4 +270,12 @@ mod test {
             assert_eq!(beta_full(should_reduce), Var(1))
         }
     }
+    
+    #[test]
+    fn applicative_order() {
+        if EVAL_ORDER == Applicative {
+            let shouldnt_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
+            assert_eq!(beta_once(shouldnt_reduce), parse(&"(λ2)((λ111)(λ111)(λ111))").unwrap())
+        }
+    }
 }
