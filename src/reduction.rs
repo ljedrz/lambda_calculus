@@ -192,5 +192,12 @@ pub fn beta_once(mut term: Term) -> Term {
 
 #[cfg(test)]
 mod test {
-
+    use super::*;
+    use parser::parse;
+    
+    #[test]
+    fn normal_order() {
+        let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
+        assert_eq!(beta_full(should_reduce), Var(1))
+    }
 }
