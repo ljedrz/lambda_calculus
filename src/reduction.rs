@@ -7,9 +7,12 @@ use self::Order::*;
 /// Set to `true` to see all the steps of β-reductions. The default is `false`.
 pub const SHOW_REDUCTIONS: bool = false;
 
+/// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction strategies) of 
+/// β-reductions. The `Applicative` order will not fully reduce expressions containing functions 
+/// without a normal form, e.g. the Y combinator. The default is `Normal`.
 pub const EVAL_ORDER: Order = Normal;
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq)]
 pub enum Order {
     Normal,
     Applicative
@@ -117,7 +120,7 @@ impl Term {
     pub fn beta_once(&mut self) {
         match EVAL_ORDER {
             Normal => self._beta_once_normal(0),
-            Applicative => unimplemented!()
+            Applicative => self._beta_once_applicative(0)
         };
     }
 
@@ -138,6 +141,59 @@ impl Term {
                     } else {
                         true
                     }
+                }
+            }
+        }
+    }
+    
+    fn _beta_once_applicative(&mut self, depth: u32) -> bool {
+        match *self {
+            Var(_) => false,
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_applicative(depth + 1),
+            App(_, _) => {
+                if !self.rhs_ref().unwrap().is_beta_reducible() && 
+                   !self.lhs_ref().unwrap().is_beta_reducible() &&
+                    self.lhs_ref().unwrap().unabs_ref().is_ok()
+                {
+                    let copy = self.clone();
+                    if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
+                    *self = copy.eval().unwrap();
+                    if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
+                    true
+                } else {
+                    if !self.rhs_ref_mut().unwrap()._beta_once_applicative(depth) {
+                        self.lhs_ref_mut().unwrap()._beta_once_applicative(depth)
+                    } else {
+                        true
+                    }
+                }
+            }
+        }
+    }
+    
+    /// Checks whether `self` is β-reducible.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lambda_calculus::arithmetic::{succ, zero};
+    ///
+    /// let reducible     = succ().app(1.into());
+    /// let not_reducible = zero();
+    ///
+    /// assert!(reducible.is_beta_reducible());
+    /// assert!(!not_reducible.is_beta_reducible());
+    /// ```
+    pub fn is_beta_reducible(&self) -> bool {
+        match *self {
+            Var(_) => false,
+            Abs(_) => self.unabs_ref().unwrap().is_beta_reducible(),
+            App(_, _) => {
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    true
+                } else {
+                    self.lhs_ref().unwrap().is_beta_reducible() ||
+                    self.rhs_ref().unwrap().is_beta_reducible()
                 }
             }
         }
@@ -209,7 +265,9 @@ mod test {
     
     #[test]
     fn normal_order() {
-        let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
-        assert_eq!(beta_full(should_reduce), Var(1))
+        if EVAL_ORDER == Normal {
+            let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
+            assert_eq!(beta_full(should_reduce), Var(1))
+        }
     }
 }
