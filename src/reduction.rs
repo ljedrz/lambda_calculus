@@ -106,26 +106,26 @@ impl Term {
     /// assert_eq!(succ_one, succ().apply(&1.into()).unwrap());
     /// ```
     pub fn beta_once(&mut self) {
-        let mut done = false;
-        self._beta_once(&mut done, 0);
+        self._beta_once_normal(0)
     }
 
-    fn _beta_once(&mut self, done: &mut bool, depth: u32) {
-        if *done { return }
-
+    fn _beta_once(&mut self, depth: u32) -> bool {
         match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once(done, depth + 1),
+            Var(_) => false,
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_normal(depth + 1),
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     let copy = self.clone();
                     if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
                     *self = copy.eval().unwrap();
                     if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
-                    *done = true;
+                    true
                 } else {
-                    self.lhs_ref_mut().unwrap()._beta_once(done, depth);
-                    self.rhs_ref_mut().unwrap()._beta_once(done, depth)
+                    if !self.lhs_ref_mut().unwrap()._beta_once_normal(depth) {
+                        self.rhs_ref_mut().unwrap()._beta_once_normal(depth)
+                    } else {
+                        true
+                    }
                 }
             }
         }
