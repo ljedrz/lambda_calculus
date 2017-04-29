@@ -2,9 +2,18 @@
 
 use term::*;
 use term::Term::*;
+use self::Order::*;
 
 /// Set to `true` to see all the steps of β-reductions. The default is `false`.
 pub const SHOW_REDUCTIONS: bool = false;
+
+pub const EVAL_ORDER: Order = Normal;
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum Order {
+    Normal,
+    Applicative
+}
 
 /// Applies two terms with substitution and variable update, consuming the first one in the process.
 ///
@@ -106,13 +115,16 @@ impl Term {
     /// assert_eq!(succ_one, succ().apply(&1.into()).unwrap());
     /// ```
     pub fn beta_once(&mut self) {
-        self._beta_once(0);
+        match EVAL_ORDER {
+            Normal => self._beta_once_normal(0),
+            Applicative => unimplemented!()
+        };
     }
 
-    fn _beta_once(&mut self, depth: u32) -> bool {
+    fn _beta_once_normal(&mut self, depth: u32) -> bool {
         match *self {
             Var(_) => false,
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once(depth + 1),
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_normal(depth + 1),
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     let copy = self.clone();
@@ -121,8 +133,8 @@ impl Term {
                     if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
                     true
                 } else {
-                    if !self.lhs_ref_mut().unwrap()._beta_once(depth) {
-                        self.rhs_ref_mut().unwrap()._beta_once(depth)
+                    if !self.lhs_ref_mut().unwrap()._beta_once_normal(depth) {
+                        self.rhs_ref_mut().unwrap()._beta_once_normal(depth)
                     } else {
                         true
                     }
