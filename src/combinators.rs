@@ -12,7 +12,6 @@
 
 use term::*;
 use term::Term::*;
-use parser::parse;
 use reduction::{EVAL_ORDER, Order};
 
 /// I - the identity combinator.
@@ -178,9 +177,7 @@ pub fn omm() -> Term { om().app(om()) }
 
 /// Y - the fixed-point combinator.
 ///
-/// Y := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1)) // normal order
-///
-/// Y := λf.(λx.x x) (λx.(λy.(f (x x) y))) = λ (λ 1 1) (λ (λ (3 (2 2) 1))) // applicative order
+/// Y := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
 ///
 /// # Example
 /// ```
@@ -198,8 +195,11 @@ pub fn y() -> Term {
                 abs(Var(2).app(Var(1).app(Var(1))))
             ))
         }
-        Order::Applicative => { /* WIP */
-            parse(&"(λ11)(λ(λ(3(22)1)))").unwrap()
+        Order::Applicative => { /* should any variant work with applicative order? */
+            panic!("Y combinator won't work with applicative order")
+            //parse(&"(λλ212)(λλ2(121))").unwrap()
+            //parse(&"(λλ(1(λ3321)))(λλ(1(λ3321)))").unwrap()
+            //parse(&"(λ11)(λ(λ(3(22)1)))").unwrap()
             //parse(&"λ(λ(2(λ(221))))(λ(2(λ(221))))").unwrap()
             //parse(&"λ(λ11)(λ(2(λ((22)1))))").unwrap()
         }
