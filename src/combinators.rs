@@ -12,6 +12,8 @@
 
 use term::*;
 use term::Term::*;
+use parser::parse;
+use reduction::{EVAL_ORDER, Order};
 
 /// I - the identity combinator.
 ///
@@ -176,7 +178,9 @@ pub fn omm() -> Term { om().app(om()) }
 
 /// Y - the fixed-point combinator.
 ///
-/// Y := λg.(λx.g (x x)) (λx.g (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
+/// Y := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1)) // normal order
+///
+/// Y := λf.(λx.x x) (λx.(λy.(f (x x) y))) = λ (λ 1 1) (λ (λ (3 (2 2) 1))) // applicative order
 ///
 /// # Example
 /// ```
@@ -187,10 +191,19 @@ pub fn omm() -> Term { om().app(om()) }
 /// assert_eq!(beta_full(y().app(zero())), beta_full(zero().app(y().app(zero()))));
 /// ```
 pub fn y() -> Term {
-    abs(app(
-        abs(Var(2).app(Var(1).app(Var(1)))),
-        abs(Var(2).app(Var(1).app(Var(1))))
-    ))
+    match EVAL_ORDER {
+        Order::Normal => {
+            abs(app(
+                abs(Var(2).app(Var(1).app(Var(1)))),
+                abs(Var(2).app(Var(1).app(Var(1))))
+            ))
+        }
+        Order::Applicative => { /* WIP */
+            parse(&"(λ11)(λ(λ(3(22)1)))").unwrap()
+            //parse(&"λ(λ(2(λ(221))))(λ(2(λ(221))))").unwrap()
+            //parse(&"λ(λ11)(λ(2(λ((22)1))))").unwrap()
+        }
+    }
 }
 
 /// T - the thrush combinator
