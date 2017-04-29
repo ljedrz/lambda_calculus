@@ -480,20 +480,22 @@ mod test {
     use combinators::c;
 
     #[test]
+    fn church_invalid_nums() {
+        assert_eq!(tru().is_cnum(),       false);
+        assert_eq!(Var(1).is_cnum(),      false);
+        assert_eq!(abs(Var(1)).is_cnum(), false);
+    }
+
+    #[test]
     fn church_number_values() {
         for n in 0..10 { assert_eq!(Term::from(n).value(), Ok(n)) }
-
-        assert_eq!(tru().value(),       Err(NotANum));
-        assert_eq!(Var(1).value(),      Err(NotANum));
-        assert_eq!(abs(Var(1)).value(), Err(NotANum));
     }
 
     #[test]
     fn church_successor() {
-        assert_eq!(Term::from(0), zero());
-        assert_eq!(Term::from(1), beta_full(succ().app(0.into())));
-        assert_eq!(Term::from(2), beta_full(succ().app(1.into())));
-        assert_eq!(Term::from(3), beta_full(succ().app(2.into())));
+        assert_eq!(beta_full(succ().app(0.into())), Term::from(1));
+        assert_eq!(beta_full(succ().app(1.into())), Term::from(2));
+        assert_eq!(beta_full(succ().app(2.into())), Term::from(3));
     }
 
     #[test]
@@ -513,15 +515,44 @@ mod test {
     fn church_multiplication() {
         assert_eq!(beta_full(mult().app(3.into()).app(4.into())), 12.into());
         assert_eq!(beta_full(mult().app(1.into()).app(3.into())), 3.into());
+        assert_eq!(beta_full(mult().app(3.into()).app(1.into())), 3.into());
         assert_eq!(beta_full(mult().app(5.into()).app(0.into())), 0.into());
+        assert_eq!(beta_full(mult().app(0.into()).app(5.into())), 0.into());
     }
 
     #[test]
     fn church_exponentiation() {
         assert_eq!(beta_full(pow().app(2.into()).app(4.into())), 16.into());
-        assert_eq!(beta_full(pow().app(1.into()).app(6.into())), 1.into());
-        assert_eq!(beta_full(pow().app(3.into()).app(2.into())), 9.into());
-        assert_eq!(beta_full(pow().app(4.into()).app(1.into())), 4.into());
+        assert_eq!(beta_full(pow().app(1.into()).app(3.into())), 1.into());
+        assert_eq!(beta_full(pow().app(3.into()).app(1.into())), 3.into());
         assert_eq!(beta_full(pow().app(5.into()).app(0.into())), 1.into());
+        assert_eq!(beta_full(pow().app(0.into()).app(5.into())), 0.into());
+    }
+    
+    #[test]
+    fn church_division() {
+        assert_eq!(beta_full(div().app(2.into()).app(2.into())), (1.into(), 0.into()).into());
+        assert_eq!(beta_full(div().app(3.into()).app(2.into())), (1.into(), 1.into()).into());
+        assert_eq!(beta_full(div().app(2.into()).app(1.into())), (2.into(), 0.into()).into());
+        assert_eq!(beta_full(div().app(0.into()).app(3.into())), (0.into(), 0.into()).into());
+        // assert_eq!(beta_full(div().app(1.into()).app(0.into())), ); division by 0 hangs
+    }
+    
+    #[test]
+    fn church_quotient() {
+        assert_eq!(beta_full(quot().app(2.into()).app(2.into())), 1.into());
+        assert_eq!(beta_full(quot().app(3.into()).app(2.into())), 1.into());
+        assert_eq!(beta_full(quot().app(2.into()).app(1.into())), 2.into());
+        assert_eq!(beta_full(quot().app(0.into()).app(3.into())), 0.into());
+        // assert_eq!(beta_full(quot().app(1.into()).app(0.into())), ); division by 0 hangs
+    }
+    
+    #[test]
+    fn church_remainder() {
+        assert_eq!(beta_full(rem().app(2.into()).app(2.into())), 0.into());
+        assert_eq!(beta_full(rem().app(3.into()).app(2.into())), 1.into());
+        assert_eq!(beta_full(rem().app(2.into()).app(1.into())), 0.into());
+        assert_eq!(beta_full(rem().app(0.into()).app(3.into())), 0.into());
+        // assert_eq!(beta_full(quot().app(1.into()).app(0.into())), ); division by 0 hangs
     }
 }
