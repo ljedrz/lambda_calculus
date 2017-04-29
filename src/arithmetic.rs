@@ -493,9 +493,9 @@ mod test {
 
     #[test]
     fn church_successor() {
-        assert_eq!(beta_full(succ().app(0.into())), Term::from(1));
-        assert_eq!(beta_full(succ().app(1.into())), Term::from(2));
-        assert_eq!(beta_full(succ().app(2.into())), Term::from(3));
+        assert_eq!(beta_full(succ().app(0.into())), 1.into());
+        assert_eq!(beta_full(succ().app(1.into())), 2.into());
+        assert_eq!(beta_full(succ().app(2.into())), 3.into());
     }
 
     #[test]
