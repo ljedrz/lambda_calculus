@@ -12,7 +12,7 @@
 
 use term::*;
 use term::Term::*;
-use reduction::{EVAL_ORDER, Order};
+use reduction::{EVALUATION_ORDER, Order};
 
 /// I - the identity combinator.
 ///
@@ -188,7 +188,7 @@ pub fn omm() -> Term { om().app(om()) }
 /// assert_eq!(beta_full(y().app(zero())), beta_full(zero().app(y().app(zero()))));
 /// ```
 pub fn y() -> Term {
-    match EVAL_ORDER {
+    match EVALUATION_ORDER {
         Order::Normal => {
             abs(app(
                 abs(Var(2).app(Var(1).app(Var(1)))),

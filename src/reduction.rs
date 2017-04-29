@@ -8,9 +8,9 @@ use self::Order::*;
 pub const SHOW_REDUCTIONS: bool = false;
 
 /// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction strategies) of 
-/// β-reductions. The `Applicative` order will not fully reduce expressions containing functions 
+/// β-reductions. `Applicative` order will not fully reduce expressions containing functions 
 /// without a normal form, e.g. the Y combinator. The default is `Normal`.
-pub const EVAL_ORDER: Order = Normal;
+pub const EVALUATION_ORDER: Order = Normal;
 
 #[derive(Debug, PartialEq)]
 pub enum Order {
@@ -105,7 +105,7 @@ impl Term {
         apply(lhs, &rhs)
     }
 
-    /// Performs a single normal-order β-reduction on `self`.
+    /// Performs a single β-reduction on `self`.
     ///
     /// # Example
     ///
@@ -118,7 +118,7 @@ impl Term {
     /// assert_eq!(succ_one, succ().apply(&1.into()).unwrap());
     /// ```
     pub fn beta_once(&mut self) {
-        match EVAL_ORDER {
+        match EVALUATION_ORDER {
             Normal => self._beta_once_normal(0),
             Applicative => self._beta_once_applicative(0)
         };
@@ -199,7 +199,7 @@ impl Term {
         }
     }
 
-    /// Performs full normal-order β-reduction on `self`.
+    /// Performs full β-reduction on `self`.
     ///
     /// # Example
     ///
@@ -224,7 +224,7 @@ impl Term {
     }
 }
 
-/// Performs full normal-order β-reduction on a `Term`, consuming it in the process.
+/// Performs full β-reduction on a `Term`, consuming it in the process.
 ///
 /// # Example
 ///
@@ -241,7 +241,7 @@ pub fn beta_full(mut term: Term) -> Term {
     term
 }
 
-/// Performs a single normal-order β-reduction on `self`.
+/// Performs a single β-reduction on `self`.
 ///
 /// # Example
 ///
@@ -265,7 +265,7 @@ mod test {
     
     #[test]
     fn normal_order() {
-        if EVAL_ORDER == Normal {
+        if EVALUATION_ORDER == Normal {
             let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
             assert_eq!(beta_full(should_reduce), Var(1))
         }
@@ -273,7 +273,7 @@ mod test {
     
     #[test]
     fn applicative_order() {
-        if EVAL_ORDER == Applicative {
+        if EVALUATION_ORDER == Applicative {
             let shouldnt_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
             assert_eq!(beta_once(shouldnt_reduce), parse(&"(λ2)((λ111)(λ111)(λ111))").unwrap())
         }
