@@ -151,8 +151,8 @@ impl Term {
             Var(_) => false,
             Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_applicative(depth + 1),
             App(_, _) => {
-                if !self.rhs_ref().unwrap().is_beta_reducible() && 
-                   !self.lhs_ref().unwrap().is_beta_reducible() &&
+                if !self.lhs_ref().unwrap().is_beta_reducible() &&
+                   !self.rhs_ref().unwrap().is_beta_reducible() &&
                     self.lhs_ref().unwrap().unabs_ref().is_ok()
                 {
                     let copy = self.clone();
@@ -161,8 +161,8 @@ impl Term {
                     if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
                     true
                 } else {
-                    if !self.rhs_ref_mut().unwrap()._beta_once_applicative(depth) {
-                        self.lhs_ref_mut().unwrap()._beta_once_applicative(depth)
+                    if !self.lhs_ref_mut().unwrap()._beta_once_applicative(depth) {
+                        self.rhs_ref_mut().unwrap()._beta_once_applicative(depth)
                     } else {
                         true
                     }
