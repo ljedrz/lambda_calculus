@@ -106,13 +106,13 @@ impl Term {
     /// assert_eq!(succ_one, succ().apply(&1.into()).unwrap());
     /// ```
     pub fn beta_once(&mut self) {
-        self._beta_once_normal(0)
+        self._beta_once(0);
     }
 
     fn _beta_once(&mut self, depth: u32) -> bool {
         match *self {
             Var(_) => false,
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_normal(depth + 1),
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once(depth + 1),
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     let copy = self.clone();
@@ -121,8 +121,8 @@ impl Term {
                     if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
                     true
                 } else {
-                    if !self.lhs_ref_mut().unwrap()._beta_once_normal(depth) {
-                        self.rhs_ref_mut().unwrap()._beta_once_normal(depth)
+                    if !self.lhs_ref_mut().unwrap()._beta_once(depth) {
+                        self.rhs_ref_mut().unwrap()._beta_once(depth)
                     } else {
                         true
                     }
