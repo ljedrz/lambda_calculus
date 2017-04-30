@@ -125,7 +125,7 @@ pub fn mult() -> Term {
 
 /// Applied to two Church-encoded numbers it raises the first one to the power of the second one.
 ///
-/// POW := λbe.IF_ELSE (IS_ZERO e) ONE (e b) = λ λ IF_ELSE (IS_ZERO 1) ONE (1 2)
+/// POW := λbe.IS_ZERO e ONE (e b) = λ λ IS_ZERO 1 ONE (1 2)
 ///
 /// # Example
 /// ```
@@ -138,8 +138,8 @@ pub fn mult() -> Term {
 /// ```
 pub fn pow() -> Term {
     abs(abs(
-        if_else()
-        .app(is_zero().app(Var(1)))
+        is_zero()
+        .app(Var(1))
         .app(one())
         .app(Var(1).app(Var(2)))
     ))
