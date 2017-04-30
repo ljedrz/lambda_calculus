@@ -7,11 +7,12 @@ use self::Order::*;
 /// Set to `true` to see all the steps of β-reductions. The default is `false`.
 pub const SHOW_REDUCTIONS: bool = false;
 
-/// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction strategies) of 
+/// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction%20strategies) of 
 /// β-reductions. `Applicative` order will not fully reduce expressions containing functions 
 /// without a normal form, e.g. the Y combinator. The default is `Normal`.
 pub const EVALUATION_ORDER: Order = Normal;
 
+/// The available variants of β-reduction evaluation order.
 #[derive(Debug, PartialEq)]
 pub enum Order {
     Normal,
@@ -124,6 +125,7 @@ impl Term {
         };
     }
 
+    // the return value indicates if reduction was performed
     fn _beta_once_normal(&mut self, depth: u32) -> bool {
         match *self {
             Var(_) => false,
@@ -146,6 +148,7 @@ impl Term {
         }
     }
     
+    // the return value indicates if reduction was performed
     fn _beta_once_applicative(&mut self, depth: u32) -> bool {
         match *self {
             Var(_) => false,
@@ -264,18 +267,16 @@ mod test {
     use parser::parse;
     
     #[test]
-    fn normal_order() {
-        if EVALUATION_ORDER == Normal {
-            let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
-            assert_eq!(beta_full(should_reduce), Var(1))
-        }
-    }
-    
-    #[test]
-    fn applicative_order() {
-        if EVALUATION_ORDER == Applicative {
-            let shouldnt_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
-            assert_eq!(beta_once(shouldnt_reduce), parse(&"(λ2)((λ111)(λ111)(λ111))").unwrap())
+    fn evaluation_order() {
+        match EVALUATION_ORDER {
+            Normal => {
+                let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
+                assert_eq!(beta_full(should_reduce), Var(1))
+            },
+            Applicative => {
+                let shouldnt_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
+                assert_eq!(beta_once(shouldnt_reduce), parse(&"(λ2)((λ111)(λ111)(λ111))").unwrap())
+            }
         }
     }
 }
