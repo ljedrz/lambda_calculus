@@ -7,8 +7,8 @@ use self::Order::*;
 /// Set to `true` to see all the steps of β-reductions. The default is `false`.
 pub const SHOW_REDUCTIONS: bool = false;
 
-/// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction_strategies) of 
-/// β-reductions. `Applicative` order will not fully reduce expressions containing functions 
+/// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction_strategies) of
+/// β-reductions. `Applicative` order will not fully reduce expressions containing functions
 /// without a normal form, e.g. the Y combinator. The default is `Normal`.
 pub const EVALUATION_ORDER: Order = Normal;
 
@@ -147,7 +147,7 @@ impl Term {
             }
         }
     }
-    
+
     // the return value indicates if reduction was performed
     fn _beta_once_applicative(&mut self, depth: u32) -> bool {
         match *self {
@@ -173,7 +173,7 @@ impl Term {
             }
         }
     }
-    
+
     /// Checks whether `self` is β-reducible.
     ///
     /// # Example
@@ -265,7 +265,7 @@ pub fn beta_once(mut term: Term) -> Term {
 mod test {
     use super::*;
     use parser::parse;
-    
+
     #[test]
     fn evaluation_order() {
         match EVALUATION_ORDER {

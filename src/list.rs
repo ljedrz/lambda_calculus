@@ -9,7 +9,7 @@ use arithmetic::{zero, succ};
 use combinators::y;
 use std::ops::Index;
 
-/// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last link of a 
+/// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last link of a
 /// Church-encoded list.
 ///
 /// NIL := FALSE
@@ -246,7 +246,7 @@ pub fn append() -> Term {
     )
 }
 
-/// Applied to a Church-encoded number `i` and a Church-encoded list it returns the `i`-th 
+/// Applied to a Church-encoded number `i` and a Church-encoded list it returns the `i`-th
 /// (zero-indexed) element of the list.
 ///
 /// INDEX := λix. FIRST (x SECOND i) = λ λ FIRST (2 SECOND 1)

@@ -421,7 +421,7 @@ pub fn rem() -> Term {
 
 /// Applied to a Church-encoded number it yields its Church-encoded factorial.
 ///
-/// FACTORIAL := Y (λgx. ISZERO x ONE (MULT x (g (PRED x)))) = 
+/// FACTORIAL := Y (λgx. ISZERO x ONE (MULT x (g (PRED x)))) =
 /// Y (λ λ ISZERO 1 ONE (MULT 1 (2 (PRED 1))))
 ///
 /// # Example
@@ -562,7 +562,7 @@ mod test {
         assert_eq!(beta_full(pow().app(5.into()).app(0.into())), 1.into());
         assert_eq!(beta_full(pow().app(0.into()).app(5.into())), 0.into());
     }
-    
+
     #[test]
     fn church_division() {
         assert_eq!(beta_full(div().app(2.into()).app(2.into())), (1.into(), 0.into()).into());
@@ -571,7 +571,7 @@ mod test {
         assert_eq!(beta_full(div().app(0.into()).app(3.into())), (0.into(), 0.into()).into());
         // assert_eq!(beta_full(div().app(1.into()).app(0.into())), ); division by 0 hangs
     }
-    
+
     #[test]
     fn church_quotient() {
         assert_eq!(beta_full(quot().app(2.into()).app(2.into())), 1.into());
@@ -580,7 +580,7 @@ mod test {
         assert_eq!(beta_full(quot().app(0.into()).app(3.into())), 0.into());
         // assert_eq!(beta_full(quot().app(1.into()).app(0.into())), ); division by 0 hangs
     }
-    
+
     #[test]
     fn church_remainder() {
         assert_eq!(beta_full(rem().app(2.into()).app(2.into())), 0.into());
@@ -589,7 +589,7 @@ mod test {
         assert_eq!(beta_full(rem().app(0.into()).app(3.into())), 0.into());
         // assert_eq!(beta_full(quot().app(1.into()).app(0.into())), ); division by 0 hangs
     }
-    
+
     #[test]
     fn church_factorial() {
         assert_eq!(beta_full(factorial().app(0.into())), 1.into());
