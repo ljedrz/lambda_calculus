@@ -209,6 +209,43 @@ pub fn list() -> Term {
     )
 }
 
+/// Applied to 2 Church-encoded lists it concatenates them.
+///
+/// APPEND := Y (λgab. NULL a b (PAIR (FIRST a) (g (SECOND a) b))) =
+/// Y (λ λ λ NULL 2 1 (PAIR (FIRST 2) (3 (SECOND 2) 1)))
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::append;
+/// use lambda_calculus::reduction::beta_full;
+///
+/// let list1 = Term::from(vec![0.into(), 1.into()]);
+/// let list2 = Term::from(vec![2.into(), 3.into()]);
+///
+/// assert_eq!(beta_full(append().app(list1).app(list2)),
+///            Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]));
+/// ```
+pub fn append() -> Term {
+    y()
+    .app(
+        abs(abs(abs(
+            null()
+            .app(Var(2))
+            .app(Var(1))
+            .app(
+                pair()
+                .app(first().app(Var(2)))
+                .app(
+                    Var(3)
+                    .app(second().app(Var(2)))
+                    .app(Var(1))
+                )
+            )
+        )))
+    )
+}
+
 impl Term {
     /// Checks whether self is a Church-encoded empty list, i.e. `nil()`.
     ///
