@@ -7,7 +7,7 @@ use self::Order::*;
 /// Set to `true` to see all the steps of β-reductions. The default is `false`.
 pub const SHOW_REDUCTIONS: bool = false;
 
-/// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction%20strategies) of 
+/// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction_strategies) of 
 /// β-reductions. `Applicative` order will not fully reduce expressions containing functions 
 /// without a normal form, e.g. the Y combinator. The default is `Normal`.
 pub const EVALUATION_ORDER: Order = Normal;
