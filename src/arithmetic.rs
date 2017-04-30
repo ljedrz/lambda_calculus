@@ -589,4 +589,12 @@ mod test {
         assert_eq!(beta_full(rem().app(0.into()).app(3.into())), 0.into());
         // assert_eq!(beta_full(quot().app(1.into()).app(0.into())), ); division by 0 hangs
     }
+    
+    #[test]
+    fn church_factorial() {
+        assert_eq!(beta_full(factorial().app(0.into())), 1.into());
+        assert_eq!(beta_full(factorial().app(1.into())), 1.into());
+        assert_eq!(beta_full(factorial().app(2.into())), 2.into());
+        assert_eq!(beta_full(factorial().app(3.into())), 6.into());
+    }
 }
