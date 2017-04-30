@@ -417,6 +417,38 @@ pub fn rem() -> Term {
     ))
 }
 
+/// Applied to a Church-encoded number it yields its Church-encoded factorial.
+///
+/// FACTORIAL := Y (λgx. ISZERO x ONE (MULT x (g (PRED x)))) = 
+/// Y (λ λ ISZERO 1 ONE (MULT 1 (2 (PRED 1))))
+///
+/// # Example
+/// ```
+/// use lambda_calculus::arithmetic::factorial;
+///
+/// let mut expr = factorial().app(3.into());
+/// expr.beta_full();
+///
+/// assert_eq!(expr, 6.into());
+/// ```
+pub fn factorial() -> Term {
+    y()
+    .app(
+        abs(abs(
+            is_zero()
+            .app(Var(1))
+            .app(one())
+            .app(
+                mult()
+                .app(Var(1))
+                .app(
+                    Var(2).app(pred().app(Var(1)))
+                )
+            )
+        ))
+    )
+}
+
 impl Term {
     /// Returns the value of `self` if it's a Church-encoded number.
     ///
