@@ -246,6 +246,32 @@ pub fn append() -> Term {
     )
 }
 
+/// Applied to a Church-encoded number `i` and a Church-encoded list it returns the `i`-th 
+/// (zero-indexed) element of the list.
+///
+/// INDEX := λix. FIRST (x SECOND i) = λ λ FIRST (2 SECOND 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::index;
+/// use lambda_calculus::reduction::beta_full;
+///
+/// let list = Term::from(vec![3.into(), 4.into(), 5.into()]);
+///
+/// assert_eq!(beta_full(index().app(0.into()).app(list.clone())), 3.into());
+/// assert_eq!(beta_full(index().app(2.into()).app(list)        ), 5.into());
+/// ```
+pub fn index() -> Term {
+    abs(abs(
+        first().app(
+            Var(2)
+            .app(second())
+            .app(Var(1))
+        )
+    ))
+}
+
 impl Term {
     /// Checks whether self is a Church-encoded empty list, i.e. `nil()`.
     ///
