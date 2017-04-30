@@ -491,7 +491,7 @@ impl Index<usize> for Term {
     fn index(&self, i: usize) -> &Self::Output {
         if !self.is_list() { panic!("attempting to index something that is not a list!") }
 
-        if i == 0 { return self.head_ref().unwrap() } // safe - checked above
+        if i == 0 { return self.head_ref().unwrap() } // safe - guaranteed by is_list()
 
         let mut candidate = self.snd_ref().expect("index out of bounds!");
 
@@ -499,7 +499,7 @@ impl Index<usize> for Term {
             candidate = candidate.snd_ref().expect("index out of bounds!")
         }
 
-        candidate.head_ref().unwrap()
+        candidate.head_ref().unwrap() // safe - verified as valid by is_list()
     }
 }
 
@@ -510,17 +510,25 @@ mod test {
 
     #[test]
     fn empty_list() {
-        let nil = nil();
-
-        assert!(!nil.is_list());
-        assert!(nil.is_empty());
+        assert!(!nil().is_list());
+        assert!(nil().is_empty());
     }
 
     #[test]
     fn list_push() {
         let list_pushed = nil().push(0.into()).push(1.into()).push(1.into());
         let list_consed = beta_full(
-            cons().app(1.into()).app(cons().app(1.into()).app(cons().app(0.into()).app(nil())))
+            cons()
+            .app(1.into())
+            .app(
+                cons()
+                .app(1.into())
+                .app(
+                    cons()
+                    .app(0.into())
+                    .app(nil())
+                )
+            )
         );
 
         assert_eq!(list_pushed, list_consed);
