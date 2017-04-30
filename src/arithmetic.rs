@@ -323,7 +323,7 @@ pub fn gt() -> Term {
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
-/// division - the quotient and the remainder.
+/// division - the quotient and the remainder. It loops indefinitely if the divisor is `zero()`.
 ///
 /// DIV := Y (λgqab.LT a b (PAIR q a) (g (SUCC q) (SUB a b) b)) ZERO =
 /// Y (λ λ λ λ LT 2 1 (PAIR 3 2) (4 (SUCC 3) (SUB 2 1) 1)) ZERO
@@ -358,6 +358,7 @@ pub fn div() -> Term {
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
+/// It loops indefinitely if the second argument is `zero()`.
 ///
 /// QUOT := Y (λrab.LT a b ZERO (SUCC (r (SUB a b) b))) =
 /// Y (λ λ λ LT 2 1 ZERO (SUCC (3 (SUB 2 1) 1)))
@@ -395,6 +396,7 @@ pub fn quot() -> Term {
 
 // TODO: find an independent variant, like with quot()
 /// Applied to two Church-encoded numbers it returns a Church-encoded remainder of their division.
+/// It loops indefinitely if the second argument is `zero()`.
 ///
 /// REM := λab. SECOND (DIV a b) = λ λ SECOND (DIV 2 1)
 ///
