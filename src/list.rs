@@ -9,7 +9,8 @@ use arithmetic::{zero, succ};
 use combinators::y;
 use std::ops::Index;
 
-/// Equivalent to `fls()`; produces a Church-encoded `nil`, the last link of a Church-encoded list.
+/// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last link of a 
+/// Church-encoded list.
 ///
 /// NIL := FALSE
 ///
@@ -42,7 +43,7 @@ pub fn null() -> Term {
     )
 }
 
-/// Equivalent to `pair()`; applied to two terms it returns them contained in a Church-encoded list.
+/// Equivalent to `pair::pair()`; applied to two terms it returns them contained in a Church-encoded list.
 ///
 /// CONS := PAIR
 ///
@@ -72,7 +73,7 @@ pub fn null() -> Term {
 /// ```
 pub fn cons() -> Term { pair() }
 
-/// Equivalent to `first()`; applied to a Church-encoded list it returns its first element.
+/// Equivalent to `pair::first()`; applied to a Church-encoded list it returns its first element.
 ///
 /// HEAD := FIRST
 ///
@@ -89,7 +90,7 @@ pub fn cons() -> Term { pair() }
 /// ```
 pub fn head() -> Term { first() }
 
-/// Equivalent to `second()`; applied to a Church-encoded list it returns a new list with all its
+/// Equivalent to `pair::second()`; applied to a Church-encoded list it returns a new list with all its
 /// elements but the first one.
 ///
 /// TAIL := SECOND
@@ -453,7 +454,7 @@ impl Term {
     /// assert_eq!(list_110, Term::from(vec![one(), zero()]));
     /// ```
     pub fn pop(&mut self) -> Result<Term, Error> {
-        let (head, tail) = try!(self.clone().uncons()); // TODO: drop clone()
+        let (head, tail) = try!(self.clone().uncons()); // TODO: drop clone()?
         *self = tail;
 
         Ok(head)
