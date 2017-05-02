@@ -1,6 +1,6 @@
 [package]
 name = "lambda_calculus"
-version = "0.6.1"
+version = "0.6.2"
 description = "A simple implementation of the untyped lambda calculus in Rust."
 repository = "https://github.com/ljedrz/lambda_calculus"
 documentation = "https://docs.rs/lambda_calculus"

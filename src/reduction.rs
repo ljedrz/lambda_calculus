@@ -8,7 +8,7 @@ use self::Order::*;
 pub const SHOW_REDUCTIONS: bool = false;
 
 /// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction_strategies) of
-/// β-reductions. `Applicative` orders will not fully reduce expressions containing functions
+/// β-reductions. `Applicative` variants will not fully reduce expressions containing functions
 /// without a normal form, e.g. the Y combinator. The default is `Normal`.
 pub const EVALUATION_ORDER: Order = Normal;
 
