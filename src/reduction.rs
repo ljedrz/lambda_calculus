@@ -15,8 +15,9 @@ pub const EVALUATION_ORDER: Order = Normal;
 /// The available variants of β-reduction evaluation order.
 #[derive(Debug, PartialEq)]
 pub enum Order {
-    Normal,
-    Applicative
+    Normal, // leftmost outermost
+    ApplicativeLeft, // leftmost innermost
+    ApplicativeRight // rightmost innermost
 }
 
 /// Applies two terms with substitution and variable update, consuming the first one in the process.
@@ -121,7 +122,8 @@ impl Term {
     pub fn beta_once(&mut self) {
         match EVALUATION_ORDER {
             Normal => self._beta_once_normal(0),
-            Applicative => self._beta_once_applicative(0)
+            ApplicativeLeft => self._beta_once_applicative_l(0),
+            ApplicativeRight => self._beta_once_applicative_r(0)
         };
     }
 
@@ -149,10 +151,10 @@ impl Term {
     }
 
     // the return value indicates if reduction was performed
-    fn _beta_once_applicative(&mut self, depth: u32) -> bool {
+    fn _beta_once_applicative_l(&mut self, depth: u32) -> bool {
         match *self {
             Var(_) => false,
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_applicative(depth + 1),
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_applicative_l(depth + 1),
             App(_, _) => {
                 if !self.lhs_ref().unwrap().is_beta_reducible() &&
                    !self.rhs_ref().unwrap().is_beta_reducible() &&
@@ -164,8 +166,34 @@ impl Term {
                     if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
                     true
                 } else {
-                    if !self.lhs_ref_mut().unwrap()._beta_once_applicative(depth) {
-                        self.rhs_ref_mut().unwrap()._beta_once_applicative(depth)
+                    if !self.lhs_ref_mut().unwrap()._beta_once_applicative_l(depth) {
+                        self.rhs_ref_mut().unwrap()._beta_once_applicative_l(depth)
+                    } else {
+                        true
+                    }
+                }
+            }
+        }
+    }
+
+    // the return value indicates if reduction was performed
+    fn _beta_once_applicative_r(&mut self, depth: u32) -> bool {
+        match *self {
+            Var(_) => false,
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_applicative_r(depth + 1),
+            App(_, _) => {
+                if !self.rhs_ref().unwrap().is_beta_reducible() &&
+                   !self.lhs_ref().unwrap().is_beta_reducible() &&
+                    self.lhs_ref().unwrap().unabs_ref().is_ok()
+                {
+                    let copy = self.clone();
+                    if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
+                    *self = copy.eval().unwrap();
+                    if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
+                    true
+                } else {
+                    if !self.rhs_ref_mut().unwrap()._beta_once_applicative_r(depth) {
+                        self.lhs_ref_mut().unwrap()._beta_once_applicative_r(depth)
                     } else {
                         true
                     }
@@ -273,9 +301,19 @@ mod test {
                 let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
                 assert_eq!(beta_full(should_reduce), Var(1))
             },
-            Applicative => {
+            ApplicativeLeft => {
+                let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
+                assert_eq!(&format!("{}", beta_once(expr)), "λ1((λλ1)((λλ21)1))");
+
                 let shouldnt_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
-                assert_eq!(beta_once(shouldnt_reduce), parse(&"(λ2)((λ111)(λ111)(λ111))").unwrap())
+                assert_eq!(&format!("{}", beta_once(shouldnt_reduce)), "(λ2)((λ111)(λ111)(λ111))")
+            },
+            ApplicativeRight => {
+                let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
+                assert_eq!(&format!("{}", beta_once(expr)), "λ1((λλλ1)1(λ21))");
+
+                let shouldnt_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
+                assert_eq!(&format!("{}", beta_once(shouldnt_reduce)), "(λ2)((λ111)(λ111)(λ111))")
             }
         }
     }

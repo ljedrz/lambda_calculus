@@ -195,7 +195,7 @@ pub fn y() -> Term {
                 abs(Var(2).app(Var(1).app(Var(1))))
             ))
         }
-        Order::Applicative => { /* should any variant work with applicative order? */
+        Order::ApplicativeLeft | Order::ApplicativeRight => { /* should any variant work? */
             panic!("Y combinator won't work with applicative order")
             //parse(&"(λλ212)(λλ2(121))").unwrap()
             //parse(&"(λλ(1(λ3321)))(λλ(1(λ3321)))").unwrap()
