@@ -17,13 +17,16 @@ pub const DISPLAY_CLASSIC: bool = false;
 /// an applicaction of one term to another.
 #[derive(Debug, PartialEq, Clone)]
 pub enum Term {
+    /// a variable
     Var(usize),
+    /// an abstraction
     Abs(Box<Term>),
+    /// an application
     App(Box<Term>, Box<Term>)
 }
 
 /// An error that can be returned when an inapplicable function is applied to a term.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq)]
 pub enum Error {
     NotAVar,
     NotAnAbs,
