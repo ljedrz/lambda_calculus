@@ -196,7 +196,7 @@ pub fn y() -> Term {
             ))
         }
         Order::ApplicativeLeft | Order::ApplicativeRight => { /* should any variant work? */
-            panic!("Y combinator won't work with applicative order")
+            panic!("Y combinator works only with normal evaluation order")
             //parse(&"(λλ212)(λλ2(121))").unwrap()
             //parse(&"(λλ(1(λ3321)))(λλ(1(λ3321)))").unwrap()
             //parse(&"(λ11)(λ(λ(3(22)1)))").unwrap()

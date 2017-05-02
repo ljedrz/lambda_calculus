@@ -8,16 +8,19 @@ use self::Order::*;
 pub const SHOW_REDUCTIONS: bool = false;
 
 /// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction_strategies) of
-/// β-reductions. `Applicative` order will not fully reduce expressions containing functions
+/// β-reductions. `Applicative` orders will not fully reduce expressions containing functions
 /// without a normal form, e.g. the Y combinator. The default is `Normal`.
 pub const EVALUATION_ORDER: Order = Normal;
 
 /// The available variants of β-reduction evaluation order.
 #[derive(Debug, PartialEq)]
 pub enum Order {
-    Normal, // leftmost outermost
-    ApplicativeLeft, // leftmost innermost
-    ApplicativeRight // rightmost innermost
+    /// leftmost outermost
+    Normal,
+    /// leftmost innermost
+    ApplicativeLeft,
+    /// rightmost innermost
+    ApplicativeRight
 }
 
 /// Applies two terms with substitution and variable update, consuming the first one in the process.
