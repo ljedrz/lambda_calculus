@@ -130,6 +130,13 @@ impl Term {
         };
     }
 
+    fn reduce(&mut self, depth: u32) {
+        let copy = self.clone();
+        if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
+        *self = copy.eval().unwrap();
+        if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
+    }
+
     // the return value indicates if reduction was performed
     fn _beta_once_normal(&mut self, depth: u32) -> bool {
         match *self {
@@ -137,17 +144,11 @@ impl Term {
             Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_normal(depth + 1),
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    let copy = self.clone();
-                    if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
-                    *self = copy.eval().unwrap();
-                    if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
+                    self.reduce(depth);
                     true
                 } else {
-                    if !self.lhs_ref_mut().unwrap()._beta_once_normal(depth) {
-                        self.rhs_ref_mut().unwrap()._beta_once_normal(depth)
-                    } else {
-                        true
-                    }
+                    self.lhs_ref_mut().unwrap()._beta_once_normal(depth) ||
+                    self.rhs_ref_mut().unwrap()._beta_once_normal(depth)
                 }
             }
         }
@@ -163,17 +164,11 @@ impl Term {
                    !self.rhs_ref().unwrap().is_beta_reducible() &&
                     self.lhs_ref().unwrap().unabs_ref().is_ok()
                 {
-                    let copy = self.clone();
-                    if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
-                    *self = copy.eval().unwrap();
-                    if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
+                    self.reduce(depth);
                     true
                 } else {
-                    if !self.lhs_ref_mut().unwrap()._beta_once_applicative_l(depth) {
-                        self.rhs_ref_mut().unwrap()._beta_once_applicative_l(depth)
-                    } else {
-                        true
-                    }
+                    self.lhs_ref_mut().unwrap()._beta_once_applicative_l(depth) ||
+                    self.rhs_ref_mut().unwrap()._beta_once_applicative_l(depth)
                 }
             }
         }
@@ -189,17 +184,11 @@ impl Term {
                    !self.lhs_ref().unwrap().is_beta_reducible() &&
                     self.lhs_ref().unwrap().unabs_ref().is_ok()
                 {
-                    let copy = self.clone();
-                    if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
-                    *self = copy.eval().unwrap();
-                    if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
+                    self.reduce(depth);
                     true
                 } else {
-                    if !self.rhs_ref_mut().unwrap()._beta_once_applicative_r(depth) {
-                        self.lhs_ref_mut().unwrap()._beta_once_applicative_r(depth)
-                    } else {
-                        true
-                    }
+                    self.rhs_ref_mut().unwrap()._beta_once_applicative_r(depth) ||
+                    self.lhs_ref_mut().unwrap()._beta_once_applicative_r(depth)
                 }
             }
         }
