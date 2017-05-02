@@ -290,6 +290,9 @@ mod test {
     fn evaluation_order() {
         match EVALUATION_ORDER {
             Normal => {
+                let reduces_instantly = parse(&"(λλ1)((λλλ((32)1))(λλ2))").unwrap();
+                assert_eq!(beta_full(reduces_instantly.clone()), beta_once(reduces_instantly));
+
                 let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
                 assert_eq!(beta_full(should_reduce), Var(1))
             },
@@ -297,15 +300,15 @@ mod test {
                 let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
                 assert_eq!(&format!("{}", beta_once(expr)), "λ1((λλ1)((λλ21)1))");
 
-                let shouldnt_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
-                assert_eq!(&format!("{}", beta_once(shouldnt_reduce)), "(λ2)((λ111)(λ111)(λ111))")
+                let expands = parse(&"(λ2)((λ111)(λ111))").unwrap();
+                assert_eq!(&format!("{}", beta_once(expands)), "(λ2)((λ111)(λ111)(λ111))")
             },
             ApplicativeRight => {
                 let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
                 assert_eq!(&format!("{}", beta_once(expr)), "λ1((λλλ1)1(λ21))");
 
-                let shouldnt_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
-                assert_eq!(&format!("{}", beta_once(shouldnt_reduce)), "(λ2)((λ111)(λ111)(λ111))")
+                let expands = parse(&"(λ2)((λ111)(λ111))").unwrap();
+                assert_eq!(&format!("{}", beta_once(expands)), "(λ2)((λ111)(λ111)(λ111))")
             }
         }
     }
