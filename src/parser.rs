@@ -145,9 +145,7 @@ fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Ve
 
 fn fold_terms(mut terms: Vec<Term>) -> Result<Term, Error> {
     if terms.len() > 1 {
-        terms.reverse();
-        let fst = terms.pop().unwrap();
-        terms.reverse();
+        let fst = terms.remove(0);
         Ok( terms.into_iter().fold(fst, |acc, t| app(acc, t)) )
     } else if terms.len() == 1 {
         Ok( terms.pop().unwrap() )
