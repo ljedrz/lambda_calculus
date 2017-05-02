@@ -123,11 +123,15 @@ impl Term {
     /// assert_eq!(succ_one, succ().apply(&1.into()).unwrap());
     /// ```
     pub fn beta_once(&mut self) {
+        self.beta_once_indicative();
+    }
+
+    fn beta_once_indicative(&mut self) -> bool {
         match EVALUATION_ORDER {
             Normal => self._beta_once_normal(0),
             ApplicativeLeft => self._beta_once_applicative_l(0),
             ApplicativeRight => self._beta_once_applicative_r(0)
-        };
+        }
     }
 
     fn reduce(&mut self, depth: u32) {
@@ -235,14 +239,10 @@ impl Term {
     /// assert_eq!(pred_one, 0.into());
     /// ```
     pub fn beta_full(&mut self) {
-        let mut tmp;
         loop {
             if SHOW_REDUCTIONS { println!("reducing {}", self) }
-            tmp = self.clone();
-            self.beta_once();
-            if *self == tmp { break }
+            if !self.beta_once_indicative() { break }
         }
-
         if SHOW_REDUCTIONS { println!("    doesn't reduce") }
     }
 }
