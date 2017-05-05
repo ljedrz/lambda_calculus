@@ -244,7 +244,7 @@ impl Term {
     }
 }
 
-/// Wraps a term in an abstraction. Consumes its argument.
+/// Wraps a `Term` in an `Abs`traction. Consumes its argument.
 ///
 /// # Example
 /// ```
@@ -255,8 +255,8 @@ impl Term {
 /// ```
 pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 
-/// Produces an application of its arguments without substitution or reduction, consuming them in
-/// the process.
+/// Produces an `App`lication of its `Term` arguments without any reduction, consuming them in the
+/// process.
 ///
 /// # Example
 /// ```

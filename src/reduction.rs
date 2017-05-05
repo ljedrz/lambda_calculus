@@ -23,7 +23,8 @@ pub enum Order {
     ApplicativeRight
 }
 
-/// Applies two terms with substitution and variable update, consuming the first one in the process.
+/// Applies two `Term`s with substitution and variable update, consuming the first one in the
+/// process.
 ///
 /// # Example
 /// ```
@@ -76,8 +77,7 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
 }
 
 impl Term {
-    /// Applies `self` to another term with substitution and variable update, consuming it
-    /// in the process.
+    /// Applies `self` to another `Term` and performs substitution, consuming `self` in the process.
     ///
     /// # Example
     /// ```
@@ -264,7 +264,7 @@ pub fn beta_full(mut term: Term) -> Term {
     term
 }
 
-/// Performs a single β-reduction on `self`.
+/// Performs a single β-reduction on a `Term`, consuming it in the process.
 ///
 /// # Example
 ///
