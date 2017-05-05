@@ -31,4 +31,3 @@ The library is already usable, but it is still a work in progress.
 - additional reduction strategies
 - β-reduction parallelization (at least to some extent)?
 - further optimizations
-- a macro for more readable chain application
