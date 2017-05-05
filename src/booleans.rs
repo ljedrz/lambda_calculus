@@ -19,13 +19,16 @@ pub fn fls() -> Term { abs(abs(Var(1))) }
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::booleans::{and, tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(and().app(tru()).app(tru())), tru());
-/// assert_eq!(beta_full(and().app(tru()).app(fls())), fls());
-/// assert_eq!(beta_full(and().app(fls()).app(tru())), fls());
-/// assert_eq!(beta_full(and().app(fls()).app(fls())), fls());
+/// assert_eq!(beta_full(app!(and(), tru(), tru())), tru());
+/// assert_eq!(beta_full(app!(and(), tru(), fls())), fls());
+/// assert_eq!(beta_full(app!(and(), fls(), tru())), fls());
+/// assert_eq!(beta_full(app!(and(), fls(), fls())), fls());
+/// # }
 /// ```
 pub fn and() -> Term {
     abs(abs(
@@ -39,13 +42,16 @@ pub fn and() -> Term {
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::booleans::{or, tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(or().app(tru()).app(tru())), tru());
-/// assert_eq!(beta_full(or().app(tru()).app(fls())), tru());
-/// assert_eq!(beta_full(or().app(fls()).app(tru())), tru());
-/// assert_eq!(beta_full(or().app(fls()).app(fls())), fls());
+/// assert_eq!(beta_full(app!(or(), tru(), tru())), tru());
+/// assert_eq!(beta_full(app!(or(), tru(), fls())), tru());
+/// assert_eq!(beta_full(app!(or(), fls(), tru())), tru());
+/// assert_eq!(beta_full(app!(or(), fls(), fls())), fls());
+/// # }
 /// ```
 pub fn or() -> Term {
     abs(abs(
@@ -59,11 +65,14 @@ pub fn or() -> Term {
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::booleans::{not, tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(not().app(tru())), fls());
-/// assert_eq!(beta_full(not().app(fls())), tru());
+/// assert_eq!(beta_full(app!(not(), tru())), fls());
+/// assert_eq!(beta_full(app!(not(), fls())), tru());
+/// # }
 /// ```
 pub fn not() -> Term {
     abs(
@@ -77,13 +86,16 @@ pub fn not() -> Term {
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::booleans::{xor, tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(xor().app(tru()).app(tru())), fls());
-/// assert_eq!(beta_full(xor().app(tru()).app(fls())), tru());
-/// assert_eq!(beta_full(xor().app(fls()).app(tru())), tru());
-/// assert_eq!(beta_full(xor().app(fls()).app(fls())), fls());
+/// assert_eq!(beta_full(app!(xor(), tru(), tru())), fls());
+/// assert_eq!(beta_full(app!(xor(), tru(), fls())), tru());
+/// assert_eq!(beta_full(app!(xor(), fls(), tru())), tru());
+/// assert_eq!(beta_full(app!(xor(), fls(), fls())), fls());
+/// # }
 /// ```
 pub fn xor() -> Term {
     abs(abs(
@@ -98,12 +110,15 @@ pub fn xor() -> Term {
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::booleans::{if_else, tru, fls};
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(if_else().app(tru()).app(one()).app(zero())), one());
-/// assert_eq!(beta_full(if_else().app(fls()).app(one()).app(zero())), zero());
+/// assert_eq!(beta_full(app!(if_else(), tru(), one(), zero())), one());
+/// assert_eq!(beta_full(app!(if_else(), fls(), one(), zero())), zero());
+/// # }
 /// ```
 pub fn if_else() -> Term {
     abs(abs(abs(
