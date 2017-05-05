@@ -313,10 +313,28 @@ fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
     }
 }
 
+macro_rules! app {
+    ($x:expr, $($y:expr),+) => {
+        {
+            let mut term = $x;
+            $(
+                term = term.app($y);
+            )*
+            term
+        }
+    };
+}
+
 #[cfg(test)]
 mod test {
-    use super::DISPLAY_CLASSIC;
+    use super::{Var, DISPLAY_CLASSIC};
     use arithmetic::{zero, succ, pred};
+
+    #[test]
+    fn app_macro() {
+        assert_eq!(&format!("{}", app!(succ(), app!(Var(1), Var(2), Var(3)))),
+                   "(λλλ2(321))(123)");
+    }
 
     #[test]
     fn display_modes() {
