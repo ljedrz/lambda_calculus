@@ -37,9 +37,7 @@ pub fn zero() -> Term { abs(abs(Var(1))) }
 /// ```
 pub fn is_zero() -> Term {
     abs(
-        Var(1)
-        .app(abs(fls()))
-        .app(tru())
+        app!(Var(1), abs(fls()), tru())
     )
 }
 
@@ -56,7 +54,7 @@ pub fn is_zero() -> Term {
 /// ```
 pub fn one() -> Term {
     abs(abs(
-        Var(2).app(Var(1))
+        app!(Var(2), Var(1))
     ))
 }
 
@@ -75,11 +73,7 @@ pub fn one() -> Term {
 /// ```
 pub fn succ() -> Term {
     abs(abs(abs(
-        Var(2).app(
-            Var(3)
-            .app(Var(2))
-            .app(Var(1))
-        )
+        app!(Var(2), app!(Var(3), Var(2), Var(1)))
     )))
 }
 
@@ -98,9 +92,7 @@ pub fn succ() -> Term {
 /// ```
 pub fn plus() -> Term {
     abs(abs(abs(abs(
-        Var(4)
-        .app(Var(2))
-        .app(Var(3).app(Var(2)).app(Var(1)))
+        app!(Var(4), Var(2), app!(Var(3), Var(2), Var(1)))
     ))))
 }
 
@@ -119,7 +111,7 @@ pub fn plus() -> Term {
 /// ```
 pub fn mult() -> Term {
     abs(abs(abs(
-        Var(3).app(Var(2).app(Var(1)))
+        app!(Var(3), app!(Var(2), Var(1)))
     )))
 }
 
@@ -138,10 +130,7 @@ pub fn mult() -> Term {
 /// ```
 pub fn pow() -> Term {
     abs(abs(
-        is_zero()
-        .app(Var(1))
-        .app(one())
-        .app(Var(1).app(Var(2)))
+        app!(is_zero(), Var(1), one(), app!(Var(1), Var(2)))
     ))
 }
 
@@ -160,10 +149,12 @@ pub fn pow() -> Term {
 /// ```
 pub fn pred() -> Term {
     abs(abs(abs(
-        Var(3)
-        .app(abs(abs(Var(1).app(Var(2).app(Var(4))))))
-        .app(abs(Var(2)))
-        .app(abs(Var(1)))
+        app!(
+        Var(3),
+        abs(abs(app!(Var(1), app!(Var(2), Var(4))))),
+        abs(Var(2)),
+        abs(Var(1))
+        )
     )))
 }
 
@@ -182,7 +173,7 @@ pub fn pred() -> Term {
 /// ```
 pub fn sub() -> Term {
     abs(abs(
-        Var(1).app(pred()).app(Var(2))
+        app!(Var(1), pred(), Var(2))
     ))
 }
 
@@ -204,7 +195,7 @@ pub fn sub() -> Term {
 /// ```
 pub fn lt() -> Term {
     abs(abs(
-        not().app(leq().app(Var(1)).app(Var(2)))
+        app!(not(), app!(leq(), Var(1), Var(2)))
     ))
 }
 
@@ -226,7 +217,7 @@ pub fn lt() -> Term {
 /// ```
 pub fn leq() -> Term {
     abs(abs(
-        is_zero().app(sub().app(Var(2)).app(Var(1)))
+        app!(is_zero(), app!(sub(), Var(2), Var(1)))
     ))
 }
 
@@ -248,9 +239,11 @@ pub fn leq() -> Term {
 /// ```
 pub fn eq() -> Term {
     abs(abs(
-        and()
-        .app(leq().app(Var(2)).app(Var(1)))
-        .app(leq().app(Var(1)).app(Var(2)))
+        app!(
+            and(),
+            app!(leq(), Var(2), Var(1)),
+            app!(leq(), Var(1), Var(2))
+        )
     ))
 }
 
@@ -272,9 +265,11 @@ pub fn eq() -> Term {
 /// ```
 pub fn neq() -> Term {
     abs(abs(
-        or()
-        .app(not().app(leq().app(Var(2)).app(Var(1))))
-        .app(not().app(leq().app(Var(1)).app(Var(2))))
+        app!(
+            or(),
+            app!(not(), app!(leq(), Var(2), Var(1))),
+            app!(not(), app!(leq(), Var(1), Var(2)))
+        )
     ))
 }
 
@@ -296,7 +291,7 @@ pub fn neq() -> Term {
 /// ```
 pub fn geq() -> Term {
     abs(abs(
-        leq().app(Var(1)).app(Var(2))
+        app!(leq(), Var(1), Var(2))
     ))
 }
 
@@ -318,7 +313,7 @@ pub fn geq() -> Term {
 /// ```
 pub fn gt() -> Term {
     abs(abs(
-        not().app(leq().app(Var(2)).app(Var(1)))
+        app!(not(), app!(leq(), Var(2), Var(1)))
     ))
 }
 
@@ -339,22 +334,24 @@ pub fn gt() -> Term {
 /// assert_eq!(expr, Term::from((2.into(), 1.into())));
 /// ```
 pub fn div() -> Term {
-    y()
-    .app(
+    app!(
+        y(),
         abs(abs(abs(abs(
-            lt()
-            .app(Var(2))
-            .app(Var(1))
-            .app(pair().app(Var(3)).app(Var(2)))
-            .app(
-                Var(4)
-                .app(succ().app(Var(3)))
-                .app(sub().app(Var(2)).app(Var(1)))
-                .app(Var(1))
+            app!(
+                lt(),
+                Var(2),
+                Var(1),
+                app!(pair(), Var(3), Var(2)),
+                app!(
+                    Var(4),
+                    app!(succ(), Var(3)),
+                    app!(sub(), Var(2), Var(1)),
+                    Var(1)
+                )
             )
-        ))))
+        )))),
+        zero()
     )
-    .app(zero())
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
@@ -373,21 +370,21 @@ pub fn div() -> Term {
 /// assert_eq!(expr, 3.into());
 /// ```
 pub fn quot() -> Term {
-    y().app(
+    app!(
+        y(),
         abs(abs(abs(
-            lt()
-            .app(Var(2))
-            .app(Var(1))
-            .app(zero())
-            .app(
-                succ().app(
-                    Var(3)
-                    .app(
-                        sub()
-                        .app(Var(2))
-                        .app(Var(1))
+            app!(
+                lt(),
+                Var(2),
+                Var(1),
+                zero(),
+                app!(
+                    succ(),
+                    app!(
+                        Var(3),
+                        app!(sub(), Var(2), Var(1)),
+                        Var(1)
                     )
-                    .app(Var(1))
                 )
             )
         )))
@@ -411,11 +408,7 @@ pub fn quot() -> Term {
 /// ```
 pub fn rem() -> Term {
     abs(abs(
-        second().app(
-            div()
-            .app(Var(2))
-            .app(Var(1))
-        )
+        app!(second(), app!(div(), Var(2), Var(1)))
     ))
 }
 
@@ -434,17 +427,20 @@ pub fn rem() -> Term {
 /// assert_eq!(expr, 6.into());
 /// ```
 pub fn factorial() -> Term {
-    y()
-    .app(
+    app!(
+        y(),
         abs(abs(
-            is_zero()
-            .app(Var(1))
-            .app(one())
-            .app(
-                mult()
-                .app(Var(1))
-                .app(
-                    Var(2).app(pred().app(Var(1)))
+            app!(
+                is_zero(),
+                Var(1),
+                one(),
+                app!(
+                    mult(),
+                    Var(1),
+                    app!(
+                        Var(2),
+                        app!(pred(), Var(1))
+                    )
                 )
             )
         ))
@@ -515,8 +511,8 @@ mod test {
 
     #[test]
     fn church_invalid_nums() {
-        assert_eq!(tru().is_cnum(),       false);
-        assert_eq!(Var(1).is_cnum(),      false);
+        assert_eq!(      tru().is_cnum(), false);
+        assert_eq!(     Var(1).is_cnum(), false);
         assert_eq!(abs(Var(1)).is_cnum(), false);
     }
 
@@ -527,74 +523,74 @@ mod test {
 
     #[test]
     fn church_successor() {
-        assert_eq!(beta_full(succ().app(0.into())), 1.into());
-        assert_eq!(beta_full(succ().app(1.into())), 2.into());
-        assert_eq!(beta_full(succ().app(2.into())), 3.into());
+        assert_eq!(beta_full(app!(succ(), 0.into())), 1.into());
+        assert_eq!(beta_full(app!(succ(), 1.into())), 2.into());
+        assert_eq!(beta_full(app!(succ(), 2.into())), 3.into());
     }
 
     #[test]
     fn church_predecessor() {
-        assert_eq!(beta_full(pred().app(0.into())), 0.into());
-        assert_eq!(beta_full(pred().app(1.into())), 0.into());
-        assert_eq!(beta_full(pred().app(5.into())), 4.into());
+        assert_eq!(beta_full(app!(pred(), 0.into())), 0.into());
+        assert_eq!(beta_full(app!(pred(), 1.into())), 0.into());
+        assert_eq!(beta_full(app!(pred(), 5.into())), 4.into());
     }
 
     #[test]
     fn church_plus_sub_equivalents() {
-        assert_eq!(beta_full(plus().app(1.into())), succ()); // PLUS 1 → SUCC
-        assert_eq!(beta_full(c().app(sub()).app(1.into())), pred()); // C SUB 1 → PRED
+        assert_eq!(beta_full(app!(    plus(), 1.into())), succ()); // PLUS 1 → SUCC
+        assert_eq!(beta_full(app!(c(), sub(), 1.into())), pred()); // C SUB 1 → PRED
     }
 
     #[test]
     fn church_multiplication() {
-        assert_eq!(beta_full(mult().app(3.into()).app(4.into())), 12.into());
-        assert_eq!(beta_full(mult().app(1.into()).app(3.into())), 3.into());
-        assert_eq!(beta_full(mult().app(3.into()).app(1.into())), 3.into());
-        assert_eq!(beta_full(mult().app(5.into()).app(0.into())), 0.into());
-        assert_eq!(beta_full(mult().app(0.into()).app(5.into())), 0.into());
+        assert_eq!(beta_full(app!(mult(), 3.into(), 4.into())), 12.into());
+        assert_eq!(beta_full(app!(mult(), 1.into(), 3.into())), 3.into());
+        assert_eq!(beta_full(app!(mult(), 3.into(), 1.into())), 3.into());
+        assert_eq!(beta_full(app!(mult(), 5.into(), 0.into())), 0.into());
+        assert_eq!(beta_full(app!(mult(), 0.into(), 5.into())), 0.into());
     }
 
     #[test]
     fn church_exponentiation() {
-        assert_eq!(beta_full(pow().app(2.into()).app(4.into())), 16.into());
-        assert_eq!(beta_full(pow().app(1.into()).app(3.into())), 1.into());
-        assert_eq!(beta_full(pow().app(3.into()).app(1.into())), 3.into());
-        assert_eq!(beta_full(pow().app(5.into()).app(0.into())), 1.into());
-        assert_eq!(beta_full(pow().app(0.into()).app(5.into())), 0.into());
+        assert_eq!(beta_full(app!(pow(), 2.into(), 4.into())), 16.into());
+        assert_eq!(beta_full(app!(pow(), 1.into(), 3.into())), 1.into());
+        assert_eq!(beta_full(app!(pow(), 3.into(), 1.into())), 3.into());
+        assert_eq!(beta_full(app!(pow(), 5.into(), 0.into())), 1.into());
+        assert_eq!(beta_full(app!(pow(), 0.into(), 5.into())), 0.into());
     }
 
     #[test]
     fn church_division() {
-        assert_eq!(beta_full(div().app(2.into()).app(2.into())), (1.into(), 0.into()).into());
-        assert_eq!(beta_full(div().app(3.into()).app(2.into())), (1.into(), 1.into()).into());
-        assert_eq!(beta_full(div().app(2.into()).app(1.into())), (2.into(), 0.into()).into());
-        assert_eq!(beta_full(div().app(0.into()).app(3.into())), (0.into(), 0.into()).into());
-        // assert_eq!(beta_full(div().app(1.into()).app(0.into())), ); division by 0 hangs
+        assert_eq!(beta_full(app!(div(), 2.into(), 2.into())), (1.into(), 0.into()).into());
+        assert_eq!(beta_full(app!(div(), 3.into(), 2.into())), (1.into(), 1.into()).into());
+        assert_eq!(beta_full(app!(div(), 2.into(), 1.into())), (2.into(), 0.into()).into());
+        assert_eq!(beta_full(app!(div(), 0.into(), 3.into())), (0.into(), 0.into()).into());
+        // assert_eq!(beta_full(app!(div(), 1.into(), 0.into())), ); division by 0 hangs
     }
 
     #[test]
     fn church_quotient() {
-        assert_eq!(beta_full(quot().app(2.into()).app(2.into())), 1.into());
-        assert_eq!(beta_full(quot().app(3.into()).app(2.into())), 1.into());
-        assert_eq!(beta_full(quot().app(2.into()).app(1.into())), 2.into());
-        assert_eq!(beta_full(quot().app(0.into()).app(3.into())), 0.into());
-        // assert_eq!(beta_full(quot().app(1.into()).app(0.into())), ); division by 0 hangs
+        assert_eq!(beta_full(app!(quot(), 2.into(), 2.into())), 1.into());
+        assert_eq!(beta_full(app!(quot(), 3.into(), 2.into())), 1.into());
+        assert_eq!(beta_full(app!(quot(), 2.into(), 1.into())), 2.into());
+        assert_eq!(beta_full(app!(quot(), 0.into(), 3.into())), 0.into());
+        // assert_eq!(beta_full(app!(quot(), 1.into(), 0.into())), ); division by 0 hangs
     }
 
     #[test]
     fn church_remainder() {
-        assert_eq!(beta_full(rem().app(2.into()).app(2.into())), 0.into());
-        assert_eq!(beta_full(rem().app(3.into()).app(2.into())), 1.into());
-        assert_eq!(beta_full(rem().app(2.into()).app(1.into())), 0.into());
-        assert_eq!(beta_full(rem().app(0.into()).app(3.into())), 0.into());
-        // assert_eq!(beta_full(quot().app(1.into()).app(0.into())), ); division by 0 hangs
+        assert_eq!(beta_full(app!(rem(), 2.into(), 2.into())), 0.into());
+        assert_eq!(beta_full(app!(rem(), 3.into(), 2.into())), 1.into());
+        assert_eq!(beta_full(app!(rem(), 2.into(), 1.into())), 0.into());
+        assert_eq!(beta_full(app!(rem(), 0.into(), 3.into())), 0.into());
+        // assert_eq!(beta_full(app!(rem(), 1.into(), 0.into())), ); division by 0 hangs
     }
 
     #[test]
     fn church_factorial() {
-        assert_eq!(beta_full(factorial().app(0.into())), 1.into());
-        assert_eq!(beta_full(factorial().app(1.into())), 1.into());
-        assert_eq!(beta_full(factorial().app(2.into())), 2.into());
-        assert_eq!(beta_full(factorial().app(3.into())), 6.into());
+        assert_eq!(beta_full(app!(factorial(), 0.into())), 1.into());
+        assert_eq!(beta_full(app!(factorial(), 1.into())), 1.into());
+        assert_eq!(beta_full(app!(factorial(), 2.into())), 2.into());
+        assert_eq!(beta_full(app!(factorial(), 3.into())), 6.into());
     }
 }
