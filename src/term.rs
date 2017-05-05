@@ -317,9 +317,7 @@ macro_rules! app {
     ($x:expr, $($y:expr),+) => {
         {
             let mut term = $x;
-            $(
-                term = term.app($y);
-            )*
+            $(term = term.app($y);)*
             term
         }
     };
@@ -332,8 +330,7 @@ mod test {
 
     #[test]
     fn app_macro() {
-        assert_eq!(&format!("{}", app!(succ(), app!(Var(1), Var(2), Var(3)))),
-                   "(λλλ2(321))(123)");
+        assert_eq!(&format!("{}", app!(succ(), app!(Var(1), Var(2), Var(3)))), "(λλλ2(321))(123)");
     }
 
     #[test]

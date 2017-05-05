@@ -29,9 +29,7 @@ pub fn fls() -> Term { abs(abs(Var(1))) }
 /// ```
 pub fn and() -> Term {
     abs(abs(
-        Var(2)
-        .app(Var(1))
-        .app(Var(2))
+        app!(Var(2), Var(1), Var(2))
     ))
 }
 
@@ -51,9 +49,7 @@ pub fn and() -> Term {
 /// ```
 pub fn or() -> Term {
     abs(abs(
-        Var(2)
-        .app(Var(2))
-        .app(Var(1))
+        app!(Var(2), Var(2), Var(1))
     ))
 }
 
@@ -71,9 +67,7 @@ pub fn or() -> Term {
 /// ```
 pub fn not() -> Term {
     abs(
-        Var(1)
-        .app(fls())
-        .app(tru())
+        app!(Var(1), fls(), tru())
     )
 }
 
@@ -93,9 +87,7 @@ pub fn not() -> Term {
 /// ```
 pub fn xor() -> Term {
     abs(abs(
-        Var(2)
-        .app(not().app(Var(1)))
-        .app(Var(1))
+        app!(Var(2), app!(not(), Var(1)), Var(1))
     ))
 }
 
@@ -115,9 +107,7 @@ pub fn xor() -> Term {
 /// ```
 pub fn if_else() -> Term {
     abs(abs(abs(
-        Var(3)
-        .app(Var(2))
-        .app(Var(1))
+        app!(Var(3), Var(2), Var(1))
     )))
 }
 
