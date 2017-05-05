@@ -24,9 +24,7 @@ use booleans::*;
 /// ```
 pub fn pair() -> Term {
     abs(abs(abs(
-        Var(1)
-        .app(Var(3))
-        .app(Var(2))
+        app!(Var(1), Var(3), Var(2))
     )))
 }
 
@@ -289,11 +287,7 @@ impl Term {
 
 impl From<(Term, Term)> for Term {
     fn from((t1, t2): (Term, Term)) -> Self {
-        abs(
-            Var(1)
-            .app(t1)
-            .app(t2)
-        )
+        abs(app!(Var(1), t1, t2))
     }
 }
 

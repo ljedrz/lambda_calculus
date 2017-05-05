@@ -191,11 +191,14 @@ pub fn omm() -> Term { om().app(om()) }
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::combinators::y;
 /// use lambda_calculus::arithmetic::zero;
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(y().app(zero())), beta_full(zero().app(y().app(zero()))));
+/// assert_eq!(beta_full(y().app(zero())), beta_full(app!(zero(), app!(y(), zero()))));
+/// # }
 /// ```
 pub fn y() -> Term {
     match EVALUATION_ORDER {
