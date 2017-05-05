@@ -34,11 +34,14 @@ pub fn i() -> Term { abs(Var(1)) }
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::combinators::k;
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(k().app(zero()).app(one())), zero());
+/// assert_eq!(beta_full(app!(k(), zero(), one())), zero());
+/// # }
 /// ```
 pub fn k() -> Term { abs(abs(Var(2))) }
 
@@ -48,12 +51,15 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::s;
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(s().app(0.into()).app(1.into()).app(2.into())),
-///            beta_full(Term::from(0).app(2.into()).app(Term::from(1).app(2.into()))));
+/// assert_eq!(beta_full(app!(s(), 0.into(), 1.into(), 2.into())),
+///            beta_full(app!(Term::from(0), 2.into(), app!(Term::from(1), 2.into()))));
+/// # }
 /// ```
 pub fn s() -> Term {
     abs(abs(abs(
@@ -69,14 +75,17 @@ pub fn s() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::combinators::{iota, i, k, s};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(iota().app(iota())), i());
-/// assert_eq!(beta_full(iota().app(iota().app(iota().app(iota())))), k());
-/// assert_eq!(beta_full(iota().app(iota().app(iota().app(iota().app(iota()))))), s());
+/// assert_eq!(beta_full(app!(iota(), iota())), i());
+/// assert_eq!(beta_full(app!(iota(), app!(iota(), app!(iota(), iota())))), k());
+/// assert_eq!(beta_full(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota()))))), s());
+/// # }
 /// ```
-pub fn iota() -> Term { abs(Var(1).app(s()).app(k())) }
+pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 
 /// B - the composition combinator.
 ///
@@ -84,17 +93,19 @@ pub fn iota() -> Term { abs(Var(1).app(s()).app(k())) }
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::b;
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(b().app(0.into()).app(1.into()).app(2.into())),
-///            beta_full(Term::from(0).app(Term::from(1).app(2.into()))));
+/// assert_eq!(beta_full(app!(b(), 0.into(), 1.into(), 2.into())),
+///            beta_full(app!(Term::from(0), app!(Term::from(1), 2.into()))));
+/// # }
 /// ```
 pub fn b() -> Term {
     abs(abs(abs(
-        Var(3)
-        .app(Var(2).app(Var(1)))
+        app!(Var(3), app!(Var(2), Var(1)))
     )))
 }
 
@@ -104,18 +115,19 @@ pub fn b() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::c;
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(c().app(0.into()).app(1.into()).app(2.into())),
-///            beta_full(Term::from(0).app(2.into()).app(1.into())));
+/// assert_eq!(beta_full(app!(c(), 0.into(), 1.into(), 2.into())),
+///            beta_full(app!(Term::from(0), 2.into(), 1.into())));
+/// # }
 /// ```
 pub fn c() -> Term {
     abs(abs(abs(
-        Var(3)
-        .app(Var(1))
-        .app(Var(2))
+        app!(Var(3), Var(1), Var(2))
     )))
 }
 
@@ -125,18 +137,19 @@ pub fn c() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::combinators::w;
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(w().app(zero()).app(one())),
-///            beta_full(zero().app(one()).app(one())));
+/// assert_eq!(beta_full(app!(w(), zero(), one())),
+///            beta_full(app!(zero(), one(), one())));
+/// # }
 /// ```
 pub fn w() -> Term {
     abs(abs(
-        Var(2)
-        .app(Var(1))
-        .app(Var(1))
+        app!(Var(2), Var(1), Var(1))
     ))
 }
 /*
@@ -191,8 +204,8 @@ pub fn y() -> Term {
     match EVALUATION_ORDER {
         Order::Normal => {
             abs(app(
-                abs(Var(2).app(Var(1).app(Var(1)))),
-                abs(Var(2).app(Var(1).app(Var(1))))
+                abs(app!(Var(2), app!(Var(1), Var(1)))),
+                abs(app!(Var(2), app!(Var(1), Var(1))))
             ))
         }
         Order::ApplicativeLeft | Order::ApplicativeRight => { /* should any variant work? */
