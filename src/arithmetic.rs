@@ -28,12 +28,15 @@ pub fn zero() -> Term { abs(abs(Var(1))) }
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::is_zero;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(is_zero().app(0.into())), tru());
-/// assert_eq!(beta_full(is_zero().app(1.into())), fls());
+/// assert_eq!(beta_full(app!(is_zero(), 0.into())), tru());
+/// assert_eq!(beta_full(app!(is_zero(), 1.into())), fls());
+/// # }
 /// ```
 pub fn is_zero() -> Term {
     abs(
@@ -83,12 +86,15 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::plus;
 ///
-/// let mut expr = plus().app(3.into()).app(2.into());
+/// let mut expr = app!(plus(), 3.into(), 2.into());
 /// expr.beta_full();
 ///
 /// assert_eq!(expr, 5.into());
+/// # }
 /// ```
 pub fn plus() -> Term {
     abs(abs(abs(abs(
@@ -102,12 +108,15 @@ pub fn plus() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::mult;
 ///
-/// let mut expr = mult().app(2.into()).app(3.into());
+/// let mut expr = app!(mult(), 2.into(), 3.into());
 /// expr.beta_full();
 ///
 /// assert_eq!(expr, 6.into());
+/// # }
 /// ```
 pub fn mult() -> Term {
     abs(abs(abs(
@@ -121,12 +130,15 @@ pub fn mult() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::pow;
 ///
-/// let mut expr = pow().app(2.into()).app(3.into());
+/// let mut expr = app!(pow(), 2.into(), 3.into());
 /// expr.beta_full();
 ///
 /// assert_eq!(expr, 8.into());
+/// # }
 /// ```
 pub fn pow() -> Term {
     abs(abs(
@@ -164,12 +176,15 @@ pub fn pred() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::sub;
 ///
-/// let mut expr = sub().app(5.into()).app(3.into());
+/// let mut expr = app!(sub(), 5.into(), 3.into());
 /// expr.beta_full();
 ///
 /// assert_eq!(expr, 2.into());
+/// # }
 /// ```
 pub fn sub() -> Term {
     abs(abs(
@@ -184,14 +199,17 @@ pub fn sub() -> Term {
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::lt;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(lt().app(0.into()).app(0.into())), fls());
-/// assert_eq!(beta_full(lt().app(1.into()).app(1.into())), fls());
-/// assert_eq!(beta_full(lt().app(0.into()).app(1.into())), tru());
-/// assert_eq!(beta_full(lt().app(1.into()).app(0.into())), fls());
+/// assert_eq!(beta_full(app!(lt(), 0.into(), 0.into())), fls());
+/// assert_eq!(beta_full(app!(lt(), 1.into(), 1.into())), fls());
+/// assert_eq!(beta_full(app!(lt(), 0.into(), 1.into())), tru());
+/// assert_eq!(beta_full(app!(lt(), 1.into(), 0.into())), fls());
+/// # }
 /// ```
 pub fn lt() -> Term {
     abs(abs(
@@ -206,14 +224,17 @@ pub fn lt() -> Term {
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::leq;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(leq().app(0.into()).app(0.into())), tru());
-/// assert_eq!(beta_full(leq().app(1.into()).app(1.into())), tru());
-/// assert_eq!(beta_full(leq().app(0.into()).app(1.into())), tru());
-/// assert_eq!(beta_full(leq().app(1.into()).app(0.into())), fls());
+/// assert_eq!(beta_full(app!(leq(), 0.into(), 0.into())), tru());
+/// assert_eq!(beta_full(app!(leq(), 1.into(), 1.into())), tru());
+/// assert_eq!(beta_full(app!(leq(), 0.into(), 1.into())), tru());
+/// assert_eq!(beta_full(app!(leq(), 1.into(), 0.into())), fls());
+/// # }
 /// ```
 pub fn leq() -> Term {
     abs(abs(
@@ -228,14 +249,17 @@ pub fn leq() -> Term {
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::eq;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(eq().app(0.into()).app(0.into())), tru());
-/// assert_eq!(beta_full(eq().app(1.into()).app(1.into())), tru());
-/// assert_eq!(beta_full(eq().app(0.into()).app(1.into())), fls());
-/// assert_eq!(beta_full(eq().app(1.into()).app(0.into())), fls());
+/// assert_eq!(beta_full(app!(eq(), 0.into(), 0.into())), tru());
+/// assert_eq!(beta_full(app!(eq(), 1.into(), 1.into())), tru());
+/// assert_eq!(beta_full(app!(eq(), 0.into(), 1.into())), fls());
+/// assert_eq!(beta_full(app!(eq(), 1.into(), 0.into())), fls());
+/// # }
 /// ```
 pub fn eq() -> Term {
     abs(abs(
@@ -254,14 +278,17 @@ pub fn eq() -> Term {
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::neq;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(neq().app(0.into()).app(0.into())), fls());
-/// assert_eq!(beta_full(neq().app(1.into()).app(1.into())), fls());
-/// assert_eq!(beta_full(neq().app(0.into()).app(1.into())), tru());
-/// assert_eq!(beta_full(neq().app(1.into()).app(0.into())), tru());
+/// assert_eq!(beta_full(app!(neq(), 0.into(), 0.into())), fls());
+/// assert_eq!(beta_full(app!(neq(), 1.into(), 1.into())), fls());
+/// assert_eq!(beta_full(app!(neq(), 0.into(), 1.into())), tru());
+/// assert_eq!(beta_full(app!(neq(), 1.into(), 0.into())), tru());
+/// # }
 /// ```
 pub fn neq() -> Term {
     abs(abs(
@@ -280,14 +307,17 @@ pub fn neq() -> Term {
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::geq;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(geq().app(0.into()).app(0.into())), tru());
-/// assert_eq!(beta_full(geq().app(1.into()).app(1.into())), tru());
-/// assert_eq!(beta_full(geq().app(0.into()).app(1.into())), fls());
-/// assert_eq!(beta_full(geq().app(1.into()).app(0.into())), tru());
+/// assert_eq!(beta_full(app!(geq(), 0.into(), 0.into())), tru());
+/// assert_eq!(beta_full(app!(geq(), 1.into(), 1.into())), tru());
+/// assert_eq!(beta_full(app!(geq(), 0.into(), 1.into())), fls());
+/// assert_eq!(beta_full(app!(geq(), 1.into(), 0.into())), tru());
+/// # }
 /// ```
 pub fn geq() -> Term {
     abs(abs(
@@ -302,14 +332,17 @@ pub fn geq() -> Term {
 ///
 /// # Examples
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::{zero, one, gt};
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(gt().app(0.into()).app(0.into())), fls());
-/// assert_eq!(beta_full(gt().app(1.into()).app(1.into())), fls());
-/// assert_eq!(beta_full(gt().app(0.into()).app(1.into())), fls());
-/// assert_eq!(beta_full(gt().app(1.into()).app(0.into())), tru());
+/// assert_eq!(beta_full(app!(gt(), 0.into(), 0.into())), fls());
+/// assert_eq!(beta_full(app!(gt(), 1.into(), 1.into())), fls());
+/// assert_eq!(beta_full(app!(gt(), 0.into(), 1.into())), fls());
+/// assert_eq!(beta_full(app!(gt(), 1.into(), 0.into())), tru());
+/// # }
 /// ```
 pub fn gt() -> Term {
     abs(abs(
@@ -325,13 +358,16 @@ pub fn gt() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::div;
 /// use lambda_calculus::term::Term;
 ///
-/// let mut expr = div().app(5.into()).app(2.into());
+/// let mut expr = app!(div(), 5.into(), 2.into());
 /// expr.beta_full();
 ///
 /// assert_eq!(expr, Term::from((2.into(), 1.into())));
+/// # }
 /// ```
 pub fn div() -> Term {
     app!(
@@ -362,12 +398,15 @@ pub fn div() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::quot;
 ///
-/// let mut expr = quot().app(6.into()).app(2.into());
+/// let mut expr = app!(quot(), 6.into(), 2.into());
 /// expr.beta_full();
 ///
 /// assert_eq!(expr, 3.into());
+/// # }
 /// ```
 pub fn quot() -> Term {
     app!(
@@ -399,12 +438,15 @@ pub fn quot() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::arithmetic::rem;
 ///
-/// let mut expr = rem().app(3.into()).app(2.into());
+/// let mut expr = app!(rem(), 3.into(), 2.into());
 /// expr.beta_full();
 ///
 /// assert_eq!(expr, 1.into());
+/// # }
 /// ```
 pub fn rem() -> Term {
     abs(abs(
