@@ -465,14 +465,14 @@ impl Term {
     }
 
     fn _value(&self) -> Result<usize, Error> {
-        if let Ok(ref rhs) = self.rhs_ref() {
-            Ok(1 + try!(rhs._value()))
-        } else if let Var(n) = *self {
-            if n == 1 {
-                Ok(0)
+        if let Ok((lhs, rhs)) = self.unapp_ref() {
+            if *lhs == Var(2) {
+                Ok(1 + try!(rhs._value()))
             } else {
                 Err(NotANum)
             }
+        } else if *self == Var(1) {
+            Ok(0)
         } else {
             Err(NotANum)
         }
