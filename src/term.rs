@@ -313,11 +313,24 @@ fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
     }
 }
 
+/// A macro for chain application of `Term`s.
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::term::Term::*;
+/// use lambda_calculus::term::app;
+///
+/// assert_eq!(app!(Var(1), Var(2), Var(3)), Var(1).app(Var(2)).app(Var(3)));
+/// # }
+/// ```
+#[macro_export]
 macro_rules! app {
-    ($x:expr, $($y:expr),+) => {
+    ($term1:expr, $($term2:expr),+) => {
         {
-            let mut term = $x;
-            $(term = term.app($y);)*
+            let mut term = $term1;
+            $(term = term.app($term2);)*
             term
         }
     };
