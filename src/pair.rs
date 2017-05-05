@@ -11,12 +11,15 @@ use booleans::*;
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::pair::pair;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// let pair01 = pair().app(zero()).app(one());
+/// let pair01 = app!(pair(), zero(), one());
 ///
 /// assert_eq!(pair01.fst_ref(), Ok(&zero()));
 /// assert_eq!(pair01.snd_ref(), Ok(&one()));
+/// # }
 /// ```
 pub fn pair() -> Term {
     abs(abs(abs(
@@ -32,13 +35,16 @@ pub fn pair() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::pair::{pair, first};
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// let pair_0_1 = pair().app(zero()).app(one());
+/// let pair_0_1 = app!(pair(), zero(), one());
 ///
 /// assert_eq!(beta_full(first().app(pair_0_1)), zero());
+/// # }
 /// ```
 pub fn first() -> Term { abs(Var(1).app(tru())) }
 
@@ -48,13 +54,16 @@ pub fn first() -> Term { abs(Var(1).app(tru())) }
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::pair::{pair, second};
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// let pair_0_1 = pair().app(zero()).app(one());
+/// let pair_0_1 = app!(pair(), zero(), one());
 ///
 /// assert_eq!(beta_full(second().app(pair_0_1)), one());
+/// # }
 /// ```
 pub fn second() -> Term { abs(Var(1).app(fls())) }
 
@@ -63,12 +72,15 @@ impl Term {
     ///
     /// # Example
     /// ```
+    /// # #[macro_use] extern crate lambda_calculus;
+    /// # fn main() {
     /// use lambda_calculus::pair::pair;
     /// use lambda_calculus::arithmetic::{zero, one};
     ///
-    /// let pair01 = pair().app(zero()).app(one());
+    /// let pair01 = app!(pair(), zero(), one());
     ///
     /// assert!(pair01.is_pair());
+    /// # }
     /// ```
     pub fn is_pair(&self) -> bool {
         self.fst_ref().is_ok() && self.snd_ref().is_ok()
@@ -78,12 +90,15 @@ impl Term {
     ///
     /// # Example
     /// ```
+    /// # #[macro_use] extern crate lambda_calculus;
+    /// # fn main() {
     /// use lambda_calculus::pair::pair;
     /// use lambda_calculus::arithmetic::{zero, one};
     ///
-    /// let pair01 = pair().app(zero()).app(one());
+    /// let pair01 = app!(pair(), zero(), one());
     ///
     /// assert_eq!(pair01.unpair(), Ok((zero(), one())));
+    /// # }
     /// ```
     pub fn unpair(self) -> Result<(Term, Term), Error> {
         if let Abs(_) = self {
@@ -105,12 +120,15 @@ impl Term {
     ///
     /// # Example
     /// ```
+    /// # #[macro_use] extern crate lambda_calculus;
+    /// # fn main() {
     /// use lambda_calculus::pair::pair;
     /// use lambda_calculus::arithmetic::{zero, one};
     ///
-    /// let pair01 = pair().app(zero()).app(one());
+    /// let pair01 = app!(pair(), zero(), one());
     ///
     /// assert_eq!(pair01.unpair_ref(), Ok((&zero(), &one())));
+    /// # }
     /// ```
     pub fn unpair_ref(&self) -> Result<(&Term, &Term), Error> {
         if let Abs(_) = *self {
@@ -132,12 +150,15 @@ impl Term {
     ///
     /// # Example
     /// ```
+    /// # #[macro_use] extern crate lambda_calculus;
+    /// # fn main() {
     /// use lambda_calculus::pair::pair;
     /// use lambda_calculus::arithmetic::{zero, one};
     ///
-    /// let mut pair01 = pair().app(zero()).app(one());
+    /// let mut pair01 = app!(pair(), zero(), one());
     ///
     /// assert_eq!(pair01.unpair_ref_mut(), Ok((&mut zero(), &mut one())));
+    /// # }
     /// ```
     pub fn unpair_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
         if let Abs(_) = *self {
@@ -159,12 +180,15 @@ impl Term {
     ///
     /// # Example
     /// ```
+    /// # #[macro_use] extern crate lambda_calculus;
+    /// # fn main() {
     /// use lambda_calculus::pair::pair;
     /// use lambda_calculus::arithmetic::{zero, one};
     ///
-    /// let pair01 = pair().app(zero()).app(one());
+    /// let pair01 = app!(pair(), zero(), one());
     ///
     /// assert_eq!(pair01.fst(), Ok(zero()));
+    /// # }
     /// ```
     pub fn fst(self) -> Result<Term, Error> {
         Ok(try!(self.unpair()).0)
@@ -174,12 +198,15 @@ impl Term {
     ///
     /// # Example
     /// ```
+    /// # #[macro_use] extern crate lambda_calculus;
+    /// # fn main() {
     /// use lambda_calculus::pair::pair;
     /// use lambda_calculus::arithmetic::{zero, one};
     ///
-    /// let pair01 = pair().app(zero()).app(one());
+    /// let pair01 = app!(pair(), zero(), one());
     ///
     /// assert_eq!(pair01.fst_ref(), Ok(&zero()));
+    /// # }
     /// ```
     pub fn fst_ref(&self) -> Result<&Term, Error> {
         Ok(try!(self.unpair_ref()).0)
@@ -190,12 +217,15 @@ impl Term {
     ///
     /// # Example
     /// ```
+    /// # #[macro_use] extern crate lambda_calculus;
+    /// # fn main() {
     /// use lambda_calculus::pair::pair;
     /// use lambda_calculus::arithmetic::{zero, one};
     ///
-    /// let mut pair01 = pair().app(zero()).app(one());
+    /// let mut pair01 = app!(pair(), zero(), one());
     ///
     /// assert_eq!(pair01.fst_ref_mut(), Ok(&mut zero()));
+    /// # }
     /// ```
     pub fn fst_ref_mut(&mut self) -> Result<&mut Term, Error> {
         Ok(try!(self.unpair_ref_mut()).0)
@@ -205,12 +235,15 @@ impl Term {
     ///
     /// # Example
     /// ```
+    /// # #[macro_use] extern crate lambda_calculus;
+    /// # fn main() {
     /// use lambda_calculus::pair::pair;
     /// use lambda_calculus::arithmetic::{zero, one};
     ///
-    /// let pair01 = pair().app(zero()).app(one());
+    /// let pair01 = app!(pair(), zero(), one());
     ///
     /// assert_eq!(pair01.snd(), Ok(one()));
+    /// # }
     /// ```
     pub fn snd(self) -> Result<Term, Error> {
         Ok(try!(self.unpair()).1)
@@ -220,12 +253,15 @@ impl Term {
     ///
     /// # Example
     /// ```
+    /// # #[macro_use] extern crate lambda_calculus;
+    /// # fn main() {
     /// use lambda_calculus::pair::pair;
     /// use lambda_calculus::arithmetic::{zero, one};
     ///
-    /// let pair01 = pair().app(zero()).app(one());
+    /// let pair01 = app!(pair(), zero(), one());
     ///
     /// assert_eq!(pair01.snd_ref(), Ok(&one()));
+    /// # }
     /// ```
     pub fn snd_ref(&self) -> Result<&Term, Error> {
         Ok(try!(self.unpair_ref()).1)
@@ -235,12 +271,15 @@ impl Term {
     ///
     /// # Example
     /// ```
+    /// # #[macro_use] extern crate lambda_calculus;
+    /// # fn main() {
     /// use lambda_calculus::pair::pair;
     /// use lambda_calculus::arithmetic::{zero, one};
     ///
-    /// let mut pair01 = pair().app(zero()).app(one());
+    /// let mut pair01 = app!(pair(), zero(), one());
     ///
     /// assert_eq!(pair01.snd_ref_mut(), Ok(&mut one()));
+    /// # }
     /// ```
     pub fn snd_ref_mut(&mut self) -> Result<&mut Term, Error> {
         Ok(try!(self.unpair_ref_mut()).1)
@@ -264,12 +303,12 @@ mod test {
 
     #[test]
     fn pair_from_pair() {
-        assert_eq!(Term::from((0.into(), 1.into())), beta_full(pair().app(0.into()).app(1.into())));
+        assert_eq!(Term::from((0.into(), 1.into())), beta_full(app!(pair(), 0.into(), 1.into())));
     }
 
     #[test]
     fn pair_operations() {
-        let pair_four_three = beta_full(pair().app(4.into()).app(3.into()));
+        let pair_four_three = beta_full(app!(pair(), 4.into(), 3.into()));
 
         assert!(pair_four_three.is_pair());
 
