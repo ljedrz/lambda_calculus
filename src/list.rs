@@ -29,18 +29,17 @@ pub fn nil() -> Term { fls() }
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::list::{nil, null};
 /// use lambda_calculus::booleans::tru;
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(null().app(nil())), tru());
+/// assert_eq!(beta_full(app!(null(), nil())), tru());
+/// # }
 /// ```
 pub fn null() -> Term {
-    abs(
-        Var(1)
-        .app(abs(abs(abs(fls()))))
-        .app(tru())
-    )
+    abs(app!(Var(1), abs(abs(abs(fls()))), tru()))
 }
 
 /// Equivalent to `pair::pair()`; applied to two terms it returns them contained in a Church-encoded list.
@@ -49,27 +48,33 @@ pub fn null() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::list::{nil, cons};
 /// use lambda_calculus::reduction::beta_full;
 ///
 /// let list_110_consed = beta_full(
-///    cons()
-///    .app(one())
-///    .app(
-///        cons()
-///        .app(one())
-///        .app(
-///            cons()
-///            .app(zero())
-///            .app(nil())
-///           )
-///      )
+///     app!(
+///         cons(),
+///         one(),
+///         app!(
+///             cons(),
+///             one(),
+///             app!(
+///                 cons(),
+///                 zero(),
+///                 nil()
+///             )
+///         )
+///     )
+///
 /// );
 /// let list_110_from_vec = Term::from(vec![one(), one(), zero()]);
 ///
 /// assert_eq!(list_110_consed, list_110_from_vec);
+/// # }
 /// ```
 pub fn cons() -> Term { pair() }
 
@@ -79,6 +84,8 @@ pub fn cons() -> Term { pair() }
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::head;
 /// use lambda_calculus::arithmetic::{zero, one};
@@ -86,7 +93,8 @@ pub fn cons() -> Term { pair() }
 ///
 /// let list_110 = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(beta_full(head().app(list_110)), one());
+/// assert_eq!(beta_full(app!(head(), list_110)), one());
+/// # }
 /// ```
 pub fn head() -> Term { first() }
 
@@ -97,6 +105,8 @@ pub fn head() -> Term { first() }
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::tail;
 /// use lambda_calculus::arithmetic::{zero, one};
@@ -104,7 +114,8 @@ pub fn head() -> Term { first() }
 ///
 /// let list_110 = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(beta_full(tail().app(list_110)), Term::from(vec![one(), zero()]));
+/// assert_eq!(beta_full(app!(tail(), list_110)), Term::from(vec![one(), zero()]));
+/// # }
 /// ```
 pub fn tail() -> Term { second() }
 
@@ -115,30 +126,35 @@ pub fn tail() -> Term { second() }
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::{length, nil};
 /// use lambda_calculus::reduction::beta_full;
 ///
 /// let list_4 = Term::from(vec![1.into(), 1.into(), 0.into(), 1.into()]);
 ///
-/// assert_eq!(beta_full(length().app(nil())),  0.into());
-/// assert_eq!(beta_full(length().app(list_4)), 4.into());
+/// assert_eq!(beta_full(app!(length(), nil())),  0.into());
+/// assert_eq!(beta_full(app!(length(), list_4)), 4.into());
+/// # }
 /// ```
 pub fn length() -> Term {
-    y()
-    .app(
+    app!(
+        y(),
         abs(abs(abs(
-            null()
-            .app(Var(1))
-            .app(Var(2))
-            .app(
-                Var(3)
-                .app(succ().app(Var(2)))
-                .app(second().app(Var(1)))
+            app!(
+                null(),
+                Var(1),
+                Var(2),
+                app!(
+                    Var(3),
+                    app!(succ(), Var(2)),
+                    app!(second(), Var(1))
+                )
             )
-        )))
+        ))),
+        zero()
     )
-    .app(zero())
 }
 
 /// Reverses a Church-encoded list.
@@ -148,6 +164,8 @@ pub fn length() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::reverse;
 /// use lambda_calculus::arithmetic::{zero, one};
@@ -155,27 +173,26 @@ pub fn length() -> Term {
 ///
 /// let list = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(beta_full(reverse().app(list)), Term::from(vec![zero(), one(), one()]));
+/// assert_eq!(beta_full(app!(reverse(), list)), Term::from(vec![zero(), one(), one()]));
+/// # }
 /// ```
 pub fn reverse() -> Term {
-    y()
-    .app(
+    app!(
+        y(),
         abs(abs(abs(
-            null()
-            .app(Var(1))
-            .app(Var(2))
-            .app(
-                Var(3)
-                .app(
-                    pair()
-                    .app(first().app(Var(1)))
-                    .app(Var(2))
+            app!(
+                null(),
+                Var(1),
+                Var(2),
+                app!(
+                    Var(3),
+                    app!(pair(), app!(first(), Var(1)), Var(2)),
+                    app!(second(), Var(1))
                 )
-                .app(second().app(Var(1)))
             )
-        )))
+        ))),
+        nil()
     )
-    .app(nil())
 }
 
 /// Applied to a Church-encoded number `n` and `n` `Term`s it creates a Church-encoded list of
@@ -185,27 +202,26 @@ pub fn reverse() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::list;
 /// use lambda_calculus::reduction::beta_full;
 ///
-/// assert_eq!(beta_full(list().app(3.into()).app(0.into()).app(1.into()).app(1.into())),
+/// assert_eq!(beta_full(app!(list(), 3.into(), 0.into(), 1.into(), 1.into())),
 ///            Term::from(vec![0.into(), 1.into(), 1.into()]));
+/// # }
 /// ```
 pub fn list() -> Term {
     abs(
-        Var(1)
-        .app(
+        app!(
+            Var(1),
             abs(abs(abs(
-                Var(3).app(
-                    pair()
-                    .app(Var(1))
-                    .app(Var(2))
-                )
-            )))
+                app!(Var(3), app!(pair(), Var(1), Var(2)))
+            ))),
+            reverse(),
+            nil()
         )
-        .app(reverse())
-        .app(nil())
     )
 }
 
@@ -216,6 +232,8 @@ pub fn list() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::append;
 /// use lambda_calculus::reduction::beta_full;
@@ -223,23 +241,22 @@ pub fn list() -> Term {
 /// let list1 = Term::from(vec![0.into(), 1.into()]);
 /// let list2 = Term::from(vec![2.into(), 3.into()]);
 ///
-/// assert_eq!(beta_full(append().app(list1).app(list2)),
+/// assert_eq!(beta_full(app!(append(), list1, list2)),
 ///            Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]));
+/// # }
 /// ```
 pub fn append() -> Term {
-    y()
-    .app(
+    app!(
+        y(),
         abs(abs(abs(
-            null()
-            .app(Var(2))
-            .app(Var(1))
-            .app(
-                pair()
-                .app(first().app(Var(2)))
-                .app(
-                    Var(3)
-                    .app(second().app(Var(2)))
-                    .app(Var(1))
+            app!(
+                null(),
+                Var(2),
+                Var(1),
+                app!(
+                    pair(),
+                    app!(first(), Var(2)),
+                    app!(Var(3), app!(second(), Var(2)), Var(1))
                 )
             )
         )))
@@ -253,22 +270,21 @@ pub fn append() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::index;
 /// use lambda_calculus::reduction::beta_full;
 ///
 /// let list = Term::from(vec![3.into(), 4.into(), 5.into()]);
 ///
-/// assert_eq!(beta_full(index().app(0.into()).app(list.clone())), 3.into());
-/// assert_eq!(beta_full(index().app(2.into()).app(list)        ), 5.into());
+/// assert_eq!(beta_full(app!(index(), 0.into(), list.clone())), 3.into());
+/// assert_eq!(beta_full(app!(index(), 2.into(), list)        ), 5.into());
+/// # }
 /// ```
 pub fn index() -> Term {
     abs(abs(
-        first().app(
-            Var(2)
-            .app(second())
-            .app(Var(1))
-        )
+        app!(first(), app!(Var(2), second(), Var(1)))
     ))
 }
 
@@ -581,15 +597,17 @@ mod test {
     fn list_push() {
         let list_pushed = nil().push(0.into()).push(1.into()).push(1.into());
         let list_consed = beta_full(
-            cons()
-            .app(1.into())
-            .app(
-                cons()
-                .app(1.into())
-                .app(
-                    cons()
-                    .app(0.into())
-                    .app(nil())
+            app!(
+                cons(),
+                1.into(),
+                app!(
+                    cons(),
+                    1.into(),
+                    app!(
+                        cons(),
+                        0.into(),
+                        nil()
+                    )
                 )
             )
         );
