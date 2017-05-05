@@ -132,7 +132,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(0).app(Var(1)).unapp(), Ok((Var(0), Var(1))));
+    /// assert_eq!(Var(1).app(Var(2)).unapp(), Ok((Var(1), Var(2))));
     /// ```
     pub fn unapp(self) -> Result<(Term, Term), Error> {
         match self {
@@ -147,7 +147,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(0).app(Var(1)).unapp_ref(), Ok((&Var(0), &Var(1))));
+    /// assert_eq!(Var(1).app(Var(2)).unapp_ref(), Ok((&Var(1), &Var(2))));
     /// ```
     pub fn unapp_ref(&self) -> Result<(&Term, &Term), Error> {
         match *self {
@@ -162,7 +162,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(0).app(Var(1)).unapp_ref_mut(), Ok((&mut Var(0), &mut Var(1))));
+    /// assert_eq!(Var(1).app(Var(2)).unapp_ref_mut(), Ok((&mut Var(1), &mut Var(2))));
     /// ```
     pub fn unapp_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
         match *self {
@@ -177,7 +177,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(0).app(Var(1)).lhs(), Ok(Var(0)));
+    /// assert_eq!(Var(1).app(Var(2)).lhs(), Ok(Var(1)));
     /// ```
     pub fn lhs(self) -> Result<Term, Error> {
         if let Ok((lhs, _)) = self.unapp() { Ok(lhs) } else { Err(NotAnApp) }
@@ -189,7 +189,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(0).app(Var(1)).lhs_ref(), Ok(&Var(0)));
+    /// assert_eq!(Var(1).app(Var(2)).lhs_ref(), Ok(&Var(1)));
     /// ```
     pub fn lhs_ref(&self) -> Result<&Term, Error> {
         if let Ok((lhs, _)) = self.unapp_ref() { Ok(lhs) } else { Err(NotAnApp) }
@@ -201,7 +201,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(0).app(Var(1)).lhs_ref_mut(), Ok(&mut Var(0)));
+    /// assert_eq!(Var(1).app(Var(2)).lhs_ref_mut(), Ok(&mut Var(1)));
     /// ```
     pub fn lhs_ref_mut(&mut self) -> Result<&mut Term, Error> {
         if let Ok((lhs, _)) = self.unapp_ref_mut() { Ok(lhs) } else { Err(NotAnApp) }
@@ -213,7 +213,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(0).app(Var(1)).rhs(), Ok(Var(1)));
+    /// assert_eq!(Var(1).app(Var(2)).rhs(), Ok(Var(2)));
     /// ```
     pub fn rhs(self) -> Result<Term, Error> {
         if let Ok((_, rhs)) = self.unapp() { Ok(rhs) } else { Err(NotAnApp) }
@@ -225,7 +225,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(0).app(Var(1)).rhs_ref(), Ok(&Var(1)));
+    /// assert_eq!(Var(1).app(Var(2)).rhs_ref(), Ok(&Var(2)));
     /// ```
     pub fn rhs_ref(&self) -> Result<&Term, Error> {
         if let Ok((_, rhs)) = self.unapp_ref() { Ok(rhs) } else { Err(NotAnApp) }
@@ -237,7 +237,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(0).app(Var(1)).rhs_ref_mut(), Ok(&mut Var(1)));
+    /// assert_eq!(Var(1).app(Var(2)).rhs_ref_mut(), Ok(&mut Var(2)));
     /// ```
     pub fn rhs_ref_mut(&mut self) -> Result<&mut Term, Error> {
         if let Ok((_, rhs)) = self.unapp_ref_mut() { Ok(rhs) } else { Err(NotAnApp) }
@@ -263,7 +263,7 @@ pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 /// use lambda_calculus::term::Term::*;
 /// use lambda_calculus::term::app;
 ///
-/// assert_eq!(app(Var(0), Var(1)), App(Box::new(Var(0)), Box::new(Var(1))));
+/// assert_eq!(app(Var(1), Var(2)), App(Box::new(Var(1)), Box::new(Var(2))));
 /// ```
 pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
 
