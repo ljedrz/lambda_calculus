@@ -15,6 +15,7 @@ use booleans::*;
 /// # fn main() {
 /// use lambda_calculus::pair::pair;
 /// use lambda_calculus::arithmetic::{zero, one};
+///
 /// let pair01 = app!(pair(), zero(), one());
 ///
 /// assert_eq!(pair01.fst_ref(), Ok(&zero()));
