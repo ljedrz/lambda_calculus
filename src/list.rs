@@ -287,6 +287,126 @@ pub fn index() -> Term {
     ))
 }
 
+/// Applied to a function and a Church list it maps the function over it.
+///
+/// MAP := Y (λgfx. NULL x NIL (PAIR (f (FIRST x)) (g f (SECOND x)))) =
+/// Y (λ λ λ NULL 1 NIL (PAIR (2 (FIRST 1)) (3 2 (SECOND 1))))
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::map;
+/// use lambda_calculus::arithmetic::succ;
+/// use lambda_calculus::reduction::beta_full;
+///
+/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+///
+/// assert_eq!(beta_full(app!(map(), succ(), list)),
+///            Term::from(vec![2.into(), 3.into(), 4.into()]));
+/// # }
+/// ```
+pub fn map() -> Term {
+    y().app(
+        abs(abs(abs(
+            app!(
+                null(),
+                Var(1),
+                nil(),
+                app!(
+                    pair(),
+                    app!(Var(2), app!(first(), Var(1))),
+                    app!(Var(3), Var(2), app!(second(), Var(1)))
+                )
+            )
+        )))
+    )
+}
+
+/// Applied to a function, a starting value and a Church list it performs a
+/// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
+/// list.
+///
+/// FOLDL := Y (λgfex. NULL x e (g f (f e (FIRST x)) (SECOND x))) =
+/// Y (λ λ λ λ NULL 1 2 (4 3 (3 2 (FIRST 1)) (SECOND 1)))
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::{foldl, nil};
+/// use lambda_calculus::arithmetic::plus;
+/// use lambda_calculus::reduction::beta_full;
+///
+/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+///
+/// assert_eq!(beta_full(app!(foldl(), plus(), 0.into(), list)),  6.into());
+/// assert_eq!(beta_full(app!(foldl(), plus(), 0.into(), nil())), 0.into());
+/// # }
+/// ```
+pub fn foldl() -> Term {
+    y().app(
+        abs(abs(abs(abs(
+            app!(
+                null(),
+                Var(1),
+                Var(2),
+                app!(
+                    Var(4),
+                    Var(3),
+                    app!(Var(3), Var(2), app!(first(), Var(1))),
+                    app!(second(), Var(1))
+                )
+            )
+        ))))
+    )
+}
+
+/// Applied to a function, a starting value and a Church list it performs a
+/// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
+/// list.
+///
+/// FOLDR := λfex. Y (λgy. NULL y e (f (FIRST y) (g (SECOND y)))) x =
+/// λ λ λ Y (λ λ NULL 1 4 (5 (FIRST 1) (2 (SECOND 1)))) 1
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::{foldr, nil};
+/// use lambda_calculus::arithmetic::plus;
+/// use lambda_calculus::reduction::beta_full;
+///
+/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+///
+/// assert_eq!(beta_full(app!(foldr(), plus(), 0.into(), list)),  6.into());
+/// assert_eq!(beta_full(app!(foldr(), plus(), 0.into(), nil())), 0.into());
+/// # }
+/// ```
+pub fn foldr() -> Term {
+    abs(abs(abs(
+        app!(
+            y(),
+            abs(abs(
+                app!(
+                    null(),
+                    Var(1),
+                    Var(4),
+                    app!(
+                        Var(5),
+                        app!(first(), Var(1)),
+                        app!(Var(2), app!(second(), Var(1)))
+                    )
+                )
+            )),
+            Var(1)
+        )
+    )))
+}
+
 impl Term {
     /// Checks whether self is a empty Church list, i.e. `nil()`.
     ///
