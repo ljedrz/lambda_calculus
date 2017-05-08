@@ -6,7 +6,7 @@ use term::Error::*;
 use booleans::*;
 use pair::*;
 use arithmetic::{zero, succ};
-use combinators::y;
+use combinators::{y, i};
 use std::ops::Index;
 
 /// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last link of a
@@ -405,6 +405,47 @@ pub fn foldr() -> Term {
             Var(1)
         )
     )))
+}
+
+/// Applied to a predicate and a Church list it filters the list based on the predicate.
+///
+/// FILTER := Y (λgfx. NULL x NIL (f (FIRST x) (PAIR (FIRST x)) I (g f (SECOND x)))) =
+/// Y (λ λ λ NULL 1 NIL (2 (FIRST 1) (PAIR (FIRST 1)) I (3 2 (SECOND 1))))
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::term::Term;
+/// use lambda_calculus::list::{filter, nil};
+/// use lambda_calculus::arithmetic::{is_zero, gt};
+/// use lambda_calculus::combinators::c;
+/// use lambda_calculus::reduction::beta_full;
+///
+/// let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
+/// let gt1  = app!(c(), gt(), 1.into());
+///
+/// assert_eq!(beta_full(app!(filter(), is_zero(), list.clone())), Term::from(vec![0.into()]));
+/// assert_eq!(beta_full(app!(filter(), gt1, list)), Term::from(vec![2.into(), 3.into()]));
+/// # }
+/// ```
+pub fn filter() -> Term {
+    y().app(
+        abs(abs(abs(
+            app!(
+                null(),
+                Var(1),
+                nil(),
+                app!(
+                    Var(2),
+                    app!(first(), Var(1)),
+                    app!(pair(), app!(first(), Var(1))),
+                    i(),
+                    app!(Var(3), Var(2), app!(second(), Var(1)))
+                )
+            )
+        )))
+    )
 }
 
 impl Term {
