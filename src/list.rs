@@ -10,7 +10,7 @@ use combinators::y;
 use std::ops::Index;
 
 /// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last link of a
-/// Church-encoded list.
+/// Church list.
 ///
 /// NIL := FALSE
 ///
@@ -23,7 +23,7 @@ use std::ops::Index;
 /// ```
 pub fn nil() -> Term { fls() }
 
-/// Applied to a Church-encoded list it determines if it is empty.
+/// Applied to a Church list it determines if it is empty.
 ///
 /// NULL := λl.l (λhtd.FALSE) TRUE = λ 1 (λ λ λ FALSE) TRUE
 ///
@@ -42,7 +42,7 @@ pub fn null() -> Term {
     abs(app!(Var(1), abs(abs(abs(fls()))), tru()))
 }
 
-/// Equivalent to `pair::pair()`; applied to two terms it returns them contained in a Church-encoded list.
+/// Equivalent to `pair::pair()`; applied to two terms it returns them contained in a Church list.
 ///
 /// CONS := PAIR
 ///
@@ -78,7 +78,7 @@ pub fn null() -> Term {
 /// ```
 pub fn cons() -> Term { pair() }
 
-/// Equivalent to `pair::first()`; applied to a Church-encoded list it returns its first element.
+/// Equivalent to `pair::first()`; applied to a Church list it returns its first element.
 ///
 /// HEAD := FIRST
 ///
@@ -98,7 +98,7 @@ pub fn cons() -> Term { pair() }
 /// ```
 pub fn head() -> Term { first() }
 
-/// Equivalent to `pair::second()`; applied to a Church-encoded list it returns a new list with all its
+/// Equivalent to `pair::second()`; applied to a Church list it returns a new list with all its
 /// elements but the first one.
 ///
 /// TAIL := SECOND
@@ -119,7 +119,7 @@ pub fn head() -> Term { first() }
 /// ```
 pub fn tail() -> Term { second() }
 
-/// Applied to a Church-encoded list it returns its Church-encoded length.
+/// Applied to a Church list it returns its Church-encoded length.
 ///
 /// LENGTH := Y (λgcx.NULL x c (g (SUCC c) (SECOND x))) ZERO
 /// = Y (λλλ NULL 1 2 (3 (SUCC 2) (SECOND 1))) ZERO
@@ -157,7 +157,7 @@ pub fn length() -> Term {
     )
 }
 
-/// Reverses a Church-encoded list.
+/// Reverses a Church list.
 ///
 /// REVERSE := Y (λgal.NULL l a (g (PAIR (FIRST l) a) (SECOND l))) NIL =
 /// Y (λ λ λ NULL 1 2 (3 (PAIR (FIRST 1) 2) (SECOND 1))) NIL
@@ -195,7 +195,7 @@ pub fn reverse() -> Term {
     )
 }
 
-/// Applied to a Church-encoded number `n` and `n` `Term`s it creates a Church-encoded list of
+/// Applied to a Church number `n` and `n` `Term`s it creates a Church list of
 /// those terms.
 ///
 /// LIST := λn.n (λfax.f (PAIR x a)) REVERSE NIL = λ 1 (λ λ λ 3 (PAIR 1 2)) REVERSE NIL
@@ -225,7 +225,7 @@ pub fn list() -> Term {
     )
 }
 
-/// Applied to 2 Church-encoded lists it concatenates them.
+/// Applied to 2 Church lists it concatenates them.
 ///
 /// APPEND := Y (λgab. NULL a b (PAIR (FIRST a) (g (SECOND a) b))) =
 /// Y (λ λ λ NULL 2 1 (PAIR (FIRST 2) (3 (SECOND 2) 1)))
@@ -246,8 +246,7 @@ pub fn list() -> Term {
 /// # }
 /// ```
 pub fn append() -> Term {
-    app!(
-        y(),
+    y().app(
         abs(abs(abs(
             app!(
                 null(),
@@ -263,7 +262,7 @@ pub fn append() -> Term {
     )
 }
 
-/// Applied to a Church-encoded number `i` and a Church-encoded list it returns the `i`-th
+/// Applied to a Church number `i` and a Church list it returns the `i`-th
 /// (zero-indexed) element of the list.
 ///
 /// INDEX := λix. FIRST (x SECOND i) = λ λ FIRST (2 SECOND 1)
@@ -289,7 +288,7 @@ pub fn index() -> Term {
 }
 
 impl Term {
-    /// Checks whether self is a Church-encoded empty list, i.e. `nil()`.
+    /// Checks whether self is a empty Church list, i.e. `nil()`.
     ///
     /// # Example
     /// ```
@@ -301,7 +300,7 @@ impl Term {
         *self == nil()
     }
 
-    // Returns a reference to the last term of a Church-encoded list.
+    // Returns a reference to the last term of a Church list.
     fn last_ref(&self) -> Result<&Term, Error> {
         if !self.is_pair() { return Err(NotAList) }
 
@@ -314,7 +313,7 @@ impl Term {
         Ok(last_candidate)
     }
 
-    /// Checks whether `self` is a Church-encoded list.
+    /// Checks whether `self` is a Church list.
     ///
     /// # Example
     /// ```
@@ -329,7 +328,7 @@ impl Term {
         self.last_ref() == Ok(&nil())
     }
 
-    /// Splits a Church-encoded list into a pair containing its first term and a list of all the
+    /// Splits a Church list into a pair containing its first term and a list of all the
     /// other terms, consuming `self`.
     ///
     /// # Example
@@ -349,7 +348,7 @@ impl Term {
         }
     }
 
-    /// Splits a Church-encoded list into a pair containing references to its first term and a to
+    /// Splits a Church list into a pair containing references to its first term and a to
     /// list of all the other terms.
     ///
     /// # Example
@@ -369,7 +368,7 @@ impl Term {
         }
     }
 
-    /// Splits a Church-encoded list into a pair containing mutable references to its first term
+    /// Splits a Church list into a pair containing mutable references to its first term
     /// and a to list of all the other terms.
     ///
     /// # Example
@@ -390,7 +389,7 @@ impl Term {
         }
     }
 
-    /// Returns the first term from a Church-encoded list, consuming `self`.
+    /// Returns the first term from a Church list, consuming `self`.
     ///
     /// # Example
     /// ```
@@ -405,7 +404,7 @@ impl Term {
         Ok(try!(self.uncons()).0)
     }
 
-    /// Returns a reference to the first term of a Church-encoded list.
+    /// Returns a reference to the first term of a Church list.
     ///
     /// # Example
     /// ```
@@ -420,7 +419,7 @@ impl Term {
         Ok(try!(self.uncons_ref()).0)
     }
 
-    /// Returns a mutable reference to the first term of a Church-encoded list.
+    /// Returns a mutable reference to the first term of a Church list.
     ///
     /// # Example
     /// ```
@@ -435,7 +434,7 @@ impl Term {
         Ok(try!(self.uncons_ref_mut()).0)
     }
 
-    /// Returns a list of all the terms of a Church-encoded list but the first one, consuming `self`.
+    /// Returns a list of all the terms of a Church list but the first one, consuming `self`.
     ///
     /// # Example
     /// ```
@@ -450,7 +449,7 @@ impl Term {
         Ok(try!(self.uncons()).1)
     }
 
-    /// Returns a reference to a list of all the terms of a Church-encoded list but the first one.
+    /// Returns a reference to a list of all the terms of a Church list but the first one.
     ///
     /// # Example
     /// ```
@@ -465,7 +464,7 @@ impl Term {
         Ok(try!(self.uncons_ref()).1)
     }
 
-    /// Returns a mutable reference to a list of all the terms of a Church-encoded list but the
+    /// Returns a mutable reference to a list of all the terms of a Church list but the
     /// first one.
     ///
     /// # Example
@@ -481,7 +480,7 @@ impl Term {
         Ok(try!(self.uncons_ref_mut()).1)
     }
 
-    /// Returns the length of a Church-encoded list
+    /// Returns the length of a Church list
     ///
     /// # Example
     /// ```
@@ -504,7 +503,7 @@ impl Term {
         Ok(n)
     }
 
-    /// Adds a term to the beginning of a Church-encoded list and returns the new list. Consumes
+    /// Adds a term to the beginning of a Church list and returns the new list. Consumes
     /// `self` and the argument.
     ///
     /// # Example
@@ -520,7 +519,7 @@ impl Term {
         abs(Var(1).app(term).app(self))
     }
 
-    /// Removes the first element from a Church-encoded list and returns it.
+    /// Removes the first element from a Church list and returns it.
     ///
     /// # Example
     /// ```
