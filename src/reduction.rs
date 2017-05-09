@@ -8,8 +8,9 @@ use self::Order::*;
 pub const SHOW_REDUCTIONS: bool = false;
 
 /// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction_strategies) of
-/// β-reductions. `Applicative` variants will not fully reduce expressions containing functions
-/// without a normal form, e.g. the Y combinator. The default is `Normal`.
+/// β-reductions. `Applicative` order will fail to fully reduce expressions containing functions
+/// without a normal form, e.g. the Y combinator (they will expand forever). The default is
+/// `Normal`.
 pub const EVALUATION_ORDER: Order = Normal;
 
 /// The available variants of β-reduction evaluation order.
@@ -17,8 +18,12 @@ pub const EVALUATION_ORDER: Order = Normal;
 pub enum Order {
     /// leftmost outermost
     Normal,
+    /// leftmost outermost not inside an abstraction
+    CallByName,
     /// leftmost innermost
     Applicative,
+    /// leftmost innermost not inside an abstraction
+    CallByValue
 }
 
 /// Applies two `Term`s with substitution and variable update, consuming the first one in the
@@ -127,7 +132,9 @@ impl Term {
     fn beta_once_indicative(&mut self) -> bool {
         match EVALUATION_ORDER {
             Normal => self._beta_once_normal(0),
+            CallByName => self._beta_once_call_by_name(),
             Applicative => self._beta_once_applicative(0),
+            CallByValue => self._beta_once_call_by_value(),
         }
     }
 
@@ -156,6 +163,23 @@ impl Term {
     }
 
     // the return value indicates if reduction was performed
+    fn _beta_once_call_by_name(&mut self) -> bool {
+        match *self {
+            Var(_) => false,
+            Abs(_) => false,
+            App(_, _) => {
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.reduce(0);
+                    true
+                } else {
+                    self.lhs_ref_mut().unwrap()._beta_once_call_by_name() ||
+                    self.rhs_ref_mut().unwrap()._beta_once_call_by_name()
+                }
+            }
+        }
+    }
+
+    // the return value indicates if reduction was performed
     fn _beta_once_applicative(&mut self, depth: u32) -> bool {
         match *self {
             Var(_) => false,
@@ -176,26 +200,26 @@ impl Term {
     }
 
     // the return value indicates if reduction was performed
-    fn _beta_once_applicative_r(&mut self, depth: u32) -> bool {
+    fn _beta_once_call_by_value(&mut self) -> bool {
         match *self {
             Var(_) => false,
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_applicative_r(depth + 1),
+            Abs(_) => false,
             App(_, _) => {
-                if !self.rhs_ref().unwrap().is_beta_reducible() &&
-                   !self.lhs_ref().unwrap().is_beta_reducible() &&
+                if !self.lhs_ref().unwrap().is_beta_reducible() &&
+                   !self.rhs_ref().unwrap().is_beta_reducible() &&
                     self.lhs_ref().unwrap().unabs_ref().is_ok()
                 {
-                    self.reduce(depth);
+                    self.reduce(0);
                     true
                 } else {
-                    self.rhs_ref_mut().unwrap()._beta_once_applicative_r(depth) ||
-                    self.lhs_ref_mut().unwrap()._beta_once_applicative_r(depth)
+                    self.lhs_ref_mut().unwrap()._beta_once_call_by_value() ||
+                    self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
                 }
             }
         }
     }
 
-    /// Checks whether `self` is β-reducible.
+    /// Checks whether `self` is β-reducible (under the configured evaluation order).
     ///
     /// # Example
     ///
@@ -211,7 +235,10 @@ impl Term {
     pub fn is_beta_reducible(&self) -> bool {
         match *self {
             Var(_) => false,
-            Abs(_) => self.unabs_ref().unwrap().is_beta_reducible(),
+            Abs(_) => match EVALUATION_ORDER {
+                Normal | Applicative => self.unabs_ref().unwrap().is_beta_reducible(),
+                _ => false
+            },
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     true
@@ -282,6 +309,7 @@ pub fn beta_once(mut term: Term) -> Term {
 mod test {
     use super::*;
     use parser::parse;
+    use combinators::i;
 
     #[test]
     fn evaluation_order() {
@@ -293,6 +321,11 @@ mod test {
                 let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
                 assert_eq!(beta_full(should_reduce), Var(1))
             },
+            CallByName => {
+                let mut expr = app(abs(Var(1)), app(Var(2), abs(Var(1))));
+                expr.beta_once();
+                assert_eq!(expr, app(Var(2), i()));
+            },
             Applicative => {
                 let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
                 assert_eq!(&format!("{}", beta_once(expr)), "λ1((λλ1)((λλ21)1))");
@@ -300,12 +333,13 @@ mod test {
                 let expands = parse(&"(λ2)((λ111)(λ111))").unwrap();
                 assert_eq!(&format!("{}", beta_once(expands)), "(λ2)((λ111)(λ111)(λ111))")
             },
-            ApplicativeRight => {
-                let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
-                assert_eq!(&format!("{}", beta_once(expr)), "λ1((λλλ1)1(λ21))");
-
-                let expands = parse(&"(λ2)((λ111)(λ111))").unwrap();
-                assert_eq!(&format!("{}", beta_once(expands)), "(λ2)((λ111)(λ111)(λ111))")
+            CallByValue => {
+                let mut expr = app(i(), app(i(), abs(app(i(), Var(1)))));
+                expr.beta_once();
+                assert_eq!(expr, app(i(), abs(app(i(), Var(1)))));
+                expr.beta_once();
+                assert_eq!(expr, abs(app(i(), Var(1))));
+                assert!(!expr.is_beta_reducible());
             }
         }
     }

@@ -745,7 +745,8 @@ impl Index<usize> for Term {
 #[cfg(test)]
 mod test {
     use super::*;
-    use reduction::beta_full;
+    use reduction::{beta_full, EVALUATION_ORDER};
+    use reduction::Order::*;
 
     #[test]
     fn empty_list() {
@@ -755,24 +756,25 @@ mod test {
 
     #[test]
     fn list_push() {
-        let list_pushed = nil().push(0.into()).push(1.into()).push(1.into());
-        let list_consed = beta_full(
-            app!(
-                cons(),
-                1.into(),
+        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
+            let list_pushed = nil().push(0.into()).push(1.into()).push(1.into());
+            let list_consed = beta_full(
                 app!(
                     cons(),
                     1.into(),
                     app!(
                         cons(),
-                        0.into(),
-                        nil()
+                        1.into(),
+                        app!(
+                            cons(),
+                            0.into(),
+                            nil()
+                        )
                     )
                 )
-            )
-        );
-
-        assert_eq!(list_pushed, list_consed);
+            );
+            assert_eq!(list_pushed, list_consed);
+        }
     }
 
     #[test]

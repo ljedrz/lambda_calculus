@@ -185,9 +185,13 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// ```
 pub fn omm() -> Term { om().app(om()) }
 
-/// Y - the fixed-point combinator.
+/// Y - the fixed-point combinator; it has different variants depending on the evaluation order.
 ///
-/// Y := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
+/// Y<sub>N, CBN</sub> := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
+///
+/// Y<sub>APP</sub> := N/A - the Y combinator won't work with applicative order
+///
+/// Y<sub>CBV</sub> := λf.(λx.f (λv.x x v)) (λx.f (λv.x x v)) = λ (λ 2 (λ 2 2 1)) (λ 2 (λ 2 2 1))
 ///
 /// # Example
 /// ```
@@ -202,7 +206,7 @@ pub fn omm() -> Term { om().app(om()) }
 /// ```
 pub fn y() -> Term {
     match EVALUATION_ORDER {
-        Order::Normal => {
+        Order::Normal | Order::CallByName => {
             abs(app(
                 abs(app!(Var(2), app!(Var(1), Var(1)))),
                 abs(app!(Var(2), app!(Var(1), Var(1))))
@@ -211,6 +215,13 @@ pub fn y() -> Term {
         Order::Applicative => {
             panic!("Y combinator doesn't work with applicative evaluation order")
         },
+        Order::CallByValue => {
+            abs(
+                app!(
+                    abs(app!(Var(2), abs(app!(Var(2), Var(2), Var(1))))),
+                    abs(app!(Var(2), abs(app!(Var(2), Var(2), Var(1)))))
+                )
+            )
         }
     }
 }

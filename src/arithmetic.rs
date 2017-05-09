@@ -89,10 +89,12 @@ pub fn succ() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::arithmetic::plus;
+/// use lambda_calculus::reduction::{EVALUATION_ORDER, Order};
 ///
 /// let mut expr = app!(plus(), 3.into(), 2.into());
 /// expr.beta_full();
 ///
+/// assert!(EVALUATION_ORDER == Order::Normal || EVALUATION_ORDER == Order::Applicative);
 /// assert_eq!(expr, 5.into());
 /// # }
 /// ```
@@ -548,7 +550,8 @@ impl From<usize> for Term {
 #[cfg(test)]
 mod test {
     use super::*;
-    use reduction::beta_full;
+    use reduction::{beta_full, EVALUATION_ORDER};
+    use reduction::Order::*;
     use combinators::c;
 
     #[test]
@@ -565,74 +568,92 @@ mod test {
 
     #[test]
     fn church_successor() {
-        assert_eq!(beta_full(app!(succ(), 0.into())), 1.into());
-        assert_eq!(beta_full(app!(succ(), 1.into())), 2.into());
-        assert_eq!(beta_full(app!(succ(), 2.into())), 3.into());
+        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
+            assert_eq!(beta_full(app!(succ(), 0.into())), 1.into());
+            assert_eq!(beta_full(app!(succ(), 1.into())), 2.into());
+            assert_eq!(beta_full(app!(succ(), 2.into())), 3.into());
+        }
     }
 
     #[test]
     fn church_predecessor() {
-        assert_eq!(beta_full(app!(pred(), 0.into())), 0.into());
-        assert_eq!(beta_full(app!(pred(), 1.into())), 0.into());
-        assert_eq!(beta_full(app!(pred(), 5.into())), 4.into());
+        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
+            assert_eq!(beta_full(app!(pred(), 0.into())), 0.into());
+            assert_eq!(beta_full(app!(pred(), 1.into())), 0.into());
+            assert_eq!(beta_full(app!(pred(), 5.into())), 4.into());
+        }
     }
 
     #[test]
     fn church_plus_sub_equivalents() {
-        assert_eq!(beta_full(app!(    plus(), 1.into())), succ()); // PLUS 1 → SUCC
-        assert_eq!(beta_full(app!(c(), sub(), 1.into())), pred()); // C SUB 1 → PRED
+        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
+            assert_eq!(beta_full(app!(    plus(), 1.into())), succ()); // PLUS 1 → SUCC
+            assert_eq!(beta_full(app!(c(), sub(), 1.into())), pred()); // C SUB 1 → PRED
+        }
     }
 
     #[test]
     fn church_multiplication() {
-        assert_eq!(beta_full(app!(mult(), 3.into(), 4.into())), 12.into());
-        assert_eq!(beta_full(app!(mult(), 1.into(), 3.into())), 3.into());
-        assert_eq!(beta_full(app!(mult(), 3.into(), 1.into())), 3.into());
-        assert_eq!(beta_full(app!(mult(), 5.into(), 0.into())), 0.into());
-        assert_eq!(beta_full(app!(mult(), 0.into(), 5.into())), 0.into());
+        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
+            assert_eq!(beta_full(app!(mult(), 3.into(), 4.into())), 12.into());
+            assert_eq!(beta_full(app!(mult(), 1.into(), 3.into())), 3.into());
+            assert_eq!(beta_full(app!(mult(), 3.into(), 1.into())), 3.into());
+            assert_eq!(beta_full(app!(mult(), 5.into(), 0.into())), 0.into());
+            assert_eq!(beta_full(app!(mult(), 0.into(), 5.into())), 0.into());
+        }
     }
 
     #[test]
     fn church_exponentiation() {
-        assert_eq!(beta_full(app!(pow(), 2.into(), 4.into())), 16.into());
-        assert_eq!(beta_full(app!(pow(), 1.into(), 3.into())), 1.into());
-        assert_eq!(beta_full(app!(pow(), 3.into(), 1.into())), 3.into());
-        assert_eq!(beta_full(app!(pow(), 5.into(), 0.into())), 1.into());
-        assert_eq!(beta_full(app!(pow(), 0.into(), 5.into())), 0.into());
+        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
+            assert_eq!(beta_full(app!(pow(), 2.into(), 4.into())), 16.into());
+            assert_eq!(beta_full(app!(pow(), 1.into(), 3.into())), 1.into());
+            assert_eq!(beta_full(app!(pow(), 3.into(), 1.into())), 3.into());
+            assert_eq!(beta_full(app!(pow(), 5.into(), 0.into())), 1.into());
+            assert_eq!(beta_full(app!(pow(), 0.into(), 5.into())), 0.into());
+        }
     }
 
     #[test]
     fn church_division() {
-        assert_eq!(beta_full(app!(div(), 2.into(), 2.into())), (1.into(), 0.into()).into());
-        assert_eq!(beta_full(app!(div(), 3.into(), 2.into())), (1.into(), 1.into()).into());
-        assert_eq!(beta_full(app!(div(), 2.into(), 1.into())), (2.into(), 0.into()).into());
-        assert_eq!(beta_full(app!(div(), 0.into(), 3.into())), (0.into(), 0.into()).into());
-        // assert_eq!(beta_full(app!(div(), 1.into(), 0.into())), ); division by 0 hangs
+        if EVALUATION_ORDER == Normal {
+            assert_eq!(beta_full(app!(div(), 2.into(), 2.into())), (1.into(), 0.into()).into());
+            assert_eq!(beta_full(app!(div(), 3.into(), 2.into())), (1.into(), 1.into()).into());
+            assert_eq!(beta_full(app!(div(), 2.into(), 1.into())), (2.into(), 0.into()).into());
+            assert_eq!(beta_full(app!(div(), 0.into(), 3.into())), (0.into(), 0.into()).into());
+            // assert_eq!(beta_full(app!(div(), 1.into(), 0.into())), ); division by 0 hangs
+        }
     }
 
     #[test]
     fn church_quotient() {
-        assert_eq!(beta_full(app!(quot(), 2.into(), 2.into())), 1.into());
-        assert_eq!(beta_full(app!(quot(), 3.into(), 2.into())), 1.into());
-        assert_eq!(beta_full(app!(quot(), 2.into(), 1.into())), 2.into());
-        assert_eq!(beta_full(app!(quot(), 0.into(), 3.into())), 0.into());
-        // assert_eq!(beta_full(app!(quot(), 1.into(), 0.into())), ); division by 0 hangs
+        if EVALUATION_ORDER == Normal {
+            assert_eq!(beta_full(app!(quot(), 2.into(), 2.into())), 1.into());
+            assert_eq!(beta_full(app!(quot(), 3.into(), 2.into())), 1.into());
+            assert_eq!(beta_full(app!(quot(), 2.into(), 1.into())), 2.into());
+            assert_eq!(beta_full(app!(quot(), 0.into(), 3.into())), 0.into());
+            // assert_eq!(beta_full(app!(quot(), 1.into(), 0.into())), ); division by 0 hangs
+        }
     }
 
     #[test]
     fn church_remainder() {
-        assert_eq!(beta_full(app!(rem(), 2.into(), 2.into())), 0.into());
-        assert_eq!(beta_full(app!(rem(), 3.into(), 2.into())), 1.into());
-        assert_eq!(beta_full(app!(rem(), 2.into(), 1.into())), 0.into());
-        assert_eq!(beta_full(app!(rem(), 0.into(), 3.into())), 0.into());
-        // assert_eq!(beta_full(app!(rem(), 1.into(), 0.into())), ); division by 0 hangs
+        if EVALUATION_ORDER == Normal {
+            assert_eq!(beta_full(app!(rem(), 2.into(), 2.into())), 0.into());
+            assert_eq!(beta_full(app!(rem(), 3.into(), 2.into())), 1.into());
+            assert_eq!(beta_full(app!(rem(), 2.into(), 1.into())), 0.into());
+            assert_eq!(beta_full(app!(rem(), 0.into(), 3.into())), 0.into());
+            // assert_eq!(beta_full(app!(rem(), 1.into(), 0.into())), ); division by 0 hangs
+        }
     }
 
     #[test]
     fn church_factorial() {
-        assert_eq!(beta_full(app!(factorial(), 0.into())), 1.into());
-        assert_eq!(beta_full(app!(factorial(), 1.into())), 1.into());
-        assert_eq!(beta_full(app!(factorial(), 2.into())), 2.into());
-        assert_eq!(beta_full(app!(factorial(), 3.into())), 6.into());
+        if EVALUATION_ORDER == Normal {
+            assert_eq!(beta_full(app!(factorial(), 0.into())), 1.into());
+            assert_eq!(beta_full(app!(factorial(), 1.into())), 1.into());
+            assert_eq!(beta_full(app!(factorial(), 2.into())), 2.into());
+            assert_eq!(beta_full(app!(factorial(), 3.into())), 6.into());
+        }
     }
 }
