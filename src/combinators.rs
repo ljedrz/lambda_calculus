@@ -207,14 +207,10 @@ pub fn y() -> Term {
                 abs(app!(Var(2), app!(Var(1), Var(1)))),
                 abs(app!(Var(2), app!(Var(1), Var(1))))
             ))
-        }
-        Order::ApplicativeLeft | Order::ApplicativeRight => { /* should any variant work? */
-            panic!("Y combinator works only with normal evaluation order")
-            //parse(&"(λλ212)(λλ2(121))").unwrap()
-            //parse(&"(λλ(1(λ3321)))(λλ(1(λ3321)))").unwrap()
-            //parse(&"(λ11)(λ(λ(3(22)1)))").unwrap()
-            //parse(&"λ(λ(2(λ(221))))(λ(2(λ(221))))").unwrap()
-            //parse(&"λ(λ11)(λ(2(λ((22)1))))").unwrap()
+        },
+        Order::Applicative => {
+            panic!("Y combinator doesn't work with applicative evaluation order")
+        },
         }
     }
 }

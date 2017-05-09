@@ -293,7 +293,7 @@ mod test {
                 let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
                 assert_eq!(beta_full(should_reduce), Var(1))
             },
-            ApplicativeLeft => {
+            Applicative => {
                 let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
                 assert_eq!(&format!("{}", beta_once(expr)), "λ1((λλ1)((λλ21)1))");
 
