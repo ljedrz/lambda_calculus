@@ -18,9 +18,7 @@ pub enum Order {
     /// leftmost outermost
     Normal,
     /// leftmost innermost
-    ApplicativeLeft,
-    /// rightmost innermost
-    ApplicativeRight
+    Applicative,
 }
 
 /// Applies two `Term`s with substitution and variable update, consuming the first one in the
@@ -129,8 +127,7 @@ impl Term {
     fn beta_once_indicative(&mut self) -> bool {
         match EVALUATION_ORDER {
             Normal => self._beta_once_normal(0),
-            ApplicativeLeft => self._beta_once_applicative_l(0),
-            ApplicativeRight => self._beta_once_applicative_r(0)
+            Applicative => self._beta_once_applicative(0),
         }
     }
 
@@ -159,10 +156,10 @@ impl Term {
     }
 
     // the return value indicates if reduction was performed
-    fn _beta_once_applicative_l(&mut self, depth: u32) -> bool {
+    fn _beta_once_applicative(&mut self, depth: u32) -> bool {
         match *self {
             Var(_) => false,
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_applicative_l(depth + 1),
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_applicative(depth + 1),
             App(_, _) => {
                 if !self.lhs_ref().unwrap().is_beta_reducible() &&
                    !self.rhs_ref().unwrap().is_beta_reducible() &&
@@ -171,8 +168,8 @@ impl Term {
                     self.reduce(depth);
                     true
                 } else {
-                    self.lhs_ref_mut().unwrap()._beta_once_applicative_l(depth) ||
-                    self.rhs_ref_mut().unwrap()._beta_once_applicative_l(depth)
+                    self.lhs_ref_mut().unwrap()._beta_once_applicative(depth) ||
+                    self.rhs_ref_mut().unwrap()._beta_once_applicative(depth)
                 }
             }
         }
