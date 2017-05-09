@@ -39,10 +39,11 @@ pub fn pair() -> Term {
 /// use lambda_calculus::pair::{pair, first};
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let pair_0_1 = app!(pair(), zero(), one());
 ///
-/// assert_eq!(beta_full(first().app(pair_0_1)), zero());
+/// assert_eq!(beta_full(first().app(pair_0_1), &Normal), zero());
 /// # }
 /// ```
 pub fn first() -> Term { abs(Var(1).app(tru())) }
@@ -58,10 +59,11 @@ pub fn first() -> Term { abs(Var(1).app(tru())) }
 /// use lambda_calculus::pair::{pair, second};
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let pair_0_1 = app!(pair(), zero(), one());
 ///
-/// assert_eq!(beta_full(second().app(pair_0_1)), one());
+/// assert_eq!(beta_full(second().app(pair_0_1), &Normal), one());
 /// # }
 /// ```
 pub fn second() -> Term { abs(Var(1).app(fls())) }
@@ -295,15 +297,17 @@ impl From<(Term, Term)> for Term {
 mod test {
     use super::*;
     use reduction::beta_full;
+    use reduction::Order::*;
 
     #[test]
     fn pair_from_pair() {
-        assert_eq!(Term::from((0.into(), 1.into())), beta_full(app!(pair(), 0.into(), 1.into())));
+        assert_eq!(Term::from((0.into(), 1.into())),
+                   beta_full(app!(pair(), 0.into(), 1.into()), &Normal));
     }
 
     #[test]
     fn pair_operations() {
-        let pair_four_three = beta_full(app!(pair(), 4.into(), 3.into()));
+        let pair_four_three = beta_full(app!(pair(), 4.into(), 3.into()), &Normal);
 
         assert!(pair_four_three.is_pair());
 
@@ -314,3 +318,4 @@ mod test {
         assert_eq!(unpaired, Ok((4.into(), 3.into())));
     }
 }
+

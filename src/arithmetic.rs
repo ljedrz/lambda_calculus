@@ -33,9 +33,10 @@ pub fn zero() -> Term { abs(abs(Var(1))) }
 /// use lambda_calculus::arithmetic::is_zero;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(is_zero(), 0.into())), tru());
-/// assert_eq!(beta_full(app!(is_zero(), 1.into())), fls());
+/// assert_eq!(beta_full(app!(is_zero(), 0.into()), &Normal), tru());
+/// assert_eq!(beta_full(app!(is_zero(), 1.into()), &Normal), fls());
 /// # }
 /// ```
 pub fn is_zero() -> Term {
@@ -68,9 +69,10 @@ pub fn one() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::arithmetic::succ;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = succ().app(0.into());
-/// expr.beta_full();
+/// expr.beta_full(&Normal);
 ///
 /// assert_eq!(expr, 1.into());
 /// ```
@@ -89,12 +91,11 @@ pub fn succ() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::arithmetic::plus;
-/// use lambda_calculus::reduction::{EVALUATION_ORDER, Order};
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(plus(), 3.into(), 2.into());
-/// expr.beta_full();
+/// expr.beta_full(&Normal);
 ///
-/// assert!(EVALUATION_ORDER == Order::Normal || EVALUATION_ORDER == Order::Applicative);
 /// assert_eq!(expr, 5.into());
 /// # }
 /// ```
@@ -113,9 +114,10 @@ pub fn plus() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::arithmetic::mult;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(mult(), 2.into(), 3.into());
-/// expr.beta_full();
+/// expr.beta_full(&Normal);
 ///
 /// assert_eq!(expr, 6.into());
 /// # }
@@ -135,9 +137,10 @@ pub fn mult() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::arithmetic::pow;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(pow(), 2.into(), 3.into());
-/// expr.beta_full();
+/// expr.beta_full(&Normal);
 ///
 /// assert_eq!(expr, 8.into());
 /// # }
@@ -155,9 +158,10 @@ pub fn pow() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::arithmetic::pred;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = pred().app(3.into());
-/// expr.beta_full();
+/// expr.beta_full(&Normal);
 ///
 /// assert_eq!(expr, 2.into());
 /// ```
@@ -181,9 +185,10 @@ pub fn pred() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::arithmetic::sub;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(sub(), 5.into(), 3.into());
-/// expr.beta_full();
+/// expr.beta_full(&Normal);
 ///
 /// assert_eq!(expr, 2.into());
 /// # }
@@ -206,11 +211,12 @@ pub fn sub() -> Term {
 /// use lambda_calculus::arithmetic::lt;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(lt(), 0.into(), 0.into())), fls());
-/// assert_eq!(beta_full(app!(lt(), 1.into(), 1.into())), fls());
-/// assert_eq!(beta_full(app!(lt(), 0.into(), 1.into())), tru());
-/// assert_eq!(beta_full(app!(lt(), 1.into(), 0.into())), fls());
+/// assert_eq!(beta_full(app!(lt(), 0.into(), 0.into()), &Normal), fls());
+/// assert_eq!(beta_full(app!(lt(), 1.into(), 1.into()), &Normal), fls());
+/// assert_eq!(beta_full(app!(lt(), 0.into(), 1.into()), &Normal), tru());
+/// assert_eq!(beta_full(app!(lt(), 1.into(), 0.into()), &Normal), fls());
 /// # }
 /// ```
 pub fn lt() -> Term {
@@ -231,11 +237,12 @@ pub fn lt() -> Term {
 /// use lambda_calculus::arithmetic::leq;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(leq(), 0.into(), 0.into())), tru());
-/// assert_eq!(beta_full(app!(leq(), 1.into(), 1.into())), tru());
-/// assert_eq!(beta_full(app!(leq(), 0.into(), 1.into())), tru());
-/// assert_eq!(beta_full(app!(leq(), 1.into(), 0.into())), fls());
+/// assert_eq!(beta_full(app!(leq(), 0.into(), 0.into()), &Normal), tru());
+/// assert_eq!(beta_full(app!(leq(), 1.into(), 1.into()), &Normal), tru());
+/// assert_eq!(beta_full(app!(leq(), 0.into(), 1.into()), &Normal), tru());
+/// assert_eq!(beta_full(app!(leq(), 1.into(), 0.into()), &Normal), fls());
 /// # }
 /// ```
 pub fn leq() -> Term {
@@ -256,11 +263,12 @@ pub fn leq() -> Term {
 /// use lambda_calculus::arithmetic::eq;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(eq(), 0.into(), 0.into())), tru());
-/// assert_eq!(beta_full(app!(eq(), 1.into(), 1.into())), tru());
-/// assert_eq!(beta_full(app!(eq(), 0.into(), 1.into())), fls());
-/// assert_eq!(beta_full(app!(eq(), 1.into(), 0.into())), fls());
+/// assert_eq!(beta_full(app!(eq(), 0.into(), 0.into()), &Normal), tru());
+/// assert_eq!(beta_full(app!(eq(), 1.into(), 1.into()), &Normal), tru());
+/// assert_eq!(beta_full(app!(eq(), 0.into(), 1.into()), &Normal), fls());
+/// assert_eq!(beta_full(app!(eq(), 1.into(), 0.into()), &Normal), fls());
 /// # }
 /// ```
 pub fn eq() -> Term {
@@ -285,11 +293,12 @@ pub fn eq() -> Term {
 /// use lambda_calculus::arithmetic::neq;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(neq(), 0.into(), 0.into())), fls());
-/// assert_eq!(beta_full(app!(neq(), 1.into(), 1.into())), fls());
-/// assert_eq!(beta_full(app!(neq(), 0.into(), 1.into())), tru());
-/// assert_eq!(beta_full(app!(neq(), 1.into(), 0.into())), tru());
+/// assert_eq!(beta_full(app!(neq(), 0.into(), 0.into()), &Normal), fls());
+/// assert_eq!(beta_full(app!(neq(), 1.into(), 1.into()), &Normal), fls());
+/// assert_eq!(beta_full(app!(neq(), 0.into(), 1.into()), &Normal), tru());
+/// assert_eq!(beta_full(app!(neq(), 1.into(), 0.into()), &Normal), tru());
 /// # }
 /// ```
 pub fn neq() -> Term {
@@ -314,11 +323,12 @@ pub fn neq() -> Term {
 /// use lambda_calculus::arithmetic::geq;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(geq(), 0.into(), 0.into())), tru());
-/// assert_eq!(beta_full(app!(geq(), 1.into(), 1.into())), tru());
-/// assert_eq!(beta_full(app!(geq(), 0.into(), 1.into())), fls());
-/// assert_eq!(beta_full(app!(geq(), 1.into(), 0.into())), tru());
+/// assert_eq!(beta_full(app!(geq(), 0.into(), 0.into()), &Normal), tru());
+/// assert_eq!(beta_full(app!(geq(), 1.into(), 1.into()), &Normal), tru());
+/// assert_eq!(beta_full(app!(geq(), 0.into(), 1.into()), &Normal), fls());
+/// assert_eq!(beta_full(app!(geq(), 1.into(), 0.into()), &Normal), tru());
 /// # }
 /// ```
 pub fn geq() -> Term {
@@ -339,11 +349,12 @@ pub fn geq() -> Term {
 /// use lambda_calculus::arithmetic::{zero, one, gt};
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(gt(), 0.into(), 0.into())), fls());
-/// assert_eq!(beta_full(app!(gt(), 1.into(), 1.into())), fls());
-/// assert_eq!(beta_full(app!(gt(), 0.into(), 1.into())), fls());
-/// assert_eq!(beta_full(app!(gt(), 1.into(), 0.into())), tru());
+/// assert_eq!(beta_full(app!(gt(), 0.into(), 0.into()), &Normal), fls());
+/// assert_eq!(beta_full(app!(gt(), 1.into(), 1.into()), &Normal), fls());
+/// assert_eq!(beta_full(app!(gt(), 0.into(), 1.into()), &Normal), fls());
+/// assert_eq!(beta_full(app!(gt(), 1.into(), 0.into()), &Normal), tru());
 /// # }
 /// ```
 pub fn gt() -> Term {
@@ -364,9 +375,10 @@ pub fn gt() -> Term {
 /// # fn main() {
 /// use lambda_calculus::arithmetic::div;
 /// use lambda_calculus::term::Term;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(div(), 5.into(), 2.into());
-/// expr.beta_full();
+/// expr.beta_full(&Normal);
 ///
 /// assert_eq!(expr, Term::from((2.into(), 1.into())));
 /// # }
@@ -403,9 +415,10 @@ pub fn div() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::arithmetic::quot;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(quot(), 6.into(), 2.into());
-/// expr.beta_full();
+/// expr.beta_full(&Normal);
 ///
 /// assert_eq!(expr, 3.into());
 /// # }
@@ -443,9 +456,10 @@ pub fn quot() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::arithmetic::rem;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(rem(), 3.into(), 2.into());
-/// expr.beta_full();
+/// expr.beta_full(&Normal);
 ///
 /// assert_eq!(expr, 1.into());
 /// # }
@@ -464,9 +478,10 @@ pub fn rem() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::arithmetic::factorial;
+/// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = factorial().app(3.into());
-/// expr.beta_full();
+/// expr.beta_full(&Normal);
 ///
 /// assert_eq!(expr, 6.into());
 /// ```
@@ -550,7 +565,7 @@ impl From<usize> for Term {
 #[cfg(test)]
 mod test {
     use super::*;
-    use reduction::{beta_full, EVALUATION_ORDER};
+    use reduction::beta_full;
     use reduction::Order::*;
     use combinators::c;
 
@@ -568,92 +583,74 @@ mod test {
 
     #[test]
     fn church_successor() {
-        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
-            assert_eq!(beta_full(app!(succ(), 0.into())), 1.into());
-            assert_eq!(beta_full(app!(succ(), 1.into())), 2.into());
-            assert_eq!(beta_full(app!(succ(), 2.into())), 3.into());
-        }
+        assert_eq!(beta_full(app!(succ(), 0.into()), &Normal), 1.into());
+        assert_eq!(beta_full(app!(succ(), 1.into()), &Normal), 2.into());
+        assert_eq!(beta_full(app!(succ(), 2.into()), &Normal), 3.into());
     }
 
     #[test]
     fn church_predecessor() {
-        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
-            assert_eq!(beta_full(app!(pred(), 0.into())), 0.into());
-            assert_eq!(beta_full(app!(pred(), 1.into())), 0.into());
-            assert_eq!(beta_full(app!(pred(), 5.into())), 4.into());
-        }
+        assert_eq!(beta_full(app!(pred(), 0.into()), &Normal), 0.into());
+        assert_eq!(beta_full(app!(pred(), 1.into()), &Normal), 0.into());
+        assert_eq!(beta_full(app!(pred(), 5.into()), &Normal), 4.into());
     }
 
     #[test]
     fn church_plus_sub_equivalents() {
-        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
-            assert_eq!(beta_full(app!(    plus(), 1.into())), succ()); // PLUS 1 → SUCC
-            assert_eq!(beta_full(app!(c(), sub(), 1.into())), pred()); // C SUB 1 → PRED
-        }
+        assert_eq!(beta_full(app!(    plus(), 1.into()), &Normal), succ()); // PLUS 1 → SUCC
+        assert_eq!(beta_full(app!(c(), sub(), 1.into()), &Normal), pred()); // C SUB 1 → PRED
     }
 
     #[test]
     fn church_multiplication() {
-        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
-            assert_eq!(beta_full(app!(mult(), 3.into(), 4.into())), 12.into());
-            assert_eq!(beta_full(app!(mult(), 1.into(), 3.into())), 3.into());
-            assert_eq!(beta_full(app!(mult(), 3.into(), 1.into())), 3.into());
-            assert_eq!(beta_full(app!(mult(), 5.into(), 0.into())), 0.into());
-            assert_eq!(beta_full(app!(mult(), 0.into(), 5.into())), 0.into());
-        }
+        assert_eq!(beta_full(app!(mult(), 3.into(), 4.into()), &Normal), 12.into());
+        assert_eq!(beta_full(app!(mult(), 1.into(), 3.into()), &Normal), 3.into());
+        assert_eq!(beta_full(app!(mult(), 3.into(), 1.into()), &Normal), 3.into());
+        assert_eq!(beta_full(app!(mult(), 5.into(), 0.into()), &Normal), 0.into());
+        assert_eq!(beta_full(app!(mult(), 0.into(), 5.into()), &Normal), 0.into());
     }
 
     #[test]
     fn church_exponentiation() {
-        if EVALUATION_ORDER == Normal || EVALUATION_ORDER == Applicative {
-            assert_eq!(beta_full(app!(pow(), 2.into(), 4.into())), 16.into());
-            assert_eq!(beta_full(app!(pow(), 1.into(), 3.into())), 1.into());
-            assert_eq!(beta_full(app!(pow(), 3.into(), 1.into())), 3.into());
-            assert_eq!(beta_full(app!(pow(), 5.into(), 0.into())), 1.into());
-            assert_eq!(beta_full(app!(pow(), 0.into(), 5.into())), 0.into());
-        }
+        assert_eq!(beta_full(app!(pow(), 2.into(), 4.into()), &Normal), 16.into());
+        assert_eq!(beta_full(app!(pow(), 1.into(), 3.into()), &Normal), 1.into());
+        assert_eq!(beta_full(app!(pow(), 3.into(), 1.into()), &Normal), 3.into());
+        assert_eq!(beta_full(app!(pow(), 5.into(), 0.into()), &Normal), 1.into());
+        assert_eq!(beta_full(app!(pow(), 0.into(), 5.into()), &Normal), 0.into());
     }
 
     #[test]
     fn church_division() {
-        if EVALUATION_ORDER == Normal {
-            assert_eq!(beta_full(app!(div(), 2.into(), 2.into())), (1.into(), 0.into()).into());
-            assert_eq!(beta_full(app!(div(), 3.into(), 2.into())), (1.into(), 1.into()).into());
-            assert_eq!(beta_full(app!(div(), 2.into(), 1.into())), (2.into(), 0.into()).into());
-            assert_eq!(beta_full(app!(div(), 0.into(), 3.into())), (0.into(), 0.into()).into());
-            // assert_eq!(beta_full(app!(div(), 1.into(), 0.into())), ); division by 0 hangs
-        }
+        assert_eq!(beta_full(app!(div(), 2.into(), 2.into()), &Normal), (1.into(), 0.into()).into());
+        assert_eq!(beta_full(app!(div(), 3.into(), 2.into()), &Normal), (1.into(), 1.into()).into());
+        assert_eq!(beta_full(app!(div(), 2.into(), 1.into()), &Normal), (2.into(), 0.into()).into());
+        assert_eq!(beta_full(app!(div(), 0.into(), 3.into()), &Normal), (0.into(), 0.into()).into());
+     // assert_eq!(beta_full(app!(div(), 1.into(), 0.into()), &Normal), ); division by 0 hangs
     }
 
     #[test]
     fn church_quotient() {
-        if EVALUATION_ORDER == Normal {
-            assert_eq!(beta_full(app!(quot(), 2.into(), 2.into())), 1.into());
-            assert_eq!(beta_full(app!(quot(), 3.into(), 2.into())), 1.into());
-            assert_eq!(beta_full(app!(quot(), 2.into(), 1.into())), 2.into());
-            assert_eq!(beta_full(app!(quot(), 0.into(), 3.into())), 0.into());
-            // assert_eq!(beta_full(app!(quot(), 1.into(), 0.into())), ); division by 0 hangs
-        }
+        assert_eq!(beta_full(app!(quot(), 2.into(), 2.into()), &Normal), 1.into());
+        assert_eq!(beta_full(app!(quot(), 3.into(), 2.into()), &Normal), 1.into());
+        assert_eq!(beta_full(app!(quot(), 2.into(), 1.into()), &Normal), 2.into());
+        assert_eq!(beta_full(app!(quot(), 0.into(), 3.into()), &Normal), 0.into());
+    //  assert_eq!(beta_full(app!(quot(), 1.into(), 0.into()), &Normal), ); division by 0 hangs
     }
 
     #[test]
     fn church_remainder() {
-        if EVALUATION_ORDER == Normal {
-            assert_eq!(beta_full(app!(rem(), 2.into(), 2.into())), 0.into());
-            assert_eq!(beta_full(app!(rem(), 3.into(), 2.into())), 1.into());
-            assert_eq!(beta_full(app!(rem(), 2.into(), 1.into())), 0.into());
-            assert_eq!(beta_full(app!(rem(), 0.into(), 3.into())), 0.into());
-            // assert_eq!(beta_full(app!(rem(), 1.into(), 0.into())), ); division by 0 hangs
-        }
+        assert_eq!(beta_full(app!(rem(), 2.into(), 2.into()), &Normal), 0.into());
+        assert_eq!(beta_full(app!(rem(), 3.into(), 2.into()), &Normal), 1.into());
+        assert_eq!(beta_full(app!(rem(), 2.into(), 1.into()), &Normal), 0.into());
+        assert_eq!(beta_full(app!(rem(), 0.into(), 3.into()), &Normal), 0.into());
+     // assert_eq!(beta_full(app!(rem(), 1.into(), 0.into()), &Normal), ); division by 0 hangs
     }
 
     #[test]
     fn church_factorial() {
-        if EVALUATION_ORDER == Normal {
-            assert_eq!(beta_full(app!(factorial(), 0.into())), 1.into());
-            assert_eq!(beta_full(app!(factorial(), 1.into())), 1.into());
-            assert_eq!(beta_full(app!(factorial(), 2.into())), 2.into());
-            assert_eq!(beta_full(app!(factorial(), 3.into())), 6.into());
-        }
+        assert_eq!(beta_full(app!(factorial(), 0.into()), &Normal), 1.into());
+        assert_eq!(beta_full(app!(factorial(), 1.into()), &Normal), 1.into());
+        assert_eq!(beta_full(app!(factorial(), 2.into()), &Normal), 2.into());
+        assert_eq!(beta_full(app!(factorial(), 3.into()), &Normal), 6.into());
     }
 }

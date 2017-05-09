@@ -7,12 +7,11 @@
 // //! * the recursion combinator U - needs more research
 //! * the looping combinator ω
 //! * the divergent combinator Ω
-//! * [the fixed-point combinator Y](https://en.wikipedia.org/wiki/Fixed-point_combinator)
+//! * [the fixed-point combinators Y and Z](https://en.wikipedia.org/wiki/Fixed-point_combinator)
 //! * the thrush (reverse application) combinator T
 
 use term::*;
 use term::Term::*;
-use reduction::{EVALUATION_ORDER, Order};
 
 /// I - the identity combinator.
 ///
@@ -23,8 +22,9 @@ use reduction::{EVALUATION_ORDER, Order};
 /// use lambda_calculus::combinators::i;
 /// use lambda_calculus::arithmetic::zero;
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(i().app(zero())), zero());
+/// assert_eq!(beta_full(i().app(zero()), &Normal), zero());
 /// ```
 pub fn i() -> Term { abs(Var(1)) }
 
@@ -39,8 +39,9 @@ pub fn i() -> Term { abs(Var(1)) }
 /// use lambda_calculus::combinators::k;
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(k(), zero(), one())), zero());
+/// assert_eq!(beta_full(app!(k(), zero(), one()), &Normal), zero());
 /// # }
 /// ```
 pub fn k() -> Term { abs(abs(Var(2))) }
@@ -56,9 +57,11 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::s;
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(s(), 0.into(), 1.into(), 2.into())),
-///            beta_full(app!(Term::from(0), 2.into(), app!(Term::from(1), 2.into()))));
+/// assert_eq!(beta_full(app!(s(), 0.into(), 1.into(), 2.into()), &Normal),
+///            beta_full(app!(Term::from(0), 2.into(), app!(Term::from(1), 2.into())), &Normal)
+/// );
 /// # }
 /// ```
 pub fn s() -> Term {
@@ -79,10 +82,12 @@ pub fn s() -> Term {
 /// # fn main() {
 /// use lambda_calculus::combinators::{iota, i, k, s};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(iota(), iota())), i());
-/// assert_eq!(beta_full(app!(iota(), app!(iota(), app!(iota(), iota())))), k());
-/// assert_eq!(beta_full(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota()))))), s());
+/// assert_eq!(beta_full(app!(iota(), iota()), &Normal), i());
+/// assert_eq!(beta_full(app!(iota(), app!(iota(), app!(iota(), iota()))), &Normal), k());
+/// assert_eq!(beta_full(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota())))), &Normal),
+///            s());
 /// # }
 /// ```
 pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
@@ -98,9 +103,11 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::b;
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(b(), 0.into(), 1.into(), 2.into())),
-///            beta_full(app!(Term::from(0), app!(Term::from(1), 2.into()))));
+/// assert_eq!(beta_full(app!(b(), 0.into(), 1.into(), 2.into()), &Normal),
+///            beta_full(app!(Term::from(0), app!(Term::from(1), 2.into())), &Normal)
+/// );
 /// # }
 /// ```
 pub fn b() -> Term {
@@ -120,9 +127,11 @@ pub fn b() -> Term {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::c;
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(c(), 0.into(), 1.into(), 2.into())),
-///            beta_full(app!(Term::from(0), 2.into(), 1.into())));
+/// assert_eq!(beta_full(app!(c(), 0.into(), 1.into(), 2.into()), &Normal),
+///            beta_full(app!(Term::from(0), 2.into(), 1.into()), &Normal)
+/// );
 /// # }
 /// ```
 pub fn c() -> Term {
@@ -142,9 +151,11 @@ pub fn c() -> Term {
 /// use lambda_calculus::combinators::w;
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(w(), zero(), one())),
-///            beta_full(app!(zero(), one(), one())));
+/// assert_eq!(beta_full(app!(w(), zero(), one()), &Normal),
+///            beta_full(app!(zero(), one(), one()), &Normal)
+/// );
 /// # }
 /// ```
 pub fn w() -> Term {
@@ -167,8 +178,9 @@ pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
 /// use lambda_calculus::combinators::om;
 /// use lambda_calculus::arithmetic::zero;
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(om().app(zero())), beta_full(zero().app(zero())));
+/// assert_eq!(beta_full(om().app(zero()), &Normal), beta_full(zero().app(zero()), &Normal));
 /// ```
 pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 
@@ -180,18 +192,15 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// ```
 /// use lambda_calculus::combinators::omm;
 /// use lambda_calculus::reduction::beta_once;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_once(omm()), omm());
+/// assert_eq!(beta_once(omm(), &Normal), omm());
 /// ```
 pub fn omm() -> Term { om().app(om()) }
 
-/// Y - the fixed-point combinator; it has different variants depending on the evaluation order.
+/// Y - the lazy fixed-point combinator intended for the `Normal` evaluation `Order`.
 ///
-/// Y<sub>N, CBN</sub> := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
-///
-/// Y<sub>APP</sub> := N/A - the Y combinator won't work with applicative order
-///
-/// Y<sub>CBV</sub> := λf.(λx.f (λv.x x v)) (λx.f (λv.x x v)) = λ (λ 2 (λ 2 2 1)) (λ 2 (λ 2 2 1))
+/// Y := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
 ///
 /// # Example
 /// ```
@@ -200,30 +209,45 @@ pub fn omm() -> Term { om().app(om()) }
 /// use lambda_calculus::combinators::y;
 /// use lambda_calculus::arithmetic::zero;
 /// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(y().app(zero())), beta_full(app!(zero(), app!(y(), zero()))));
+/// assert_eq!(beta_full(y().app(zero()), &Normal),
+///            beta_full(app!(zero(), app!(y(), zero())), &Normal)
+/// );
 /// # }
 /// ```
 pub fn y() -> Term {
-    match EVALUATION_ORDER {
-        Order::Normal | Order::CallByName => {
-            abs(app(
-                abs(app!(Var(2), app!(Var(1), Var(1)))),
-                abs(app!(Var(2), app!(Var(1), Var(1))))
-            ))
-        },
-        Order::Applicative => {
-            panic!("Y combinator doesn't work with applicative evaluation order")
-        },
-        Order::CallByValue => {
-            abs(
-                app!(
-                    abs(app!(Var(2), abs(app!(Var(2), Var(2), Var(1))))),
-                    abs(app!(Var(2), abs(app!(Var(2), Var(2), Var(1)))))
-                )
-            )
-        }
-    }
+    abs(app(
+        abs(app!(Var(2), app!(Var(1), Var(1)))),
+        abs(app!(Var(2), app!(Var(1), Var(1))))
+    ))
+}
+
+/// Z - the strict fixed-point combinator intended for the `CallByValue` evaluation `Order`.
+///
+/// Z := λf.(λx.f (λv.x x v)) (λx.f (λv.x x v)) = λ (λ 2 (λ 2 2 1)) (λ 2 (λ 2 2 1))
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::combinators::z;
+/// use lambda_calculus::arithmetic::zero;
+/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::Order::*;
+///
+/// assert_eq!(beta_full(z().app(zero()), &CallByValue),
+///            beta_full(app!(zero(), app!(z(), zero())), &CallByValue)
+/// );
+/// # }
+/// ```
+pub fn z() -> Term {
+    abs(
+        app!(
+            abs(app!(Var(2), abs(app!(Var(2), Var(2), Var(1))))),
+            abs(app!(Var(2), abs(app!(Var(2), Var(2), Var(1)))))
+        )
+    )
 }
 
 /// T - the thrush combinator
