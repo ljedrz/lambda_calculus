@@ -152,8 +152,8 @@ pub fn length() -> Term {
                 Var(2),
                 app!(
                     Var(3),
-                    app!(succ(), Var(2)),
-                    app!(second(), Var(1))
+                    app(succ(), Var(2)),
+                    app(second(), Var(1))
                 )
             )
         ))),
@@ -191,8 +191,8 @@ pub fn reverse() -> Term {
                 Var(2),
                 app!(
                     Var(3),
-                    app!(pair(), app!(first(), Var(1)), Var(2)),
-                    app!(second(), Var(1))
+                    app!(pair(), app(first(), Var(1)), Var(2)),
+                    app(second(), Var(1))
                 )
             )
         ))),
@@ -223,7 +223,7 @@ pub fn list() -> Term {
         app!(
             Var(1),
             abs(abs(abs(
-                app!(Var(3), app!(pair(), Var(1), Var(2)))
+                app(Var(3), app!(pair(), Var(1), Var(2)))
             ))),
             reverse(),
             nil()
@@ -261,8 +261,8 @@ pub fn append() -> Term {
                 Var(1),
                 app!(
                     pair(),
-                    app!(first(), Var(2)),
-                    app!(Var(3), app!(second(), Var(2)), Var(1))
+                    app(first(), Var(2)),
+                    app!(Var(3), app(second(), Var(2)), Var(1))
                 )
             )
         )))
@@ -291,7 +291,7 @@ pub fn append() -> Term {
 /// ```
 pub fn index() -> Term {
     abs(abs(
-        app!(first(), app!(Var(2), second(), Var(1)))
+        app(first(), app!(Var(2), second(), Var(1)))
     ))
 }
 
@@ -325,8 +325,8 @@ pub fn map() -> Term {
                 nil(),
                 app!(
                     pair(),
-                    app!(Var(2), app!(first(), Var(1))),
-                    app!(Var(3), Var(2), app!(second(), Var(1)))
+                    app(Var(2), app(first(), Var(1))),
+                    app!(Var(3), Var(2), app(second(), Var(1)))
                 )
             )
         )))
@@ -366,8 +366,8 @@ pub fn foldl() -> Term {
                 app!(
                     Var(4),
                     Var(3),
-                    app!(Var(3), Var(2), app!(first(), Var(1))),
-                    app!(second(), Var(1))
+                    app!(Var(3), Var(2), app(first(), Var(1))),
+                    app(second(), Var(1))
                 )
             )
         ))))
@@ -408,8 +408,8 @@ pub fn foldr() -> Term {
                     Var(4),
                     app!(
                         Var(5),
-                        app!(first(), Var(1)),
-                        app!(Var(2), app!(second(), Var(1)))
+                        app(first(), Var(1)),
+                        app(Var(2), app(second(), Var(1)))
                     )
                 )
             )),
@@ -452,10 +452,10 @@ pub fn filter() -> Term {
                 nil(),
                 app!(
                     Var(2),
-                    app!(first(), Var(1)),
-                    app!(pair(), app!(first(), Var(1))),
+                    app(first(), Var(1)),
+                    app(pair(), app(first(), Var(1))),
                     i(),
-                    app!(Var(3), Var(2), app!(second(), Var(1)))
+                    app!(Var(3), Var(2), app(second(), Var(1)))
                 )
             )
         )))

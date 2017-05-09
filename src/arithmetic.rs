@@ -58,7 +58,7 @@ pub fn is_zero() -> Term {
 /// ```
 pub fn one() -> Term {
     abs(abs(
-        app!(Var(2), Var(1))
+        app(Var(2), Var(1))
     ))
 }
 
@@ -78,7 +78,7 @@ pub fn one() -> Term {
 /// ```
 pub fn succ() -> Term {
     abs(abs(abs(
-        app!(Var(2), app!(Var(3), Var(2), Var(1)))
+        app(Var(2), app!(Var(3), Var(2), Var(1)))
     )))
 }
 
@@ -124,7 +124,7 @@ pub fn plus() -> Term {
 /// ```
 pub fn mult() -> Term {
     abs(abs(abs(
-        app!(Var(3), app!(Var(2), Var(1)))
+        app(Var(3), app(Var(2), Var(1)))
     )))
 }
 
@@ -147,7 +147,7 @@ pub fn mult() -> Term {
 /// ```
 pub fn pow() -> Term {
     abs(abs(
-        app!(is_zero(), Var(1), one(), app!(Var(1), Var(2)))
+        app!(is_zero(), Var(1), one(), app(Var(1), Var(2)))
     ))
 }
 
@@ -221,7 +221,7 @@ pub fn sub() -> Term {
 /// ```
 pub fn lt() -> Term {
     abs(abs(
-        app!(not(), app!(leq(), Var(1), Var(2)))
+        app(not(), app!(leq(), Var(1), Var(2)))
     ))
 }
 
@@ -247,7 +247,7 @@ pub fn lt() -> Term {
 /// ```
 pub fn leq() -> Term {
     abs(abs(
-        app!(is_zero(), app!(sub(), Var(2), Var(1)))
+        app(is_zero(), app!(sub(), Var(2), Var(1)))
     ))
 }
 
@@ -305,8 +305,8 @@ pub fn neq() -> Term {
     abs(abs(
         app!(
             or(),
-            app!(not(), app!(leq(), Var(2), Var(1))),
-            app!(not(), app!(leq(), Var(1), Var(2)))
+            app(not(), app!(leq(), Var(2), Var(1))),
+            app(not(), app!(leq(), Var(1), Var(2)))
         )
     ))
 }
@@ -359,7 +359,7 @@ pub fn geq() -> Term {
 /// ```
 pub fn gt() -> Term {
     abs(abs(
-        app!(not(), app!(leq(), Var(2), Var(1)))
+        app(not(), app!(leq(), Var(2), Var(1)))
     ))
 }
 
@@ -394,7 +394,7 @@ pub fn div() -> Term {
                 app!(pair(), Var(3), Var(2)),
                 app!(
                     Var(4),
-                    app!(succ(), Var(3)),
+                    app(succ(), Var(3)),
                     app!(sub(), Var(2), Var(1)),
                     Var(1)
                 )
@@ -424,7 +424,7 @@ pub fn div() -> Term {
 /// # }
 /// ```
 pub fn quot() -> Term {
-    app!(
+    app(
         y(),
         abs(abs(abs(
             app!(
@@ -496,10 +496,7 @@ pub fn factorial() -> Term {
                 app!(
                     mult(),
                     Var(1),
-                    app!(
-                        Var(2),
-                        app!(pred(), Var(1))
-                    )
+                    app(Var(2), app(pred(), Var(1)))
                 )
             )
         ))

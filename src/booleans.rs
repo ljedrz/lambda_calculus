@@ -103,7 +103,7 @@ pub fn not() -> Term {
 /// ```
 pub fn xor() -> Term {
     abs(abs(
-        app!(Var(2), app!(not(), Var(1)), Var(1))
+        app!(Var(2), app(not(), Var(1)), Var(1))
     ))
 }
 

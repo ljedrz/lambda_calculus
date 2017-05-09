@@ -66,9 +66,7 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 /// ```
 pub fn s() -> Term {
     abs(abs(abs(
-        Var(3)
-        .app(Var(1))
-        .app(Var(2).app(Var(1)))
+        app!(Var(3), Var(1), app(Var(2), Var(1)))
     )))
 }
 
@@ -218,8 +216,8 @@ pub fn omm() -> Term { om().app(om()) }
 /// ```
 pub fn y() -> Term {
     abs(app(
-        abs(app!(Var(2), app!(Var(1), Var(1)))),
-        abs(app!(Var(2), app!(Var(1), Var(1))))
+        abs(app(Var(2), app(Var(1), Var(1)))),
+        abs(app(Var(2), app(Var(1), Var(1))))
     ))
 }
 
@@ -242,12 +240,10 @@ pub fn y() -> Term {
 /// # }
 /// ```
 pub fn z() -> Term {
-    abs(
-        app!(
-            abs(app!(Var(2), abs(app!(Var(2), Var(2), Var(1))))),
-            abs(app!(Var(2), abs(app!(Var(2), Var(2), Var(1)))))
-        )
-    )
+    abs(app(
+        abs(app(Var(2), abs(app!(Var(2), Var(2), Var(1))))),
+        abs(app(Var(2), abs(app!(Var(2), Var(2), Var(1)))))
+    ))
 }
 
 /// T - the thrush combinator
