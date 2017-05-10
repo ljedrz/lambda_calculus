@@ -311,7 +311,7 @@ pub fn beta_once(mut term: Term, order: &Order) -> Term {
 mod test {
     use super::*;
     use parser::parse;
-    use combinators::i;
+    use combinators::{i, y};
 
     #[test]
     fn normal_order() {
@@ -352,5 +352,13 @@ mod test {
         assert_eq!(expr, app(i(), i()));
         expr.beta_once(&CallByValue);
         assert_eq!(expr, i());
+    }
+
+    #[test]
+    fn reducibility() {
+        assert!(y().is_beta_reducible(&Normal));
+        assert!(y().is_beta_reducible(&Applicative));
+        assert!(!y().is_beta_reducible(&CallByName));
+        assert!(!y().is_beta_reducible(&CallByValue));
     }
 }
