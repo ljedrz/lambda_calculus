@@ -325,9 +325,13 @@ mod test {
 
     #[test]
     fn call_by_name_order() {
-        let mut expr = app(abs(Var(1)), app(Var(2), abs(Var(1))));
+        let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
         expr.beta_once(&CallByName);
-        assert_eq!(expr, app(Var(2), i()));
+        assert_eq!(expr, app(i(), app(i(), i())));
+        expr.beta_once(&CallByName);
+        assert_eq!(expr, app(i(), i()));
+        expr.beta_once(&CallByName);
+        assert_eq!(expr, i());
     }
 
     #[test]
@@ -341,11 +345,12 @@ mod test {
 
     #[test]
     fn call_by_value_order() {
-        let mut expr = app(i(), app(i(), abs(app(i(), Var(1)))));
+        let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
         expr.beta_once(&CallByValue);
-        assert_eq!(expr, app(i(), abs(app(i(), Var(1)))));
+        assert_eq!(expr, app(abs(app(i(), Var(1))), i()));
         expr.beta_once(&CallByValue);
-        assert_eq!(expr, abs(app(i(), Var(1))));
-        assert!(!expr.is_beta_reducible(&CallByValue));
+        assert_eq!(expr, app(i(), i()));
+        expr.beta_once(&CallByValue);
+        assert_eq!(expr, i());
     }
 }
