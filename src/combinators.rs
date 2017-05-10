@@ -110,7 +110,7 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 /// ```
 pub fn b() -> Term {
     abs(abs(abs(
-        app!(Var(3), app!(Var(2), Var(1)))
+        app(Var(3), app(Var(2), Var(1)))
     )))
 }
 

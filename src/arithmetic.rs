@@ -169,7 +169,7 @@ pub fn pred() -> Term {
     abs(abs(abs(
         app!(
         Var(3),
-        abs(abs(app!(Var(1), app!(Var(2), Var(4))))),
+        abs(abs(app(Var(1), app(Var(2), Var(4))))),
         abs(Var(2)),
         abs(Var(1))
         )
@@ -432,7 +432,7 @@ pub fn quot() -> Term {
                 Var(2),
                 Var(1),
                 zero(),
-                app!(
+                app(
                     succ(),
                     app!(
                         Var(3),
@@ -466,7 +466,7 @@ pub fn quot() -> Term {
 /// ```
 pub fn rem() -> Term {
     abs(abs(
-        app!(second(), app!(div(), Var(2), Var(1)))
+        app(second(), app!(div(), Var(2), Var(1)))
     ))
 }
 
@@ -486,7 +486,7 @@ pub fn rem() -> Term {
 /// assert_eq!(expr, 6.into());
 /// ```
 pub fn factorial() -> Term {
-    app!(
+    app(
         y(),
         abs(abs(
             app!(
