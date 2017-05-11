@@ -9,18 +9,24 @@ pub const SHOW_REDUCTIONS: bool = false;
 
 /// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction_strategies) of
 /// β-reductions. `Applicative` order will fail to fully reduce expressions containing functions
-/// without a normal form, e.g. the Y combinator (they will expand forever). `CallByName` and
-/// `CallByValue` orders only produce weak normal forms. The default is `Normal`.
+/// without a normal form, e.g. the Y combinator (they will expand forever). The default is
+/// `Normal`.
 #[derive(Debug, PartialEq)]
 pub enum Order {
     /// leftmost outermost
     Normal,
-    /// leftmost outermost not inside an abstraction
+    /// leftmost outermost, but not inside abstractions
     CallByName,
+    /// leftmost outermost, but abstractions reduced only in head position
+    HeadSpine,
+    /// `HeadSpine` + `Normal`
+    HybridNormal,
     /// leftmost innermost
     Applicative,
-    /// leftmost innermost not inside an abstraction
-    CallByValue
+    /// leftmost innermost, but not inside abstractions
+    CallByValue,
+    /// `CallByValue` + `Applicative`
+    HybridApplicative
 }
 
 /// Applies two `Term`s with substitution and variable update, consuming the first one in the
@@ -129,10 +135,19 @@ impl Term {
 
     fn beta_once_indicative(&mut self, order: &Order) -> bool {
         match *order {
-            Normal => self._beta_once_normal(0),
-            CallByName => self._beta_once_call_by_name(),
-            Applicative => self._beta_once_applicative(0),
-            CallByValue => self._beta_once_call_by_value(),
+            Normal       => self._beta_once_normal(0),
+            CallByName   => self._beta_once_call_by_name(),
+            HeadSpine    => self._beta_once_head_spine(0, true),
+            Applicative  => self._beta_once_applicative(0),
+            CallByValue  => self._beta_once_call_by_value(),
+            HybridNormal => {
+                self._beta_once_head_spine(0, true);
+                self._beta_once_normal(0)
+            },
+            HybridApplicative => {
+                self._beta_once_call_by_value();
+                self._beta_once_applicative(0)
+            }
         }
     }
 
@@ -172,6 +187,27 @@ impl Term {
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_call_by_name() ||
                     self.rhs_ref_mut().unwrap()._beta_once_call_by_name()
+                }
+            }
+        }
+    }
+
+    // the return value indicates if reduction was performed
+    fn _beta_once_head_spine(&mut self, depth: u32, is_head: bool) -> bool {
+        match *self {
+            Var(_) => false,
+            Abs(_) => if is_head {
+                self.unabs_ref_mut().unwrap()._beta_once_head_spine(depth + 1, is_head)
+            } else {
+                false
+            },
+            App(_, _) => {
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(0);
+                    true
+                } else {
+                    self.lhs_ref_mut().unwrap()._beta_once_head_spine(depth, is_head) ||
+                    self.rhs_ref_mut().unwrap()._beta_once_head_spine(depth, false)
                 }
             }
         }
