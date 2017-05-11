@@ -144,10 +144,7 @@ impl Term {
                 self._beta_once_head_spine(0, true);
                 self._beta_once_normal(0)
             },
-            HybridApplicative => {
-                self._beta_once_call_by_value();
-                self._beta_once_applicative(0)
-            }
+            HybridApplicative => self._beta_once_hybrid_applicative(0)
         }
     }
 
@@ -245,6 +242,25 @@ impl Term {
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_call_by_value() ||
                     self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
+                }
+            }
+        }
+    }
+
+    // the return value indicates if reduction was performed
+    fn _beta_once_hybrid_applicative(&mut self, depth: u32) -> bool {
+        match *self {
+            Var(_) => false,
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth + 1),
+            App(_, _) => {
+                if  self.lhs_ref().unwrap().unabs_ref().is_ok() &&
+                   !self.rhs_ref().unwrap().is_beta_reducible(&HybridApplicative)
+                {
+                    self.eval_with_info(0);
+                    true
+                } else {
+                    self.lhs_ref_mut().unwrap()._beta_once_call_by_value() || // TODO: pass depth
+                    self.rhs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth)
                 }
             }
         }
