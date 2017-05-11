@@ -13,7 +13,7 @@ The library contains:
 - Church lists
 - standard lambda terms and combinators
 - a parser for lambda expressions with De Bruijn indices
-- normal/applicative order β-reduction with optional display of reduction steps
+- different β-reduction strategies with optional display of reduction steps
 
 The implementation tries to find a compromise between the spirit of the lambda calculus and Rust's
 best practices; the lambda `Term`s implemented by the library are produced by functions (in order
@@ -28,6 +28,6 @@ The library is already usable, but it is still a work in progress.
 
 ## TODO
 
-- additional reduction strategies
+- thoroughly test all the evaluation orders
 - β-reduction parallelization (at least to some extent)?
 - further optimizations
