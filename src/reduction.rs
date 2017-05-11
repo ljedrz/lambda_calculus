@@ -148,11 +148,12 @@ impl Term {
         }
     }
 
-    fn eval_with_info(&mut self, depth: u32) {
+    fn eval_with_info(&mut self, depth: u32) -> bool {
         if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
         let copy = self.clone();
         *self = copy.eval().unwrap();
-        if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
+        if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) };
+        true
     }
 
     // the return value indicates if reduction was performed
@@ -162,8 +163,7 @@ impl Term {
             Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_normal(depth + 1),
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(depth);
-                    true
+                    self.eval_with_info(depth)
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_normal(depth) ||
                     self.rhs_ref_mut().unwrap()._beta_once_normal(depth)
@@ -177,8 +177,7 @@ impl Term {
         match *self {
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(0);
-                    true
+                    self.eval_with_info(0)
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_call_by_name()
                 }
@@ -198,8 +197,7 @@ impl Term {
             },
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(0);
-                    true
+                    self.eval_with_info(0)
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_head_spine(depth, is_head) ||
                     self.rhs_ref_mut().unwrap()._beta_once_head_spine(depth, false)
@@ -217,8 +215,7 @@ impl Term {
                 if  self.lhs_ref().unwrap().unabs_ref().is_ok() &&
                    !self.rhs_ref().unwrap().is_beta_reducible(&Applicative)
                 {
-                    self.eval_with_info(depth);
-                    true
+                    self.eval_with_info(depth)
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_applicative(depth) ||
                     self.rhs_ref_mut().unwrap()._beta_once_applicative(depth)
@@ -235,8 +232,7 @@ impl Term {
                     if self.rhs_ref_mut().unwrap().is_beta_reducible(&CallByValue) {
                         self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
                     } else {
-                        self.eval_with_info(0);
-                        true
+                        self.eval_with_info(0)
                     }
                 } else {
                     self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
@@ -256,8 +252,7 @@ impl Term {
                     if self.rhs_ref_mut().unwrap().is_beta_reducible(&CallByValue) {
                         self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
                     } else {
-                        self.eval_with_info(0);
-                        true
+                        self.eval_with_info(0)
                     }
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth) ||
