@@ -184,6 +184,7 @@ impl Term {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self._beta_full_normal(depth, limit)
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_full_normal(depth, limit);
                     self.rhs_ref_mut().unwrap()._beta_full_normal(depth, limit);
@@ -216,6 +217,7 @@ impl Term {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self._beta_full_call_by_name(depth, limit);
                 }
             },
             _ => ()
@@ -254,6 +256,7 @@ impl Term {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self._beta_full_head_spine(depth, limit)
                 }
             }
         }
@@ -271,6 +274,10 @@ impl Term {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self._beta_full_hybrid_normal(depth, limit)
+                } else {
+                    self.lhs_ref_mut().unwrap()._beta_full_hybrid_normal(depth, limit);
+                    self.rhs_ref_mut().unwrap()._beta_full_hybrid_normal(depth, limit);
                 }
             }
         }
@@ -308,6 +315,7 @@ impl Term {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self._beta_full_applicative(depth, limit);
                 }
             }
         }
@@ -342,6 +350,7 @@ impl Term {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self._beta_full_call_by_value(depth, limit);
                 }
             },
             _ => ()
@@ -381,6 +390,7 @@ impl Term {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self._beta_full_hybrid_applicative(depth, limit);
                 }
             }
         }
