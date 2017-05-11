@@ -243,6 +243,7 @@ impl Term {
                     self.eval_with_info(0);
                     true
                 } else {
+                    self.lhs_ref_mut().unwrap()._beta_once_call_by_value() ||
                     self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
                 }
             }
