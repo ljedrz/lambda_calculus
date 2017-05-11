@@ -172,6 +172,23 @@ impl Term {
         }
     }
 
+    fn _beta_full_normal(&mut self, depth: u32) {
+        match *self {
+            Var(_) => (),
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_full_normal(depth + 1),
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap()._beta_full_call_by_name(depth);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
+                } else {
+                    self.lhs_ref_mut().unwrap()._beta_full_normal(depth);
+                    self.rhs_ref_mut().unwrap()._beta_full_normal(depth);
+                }
+            }
+        }
+    }
+
     // the return value indicates if reduction was performed
     fn _beta_once_call_by_name(&mut self) -> bool {
         match *self {
@@ -183,6 +200,19 @@ impl Term {
                 }
             },
             _ => false
+        }
+    }
+
+    fn _beta_full_call_by_name(&mut self, depth: u32) {
+        match *self {
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap()._beta_full_call_by_name(depth);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
+                }
+            },
+            _ => ()
         }
     }
 
@@ -201,6 +231,22 @@ impl Term {
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_head_spine(depth, is_head) ||
                     self.rhs_ref_mut().unwrap()._beta_once_head_spine(depth, false)
+                }
+            }
+        }
+    }
+
+    fn _beta_full_head_spine(&mut self, depth: u32, is_head: bool) {
+        match *self {
+            Var(_) => (),
+            Abs(_) => if is_head {
+                self.unabs_ref_mut().unwrap()._beta_full_head_spine(depth + 1, is_head)
+            },
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap()._beta_full_head_spine(depth, is_head);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
                 }
             }
         }
@@ -225,6 +271,22 @@ impl Term {
     }
 
     // the return value indicates if reduction was performed
+    fn _beta_full_applicative(&mut self, depth: u32) {
+        match *self {
+            Var(_) => (),
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_full_applicative(depth + 1),
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap()._beta_full_applicative(depth);
+                self.rhs_ref_mut().unwrap()._beta_full_applicative(depth);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
+                }
+            }
+        }
+    }
+
+    // the return value indicates if reduction was performed
     fn _beta_once_call_by_value(&mut self) -> bool {
         match *self {
             App(_, _) => {
@@ -239,6 +301,20 @@ impl Term {
                 }
             },
             _ => false
+        }
+    }
+
+    fn _beta_full_call_by_value(&mut self, depth: u32) {
+        match *self {
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap()._beta_full_call_by_value(depth);
+                self.rhs_ref_mut().unwrap()._beta_full_call_by_value(depth);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
+                }
+            },
+            _ => ()
         }
     }
 
@@ -257,6 +333,21 @@ impl Term {
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth) ||
                     self.rhs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth)
+                }
+            }
+        }
+    }
+
+    fn _beta_full_hybrid_applicative(&mut self, depth: u32) {
+        match *self {
+            Var(_) => (),
+            Abs(_) => self.unabs_ref_mut().unwrap()._beta_full_hybrid_applicative(depth + 1),
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap()._beta_full_call_by_value(depth);
+                self.rhs_ref_mut().unwrap()._beta_full_hybrid_applicative(depth);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
                 }
             }
         }
