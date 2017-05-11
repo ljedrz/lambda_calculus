@@ -301,7 +301,6 @@ impl Term {
         }
     }
 
-    // the return value indicates if reduction was performed
     fn _beta_full_applicative(&mut self, depth: u32, limit: &mut Option<usize>) {
         if let Some(0) = *limit { return }
 
@@ -391,6 +390,8 @@ impl Term {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
                     self._beta_full_hybrid_applicative(depth, limit);
+                } else {
+                    self.lhs_ref_mut().unwrap()._beta_full_hybrid_applicative(depth, limit);
                 }
             }
         }
