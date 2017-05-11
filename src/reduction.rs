@@ -219,9 +219,8 @@ impl Term {
             Var(_) => false,
             Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_applicative(depth + 1),
             App(_, _) => {
-                if !self.lhs_ref().unwrap().is_beta_reducible(&Applicative) &&
-                   !self.rhs_ref().unwrap().is_beta_reducible(&Applicative) &&
-                    self.lhs_ref().unwrap().unabs_ref().is_ok()
+                if  self.lhs_ref().unwrap().unabs_ref().is_ok() &&
+                   !self.rhs_ref().unwrap().is_beta_reducible(&Applicative)
                 {
                     self.eval_with_info(depth);
                     true
@@ -239,9 +238,8 @@ impl Term {
             Var(_) => false,
             Abs(_) => false,
             App(_, _) => {
-                if !self.lhs_ref().unwrap().is_beta_reducible(&CallByValue) &&
-                   !self.rhs_ref().unwrap().is_beta_reducible(&CallByValue) &&
-                    self.lhs_ref().unwrap().unabs_ref().is_ok()
+                if  self.lhs_ref().unwrap().unabs_ref().is_ok() &&
+                   !self.rhs_ref().unwrap().is_beta_reducible(&CallByValue)
                 {
                     self.eval_with_info(0);
                     true
