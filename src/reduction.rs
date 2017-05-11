@@ -175,8 +175,6 @@ impl Term {
     // the return value indicates if reduction was performed
     fn _beta_once_call_by_name(&mut self) -> bool {
         match *self {
-            Var(_) => false,
-            Abs(_) => false,
             App(_, _) => {
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(0);
@@ -184,7 +182,8 @@ impl Term {
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_call_by_name()
                 }
-            }
+            },
+            _ => false
         }
     }
 
@@ -231,8 +230,6 @@ impl Term {
     // the return value indicates if reduction was performed
     fn _beta_once_call_by_value(&mut self) -> bool {
         match *self {
-            Var(_) => false,
-            Abs(_) => false,
             App(_, _) => {
                 if  self.lhs_ref().unwrap().unabs_ref().is_ok() &&
                    !self.rhs_ref().unwrap().is_beta_reducible(&CallByValue)
@@ -243,7 +240,8 @@ impl Term {
                     self.lhs_ref_mut().unwrap()._beta_once_call_by_value() ||
                     self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
                 }
-            }
+            },
+            _ => false
         }
     }
 
