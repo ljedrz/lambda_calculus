@@ -215,6 +215,7 @@ impl Term {
 
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
                 }
             },
             _ => ()
@@ -252,6 +253,7 @@ impl Term {
 
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
                 }
             }
         }
@@ -268,6 +270,7 @@ impl Term {
 
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
                 }
             }
         }
@@ -304,6 +307,7 @@ impl Term {
 
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
                 }
             }
         }
@@ -337,6 +341,7 @@ impl Term {
 
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
                 }
             },
             _ => ()
@@ -375,6 +380,7 @@ impl Term {
 
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
                 }
             }
         }
