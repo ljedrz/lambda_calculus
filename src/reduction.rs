@@ -231,8 +231,7 @@ impl Term {
     fn _beta_once_call_by_value(&mut self) -> bool {
         match *self {
             App(_, _) => {
-                if self.lhs_ref().unwrap().unabs_ref().is_ok()
-                {
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     if self.rhs_ref_mut().unwrap().is_beta_reducible(&CallByValue) {
                         self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
                     } else {
@@ -253,13 +252,15 @@ impl Term {
             Var(_) => false,
             Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth + 1),
             App(_, _) => {
-                if  self.lhs_ref().unwrap().unabs_ref().is_ok() &&
-                   !self.rhs_ref().unwrap().is_beta_reducible(&HybridApplicative)
-                {
-                    self.eval_with_info(0);
-                    true
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    if self.rhs_ref_mut().unwrap().is_beta_reducible(&CallByValue) {
+                        self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
+                    } else {
+                        self.eval_with_info(0);
+                        true
+                    }
                 } else {
-                    self.lhs_ref_mut().unwrap()._beta_once_call_by_value() || // TODO: pass depth
+                    self.lhs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth) ||
                     self.rhs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth)
                 }
             }
