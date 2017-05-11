@@ -583,6 +583,18 @@ mod test {
         assert_eq!(beta_full(app!(succ(), 0.into()), &Normal), 1.into());
         assert_eq!(beta_full(app!(succ(), 1.into()), &Normal), 2.into());
         assert_eq!(beta_full(app!(succ(), 2.into()), &Normal), 3.into());
+
+        assert_eq!(beta_full(app!(succ(), 0.into()), &HybridNormal), 1.into());
+        assert_eq!(beta_full(app!(succ(), 1.into()), &HybridNormal), 2.into());
+        assert_eq!(beta_full(app!(succ(), 2.into()), &HybridNormal), 3.into());
+
+        assert_eq!(beta_full(app!(succ(), 0.into()), &Applicative), 1.into());
+        assert_eq!(beta_full(app!(succ(), 1.into()), &Applicative), 2.into());
+        assert_eq!(beta_full(app!(succ(), 2.into()), &Applicative), 3.into());
+
+        assert_eq!(beta_full(app!(succ(), 0.into()), &HybridApplicative), 1.into());
+        assert_eq!(beta_full(app!(succ(), 1.into()), &HybridApplicative), 2.into());
+        assert_eq!(beta_full(app!(succ(), 2.into()), &HybridApplicative), 3.into());
     }
 
     #[test]
@@ -590,30 +602,88 @@ mod test {
         assert_eq!(beta_full(app!(pred(), 0.into()), &Normal), 0.into());
         assert_eq!(beta_full(app!(pred(), 1.into()), &Normal), 0.into());
         assert_eq!(beta_full(app!(pred(), 5.into()), &Normal), 4.into());
+
+        assert_eq!(beta_full(app!(pred(), 0.into()), &HybridNormal), 0.into());
+        assert_eq!(beta_full(app!(pred(), 1.into()), &HybridNormal), 0.into());
+        assert_eq!(beta_full(app!(pred(), 5.into()), &HybridNormal), 4.into());
+
+        assert_eq!(beta_full(app!(pred(), 0.into()), &Applicative), 0.into());
+        assert_eq!(beta_full(app!(pred(), 1.into()), &Applicative), 0.into());
+        assert_eq!(beta_full(app!(pred(), 5.into()), &Applicative), 4.into());
+
+        assert_eq!(beta_full(app!(pred(), 0.into()), &HybridApplicative), 0.into());
+        assert_eq!(beta_full(app!(pred(), 1.into()), &HybridApplicative), 0.into());
+        assert_eq!(beta_full(app!(pred(), 5.into()), &HybridApplicative), 4.into());
     }
 
     #[test]
     fn church_plus_sub_equivalents() {
-        assert_eq!(beta_full(app!(    plus(), 1.into()), &Normal), succ()); // PLUS 1 → SUCC
-        assert_eq!(beta_full(app!(c(), sub(), 1.into()), &Normal), pred()); // C SUB 1 → PRED
+        /* PLUS 1 → SUCC & C SUB 1 → PRED */
+        assert_eq!(beta_full(app!(    plus(), 1.into()), &Normal), succ());
+        assert_eq!(beta_full(app!(c(), sub(), 1.into()), &Normal), pred());
+
+        assert_eq!(beta_full(app!(    plus(), 1.into()), &HybridNormal), succ());
+        assert_eq!(beta_full(app!(c(), sub(), 1.into()), &HybridNormal), pred());
+
+        assert_eq!(beta_full(app!(    plus(), 1.into()), &Applicative), succ());
+        assert_eq!(beta_full(app!(c(), sub(), 1.into()), &Applicative), pred());
+
+        assert_eq!(beta_full(app!(    plus(), 1.into()), &HybridApplicative), succ());
+        assert_eq!(beta_full(app!(c(), sub(), 1.into()), &HybridApplicative), pred());
     }
 
     #[test]
     fn church_multiplication() {
         assert_eq!(beta_full(app!(mult(), 3.into(), 4.into()), &Normal), 12.into());
-        assert_eq!(beta_full(app!(mult(), 1.into(), 3.into()), &Normal), 3.into());
-        assert_eq!(beta_full(app!(mult(), 3.into(), 1.into()), &Normal), 3.into());
-        assert_eq!(beta_full(app!(mult(), 5.into(), 0.into()), &Normal), 0.into());
-        assert_eq!(beta_full(app!(mult(), 0.into(), 5.into()), &Normal), 0.into());
+        assert_eq!(beta_full(app!(mult(), 1.into(), 3.into()), &Normal),  3.into());
+        assert_eq!(beta_full(app!(mult(), 3.into(), 1.into()), &Normal),  3.into());
+        assert_eq!(beta_full(app!(mult(), 5.into(), 0.into()), &Normal),  0.into());
+        assert_eq!(beta_full(app!(mult(), 0.into(), 5.into()), &Normal),  0.into());
+
+        assert_eq!(beta_full(app!(mult(), 3.into(), 4.into()), &HybridNormal), 12.into());
+        assert_eq!(beta_full(app!(mult(), 1.into(), 3.into()), &HybridNormal),  3.into());
+        assert_eq!(beta_full(app!(mult(), 3.into(), 1.into()), &HybridNormal),  3.into());
+        assert_eq!(beta_full(app!(mult(), 5.into(), 0.into()), &HybridNormal),  0.into());
+        assert_eq!(beta_full(app!(mult(), 0.into(), 5.into()), &HybridNormal),  0.into());
+
+        assert_eq!(beta_full(app!(mult(), 3.into(), 4.into()), &Applicative), 12.into());
+        assert_eq!(beta_full(app!(mult(), 1.into(), 3.into()), &Applicative),  3.into());
+        assert_eq!(beta_full(app!(mult(), 3.into(), 1.into()), &Applicative),  3.into());
+        assert_eq!(beta_full(app!(mult(), 5.into(), 0.into()), &Applicative),  0.into());
+        assert_eq!(beta_full(app!(mult(), 0.into(), 5.into()), &Applicative),  0.into());
+
+        assert_eq!(beta_full(app!(mult(), 3.into(), 4.into()), &HybridApplicative), 12.into());
+        assert_eq!(beta_full(app!(mult(), 1.into(), 3.into()), &HybridApplicative),  3.into());
+        assert_eq!(beta_full(app!(mult(), 3.into(), 1.into()), &HybridApplicative),  3.into());
+        assert_eq!(beta_full(app!(mult(), 5.into(), 0.into()), &HybridApplicative),  0.into());
+        assert_eq!(beta_full(app!(mult(), 0.into(), 5.into()), &HybridApplicative),  0.into());
     }
 
     #[test]
     fn church_exponentiation() {
         assert_eq!(beta_full(app!(pow(), 2.into(), 4.into()), &Normal), 16.into());
-        assert_eq!(beta_full(app!(pow(), 1.into(), 3.into()), &Normal), 1.into());
-        assert_eq!(beta_full(app!(pow(), 3.into(), 1.into()), &Normal), 3.into());
-        assert_eq!(beta_full(app!(pow(), 5.into(), 0.into()), &Normal), 1.into());
-        assert_eq!(beta_full(app!(pow(), 0.into(), 5.into()), &Normal), 0.into());
+        assert_eq!(beta_full(app!(pow(), 1.into(), 3.into()), &Normal),  1.into());
+        assert_eq!(beta_full(app!(pow(), 3.into(), 1.into()), &Normal),  3.into());
+        assert_eq!(beta_full(app!(pow(), 5.into(), 0.into()), &Normal),  1.into());
+        assert_eq!(beta_full(app!(pow(), 0.into(), 5.into()), &Normal),  0.into());
+
+        assert_eq!(beta_full(app!(pow(), 2.into(), 4.into()), &HybridNormal), 16.into());
+        assert_eq!(beta_full(app!(pow(), 1.into(), 3.into()), &HybridNormal),  1.into());
+        assert_eq!(beta_full(app!(pow(), 3.into(), 1.into()), &HybridNormal),  3.into());
+        assert_eq!(beta_full(app!(pow(), 5.into(), 0.into()), &HybridNormal),  1.into());
+        assert_eq!(beta_full(app!(pow(), 0.into(), 5.into()), &HybridNormal),  0.into());
+
+        assert_eq!(beta_full(app!(pow(), 2.into(), 4.into()), &Applicative), 16.into());
+        assert_eq!(beta_full(app!(pow(), 1.into(), 3.into()), &Applicative),  1.into());
+        assert_eq!(beta_full(app!(pow(), 3.into(), 1.into()), &Applicative),  3.into());
+        assert_eq!(beta_full(app!(pow(), 5.into(), 0.into()), &Applicative),  1.into());
+        assert_eq!(beta_full(app!(pow(), 0.into(), 5.into()), &Applicative),  0.into());
+
+        assert_eq!(beta_full(app!(pow(), 2.into(), 4.into()), &HybridApplicative), 16.into());
+        assert_eq!(beta_full(app!(pow(), 1.into(), 3.into()), &HybridApplicative),  1.into());
+        assert_eq!(beta_full(app!(pow(), 3.into(), 1.into()), &HybridApplicative),  3.into());
+        assert_eq!(beta_full(app!(pow(), 5.into(), 0.into()), &HybridApplicative),  1.into());
+        assert_eq!(beta_full(app!(pow(), 0.into(), 5.into()), &HybridApplicative),  0.into());
     }
 
     #[test]
@@ -623,6 +693,11 @@ mod test {
         assert_eq!(beta_full(app!(div(), 2.into(), 1.into()), &Normal), (2.into(), 0.into()).into());
         assert_eq!(beta_full(app!(div(), 0.into(), 3.into()), &Normal), (0.into(), 0.into()).into());
      // assert_eq!(beta_full(app!(div(), 1.into(), 0.into()), &Normal), ); division by 0 hangs
+
+        assert_eq!(beta_full(app!(div(), 2.into(), 2.into()), &HybridNormal), (1.into(), 0.into()).into());
+        assert_eq!(beta_full(app!(div(), 3.into(), 2.into()), &HybridNormal), (1.into(), 1.into()).into());
+        assert_eq!(beta_full(app!(div(), 2.into(), 1.into()), &HybridNormal), (2.into(), 0.into()).into());
+        assert_eq!(beta_full(app!(div(), 0.into(), 3.into()), &HybridNormal), (0.into(), 0.into()).into());
     }
 
     #[test]
@@ -632,6 +707,11 @@ mod test {
         assert_eq!(beta_full(app!(quot(), 2.into(), 1.into()), &Normal), 2.into());
         assert_eq!(beta_full(app!(quot(), 0.into(), 3.into()), &Normal), 0.into());
     //  assert_eq!(beta_full(app!(quot(), 1.into(), 0.into()), &Normal), ); division by 0 hangs
+
+        assert_eq!(beta_full(app!(quot(), 2.into(), 2.into()), &HybridNormal), 1.into());
+        assert_eq!(beta_full(app!(quot(), 3.into(), 2.into()), &HybridNormal), 1.into());
+        assert_eq!(beta_full(app!(quot(), 2.into(), 1.into()), &HybridNormal), 2.into());
+        assert_eq!(beta_full(app!(quot(), 0.into(), 3.into()), &HybridNormal), 0.into());
     }
 
     #[test]
@@ -641,6 +721,11 @@ mod test {
         assert_eq!(beta_full(app!(rem(), 2.into(), 1.into()), &Normal), 0.into());
         assert_eq!(beta_full(app!(rem(), 0.into(), 3.into()), &Normal), 0.into());
      // assert_eq!(beta_full(app!(rem(), 1.into(), 0.into()), &Normal), ); division by 0 hangs
+
+        assert_eq!(beta_full(app!(rem(), 2.into(), 2.into()), &HybridNormal), 0.into());
+        assert_eq!(beta_full(app!(rem(), 3.into(), 2.into()), &HybridNormal), 1.into());
+        assert_eq!(beta_full(app!(rem(), 2.into(), 1.into()), &HybridNormal), 0.into());
+        assert_eq!(beta_full(app!(rem(), 0.into(), 3.into()), &HybridNormal), 0.into());
     }
 
     #[test]
@@ -649,5 +734,10 @@ mod test {
         assert_eq!(beta_full(app!(factorial(), 1.into()), &Normal), 1.into());
         assert_eq!(beta_full(app!(factorial(), 2.into()), &Normal), 2.into());
         assert_eq!(beta_full(app!(factorial(), 3.into()), &Normal), 6.into());
+
+        assert_eq!(beta_full(app!(factorial(), 0.into()), &HybridNormal), 1.into());
+        assert_eq!(beta_full(app!(factorial(), 1.into()), &HybridNormal), 1.into());
+        assert_eq!(beta_full(app!(factorial(), 2.into()), &HybridNormal), 2.into());
+        assert_eq!(beta_full(app!(factorial(), 3.into()), &HybridNormal), 6.into());
     }
 }

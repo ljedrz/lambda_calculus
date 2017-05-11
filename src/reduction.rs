@@ -9,8 +9,8 @@ pub const SHOW_REDUCTIONS: bool = false;
 
 /// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction_strategies) of
 /// β-reductions. `Applicative` order will fail to fully reduce expressions containing functions
-/// without a normal form, e.g. the Y combinator (they will expand forever). The default is
-/// `Normal`.
+/// without a normal form, e.g. the Y combinator (they will expand forever). `CallByName`,
+/// `HeadSpine` and `CallByValue` orders don't always normalize fully. The default is `Normal`.
 #[derive(Debug, PartialEq)]
 pub enum Order {
     /// leftmost outermost
