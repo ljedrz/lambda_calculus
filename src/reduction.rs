@@ -231,13 +231,15 @@ impl Term {
     fn _beta_once_call_by_value(&mut self) -> bool {
         match *self {
             App(_, _) => {
-                if  self.lhs_ref().unwrap().unabs_ref().is_ok() &&
-                   !self.rhs_ref().unwrap().is_beta_reducible(&CallByValue)
+                if self.lhs_ref().unwrap().unabs_ref().is_ok()
                 {
-                    self.eval_with_info(0);
-                    true
+                    if self.rhs_ref_mut().unwrap().is_beta_reducible(&CallByValue) {
+                        self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
+                    } else {
+                        self.eval_with_info(0);
+                        true
+                    }
                 } else {
-                    self.lhs_ref_mut().unwrap()._beta_once_call_by_value() ||
                     self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
                 }
             },
