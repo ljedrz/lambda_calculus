@@ -6,7 +6,7 @@ use term::Term::*;
 use term::Error::*;
 use booleans::*;
 use pair::{pair, second};
-use combinators::y;
+use combinators::z;
 
 /// Produces a Church-encoded number zero.
 ///
@@ -385,7 +385,7 @@ pub fn gt() -> Term {
 /// ```
 pub fn div() -> Term {
     app!(
-        y(),
+        z(),
         abs(abs(abs(abs(
             app!(
                 lt(),
@@ -425,7 +425,7 @@ pub fn div() -> Term {
 /// ```
 pub fn quot() -> Term {
     app(
-        y(),
+        z(),
         abs(abs(abs(
             app!(
                 lt(),
@@ -487,7 +487,7 @@ pub fn rem() -> Term {
 /// ```
 pub fn factorial() -> Term {
     app(
-        y(),
+        z(),
         abs(abs(
             app!(
                 is_zero(),
