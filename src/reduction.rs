@@ -138,7 +138,7 @@ impl Term {
     }
 
     fn eval_with_info(&mut self, depth: u32) {
-        if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
+        if SHOW_REDUCTIONS { print!("\n{} reduces to ", show_precedence(self, 0, depth)) };
         let copy = self.clone();
         *self = copy.eval().unwrap();
         if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) };
@@ -164,6 +164,7 @@ impl Term {
     /// assert_eq!(pred_one, 0.into());
     /// ```
     pub fn beta(&mut self, order: &Order, mut limit: Option<usize>) {
+        if SHOW_REDUCTIONS { println!("reducing {}:", self) };
         match *order {
             CallByName        => self.beta_cbn(0, &mut limit),
             Normal            => self.beta_nor(0, &mut limit),
@@ -173,6 +174,7 @@ impl Term {
             HybridNormal      => self.beta_hnor(0, &mut limit),
             HybridApplicative => self.beta_happ(0, &mut limit)
         }
+        if SHOW_REDUCTIONS { println!("\n{}", self) };
     }
 
     fn beta_cbn(&mut self, depth: u32, limit: &mut Option<usize>) {
