@@ -198,7 +198,8 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// ```
 pub fn omm() -> Term { om().app(om()) }
 
-/// Y - the lazy fixed-point combinator intended for the `Normal` evaluation `Order`.
+/// Y - the lazy fixed-point combinator suitable for `Normal` and `HybridNormal` β-reduction
+/// `Order`s.
 ///
 /// Y := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
 ///
@@ -223,7 +224,8 @@ pub fn y() -> Term {
     ))
 }
 
-/// Z - the strict fixed-point combinator intended for the `CallByValue` evaluation `Order`.
+/// Z - the strict fixed-point combinator suitable for `Normal`, `HybridNormal`, `CallByValue` and
+/// `HybridApplicative` β-reduction `Order`s.
 ///
 /// Z := λf.(λx.f (λv.x x v)) (λx.f (λv.x x v)) = λ (λ 2 (λ 2 2 1)) (λ 2 (λ 2 2 1))
 ///
@@ -236,7 +238,7 @@ pub fn y() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(             app!(z(), zero()) , &CallByValue, None),
+/// assert_eq!(beta(             app!(z(), zero() ), &CallByValue, None),
 ///            beta(app!(zero(), app!(z(), zero())), &CallByValue, None)
 /// );
 /// # }
