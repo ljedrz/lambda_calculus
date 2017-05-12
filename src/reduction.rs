@@ -264,7 +264,7 @@ impl Term {
 
     fn is_reducible(&self, limit: &mut Option<usize>) -> bool {
         self.lhs_ref().unwrap().unabs_ref().is_ok() &&
-        (limit.is_none() || limit.is_some() && limit.unwrap() > 1)
+        (limit.is_none() || limit.is_some() && limit.unwrap() > 0)
     }
 
     fn beta_cbn(&mut self, depth: u32, limit: &mut Option<usize>) {
