@@ -33,10 +33,10 @@ pub fn nil() -> Term { fls() }
 /// # fn main() {
 /// use lambda_calculus::list::{nil, null};
 /// use lambda_calculus::booleans::tru;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(null(), nil()), &Normal), tru());
+/// assert_eq!(beta(app!(null(), nil()), &Normal, None), tru());
 /// # }
 /// ```
 pub fn null() -> Term {
@@ -54,10 +54,10 @@ pub fn null() -> Term {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::list::{nil, cons};
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// let list_110_consed = beta_full(
+/// let list_110_consed = beta(
 ///     app!(
 ///         cons(),
 ///         one(),
@@ -70,7 +70,7 @@ pub fn null() -> Term {
 ///                 nil()
 ///             )
 ///         )
-///     ), &Normal
+///     ), &Normal, None
 /// );
 /// let list_110_from_vec = Term::from(vec![one(), one(), zero()]);
 ///
@@ -90,12 +90,12 @@ pub fn cons() -> Term { pair() }
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::head;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let list_110 = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(beta_full(app!(head(), list_110), &Normal), one());
+/// assert_eq!(beta(app!(head(), list_110), &Normal, None), one());
 /// # }
 /// ```
 pub fn head() -> Term { first() }
@@ -112,12 +112,12 @@ pub fn head() -> Term { first() }
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::tail;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let list_110 = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(beta_full(app!(tail(), list_110), &Normal), Term::from(vec![one(), zero()]));
+/// assert_eq!(beta(app!(tail(), list_110), &Normal, None), Term::from(vec![one(), zero()]));
 /// # }
 /// ```
 pub fn tail() -> Term { second() }
@@ -133,13 +133,13 @@ pub fn tail() -> Term { second() }
 /// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::{length, nil};
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let list_4 = Term::from(vec![1.into(), 1.into(), 0.into(), 1.into()]);
 ///
-/// assert_eq!(beta_full(app!(length(), nil() ), &Normal), 0.into());
-/// assert_eq!(beta_full(app!(length(), list_4), &Normal), 4.into());
+/// assert_eq!(beta(app!(length(), nil() ), &Normal, None), 0.into());
+/// assert_eq!(beta(app!(length(), list_4), &Normal, None), 4.into());
 /// # }
 /// ```
 pub fn length() -> Term {
@@ -173,12 +173,12 @@ pub fn length() -> Term {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::reverse;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let list = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(beta_full(app!(reverse(), list), &Normal), Term::from(vec![zero(), one(), one()]));
+/// assert_eq!(beta(app!(reverse(), list), &Normal, None), Term::from(vec![zero(), one(), one()]));
 /// # }
 /// ```
 pub fn reverse() -> Term {
@@ -211,10 +211,10 @@ pub fn reverse() -> Term {
 /// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::list;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(list(), 3.into(), 0.into(), 1.into(), 1.into()), &Normal),
+/// assert_eq!(beta(app!(list(), 3.into(), 0.into(), 1.into(), 1.into()), &Normal, None),
 ///            Term::from(vec![0.into(), 1.into(), 1.into()]));
 /// # }
 /// ```
@@ -242,13 +242,13 @@ pub fn list() -> Term {
 /// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::append;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let list1 = Term::from(vec![0.into(), 1.into()]);
 /// let list2 = Term::from(vec![2.into(), 3.into()]);
 ///
-/// assert_eq!(beta_full(app!(append(), list1, list2), &Normal),
+/// assert_eq!(beta(app!(append(), list1, list2), &Normal, None),
 ///            Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]));
 /// # }
 /// ```
@@ -280,13 +280,13 @@ pub fn append() -> Term {
 /// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::index;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let list = Term::from(vec![3.into(), 4.into(), 5.into()]);
 ///
-/// assert_eq!(beta_full(app!(index(), 0.into(), list.clone()), &Normal), 3.into());
-/// assert_eq!(beta_full(app!(index(), 2.into(), list        ), &Normal), 5.into());
+/// assert_eq!(beta(app!(index(), 0.into(), list.clone()), &Normal, None), 3.into());
+/// assert_eq!(beta(app!(index(), 2.into(), list        ), &Normal, None), 5.into());
 /// # }
 /// ```
 pub fn index() -> Term {
@@ -307,12 +307,12 @@ pub fn index() -> Term {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::map;
 /// use lambda_calculus::arithmetic::succ;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta_full(app!(map(), succ(), list), &Normal),
+/// assert_eq!(beta(app!(map(), succ(), list), &Normal, None),
 ///            Term::from(vec![2.into(), 3.into(), 4.into()]));
 /// # }
 /// ```
@@ -347,13 +347,13 @@ pub fn map() -> Term {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::{foldl, nil};
 /// use lambda_calculus::arithmetic::plus;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta_full(app!(foldl(), plus(), 0.into(), list ), &Normal), 6.into());
-/// assert_eq!(beta_full(app!(foldl(), plus(), 0.into(), nil()), &Normal), 0.into());
+/// assert_eq!(beta(app!(foldl(), plus(), 0.into(), list ), &Normal, None), 6.into());
+/// assert_eq!(beta(app!(foldl(), plus(), 0.into(), nil()), &Normal, None), 0.into());
 /// # }
 /// ```
 pub fn foldl() -> Term {
@@ -388,13 +388,13 @@ pub fn foldl() -> Term {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::list::{foldr, nil};
 /// use lambda_calculus::arithmetic::plus;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta_full(app!(foldr(), plus(), 0.into(), list ), &Normal), 6.into());
-/// assert_eq!(beta_full(app!(foldr(), plus(), 0.into(), nil()), &Normal), 0.into());
+/// assert_eq!(beta(app!(foldr(), plus(), 0.into(), list ), &Normal, None), 6.into());
+/// assert_eq!(beta(app!(foldr(), plus(), 0.into(), nil()), &Normal, None), 0.into());
 /// # }
 /// ```
 pub fn foldr() -> Term {
@@ -431,15 +431,15 @@ pub fn foldr() -> Term {
 /// use lambda_calculus::list::{filter, nil};
 /// use lambda_calculus::arithmetic::{is_zero, gt};
 /// use lambda_calculus::combinators::c;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
 /// let gt1  = app!(c(), gt(), 1.into());
 ///
-/// assert_eq!(beta_full(app!(filter(), is_zero(), list.clone()), &Normal),
+/// assert_eq!(beta(app!(filter(), is_zero(), list.clone()), &Normal, None),
 ///            Term::from(vec![0.into()]));
-/// assert_eq!(beta_full(app!(filter(), gt1, list), &Normal),
+/// assert_eq!(beta(app!(filter(), gt1, list), &Normal, None),
 ///            Term::from(vec![2.into(), 3.into()]));
 /// # }
 /// ```
@@ -759,7 +759,7 @@ impl Index<usize> for Term {
 #[cfg(test)]
 mod test {
     use super::*;
-    use reduction::beta_full;
+    use reduction::beta;
     use reduction::Order::*;
 
     #[test]
@@ -771,7 +771,7 @@ mod test {
     #[test]
     fn list_push() {
         let list_pushed = nil().push(0.into()).push(1.into()).push(1.into());
-        let list_consed = beta_full(
+        let list_consed = beta(
             app!(
                 cons(),
                 1.into(),
@@ -784,7 +784,7 @@ mod test {
                         nil()
                     )
                 )
-            ), &Normal
+            ), &Normal, None
         );
         assert_eq!(list_pushed, list_consed);
     }
