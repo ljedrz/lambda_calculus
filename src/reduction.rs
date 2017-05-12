@@ -30,7 +30,7 @@ pub enum Order {
 }
 
 /// Applies two `Term`s with substitution and variable update, consuming the first one in the
-/// process.
+/// process. It produces an `Error` if the first `Term` is not an `Abs`traction.
 ///
 /// # Example
 /// ```
@@ -82,8 +82,28 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
     }
 }
 
+/// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit on
+/// number of reductions.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::arithmetic::pred;
+/// use lambda_calculus::reduction::beta;
+/// use lambda_calculus::reduction::Order::Normal;
+///
+/// let pred_one = pred().app(1.into());
+///
+/// assert_eq!(beta(pred_one, &Normal, None), 0.into());
+/// ```
+pub fn beta(mut term: Term, order: &Order, limit: Option<usize>) -> Term {
+    term.beta(order, limit);
+    term
+}
+
 impl Term {
     /// Applies `self` to another `Term` and performs substitution, consuming `self` in the process.
+    /// It produces an `Error` if `self` is not an `Abs`traction.
     ///
     /// # Example
     /// ```
@@ -99,7 +119,8 @@ impl Term {
         apply(self, rhs)
     }
 
-    /// Reduces an `App`lication by substitution and variable update.
+    /// Reduces an `App`lication by substitution and variable update. It produces an `Error` if
+    /// `self` is not an `App`lication.
     ///
     /// # Example
     /// ```
@@ -116,155 +137,42 @@ impl Term {
         apply(lhs, &rhs)
     }
 
-    /// Performs a single β-reduction on `self` with the specified evaluation `Order`.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use lambda_calculus::arithmetic::succ;
-    /// use lambda_calculus::reduction::Order;
-    ///
-    /// let mut succ_one = succ().app(1.into());
-    /// succ_one.beta_once(&Order::Normal);
-    ///
-    /// assert_eq!(succ_one, succ().apply(&1.into()).unwrap());
-    /// ```
-    pub fn beta_once(&mut self, order: &Order) {
-        self.beta_once_indicative(order);
-    }
-
-    fn beta_once_indicative(&mut self, order: &Order) -> bool {
-        match *order {
-            Normal       => self._beta_once_normal(0),
-            CallByName   => self._beta_once_call_by_name(),
-            HeadSpine    => self._beta_once_head_spine(0, true),
-            Applicative  => self._beta_once_applicative(0),
-            CallByValue  => self._beta_once_call_by_value(),
-            HybridNormal => {
-                self._beta_once_head_spine(0, true);
-                self._beta_once_normal(0)
-            },
-            HybridApplicative => self._beta_once_hybrid_applicative(0)
-        }
-    }
-
-    fn eval_with_info(&mut self, depth: u32) -> bool {
+    fn eval_with_info(&mut self, depth: u32) {
         if SHOW_REDUCTIONS { print!("    {} reduces to ", show_precedence(self, 0, depth)) };
         let copy = self.clone();
         *self = copy.eval().unwrap();
         if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) };
-        true
-    }
-
-    // the return value indicates if reduction was performed
-    fn _beta_once_normal(&mut self, depth: u32) -> bool {
-        match *self {
-            Var(_) => false,
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_normal(depth + 1),
-            App(_, _) => {
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(depth)
-                } else {
-                    self.lhs_ref_mut().unwrap()._beta_once_normal(depth) ||
-                    self.rhs_ref_mut().unwrap()._beta_once_normal(depth)
-                }
-            }
-        }
-    }
-
-    // the return value indicates if reduction was performed
-    fn _beta_once_call_by_name(&mut self) -> bool {
-        match *self {
-            App(_, _) => {
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(0)
-                } else {
-                    self.lhs_ref_mut().unwrap()._beta_once_call_by_name()
-                }
-            },
-            _ => false
-        }
-    }
-
-    // the return value indicates if reduction was performed
-    fn _beta_once_head_spine(&mut self, depth: u32, is_head: bool) -> bool {
-        match *self {
-            Var(_) => false,
-            Abs(_) => if is_head {
-                self.unabs_ref_mut().unwrap()._beta_once_head_spine(depth + 1, is_head)
-            } else {
-                false
-            },
-            App(_, _) => {
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(0)
-                } else {
-                    self.lhs_ref_mut().unwrap()._beta_once_head_spine(depth, is_head) ||
-                    self.rhs_ref_mut().unwrap()._beta_once_head_spine(depth, false)
-                }
-            }
-        }
-    }
-
-    // the return value indicates if reduction was performed
-    fn _beta_once_applicative(&mut self, depth: u32) -> bool {
-        match *self {
-            Var(_) => false,
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_applicative(depth + 1),
-            App(_, _) => {
-                if  self.lhs_ref().unwrap().unabs_ref().is_ok() &&
-                   !self.rhs_ref().unwrap().is_beta_reducible(&Applicative)
-                {
-                    self.eval_with_info(depth)
-                } else {
-                    self.lhs_ref_mut().unwrap()._beta_once_applicative(depth) ||
-                    self.rhs_ref_mut().unwrap()._beta_once_applicative(depth)
-                }
-            }
-        }
-    }
-
-    // the return value indicates if reduction was performed
-    fn _beta_once_call_by_value(&mut self) -> bool {
-        match *self {
-            App(_, _) => {
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    if self.rhs_ref_mut().unwrap().is_beta_reducible(&CallByValue) {
-                        self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
-                    } else {
-                        self.eval_with_info(0)
-                    }
-                } else {
-                    self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
-                }
-            },
-            _ => false
-        }
-    }
-
-    // the return value indicates if reduction was performed
-    fn _beta_once_hybrid_applicative(&mut self, depth: u32) -> bool {
-        match *self {
-            Var(_) => false,
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth + 1),
-            App(_, _) => {
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    if self.rhs_ref_mut().unwrap().is_beta_reducible(&CallByValue) {
-                        self.rhs_ref_mut().unwrap()._beta_once_call_by_value()
-                    } else {
-                        self.eval_with_info(0)
-                    }
-                } else {
-                    self.lhs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth) ||
-                    self.rhs_ref_mut().unwrap()._beta_once_hybrid_applicative(depth)
-                }
-            }
-        }
     }
 
     fn is_reducible(&self, limit: &mut Option<usize>) -> bool {
         self.lhs_ref().unwrap().unabs_ref().is_ok() &&
         (limit.is_none() || limit.is_some() && limit.unwrap() > 0)
+    }
+
+    /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional
+    /// limit on number of reductions.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lambda_calculus::arithmetic::pred;
+    /// use lambda_calculus::reduction::Order::Normal;
+    ///
+    /// let mut pred_one = pred().app(1.into());
+    /// pred_one.beta(&Normal, None);
+    ///
+    /// assert_eq!(pred_one, 0.into());
+    /// ```
+    pub fn beta(&mut self, order: &Order, mut limit: Option<usize>) {
+        match *order {
+            CallByName        => self.beta_cbn(0, &mut limit),
+            Normal            => self.beta_nor(0, &mut limit),
+            CallByValue       => self.beta_cbv(0, &mut limit),
+            Applicative       => self.beta_app(0, &mut limit),
+            HeadSpine         => self.beta_hs(0, &mut limit),
+            HybridNormal      => self.beta_hnor(0, &mut limit),
+            HybridApplicative => self.beta_happ(0, &mut limit)
+        }
     }
 
     fn beta_cbn(&mut self, depth: u32, limit: &mut Option<usize>) {
@@ -403,166 +311,53 @@ impl Term {
             }
         }
     }
-
-    /// Checks whether `self` is β-reducible under the specified evaluation `Order`.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use lambda_calculus::arithmetic::{succ, zero};
-    /// use lambda_calculus::reduction::Order;
-    ///
-    /// let reducible     = succ().app(1.into());
-    /// let not_reducible = zero();
-    ///
-    /// assert!(reducible.is_beta_reducible(&Order::Normal));
-    /// assert!(!not_reducible.is_beta_reducible(&Order::Normal));
-    /// ```
-    pub fn is_beta_reducible(&self, order: &Order) -> bool {
-        match *self {
-            Var(_) => false,
-            Abs(_) => match *order {
-                Normal | Applicative => self.unabs_ref().unwrap().is_beta_reducible(order),
-                _ => false
-            },
-            App(_, _) => {
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    true
-                } else {
-                    self.lhs_ref().unwrap().is_beta_reducible(order) ||
-                    self.rhs_ref().unwrap().is_beta_reducible(order)
-                }
-            }
-        }
-    }
-
-    /// Performs full β-reduction on `self` using the specified evaluation `Order`.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use lambda_calculus::arithmetic::pred;
-    /// use lambda_calculus::reduction::Order;
-    ///
-    /// let mut pred_one = pred().app(1.into());
-    /// pred_one.beta_full(&Order::Normal);
-    ///
-    /// assert_eq!(pred_one, 0.into());
-    /// ```
-    pub fn beta_full(&mut self, order: &Order) {
-        loop {
-            if SHOW_REDUCTIONS { println!("reducing {}", self) }
-            if !self.beta_once_indicative(order) { break }
-        }
-        if SHOW_REDUCTIONS { println!("    doesn't reduce") }
-    }
-
-    pub fn beta(&mut self, order: &Order, mut limit: Option<usize>) {
-        match *order {
-            CallByName        => self.beta_cbn(0, &mut limit),
-            Normal            => self.beta_nor(0, &mut limit),
-            CallByValue       => self.beta_cbv(0, &mut limit),
-            Applicative       => self.beta_app(0, &mut limit),
-            HeadSpine         => self.beta_hs(0, &mut limit),
-            HybridNormal      => self.beta_hnor(0, &mut limit),
-            HybridApplicative => self.beta_happ(0, &mut limit)
-        }
-    }
-}
-
-/// Performs full β-reduction on a `Term` using the specified evaluation `Order`, consuming its
-/// argument in the process.
-///
-/// # Example
-///
-/// ```
-/// use lambda_calculus::arithmetic::pred;
-/// use lambda_calculus::reduction::{beta_full, Order};
-///
-/// let pred_one = pred().app(1.into());
-///
-/// assert_eq!(beta_full(pred_one, &Order::Normal), 0.into());
-/// ```
-pub fn beta_full(mut term: Term, order: &Order) -> Term {
-    term.beta_full(order);
-    term
-}
-
-pub fn beta(mut term: Term, order: &Order, limit: Option<usize>) -> Term {
-    term.beta(order, limit);
-    term
-}
-
-/// Performs a single β-reduction on a `Term` using the specified evaluation `Order`, consuming its
-/// argument in the process.
-///
-/// # Example
-///
-/// ```
-/// use lambda_calculus::arithmetic::succ;
-/// use lambda_calculus::reduction::{beta_once, Order};
-///
-/// let succ_one = succ().app(1.into());
-///
-/// assert_eq!(beta_once(succ_one, &Order::Normal), succ().apply(&1.into()).unwrap());
-/// ```
-pub fn beta_once(mut term: Term, order: &Order) -> Term {
-    term.beta_once(order);
-    term
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
     use parser::parse;
-    use combinators::{i, y};
+    use combinators::i;
 
     #[test]
     fn normal_order() {
         let reduces_instantly = parse(&"(λλ1)((λλλ((32)1))(λλ2))").unwrap();
-        assert_eq!(beta_full(reduces_instantly.clone(), &Normal),
-                   beta_once(reduces_instantly, &Normal));
+        assert_eq!(beta(reduces_instantly.clone(), &Normal, None   ),
+                   beta(reduces_instantly,         &Normal, Some(1))
+        );
 
         let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
-        assert_eq!(beta_full(should_reduce, &Normal), Var(1))
+        assert_eq!(beta(should_reduce, &Normal, None), Var(1));
     }
 
     #[test]
     fn call_by_name_order() {
         let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
-        expr.beta_once(&CallByName);
+        expr.beta(&CallByName, Some(1));
         assert_eq!(expr, app(i(), app(i(), i())));
-        expr.beta_once(&CallByName);
+        expr.beta(&CallByName, Some(1));
         assert_eq!(expr, app(i(), i()));
-        expr.beta_once(&CallByName);
+        expr.beta(&CallByName, Some(1));
         assert_eq!(expr, i());
     }
 
     #[test]
     fn applicative_order() {
         let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
-        assert_eq!(&format!("{}", beta_once(expr, &Applicative)), "λ1((λλ1)((λλ21)1))");
+        assert_eq!(&format!("{}", beta(expr, &Applicative, Some(1))), "λ1((λλ1)((λλ21)1))");
 
         let expands = parse(&"(λ2)((λ111)(λ111))").unwrap();
-        assert_eq!(&format!("{}", beta_once(expands, &Applicative)), "(λ2)((λ111)(λ111)(λ111))")
+        assert_eq!(&format!("{}", beta(expands, &Applicative, Some(1))), "(λ2)((λ111)(λ111)(λ111))");
     }
 
     #[test]
     fn call_by_value_order() {
         let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
-        expr.beta_once(&CallByValue);
+        expr.beta(&CallByValue, Some(1));
         assert_eq!(expr, app(abs(app(i(), Var(1))), i()));
-        expr.beta_once(&CallByValue);
+        expr.beta(&CallByValue, Some(1));
         assert_eq!(expr, app(i(), i()));
-        expr.beta_once(&CallByValue);
+        expr.beta(&CallByValue, Some(1));
         assert_eq!(expr, i());
-    }
-
-    #[test]
-    fn reducibility() {
-        assert!(y().is_beta_reducible(&Normal));
-        assert!(y().is_beta_reducible(&Applicative));
-        assert!(!y().is_beta_reducible(&CallByName));
-        assert!(!y().is_beta_reducible(&CallByValue));
     }
 }
