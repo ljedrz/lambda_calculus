@@ -21,10 +21,10 @@ use term::Term::*;
 /// ```
 /// use lambda_calculus::combinators::i;
 /// use lambda_calculus::arithmetic::zero;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(i().app(zero()), &Normal), zero());
+/// assert_eq!(beta(i().app(zero()), &Normal, None), zero());
 /// ```
 pub fn i() -> Term { abs(Var(1)) }
 
@@ -38,10 +38,10 @@ pub fn i() -> Term { abs(Var(1)) }
 /// # fn main() {
 /// use lambda_calculus::combinators::k;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(k(), zero(), one()), &Normal), zero());
+/// assert_eq!(beta(app!(k(), zero(), one()), &Normal, None), zero());
 /// # }
 /// ```
 pub fn k() -> Term { abs(abs(Var(2))) }
@@ -56,11 +56,11 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 /// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::s;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(s(), 0.into(), 1.into(), 2.into()), &Normal),
-///            beta_full(app!(Term::from(0), 2.into(), app!(Term::from(1), 2.into())), &Normal)
+/// assert_eq!(beta(app!(s(), 0.into(), 1.into(), 2.into()), &Normal, None),
+///            beta(app!(Term::from(0), 2.into(), app!(Term::from(1), 2.into())), &Normal, None)
 /// );
 /// # }
 /// ```
@@ -79,12 +79,12 @@ pub fn s() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::{iota, i, k, s};
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(iota(), iota()), &Normal), i());
-/// assert_eq!(beta_full(app!(iota(), app!(iota(), app!(iota(), iota()))), &Normal), k());
-/// assert_eq!(beta_full(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota())))), &Normal),
+/// assert_eq!(beta(app!(iota(), iota()), &Normal, None), i());
+/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), iota()))), &Normal, None), k());
+/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota())))), &Normal, None),
 ///            s());
 /// # }
 /// ```
@@ -100,11 +100,11 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 /// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::b;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(b(), 0.into(), 1.into(), 2.into()), &Normal),
-///            beta_full(app!(Term::from(0), app!(Term::from(1), 2.into())), &Normal)
+/// assert_eq!(beta(app!(b(), 0.into(),           1.into(), 2.into() ), &Normal, None),
+///            beta(app!(Term::from(0), app!(Term::from(1), 2.into())), &Normal, None)
 /// );
 /// # }
 /// ```
@@ -124,11 +124,11 @@ pub fn b() -> Term {
 /// # fn main() {
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::c;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(c(), 0.into(), 1.into(), 2.into()), &Normal),
-///            beta_full(app!(Term::from(0), 2.into(), 1.into()), &Normal)
+/// assert_eq!(beta(app!(c(), 0.into(), 1.into(), 2.into()), &Normal, None),
+///            beta(app!(Term::from(0), 2.into(), 1.into()), &Normal, None)
 /// );
 /// # }
 /// ```
@@ -148,11 +148,11 @@ pub fn c() -> Term {
 /// # fn main() {
 /// use lambda_calculus::combinators::w;
 /// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(app!(w(), zero(), one()), &Normal),
-///            beta_full(app!(zero(), one(), one()), &Normal)
+/// assert_eq!(beta(app!(   w(), zero(), one()), &Normal, None),
+///            beta(app!(zero(),  one(), one()), &Normal, None)
 /// );
 /// # }
 /// ```
@@ -175,10 +175,12 @@ pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
 /// ```
 /// use lambda_calculus::combinators::om;
 /// use lambda_calculus::arithmetic::zero;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(om().app(zero()), &Normal), beta_full(zero().app(zero()), &Normal));
+/// assert_eq!(beta(  om().app(zero()), &Normal, None),
+///            beta(zero().app(zero()), &Normal, None)
+/// );
 /// ```
 pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 
@@ -189,10 +191,10 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// # Example
 /// ```
 /// use lambda_calculus::combinators::omm;
-/// use lambda_calculus::reduction::beta_once;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_once(omm(), &Normal), omm());
+/// assert_eq!(beta(omm(), &Normal, Some(3)), omm());
 /// ```
 pub fn omm() -> Term { om().app(om()) }
 
@@ -206,11 +208,11 @@ pub fn omm() -> Term { om().app(om()) }
 /// # fn main() {
 /// use lambda_calculus::combinators::y;
 /// use lambda_calculus::arithmetic::zero;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(y().app(zero()), &Normal),
-///            beta_full(app!(zero(), app!(y(), zero())), &Normal)
+/// assert_eq!(beta(             app!(y(), zero() ), &Normal, None),
+///            beta(app!(zero(), app!(y(), zero())), &Normal, None)
 /// );
 /// # }
 /// ```
@@ -231,11 +233,11 @@ pub fn y() -> Term {
 /// # fn main() {
 /// use lambda_calculus::combinators::z;
 /// use lambda_calculus::arithmetic::zero;
-/// use lambda_calculus::reduction::beta_full;
+/// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta_full(z().app(zero()), &CallByValue),
-///            beta_full(app!(zero(), app!(z(), zero())), &CallByValue)
+/// assert_eq!(beta(             app!(z(), zero()) , &CallByValue, None),
+///            beta(app!(zero(), app!(z(), zero())), &CallByValue, None)
 /// );
 /// # }
 /// ```
