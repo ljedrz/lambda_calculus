@@ -24,7 +24,7 @@ use term::Term::*;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(i().app(zero()), &Normal, None), zero());
+/// assert_eq!(beta(i().app(zero()), &Normal, 0), zero());
 /// ```
 pub fn i() -> Term { abs(Var(1)) }
 
@@ -41,7 +41,7 @@ pub fn i() -> Term { abs(Var(1)) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(k(), zero(), one()), &Normal, None), zero());
+/// assert_eq!(beta(app!(k(), zero(), one()), &Normal, 0), zero());
 /// # }
 /// ```
 pub fn k() -> Term { abs(abs(Var(2))) }
@@ -59,8 +59,8 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(s(), 0.into(), 1.into(), 2.into()), &Normal, None),
-///            beta(app!(Term::from(0), 2.into(), app!(Term::from(1), 2.into())), &Normal, None)
+/// assert_eq!(beta(app!(s(), 0.into(), 1.into(), 2.into()), &Normal, 0),
+///            beta(app!(Term::from(0), 2.into(), app!(Term::from(1), 2.into())), &Normal, 0)
 /// );
 /// # }
 /// ```
@@ -82,9 +82,9 @@ pub fn s() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(iota(), iota()), &Normal, None), i());
-/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), iota()))), &Normal, None), k());
-/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota())))), &Normal, None),
+/// assert_eq!(beta(app!(iota(), iota()), &Normal, 0), i());
+/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), iota()))), &Normal, 0), k());
+/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota())))), &Normal, 0),
 ///            s());
 /// # }
 /// ```
@@ -103,8 +103,8 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(b(), 0.into(),           1.into(), 2.into() ), &Normal, None),
-///            beta(app!(Term::from(0), app!(Term::from(1), 2.into())), &Normal, None)
+/// assert_eq!(beta(app!(b(), 0.into(),           1.into(), 2.into() ), &Normal, 0),
+///            beta(app!(Term::from(0), app!(Term::from(1), 2.into())), &Normal, 0)
 /// );
 /// # }
 /// ```
@@ -127,8 +127,8 @@ pub fn b() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(c(), 0.into(), 1.into(), 2.into()), &Normal, None),
-///            beta(app!(Term::from(0), 2.into(), 1.into()), &Normal, None)
+/// assert_eq!(beta(app!(c(), 0.into(), 1.into(), 2.into()), &Normal, 0),
+///            beta(app!(Term::from(0), 2.into(), 1.into()), &Normal, 0)
 /// );
 /// # }
 /// ```
@@ -151,8 +151,8 @@ pub fn c() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(   w(), zero(), one()), &Normal, None),
-///            beta(app!(zero(),  one(), one()), &Normal, None)
+/// assert_eq!(beta(app!(   w(), zero(), one()), &Normal, 0),
+///            beta(app!(zero(),  one(), one()), &Normal, 0)
 /// );
 /// # }
 /// ```
@@ -178,8 +178,8 @@ pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(  om().app(zero()), &Normal, None),
-///            beta(zero().app(zero()), &Normal, None)
+/// assert_eq!(beta(  om().app(zero()), &Normal, 0),
+///            beta(zero().app(zero()), &Normal, 0)
 /// );
 /// ```
 pub fn om() -> Term { abs(Var(1).app(Var(1))) }
@@ -194,7 +194,7 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(omm(), &Normal, Some(3)), omm());
+/// assert_eq!(beta(omm(), &Normal, 3), omm());
 /// ```
 pub fn omm() -> Term { om().app(om()) }
 
@@ -212,8 +212,8 @@ pub fn omm() -> Term { om().app(om()) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(             app!(y(), zero() ), &Normal, None),
-///            beta(app!(zero(), app!(y(), zero())), &Normal, None)
+/// assert_eq!(beta(             app!(y(), zero() ), &Normal, 0),
+///            beta(app!(zero(), app!(y(), zero())), &Normal, 0)
 /// );
 /// # }
 /// ```
@@ -238,8 +238,8 @@ pub fn y() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(             app!(z(), zero() ), &CallByValue, None),
-///            beta(app!(zero(), app!(z(), zero())), &CallByValue, None)
+/// assert_eq!(beta(             app!(z(), zero() ), &CallByValue, 0),
+///            beta(app!(zero(), app!(z(), zero())), &CallByValue, 0)
 /// );
 /// # }
 /// ```

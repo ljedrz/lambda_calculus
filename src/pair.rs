@@ -43,7 +43,7 @@ pub fn pair() -> Term {
 ///
 /// let pair_0_1 = app!(pair(), zero(), one());
 ///
-/// assert_eq!(beta(first().app(pair_0_1), &Normal, None), zero());
+/// assert_eq!(beta(first().app(pair_0_1), &Normal, 0), zero());
 /// # }
 /// ```
 pub fn first() -> Term { abs(Var(1).app(tru())) }
@@ -63,7 +63,7 @@ pub fn first() -> Term { abs(Var(1).app(tru())) }
 ///
 /// let pair_0_1 = app!(pair(), zero(), one());
 ///
-/// assert_eq!(beta(second().app(pair_0_1), &Normal, None), one());
+/// assert_eq!(beta(second().app(pair_0_1), &Normal, 0), one());
 /// # }
 /// ```
 pub fn second() -> Term { abs(Var(1).app(fls())) }
@@ -302,12 +302,12 @@ mod test {
     #[test]
     fn pair_from_pair() {
         assert_eq!(Term::from((0.into(), 1.into())),
-                   beta(app!(pair(), 0.into(), 1.into()), &Normal, None));
+                   beta(app!(pair(), 0.into(), 1.into()), &Normal, 0));
     }
 
     #[test]
     fn pair_operations() {
-        let pair_four_three = beta(app!(pair(), 4.into(), 3.into()), &Normal, None);
+        let pair_four_three = beta(app!(pair(), 4.into(), 3.into()), &Normal, 0);
 
         assert!(pair_four_three.is_pair());
 
