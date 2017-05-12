@@ -262,6 +262,11 @@ impl Term {
         }
     }
 
+    fn is_reducible(&self, limit: &mut Option<usize>) -> bool {
+        self.lhs_ref().unwrap().unabs_ref().is_ok() &&
+        (limit.is_none() || limit.is_some() && limit.unwrap() > 1)
+    }
+
     fn beta_cbn(&mut self, depth: u32, limit: &mut Option<usize>) {
         if let Some(0) = *limit { return }
 
@@ -269,7 +274,7 @@ impl Term {
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_cbn(depth, limit);
 
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                if self.is_reducible(limit) {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
                     self.beta_cbn(depth, limit);
@@ -288,7 +293,7 @@ impl Term {
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_cbn(depth, limit);
 
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                if self.is_reducible(limit) {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
                     self.beta_nor(depth, limit);
@@ -308,7 +313,7 @@ impl Term {
                 self.lhs_ref_mut().unwrap().beta_cbv(depth, limit);
                 self.rhs_ref_mut().unwrap().beta_cbv(depth, limit);
 
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                if self.is_reducible(limit) {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
                     self.beta_cbv(depth, limit);
@@ -316,8 +321,6 @@ impl Term {
             },
             _ => ()
         }
-
-        if let Some(0) = *limit { return }
     }
 
     fn beta_app(&mut self, depth: u32, limit: &mut Option<usize>) {
@@ -330,7 +333,7 @@ impl Term {
                 self.lhs_ref_mut().unwrap().beta_app(depth, limit);
                 self.rhs_ref_mut().unwrap().beta_app(depth, limit);
 
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                if self.is_reducible(limit) {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
                     self.beta_app(depth, limit);
@@ -351,7 +354,7 @@ impl Term {
                 self.lhs_ref_mut().unwrap().beta_cbv(depth, limit);
                 self.rhs_ref_mut().unwrap().beta_happ(depth, limit);
 
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                if self.is_reducible(limit) {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
                     self.beta_happ(depth, limit);
@@ -371,7 +374,7 @@ impl Term {
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_cbn(depth, limit);
 
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                if self.is_reducible(limit) {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
                     self.beta_hs(depth, limit)
@@ -389,7 +392,7 @@ impl Term {
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_hs(depth, limit);
 
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                if self.is_reducible(limit) {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
                     self.beta_hnor(depth, limit)
