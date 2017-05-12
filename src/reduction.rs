@@ -172,27 +172,6 @@ impl Term {
         }
     }
 
-    fn _beta_full_normal(&mut self, depth: u32, limit: &mut Option<usize>) {
-        if let Some(0) = *limit { return }
-
-        match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_full_normal(depth + 1, limit),
-            App(_, _) => {
-                self.lhs_ref_mut().unwrap()._beta_full_call_by_name(depth, limit);
-
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(depth);
-                    if let Some(l) = *limit { *limit = Some(l - 1) }
-                    self._beta_full_normal(depth, limit)
-                } else {
-                    self.lhs_ref_mut().unwrap()._beta_full_normal(depth, limit);
-                    self.rhs_ref_mut().unwrap()._beta_full_normal(depth, limit);
-                }
-            }
-        }
-    }
-
     // the return value indicates if reduction was performed
     fn _beta_once_call_by_name(&mut self) -> bool {
         match *self {
@@ -204,23 +183,6 @@ impl Term {
                 }
             },
             _ => false
-        }
-    }
-
-    fn _beta_full_call_by_name(&mut self, depth: u32, limit: &mut Option<usize>) {
-        if let Some(0) = *limit { return }
-
-        match *self {
-            App(_, _) => {
-                self.lhs_ref_mut().unwrap()._beta_full_call_by_name(depth, limit);
-
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(depth);
-                    if let Some(l) = *limit { *limit = Some(l - 1) }
-                    self._beta_full_call_by_name(depth, limit);
-                }
-            },
-            _ => ()
         }
     }
 
@@ -244,45 +206,6 @@ impl Term {
         }
     }
 
-    fn _beta_full_head_spine(&mut self, depth: u32, limit: &mut Option<usize>) {
-        if let Some(0) = *limit { return }
-
-        match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_full_head_spine(depth + 1, limit),
-            App(_, _) => {
-                self.lhs_ref_mut().unwrap()._beta_full_call_by_name(depth, limit);
-
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(depth);
-                    if let Some(l) = *limit { *limit = Some(l - 1) }
-                    self._beta_full_head_spine(depth, limit)
-                }
-            }
-        }
-    }
-
-    fn _beta_full_hybrid_normal(&mut self, depth: u32, limit: &mut Option<usize>) {
-        if let Some(0) = *limit { return }
-
-        match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_full_hybrid_normal(depth + 1, limit),
-            App(_, _) => {
-                self.lhs_ref_mut().unwrap()._beta_full_head_spine(depth, limit);
-
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(depth);
-                    if let Some(l) = *limit { *limit = Some(l - 1) }
-                    self._beta_full_hybrid_normal(depth, limit)
-                } else {
-                    self.lhs_ref_mut().unwrap()._beta_full_hybrid_normal(depth, limit);
-                    self.rhs_ref_mut().unwrap()._beta_full_hybrid_normal(depth, limit);
-                }
-            }
-        }
-    }
-
     // the return value indicates if reduction was performed
     fn _beta_once_applicative(&mut self, depth: u32) -> bool {
         match *self {
@@ -296,25 +219,6 @@ impl Term {
                 } else {
                     self.lhs_ref_mut().unwrap()._beta_once_applicative(depth) ||
                     self.rhs_ref_mut().unwrap()._beta_once_applicative(depth)
-                }
-            }
-        }
-    }
-
-    fn _beta_full_applicative(&mut self, depth: u32, limit: &mut Option<usize>) {
-        if let Some(0) = *limit { return }
-
-        match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_full_applicative(depth + 1, limit),
-            App(_, _) => {
-                self.lhs_ref_mut().unwrap()._beta_full_applicative(depth, limit);
-                self.rhs_ref_mut().unwrap()._beta_full_applicative(depth, limit);
-
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(depth);
-                    if let Some(l) = *limit { *limit = Some(l - 1) }
-                    self._beta_full_applicative(depth, limit);
                 }
             }
         }
@@ -338,24 +242,6 @@ impl Term {
         }
     }
 
-    fn _beta_full_call_by_value(&mut self, depth: u32, limit: &mut Option<usize>) {
-        if let Some(0) = *limit { return }
-
-        match *self {
-            App(_, _) => {
-                self.lhs_ref_mut().unwrap()._beta_full_call_by_value(depth, limit);
-                self.rhs_ref_mut().unwrap()._beta_full_call_by_value(depth, limit);
-
-                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
-                    self.eval_with_info(depth);
-                    if let Some(l) = *limit { *limit = Some(l - 1) }
-                    self._beta_full_call_by_value(depth, limit);
-                }
-            },
-            _ => ()
-        }
-    }
-
     // the return value indicates if reduction was performed
     fn _beta_once_hybrid_applicative(&mut self, depth: u32) -> bool {
         match *self {
@@ -376,22 +262,140 @@ impl Term {
         }
     }
 
-    fn _beta_full_hybrid_applicative(&mut self, depth: u32, limit: &mut Option<usize>) {
+    fn beta_cbn(&mut self, depth: u32, limit: &mut Option<usize>) {
         if let Some(0) = *limit { return }
 
         match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap()._beta_full_hybrid_applicative(depth + 1, limit),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap()._beta_full_call_by_value(depth, limit);
-                self.rhs_ref_mut().unwrap()._beta_full_hybrid_applicative(depth, limit);
+                self.lhs_ref_mut().unwrap().beta_cbn(depth, limit);
 
                 if self.lhs_ref().unwrap().unabs_ref().is_ok() {
                     self.eval_with_info(depth);
                     if let Some(l) = *limit { *limit = Some(l - 1) }
-                    self._beta_full_hybrid_applicative(depth, limit);
+                    self.beta_cbn(depth, limit);
+                }
+            },
+            _ => ()
+        }
+    }
+
+    fn beta_nor(&mut self, depth: u32, limit: &mut Option<usize>) {
+        if let Some(0) = *limit { return }
+
+        match *self {
+            Var(_) => (),
+            Abs(_) => self.unabs_ref_mut().unwrap().beta_nor(depth + 1, limit),
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap().beta_cbn(depth, limit);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self.beta_nor(depth, limit);
                 } else {
-                    self.lhs_ref_mut().unwrap()._beta_full_hybrid_applicative(depth, limit);
+                    self.lhs_ref_mut().unwrap().beta_nor(depth, limit);
+                    self.rhs_ref_mut().unwrap().beta_nor(depth, limit);
+                }
+            }
+        }
+    }
+
+    fn beta_cbv(&mut self, depth: u32, limit: &mut Option<usize>) {
+        if let Some(0) = *limit { return }
+
+        match *self {
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap().beta_cbv(depth, limit);
+                self.rhs_ref_mut().unwrap().beta_cbv(depth, limit);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self.beta_cbv(depth, limit);
+                }
+            },
+            _ => ()
+        }
+
+        if let Some(0) = *limit { return }
+    }
+
+    fn beta_app(&mut self, depth: u32, limit: &mut Option<usize>) {
+        if let Some(0) = *limit { return }
+
+        match *self {
+            Var(_) => (),
+            Abs(_) => self.unabs_ref_mut().unwrap().beta_app(depth + 1, limit),
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap().beta_app(depth, limit);
+                self.rhs_ref_mut().unwrap().beta_app(depth, limit);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self.beta_app(depth, limit);
+                }
+            }
+        }
+
+        if let Some(0) = *limit { return }
+    }
+
+    fn beta_happ(&mut self, depth: u32, limit: &mut Option<usize>) {
+        if let Some(0) = *limit { return }
+
+        match *self {
+            Var(_) => (),
+            Abs(_) => self.unabs_ref_mut().unwrap().beta_happ(depth + 1, limit),
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap().beta_cbv(depth, limit);
+                self.rhs_ref_mut().unwrap().beta_happ(depth, limit);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self.beta_happ(depth, limit);
+                } else {
+                    self.lhs_ref_mut().unwrap().beta_happ(depth, limit);
+                }
+            }
+        }
+    }
+
+    fn beta_hs(&mut self, depth: u32, limit: &mut Option<usize>) {
+        if let Some(0) = *limit { return }
+
+        match *self {
+            Var(_) => (),
+            Abs(_) => self.unabs_ref_mut().unwrap().beta_hs(depth + 1, limit),
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap().beta_cbn(depth, limit);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self.beta_hs(depth, limit)
+                }
+            }
+        }
+    }
+
+    fn beta_hnor(&mut self, depth: u32, limit: &mut Option<usize>) {
+        if let Some(0) = *limit { return }
+
+        match *self {
+            Var(_) => (),
+            Abs(_) => self.unabs_ref_mut().unwrap().beta_hnor(depth + 1, limit),
+            App(_, _) => {
+                self.lhs_ref_mut().unwrap().beta_hs(depth, limit);
+
+                if self.lhs_ref().unwrap().unabs_ref().is_ok() {
+                    self.eval_with_info(depth);
+                    if let Some(l) = *limit { *limit = Some(l - 1) }
+                    self.beta_hnor(depth, limit)
+                } else {
+                    self.lhs_ref_mut().unwrap().beta_hnor(depth, limit);
+                    self.rhs_ref_mut().unwrap().beta_hnor(depth, limit);
                 }
             }
         }
@@ -452,13 +456,13 @@ impl Term {
 
     pub fn beta(&mut self, order: &Order, mut limit: Option<usize>) {
         match *order {
-            Normal            => self._beta_full_normal(0, &mut limit),
-            CallByName        => self._beta_full_call_by_name(0, &mut limit),
-            HeadSpine         => self._beta_full_head_spine(0, &mut limit),
-            Applicative       => self._beta_full_applicative(0, &mut limit),
-            CallByValue       => self._beta_full_call_by_value(0, &mut limit),
-            HybridNormal      => self._beta_full_hybrid_normal(0, &mut limit),
-            HybridApplicative => self._beta_full_hybrid_applicative(0, &mut limit)
+            CallByName        => self.beta_cbn(0, &mut limit),
+            Normal            => self.beta_nor(0, &mut limit),
+            CallByValue       => self.beta_cbv(0, &mut limit),
+            Applicative       => self.beta_app(0, &mut limit),
+            HeadSpine         => self.beta_hs(0, &mut limit),
+            HybridNormal      => self.beta_hnor(0, &mut limit),
+            HybridApplicative => self.beta_happ(0, &mut limit)
         }
     }
 }
