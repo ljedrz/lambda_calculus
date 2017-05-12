@@ -719,7 +719,7 @@ mod test {
         assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &HybridNormal, 0), 2.into());
         assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &HybridNormal, 0), 0.into());
 /*
-        assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &HybridApplicative, Some(3)), 1.into());
+        assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &HybridApplicative, 0), 1.into());
         assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &HybridApplicative, 0), 1.into());
         assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &HybridApplicative, 0), 2.into());
         assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &HybridApplicative, 0), 0.into());

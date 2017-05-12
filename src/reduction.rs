@@ -7,7 +7,7 @@ use self::Order::*;
 /// Set to `true` to see all the steps of β-reductions. The default is `false`.
 pub const SHOW_REDUCTIONS: bool = false;
 
-/// The [evaluation order](https://en.wikipedia.org/wiki/Lambda_calculus#Reduction_strategies) of
+/// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
 /// β-reductions. `Applicative` order will fail to fully reduce expressions containing functions
 /// without a normal form, e.g. the Y combinator (they will expand forever). `CallByName`,
 /// `HeadSpine` and `CallByValue` orders don't always normalize fully. The default is `Normal`.
@@ -320,17 +320,20 @@ impl Term {
 mod test {
     use super::*;
     use parser::parse;
-    use combinators::i;
+    use combinators::{i, omm};
 
     #[test]
     fn normal_order() {
         let reduces_instantly = parse(&"(λλ1)((λλλ((32)1))(λλ2))").unwrap();
-        assert_eq!(beta(reduces_instantly.clone(), &Normal, 0   ),
+        assert_eq!(beta(reduces_instantly.clone(), &Normal, 0),
                    beta(reduces_instantly,         &Normal, 1)
         );
 
         let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
         assert_eq!(beta(should_reduce, &Normal, 0), Var(1));
+
+        let does_reduce = app(abs(Var(2)), omm());
+        assert_eq!(beta(does_reduce, &Normal, 0), Var(1));
     }
 
     #[test]
@@ -351,6 +354,10 @@ mod test {
 
         let expands = parse(&"(λ2)((λ111)(λ111))").unwrap();
         assert_eq!(&format!("{}", beta(expands, &Applicative, 1)), "(λ2)((λ111)(λ111)(λ111))");
+
+        let mut wont_reduce = app(abs(Var(2)), omm());
+        wont_reduce.beta(&Applicative, 3);
+        assert_eq!(wont_reduce, app(abs(Var(2)), omm()));
     }
 
     #[test]
