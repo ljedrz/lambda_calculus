@@ -6,7 +6,7 @@ use term::Term::*;
 use term::Error::*;
 use booleans::*;
 use pair::{pair, second};
-use combinators::z;
+use combinators::{k, z};
 
 /// Produces a Church-encoded number zero.
 ///
@@ -472,8 +472,8 @@ pub fn rem() -> Term {
 
 /// Applied to a Church-encoded number it yields its Church-encoded factorial.
 ///
-/// FACTORIAL := Y (λgx. ISZERO x ONE (MULT x (g (PRED x)))) =
-/// Y (λ λ ISZERO 1 ONE (MULT 1 (2 (PRED 1))))
+/// FACTORIAL := λn. n (λfax. f (MULT a x) (SUCC x)) K ONE ONE =
+/// λ 1 (λ λ λ 3 (MULT 2 1) (SUCC 1)) K ONE ONE
 ///
 /// # Example
 /// ```
@@ -486,20 +486,20 @@ pub fn rem() -> Term {
 /// assert_eq!(expr, 6.into());
 /// ```
 pub fn factorial() -> Term {
-    app(
-        z(),
-        abs(abs(
-            app!(
-                is_zero(),
-                Var(1),
-                one(),
+    abs(
+        app!(
+            Var(1),
+            abs(abs(abs(
                 app!(
-                    mult(),
-                    Var(1),
-                    app(Var(2), app(pred(), Var(1)))
+                    Var(3),
+                    app!(mult(), Var(2), Var(1)),
+                    app!(succ(), Var(1))
                 )
-            )
-        ))
+            ))),
+            k(),
+            1.into(),
+            1.into()
+        )
     )
 }
 
@@ -757,11 +757,10 @@ mod test {
         assert_eq!(beta(app!(factorial(), 1.into()), &HybridNormal, 0), 1.into());
         assert_eq!(beta(app!(factorial(), 2.into()), &HybridNormal, 0), 2.into());
         assert_eq!(beta(app!(factorial(), 3.into()), &HybridNormal, 0), 6.into());
-/*
+
         assert_eq!(beta(app!(factorial(), 0.into()), &HybridApplicative, 0), 1.into());
         assert_eq!(beta(app!(factorial(), 1.into()), &HybridApplicative, 0), 1.into());
         assert_eq!(beta(app!(factorial(), 2.into()), &HybridApplicative, 0), 2.into());
         assert_eq!(beta(app!(factorial(), 3.into()), &HybridApplicative, 0), 6.into());
-*/
     }
 }
