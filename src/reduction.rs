@@ -102,6 +102,51 @@ pub fn beta(mut term: Term, order: &Order, limit: usize) -> Term {
     term
 }
 
+/// Prints the number of reductions required to reach the final form of all the available reduction
+/// strategies.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::arithmetic::factorial;
+/// use lambda_calculus::reduction::benchmark;
+///
+/// benchmark(&factorial().app(5.into()));
+///
+/// // stdout:
+///
+/// // call-by-name:       22
+/// // normal:             460
+/// // call-by-value:      35
+/// // applicative:        151
+/// // head spine:         49
+/// // hybrid normal:      460
+/// // hybrid applicative: 66
+/// ```
+pub fn benchmark(term: &Term) {
+    let mut count = 0;
+    term.clone().beta_cbn(0, 0, &mut count);
+    println!("{}:       {}", CallByName, count);
+    count = 0;
+    term.clone().beta_nor(0, 0, &mut count);
+    println!("{}:             {}", Normal, count);
+    count = 0;
+    term.clone().beta_cbv(0, 0, &mut count);
+    println!("{}:      {}", CallByValue, count);
+    count = 0;
+    term.clone().beta_app(0, 0, &mut count);
+    println!("{}:        {}", Applicative, count);
+    count = 0;
+    term.clone().beta_hs(0, 0, &mut count);
+    println!("{}:         {}", HeadSpine, count);
+    count = 0;
+    term.clone().beta_hnor(0, 0, &mut count);
+    println!("{}:      {}", HybridNormal, count);
+    count = 0;
+    term.clone().beta_happ(0, 0, &mut count);
+    println!("{}: {}", HybridApplicative, count);
+}
+
 impl Term {
     /// Applies `self` to another `Term` and performs substitution, consuming `self` in the process.
     /// It produces an `Error` if `self` is not an `Abs`traction.
