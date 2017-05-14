@@ -141,7 +141,8 @@ impl Term {
     fn eval_with_info(&mut self, depth: u32, count: &usize) {
         if SHOW_REDUCTIONS {
             print!("\n{}. {}\n=>", count + 1, show_precedence(self, 0, depth));
-            let indent_len = 3 + ((*count + 1) as f32).log10().trunc() as usize;
+            let mut indent_len = ((*count + 1) as f32).log10().trunc() as usize + 3;
+            if DISPLAY_CLASSIC { indent_len += 3 }
             for _ in 0..indent_len { print!(" ") };
         };
         let copy = self.clone();
