@@ -193,7 +193,10 @@ impl Term {
             HybridNormal      => self.beta_hnor(0, limit, &mut count),
             HybridApplicative => self.beta_happ(0, limit, &mut count)
         }
-        if SHOW_REDUCTIONS { println!("\nresult after {} reductions: {}\n", count, self) };
+        if SHOW_REDUCTIONS {
+            println!("\nresult after {} reduction{}: {}\n", count,
+                if limit == 1 { "" } else { "s" }, self);
+        };
     }
 
     fn beta_cbn(&mut self, depth: u32, limit: usize, count: &mut usize) {
