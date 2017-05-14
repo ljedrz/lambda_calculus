@@ -3,6 +3,7 @@
 use term::*;
 use term::Term::*;
 use self::Order::*;
+use std::fmt;
 
 /// Set to `true` to see all the steps of β-reductions. The default is `false`.
 pub const SHOW_REDUCTIONS: bool = false;
@@ -138,7 +139,11 @@ impl Term {
     }
 
     fn eval_with_info(&mut self, depth: u32, count: &usize) {
-        if SHOW_REDUCTIONS { print!("\n{}. {} reduces to ", count + 1, show_precedence(self, 0, depth)) };
+        if SHOW_REDUCTIONS {
+            print!("\n{}. {}\n=>", count + 1, show_precedence(self, 0, depth));
+            let indent_len = 3 + ((*count + 1) as f32).log10().trunc() as usize;
+            for _ in 0..indent_len { print!(" ") };
+        };
         let copy = self.clone();
         *self = copy.eval().unwrap();
         if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) };
@@ -164,7 +169,17 @@ impl Term {
     /// assert_eq!(pred_one, 0.into());
     /// ```
     pub fn beta(&mut self, order: &Order, limit: usize) {
-        if SHOW_REDUCTIONS { println!("reducing {}:", self) };
+        if SHOW_REDUCTIONS {
+            println!("reducing {} [{} order{}]:", self, order,
+                if limit != 0 {
+                    format!(", limit of {} reduction{}", limit,
+                        if limit == 1 { "" } else { "s" }
+                    )
+                } else {
+                    "".into()
+                }
+            );
+        };
 
         let mut count = 0;
 
@@ -177,7 +192,7 @@ impl Term {
             HybridNormal      => self.beta_hnor(0, limit, &mut count),
             HybridApplicative => self.beta_happ(0, limit, &mut count)
         }
-        if SHOW_REDUCTIONS { println!("\nfinal form: {}", self) };
+        if SHOW_REDUCTIONS { println!("\nresult: {}\n", self) };
     }
 
     fn beta_cbn(&mut self, depth: u32, limit: usize, count: &mut usize) {
@@ -313,6 +328,20 @@ impl Term {
                 }
             }
         }
+    }
+}
+
+impl fmt::Display for Order {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", match *self {
+            Normal => "normal",
+            CallByName => "call-by-name",
+            HeadSpine => "head spine",
+            HybridNormal => "hybrid normal",
+            Applicative => "applicative",
+            CallByValue => "call-by-value",
+            HybridApplicative => "hybrid applicative"
+        })
     }
 }
 
