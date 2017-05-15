@@ -6,7 +6,7 @@ use term::Error::*;
 use booleans::*;
 use pair::*;
 use arithmetic::{zero, succ};
-use combinators::{y, i};
+use combinators::{i, z};
 use std::ops::Index;
 
 /// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last link of a
@@ -144,7 +144,7 @@ pub fn tail() -> Term { second() }
 /// ```
 pub fn length() -> Term {
     app!(
-        y(),
+        z(),
         abs(abs(abs(
             app!(
                 null(),
@@ -183,7 +183,7 @@ pub fn length() -> Term {
 /// ```
 pub fn reverse() -> Term {
     app!(
-        y(),
+        z(),
         abs(abs(abs(
             app!(
                 null(),
@@ -253,7 +253,7 @@ pub fn list() -> Term {
 /// # }
 /// ```
 pub fn append() -> Term {
-    y().app(
+    z().app(
         abs(abs(abs(
             app!(
                 null(),
@@ -317,7 +317,7 @@ pub fn index() -> Term {
 /// # }
 /// ```
 pub fn map() -> Term {
-    y().app(
+    z().app(
         abs(abs(abs(
             app!(
                 null(),
@@ -357,7 +357,7 @@ pub fn map() -> Term {
 /// # }
 /// ```
 pub fn foldl() -> Term {
-    y().app(
+    z().app(
         abs(abs(abs(abs(
             app!(
                 null(),
@@ -400,7 +400,7 @@ pub fn foldl() -> Term {
 pub fn foldr() -> Term {
     abs(abs(abs(
         app!(
-            y(),
+            z(),
             abs(abs(
                 app!(
                     null(),
@@ -444,7 +444,7 @@ pub fn foldr() -> Term {
 /// # }
 /// ```
 pub fn filter() -> Term {
-    y().app(
+    z().app(
         abs(abs(abs(
             app!(
                 null(),
