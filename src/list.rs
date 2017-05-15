@@ -343,8 +343,8 @@ pub fn map() -> Term {
 /// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
 /// list.
 ///
-/// FOLDL := Z (λgfex. NULL x e (g f (f e (FIRST x)) (SECOND x))) =
-/// Z (λ λ λ λ NULL 1 2 (4 3 (3 2 (FIRST 1)) (SECOND 1)))
+/// FOLDL := Z (λgfex. NULL x (λz.e) (λz.g f (f e (FIRST x)) (SECOND x)) I) =
+/// Z (λ λ λ λ NULL 1 (λ 2) (λ 5 4 (4 3 (FIRST 2)) (SECOND 2)) I)
 ///
 /// # Example
 /// ```
@@ -368,13 +368,14 @@ pub fn foldl() -> Term {
             app!(
                 null(),
                 Var(1),
-                Var(2),
-                app!(
+                abs(Var(3)),
+                abs(app!(
+                    Var(5),
                     Var(4),
-                    Var(3),
-                    app!(Var(3), Var(2), app(first(), Var(1))),
-                    app(second(), Var(1))
-                )
+                    app!(Var(4), Var(3), app(first(), Var(2))),
+                    app(second(), Var(2))
+                )),
+                i()
             )
         ))))
     )
@@ -384,8 +385,8 @@ pub fn foldl() -> Term {
 /// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
 /// list.
 ///
-/// FOLDR := λfex. Z (λgy. NULL y e (f (FIRST y) (g (SECOND y)))) x =
-/// λ λ λ Z (λ λ NULL 1 4 (5 (FIRST 1) (2 (SECOND 1)))) 1
+/// FOLDR := λfex. Z (λgy. NULL y (λz.e) (λz.f (FIRST y) (g (SECOND y))) I) x =
+/// λ λ λ Z (λ λ NULL 1 (λ 5) (λ 6 (FIRST 2) (3 (SECOND 2))) I) 1
 ///
 /// # Example
 /// ```
@@ -411,12 +412,13 @@ pub fn foldr() -> Term {
                 app!(
                     null(),
                     Var(1),
-                    Var(4),
-                    app!(
-                        Var(5),
-                        app(first(), Var(1)),
-                        app(Var(2), app(second(), Var(1)))
-                    )
+                    abs(Var(5)),
+                    abs(app!(
+                        Var(6),
+                        app(first(), Var(2)),
+                        app(Var(3), app(second(), Var(2)))
+                    )),
+                    i()
                 )
             )),
             Var(1)
@@ -426,8 +428,8 @@ pub fn foldr() -> Term {
 
 /// Applied to a predicate and a Church list it filters the list based on the predicate.
 ///
-/// FILTER := Z (λgfx. NULL x NIL (f (FIRST x) (PAIR (FIRST x)) I (g f (SECOND x)))) =
-/// Z (λ λ λ NULL 1 NIL (2 (FIRST 1) (PAIR (FIRST 1)) I (3 2 (SECOND 1))))
+/// FILTER := Z (λgfx. NULL x (λz.NIL) (λz.f (FIRST x) (PAIR (FIRST x)) I (g f (SECOND x))) I) =
+/// Z (λ λ λ NULL 1 (λ NIL) (λ 3 (FIRST 2) (PAIR (FIRST 2)) I (4 3 (SECOND 2))) I)
 ///
 /// # Example
 /// ```
@@ -455,14 +457,15 @@ pub fn filter() -> Term {
             app!(
                 null(),
                 Var(1),
-                nil(),
-                app!(
-                    Var(2),
-                    app(first(), Var(1)),
-                    app(pair(), app(first(), Var(1))),
+                abs(nil()),
+                abs(app!(
+                    Var(3),
+                    app(first(), Var(2)),
+                    app(pair(), app(first(), Var(2))),
                     i(),
-                    app!(Var(3), Var(2), app(second(), Var(1)))
-                )
+                    app!(Var(4), Var(3), app(second(), Var(2)))
+                )),
+                i()
             )
         )))
     )
