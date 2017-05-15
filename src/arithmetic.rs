@@ -168,10 +168,10 @@ pub fn pow() -> Term {
 pub fn pred() -> Term {
     abs(abs(abs(
         app!(
-        Var(3),
-        abs(abs(app(Var(1), app(Var(2), Var(4))))),
-        abs(Var(2)),
-        abs(Var(1))
+            Var(3),
+            abs(abs(app(Var(1), app(Var(2), Var(4))))),
+            abs(Var(2)),
+            abs(Var(1))
         )
     )))
 }
@@ -499,8 +499,8 @@ pub fn factorial() -> Term {
                 )
             ))),
             k(),
-            1.into(),
-            1.into()
+            one(),
+            one()
         )
     )
 }
