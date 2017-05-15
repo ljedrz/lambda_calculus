@@ -6,7 +6,7 @@ use term::Term::*;
 use term::Error::*;
 use booleans::*;
 use pair::{pair, second};
-use combinators::{k, z};
+use combinators::{i, k, z};
 
 /// Produces a Church-encoded number zero.
 ///
@@ -366,8 +366,8 @@ pub fn gt() -> Term {
 /// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
 /// division - the quotient and the remainder. It loops indefinitely if the divisor is `zero()`.
 ///
-/// DIV := Y (λgqab.LT a b (PAIR q a) (g (SUCC q) (SUB a b) b)) ZERO =
-/// Y (λ λ λ λ LT 2 1 (PAIR 3 2) (4 (SUCC 3) (SUB 2 1) 1)) ZERO
+/// DIV := Z (λgqab.LT a b (λx.PAIR q a) (λx.g (SUCC q) (SUB a b) b) I) ZERO =
+/// Z (λ λ λ λ LT 2 1 (λ PAIR 4 3) (λ 5 (SUCC 4) (SUB 3 2) 2) I) ZERO
 ///
 /// # Example
 /// ```
@@ -391,13 +391,14 @@ pub fn div() -> Term {
                 lt(),
                 Var(2),
                 Var(1),
-                app!(pair(), Var(3), Var(2)),
-                app!(
-                    Var(4),
-                    app(succ(), Var(3)),
-                    app!(sub(), Var(2), Var(1)),
-                    Var(1)
-                )
+                abs(app!(pair(), Var(4), Var(3))),
+                abs(app!(
+                    Var(5),
+                    app(succ(), Var(4)),
+                    app!(sub(), Var(3), Var(2)),
+                    Var(2)
+                )),
+                i()
             )
         )))),
         zero()
