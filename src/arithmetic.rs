@@ -408,8 +408,8 @@ pub fn div() -> Term {
 /// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
 /// It loops indefinitely if the second argument is `zero()`.
 ///
-/// QUOT := Y (λrab.LT a b ZERO (SUCC (r (SUB a b) b))) =
-/// Y (λ λ λ LT 2 1 ZERO (SUCC (3 (SUB 2 1) 1)))
+/// QUOT := Z (λrab.LT a b (λx.ZERO) (λx.SUCC (r (SUB a b) b)) I) =
+/// Z (λ λ λ LT 2 1 (λ ZERO) (λ SUCC (4 (SUB 3 2) 2)) I)
 ///
 /// # Example
 /// ```
@@ -432,15 +432,16 @@ pub fn quot() -> Term {
                 lt(),
                 Var(2),
                 Var(1),
-                zero(),
-                app(
+                abs(zero()),
+                abs(app(
                     succ(),
                     app!(
-                        Var(3),
-                        app!(sub(), Var(2), Var(1)),
-                        Var(1)
+                        Var(4),
+                        app!(sub(), Var(3), Var(2)),
+                        Var(2)
                     )
-                )
+                )),
+                i()
             )
         )))
     )
@@ -718,12 +719,11 @@ mod test {
         assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &HybridNormal, 0), 1.into());
         assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &HybridNormal, 0), 2.into());
         assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &HybridNormal, 0), 0.into());
-/*
+
         assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &HybridApplicative, 0), 1.into());
         assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &HybridApplicative, 0), 1.into());
         assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &HybridApplicative, 0), 2.into());
         assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &HybridApplicative, 0), 0.into());
-*/
     }
 
     #[test]
