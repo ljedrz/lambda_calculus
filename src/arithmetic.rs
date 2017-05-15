@@ -699,12 +699,11 @@ mod test {
         assert_eq!(beta(app!(div(), 3.into(), 2.into()), &HybridNormal, 0), (1.into(), 1.into()).into());
         assert_eq!(beta(app!(div(), 2.into(), 1.into()), &HybridNormal, 0), (2.into(), 0.into()).into());
         assert_eq!(beta(app!(div(), 0.into(), 3.into()), &HybridNormal, 0), (0.into(), 0.into()).into());
-/*
+
         assert_eq!(beta(app!(div(), 2.into(), 2.into()), &HybridApplicative, 0), (1.into(), 0.into()).into());
         assert_eq!(beta(app!(div(), 3.into(), 2.into()), &HybridApplicative, 0), (1.into(), 1.into()).into());
         assert_eq!(beta(app!(div(), 2.into(), 1.into()), &HybridApplicative, 0), (2.into(), 0.into()).into());
         assert_eq!(beta(app!(div(), 0.into(), 3.into()), &HybridApplicative, 0), (0.into(), 0.into()).into());
-*/
     }
 
     #[test]
@@ -739,12 +738,11 @@ mod test {
         assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &HybridNormal, 0), 1.into());
         assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &HybridNormal, 0), 0.into());
         assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &HybridNormal, 0), 0.into());
-/*
+
         assert_eq!(beta(app!(rem(), 2.into(), 2.into()), &HybridApplicative, 0), 0.into());
         assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &HybridApplicative, 0), 1.into());
         assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &HybridApplicative, 0), 0.into());
         assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &HybridApplicative, 0), 0.into());
-*/
     }
 
     #[test]
