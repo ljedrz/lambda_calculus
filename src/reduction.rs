@@ -9,9 +9,17 @@ use std::fmt;
 pub const SHOW_REDUCTIONS: bool = false;
 
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
-/// β-reductions. `Applicative` order will fail to fully reduce expressions containing functions
-/// without a normal form, e.g. the Y combinator (they will expand forever). `CallByName`,
-/// `HeadSpine` and `CallByValue` orders don't always normalize fully. The default is `Normal`.
+/// β-reductions. The default is `Normal`.
+///
+/// They don't always yield the same result:
+///
+/// - The `Normal`, `HybridNormal`, `Applicative` and `HybridApplicative` orders reduce expressions
+/// to their normal forms
+/// - The `Applicative` order will fail to fully reduce expressions containing functions
+/// without a normal form, e.g. the `Y` combinator (they will expand forever)
+/// - The `CallByName` order reduces to weak head normal form
+/// - The `CallByValue` order reduces to weak normal form
+/// - The `HeadSpine` order reduces to head normal form
 #[derive(Debug, PartialEq)]
 pub enum Order {
     /// leftmost outermost
@@ -20,13 +28,13 @@ pub enum Order {
     CallByName,
     /// leftmost outermost, but abstractions reduced only in head position
     HeadSpine,
-    /// `HeadSpine` + `Normal`
+    /// a hybrid between `HeadSpine` and `Normal`
     HybridNormal,
     /// leftmost innermost
     Applicative,
     /// leftmost innermost, but not inside abstractions
     CallByValue,
-    /// `CallByValue` + `Applicative`
+    /// a hybrid between `CallByValue` and `Applicative`
     HybridApplicative
 }
 
@@ -102,49 +110,62 @@ pub fn beta(mut term: Term, order: &Order, limit: usize) -> Term {
     term
 }
 
-/// Prints the number of reductions required to reach the final form of all the available reduction
-/// strategies.
+/// Prints the number of reductions required for `term` to reach the final form with all the
+/// available reduction strategies, optionally excluding the ones from the given list. Such
+/// exclusions might be necessary, especially if the expression contains the fixed-point combinator.
 ///
 /// # Example
 ///
 /// ```
 /// use lambda_calculus::arithmetic::factorial;
 /// use lambda_calculus::reduction::benchmark;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// benchmark(&factorial().app(5.into()));
+/// benchmark(&factorial().app(3.into()), &[CallByName, CallByValue, HeadSpine]);
 ///
 /// // stdout:
 ///
-/// // call-by-name:       22
-/// // normal:             460
-/// // call-by-value:      35
-/// // applicative:        151
-/// // head spine:         49
-/// // hybrid normal:      460
-/// // hybrid applicative: 66
+/// // normal:             46
+/// // applicative:        39
+/// // hybrid normal:      46
+/// // hybrid applicative: 39
 /// ```
-pub fn benchmark(term: &Term) {
+pub fn benchmark(term: &Term, exclude: &[Order]) {
     let mut count = 0;
-    term.clone().beta_cbn(0, 0, &mut count);
-    println!("{}:       {}", CallByName, count);
-    count = 0;
-    term.clone().beta_nor(0, 0, &mut count);
-    println!("{}:             {}", Normal, count);
-    count = 0;
-    term.clone().beta_cbv(0, 0, &mut count);
-    println!("{}:      {}", CallByValue, count);
-    count = 0;
-    term.clone().beta_app(0, 0, &mut count);
-    println!("{}:        {}", Applicative, count);
-    count = 0;
-    term.clone().beta_hs(0, 0, &mut count);
-    println!("{}:         {}", HeadSpine, count);
-    count = 0;
-    term.clone().beta_hnor(0, 0, &mut count);
-    println!("{}:      {}", HybridNormal, count);
-    count = 0;
-    term.clone().beta_happ(0, 0, &mut count);
-    println!("{}: {}", HybridApplicative, count);
+    if !exclude.contains(&CallByName) {
+        term.clone().beta_cbn(0, 0, &mut count);
+        println!("{}:       {}", CallByName, count);
+        count = 0;
+    }
+    if !exclude.contains(&Normal) {
+        term.clone().beta_nor(0, 0, &mut count);
+        println!("{}:             {}", Normal, count);
+        count = 0;
+    }
+    if !exclude.contains(&CallByValue) {
+        term.clone().beta_cbv(0, 0, &mut count);
+        println!("{}:      {}", CallByValue, count);
+        count = 0;
+    }
+    if !exclude.contains(&Applicative) {
+        term.clone().beta_app(0, 0, &mut count);
+        println!("{}:        {}", Applicative, count);
+        count = 0;
+    }
+    if !exclude.contains(&HeadSpine) {
+        term.clone().beta_hs(0, 0, &mut count);
+        println!("{}:         {}", HeadSpine, count);
+        count = 0;
+    }
+    if !exclude.contains(&HybridNormal) {
+        term.clone().beta_hnor(0, 0, &mut count);
+        println!("{}:      {}", HybridNormal, count);
+        count = 0;
+    }
+    if !exclude.contains(&HybridApplicative) {
+        term.clone().beta_happ(0, 0, &mut count);
+        println!("{}: {}", HybridApplicative, count);
+    }
 }
 
 impl Term {
