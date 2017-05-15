@@ -3,7 +3,9 @@
 **lambda_calculus** is a simple implementation of the untyped lambda calculus in Rust.
 
 The data and operators follow the Church encoding. The terms are implemented using De Bruijn
-indices, but can also be displayed using the classic lambda notation.
+indices, but can also be displayed using the classic lambda notation. Expressions containing the
+fixed-point combinator use its call-by-value variant and are adjusted so that they are compatible
+with as many β-reduction strategies as possible.
 
 The library contains:
 
@@ -29,7 +31,6 @@ The library is already usable, but it is still a work in progress.
 
 ## TODO
 
-- polish `CallByValue` and `HybridApplicative` orders (they have issues with the Z combinator)
 - additional tests
 - β-reduction parallelization (at least to some extent)?
 - further optimizations
