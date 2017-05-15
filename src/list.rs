@@ -344,7 +344,7 @@ pub fn map() -> Term {
 /// list.
 ///
 /// FOLDL := Z (λgfex. NULL x (λz.e) (λz.g f (f e (FIRST x)) (SECOND x)) I) =
-/// Z (λ λ λ λ NULL 1 (λ 2) (λ 5 4 (4 3 (FIRST 2)) (SECOND 2)) I)
+/// Z (λ λ λ λ NULL 1 (λ 3) (λ 5 4 (4 3 (FIRST 2)) (SECOND 2)) I)
 ///
 /// # Example
 /// ```
