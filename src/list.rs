@@ -124,8 +124,8 @@ pub fn tail() -> Term { second() }
 
 /// Applied to a Church list it returns its Church-encoded length.
 ///
-/// LENGTH := Z (λgcx.NULL x c (g (SUCC c) (SECOND x))) ZERO
-/// = Z (λλλ NULL 1 2 (3 (SUCC 2) (SECOND 1))) ZERO
+/// LENGTH := Z (λgcx.NULL x (λz.c) (λz.g (SUCC c) (SECOND x)) I) ZERO
+/// = Z (λλλ NULL 1 (λ 3) (λ 4 (SUCC 3) (SECOND 2)) I) ZERO
 ///
 /// # Example
 /// ```
@@ -149,12 +149,13 @@ pub fn length() -> Term {
             app!(
                 null(),
                 Var(1),
-                Var(2),
-                app!(
-                    Var(3),
-                    app(succ(), Var(2)),
-                    app(second(), Var(1))
-                )
+                abs(Var(3)),
+                abs(app!(
+                    Var(4),
+                    app(succ(), Var(3)),
+                    app(second(), Var(2))
+                )),
+                i()
             )
         ))),
         zero()
@@ -298,7 +299,7 @@ pub fn index() -> Term {
 /// Applied to a function and a Church list it maps the function over it.
 ///
 /// MAP := Z (λgfx. NULL x (λa.NIL) (λa.PAIR (f (FIRST x)) (g f (SECOND x))) I) =
-/// Z (λ λ λ NULL 1 (λ NIL) (λ PAIR (2 (FIRST 1)) (3 2 (SECOND 1))) I)
+/// Z (λ λ λ NULL 1 (λ NIL) (λ PAIR (3 (FIRST 2)) (4 3 (SECOND 2))) I)
 ///
 /// # Example
 /// ```
