@@ -164,8 +164,8 @@ pub fn length() -> Term {
 
 /// Reverses a Church list.
 ///
-/// REVERSE := Z (λgal.NULL l a (g (PAIR (FIRST l) a) (SECOND l))) NIL =
-/// Z (λ λ λ NULL 1 2 (3 (PAIR (FIRST 1) 2) (SECOND 1))) NIL
+/// REVERSE := Z (λgal.NULL l (λx.a) (λx.g (PAIR (FIRST l) a) (SECOND l) I)) NIL =
+/// Z (λ λ λ NULL 1 (λ 3) (λ 4 (PAIR (FIRST 2) 3) (SECOND 2)) I) NIL
 ///
 /// # Example
 /// ```
@@ -179,7 +179,9 @@ pub fn length() -> Term {
 ///
 /// let list = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(beta(app!(reverse(), list), &Normal, 0), Term::from(vec![zero(), one(), one()]));
+/// assert_eq!(beta(app!(reverse(), list), &Normal, 0),
+///            Term::from(vec![zero(), one(), one()])
+/// );
 /// # }
 /// ```
 pub fn reverse() -> Term {
@@ -189,12 +191,13 @@ pub fn reverse() -> Term {
             app!(
                 null(),
                 Var(1),
-                Var(2),
-                app!(
-                    Var(3),
-                    app!(pair(), app(first(), Var(1)), Var(2)),
-                    app(second(), Var(1))
-                )
+                abs(Var(3)),
+                abs(app!(
+                    Var(4),
+                    app!(pair(), app(first(), Var(2)), Var(3)),
+                    app(second(), Var(2))
+                )),
+                i()
             )
         ))),
         nil()
@@ -234,8 +237,8 @@ pub fn list() -> Term {
 
 /// Applied to 2 Church lists it concatenates them.
 ///
-/// APPEND := Z (λgab. NULL a b (PAIR (FIRST a) (g (SECOND a) b))) =
-/// Z (λ λ λ NULL 2 1 (PAIR (FIRST 2) (3 (SECOND 2) 1)))
+/// APPEND := Z (λgab. NULL a (λx.b) (λx.PAIR (FIRST a) (g (SECOND a) b)) I) =
+/// Z (λ λ λ NULL 2 (λ 2) (λ PAIR (FIRST 3) (4 (SECOND 3) 2)) I)
 ///
 /// # Example
 /// ```
@@ -259,12 +262,13 @@ pub fn append() -> Term {
             app!(
                 null(),
                 Var(2),
-                Var(1),
-                app!(
+                abs(Var(2)),
+                abs(app!(
                     pair(),
-                    app(first(), Var(2)),
-                    app!(Var(3), app(second(), Var(2)), Var(1))
-                )
+                    app(first(), Var(3)),
+                    app!(Var(4), app(second(), Var(3)), Var(2))
+                )),
+                i()
             )
         )))
     )
