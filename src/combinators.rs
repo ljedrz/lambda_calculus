@@ -84,8 +84,7 @@ pub fn s() -> Term {
 ///
 /// assert_eq!(beta(app!(iota(), iota()), &NOR, 0), i());
 /// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), iota()))), &NOR, 0), k());
-/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota())))), &NOR, 0),
-///            s());
+/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota())))), &NOR, 0), s());
 /// # }
 /// ```
 pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }

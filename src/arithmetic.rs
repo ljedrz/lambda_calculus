@@ -5,7 +5,7 @@ use term::*;
 use term::Term::*;
 use term::Error::*;
 use booleans::*;
-use pair::{pair, second};
+use pair::pair;
 use combinators::{i, k, z};
 
 /// Produces a Church-encoded number zero.
@@ -130,7 +130,7 @@ pub fn mult() -> Term {
 
 /// Applied to two Church-encoded numbers it raises the first one to the power of the second one.
 ///
-/// POW := λbe.IS_ZERO e ONE (e b) = λ λ IS_ZERO 1 ONE (1 2)
+/// POW := λab.IS_ZERO b ONE (b a) = λ λ IS_ZERO 1 ONE (1 2)
 ///
 /// # Example
 /// ```
@@ -178,7 +178,7 @@ pub fn pred() -> Term {
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
 ///
-/// SUB := λmn.n PRED m = λ λ 1 PRED 2
+/// SUB := λab.b PRED a = λ λ 1 PRED 2
 ///
 /// # Example
 /// ```
@@ -366,7 +366,7 @@ pub fn gt() -> Term {
 /// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
 /// division - the quotient and the remainder. It loops indefinitely if the divisor is `zero()`.
 ///
-/// DIV := Z (λgqab.LT a b (λx.PAIR q a) (λx.g (SUCC q) (SUB a b) b) I) ZERO =
+/// DIV := Z (λzqab.LT a b (λx.PAIR q a) (λx.z (SUCC q) (SUB a b) b) I) ZERO =
 /// Z (λ λ λ λ LT 2 1 (λ PAIR 4 3) (λ 5 (SUCC 4) (SUB 3 2) 2) I) ZERO
 ///
 /// # Example
@@ -408,7 +408,7 @@ pub fn div() -> Term {
 /// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
 /// It loops indefinitely if the second argument is `zero()`.
 ///
-/// QUOT := Z (λrab.LT a b (λx.ZERO) (λx.SUCC (r (SUB a b) b)) I) =
+/// QUOT := Z (λzab.LT a b (λx.ZERO) (λx.SUCC (z (SUB a b) b)) I) =
 /// Z (λ λ λ LT 2 1 (λ ZERO) (λ SUCC (4 (SUB 3 2) 2)) I)
 ///
 /// # Example
@@ -489,7 +489,7 @@ pub fn rem() -> Term {
 
 /// Applied to a Church-encoded number it yields its Church-encoded factorial.
 ///
-/// FACTORIAL := λn. n (λfax. f (MULT a x) (SUCC x)) K ONE ONE =
+/// FACTORIAL := λn. n (λfab. f (MULT a b) (SUCC b)) K ONE ONE =
 /// λ 1 (λ λ λ 3 (MULT 2 1) (SUCC 1)) K ONE ONE
 ///
 /// # Example
@@ -707,17 +707,20 @@ mod test {
     fn church_division() {
         assert_eq!(beta(app!(div(), 2.into(), 2.into()), &NOR, 0), (1.into(), 0.into()).into());
         assert_eq!(beta(app!(div(), 3.into(), 2.into()), &NOR, 0), (1.into(), 1.into()).into());
+        assert_eq!(beta(app!(div(), 5.into(), 2.into()), &NOR, 0), (2.into(), 1.into()).into());
         assert_eq!(beta(app!(div(), 2.into(), 1.into()), &NOR, 0), (2.into(), 0.into()).into());
         assert_eq!(beta(app!(div(), 0.into(), 3.into()), &NOR, 0), (0.into(), 0.into()).into());
      // assert_eq!(beta(app!(div(), 1.into(), 0.into()), &NOR, 0), ); division by 0 hangs
 
         assert_eq!(beta(app!(div(), 2.into(), 2.into()), &HNO, 0), (1.into(), 0.into()).into());
         assert_eq!(beta(app!(div(), 3.into(), 2.into()), &HNO, 0), (1.into(), 1.into()).into());
+        assert_eq!(beta(app!(div(), 5.into(), 2.into()), &HNO, 0), (2.into(), 1.into()).into());
         assert_eq!(beta(app!(div(), 2.into(), 1.into()), &HNO, 0), (2.into(), 0.into()).into());
         assert_eq!(beta(app!(div(), 0.into(), 3.into()), &HNO, 0), (0.into(), 0.into()).into());
 
         assert_eq!(beta(app!(div(), 2.into(), 2.into()), &HAP, 0), (1.into(), 0.into()).into());
         assert_eq!(beta(app!(div(), 3.into(), 2.into()), &HAP, 0), (1.into(), 1.into()).into());
+        assert_eq!(beta(app!(div(), 5.into(), 2.into()), &HAP, 0), (2.into(), 1.into()).into());
         assert_eq!(beta(app!(div(), 2.into(), 1.into()), &HAP, 0), (2.into(), 0.into()).into());
         assert_eq!(beta(app!(div(), 0.into(), 3.into()), &HAP, 0), (0.into(), 0.into()).into());
     }
@@ -726,17 +729,20 @@ mod test {
     fn church_quotient() {
         assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &NOR, 0), 1.into());
         assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &NOR, 0), 1.into());
+        assert_eq!(beta(app!(quot(), 5.into(), 2.into()), &NOR, 0), 2.into());
         assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &NOR, 0), 2.into());
         assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &NOR, 0), 0.into());
     //  assert_eq!(beta(app!(quot(), 1.into(), 0.into()), &NOR, 0), ); division by 0 hangs
 
         assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &HNO, 0), 1.into());
         assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &HNO, 0), 1.into());
+        assert_eq!(beta(app!(quot(), 5.into(), 2.into()), &HNO, 0), 2.into());
         assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &HNO, 0), 2.into());
         assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &HNO, 0), 0.into());
 
         assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &HAP, 0), 1.into());
         assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &HAP, 0), 1.into());
+        assert_eq!(beta(app!(quot(), 5.into(), 2.into()), &HAP, 0), 2.into());
         assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &HAP, 0), 2.into());
         assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &HAP, 0), 0.into());
     }

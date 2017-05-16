@@ -124,7 +124,7 @@ pub fn tail() -> Term { second() }
 
 /// Applied to a Church list it returns its Church-encoded length.
 ///
-/// LENGTH := Z (λgcx.NULL x (λz.c) (λz.g (SUCC c) (SECOND x)) I) ZERO
+/// LENGTH := Z (λzal.NULL l (λx.a) (λx.z (SUCC a) (SECOND l)) I) ZERO
 /// = Z (λλλ NULL 1 (λ 3) (λ 4 (SUCC 3) (SECOND 2)) I) ZERO
 ///
 /// # Example
@@ -164,7 +164,7 @@ pub fn length() -> Term {
 
 /// Reverses a Church list.
 ///
-/// REVERSE := Z (λgal.NULL l (λx.a) (λx.g (PAIR (FIRST l) a) (SECOND l) I)) NIL =
+/// REVERSE := Z (λzal.NULL l (λx.a) (λx.z (PAIR (FIRST l) a) (SECOND l) I)) NIL =
 /// Z (λ λ λ NULL 1 (λ 3) (λ 4 (PAIR (FIRST 2) 3) (SECOND 2)) I) NIL
 ///
 /// # Example
@@ -237,7 +237,7 @@ pub fn list() -> Term {
 
 /// Applied to 2 Church lists it concatenates them.
 ///
-/// APPEND := Z (λgab. NULL a (λx.b) (λx.PAIR (FIRST a) (g (SECOND a) b)) I) =
+/// APPEND := Z (λzab. NULL a (λx.b) (λx.PAIR (FIRST a) (z (SECOND a) b)) I) =
 /// Z (λ λ λ NULL 2 (λ 2) (λ PAIR (FIRST 3) (4 (SECOND 3) 2)) I)
 ///
 /// # Example
@@ -277,7 +277,7 @@ pub fn append() -> Term {
 /// Applied to a Church number `i` and a Church list it returns the `i`-th
 /// (zero-indexed) element of the list.
 ///
-/// INDEX := λix. FIRST (x SECOND i) = λ λ FIRST (2 SECOND 1)
+/// INDEX := λil. FIRST (l SECOND i) = λ λ FIRST (2 SECOND 1)
 ///
 /// # Example
 /// ```
@@ -302,7 +302,7 @@ pub fn index() -> Term {
 
 /// Applied to a function and a Church list it maps the function over it.
 ///
-/// MAP := Z (λgfx. NULL x (λa.NIL) (λa.PAIR (f (FIRST x)) (g f (SECOND x))) I) =
+/// MAP := Z (λzfl. NULL l (λx.NIL) (λx.PAIR (f (FIRST l)) (z f (SECOND l))) I) =
 /// Z (λ λ λ NULL 1 (λ NIL) (λ PAIR (3 (FIRST 2)) (4 3 (SECOND 2))) I)
 ///
 /// # Example
@@ -343,7 +343,7 @@ pub fn map() -> Term {
 /// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
 /// list.
 ///
-/// FOLDL := Z (λgfex. NULL x (λz.e) (λz.g f (f e (FIRST x)) (SECOND x)) I) =
+/// FOLDL := Z (λzfsl. NULL l (λx.s) (λx.z f (f s (FIRST l)) (SECOND l)) I) =
 /// Z (λ λ λ λ NULL 1 (λ 3) (λ 5 4 (4 3 (FIRST 2)) (SECOND 2)) I)
 ///
 /// # Example
@@ -385,7 +385,7 @@ pub fn foldl() -> Term {
 /// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
 /// list.
 ///
-/// FOLDR := λfex. Z (λgy. NULL y (λz.e) (λz.f (FIRST y) (g (SECOND y))) I) x =
+/// FOLDR := λfsl. Z (λzt. NULL t (λx.s) (λx.f (FIRST t) (z (SECOND t))) I) l =
 /// λ λ λ Z (λ λ NULL 1 (λ 5) (λ 6 (FIRST 2) (3 (SECOND 2))) I) 1
 ///
 /// # Example
@@ -428,7 +428,7 @@ pub fn foldr() -> Term {
 
 /// Applied to a predicate and a Church list it filters the list based on the predicate.
 ///
-/// FILTER := Z (λgfx. NULL x (λz.NIL) (λz.f (FIRST x) (PAIR (FIRST x)) I (g f (SECOND x))) I) =
+/// FILTER := Z (λzpl. NULL l (λx.NIL) (λx.p (FIRST l) (PAIR (FIRST l)) I (z p (SECOND l))) I) =
 /// Z (λ λ λ NULL 1 (λ NIL) (λ 3 (FIRST 2) (PAIR (FIRST 2)) I (4 3 (SECOND 2))) I)
 ///
 /// # Example
