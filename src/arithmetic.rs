@@ -447,11 +447,10 @@ pub fn quot() -> Term {
     )
 }
 
-// TODO: find an independent variant, like with quot()
 /// Applied to two Church-encoded numbers it returns a Church-encoded remainder of their division.
 /// It loops indefinitely if the second argument is `zero()`.
 ///
-/// REM := λab. SECOND (DIV a b) = λ λ SECOND (DIV 2 1)
+/// REM := Z (λzab.LT a b (λx.a) (λx.z (SUB a b) b) I) = Z (λ λ λ LT 2 1 (λ 3) (λ 4 (SUB 3 2) 2) I)
 ///
 /// # Example
 /// ```
@@ -467,9 +466,25 @@ pub fn quot() -> Term {
 /// # }
 /// ```
 pub fn rem() -> Term {
-    abs(abs(
-        app(second(), app!(div(), Var(2), Var(1)))
-    ))
+    app(
+        z(),
+        abs(abs(abs(
+            app!(
+                lt(),
+                Var(2),
+                Var(1),
+                abs(Var(3)),
+                abs(
+                    app!(
+                        Var(4),
+                        app!(sub(), Var(3), Var(2)),
+                        Var(2)
+                    )
+                ),
+                i()
+            )
+        )))
+    )
 }
 
 /// Applied to a Church-encoded number it yields its Church-encoded factorial.
@@ -730,17 +745,20 @@ mod test {
     fn church_remainder() {
         assert_eq!(beta(app!(rem(), 2.into(), 2.into()), &NOR, 0), 0.into());
         assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &NOR, 0), 1.into());
+        assert_eq!(beta(app!(rem(), 2.into(), 5.into()), &NOR, 0), 2.into());
         assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &NOR, 0), 0.into());
         assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &NOR, 0), 0.into());
      // assert_eq!(beta(app!(rem(), 1.into(), 0.into()), &NOR, 0), ); division by 0 hangs
 
         assert_eq!(beta(app!(rem(), 2.into(), 2.into()), &HNO, 0), 0.into());
         assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &HNO, 0), 1.into());
+        assert_eq!(beta(app!(rem(), 2.into(), 5.into()), &HNO, 0), 2.into());
         assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &HNO, 0), 0.into());
         assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &HNO, 0), 0.into());
 
         assert_eq!(beta(app!(rem(), 2.into(), 2.into()), &HAP, 0), 0.into());
         assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &HAP, 0), 1.into());
+        assert_eq!(beta(app!(rem(), 2.into(), 5.into()), &HAP, 0), 2.into());
         assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &HAP, 0), 0.into());
         assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &HAP, 0), 0.into());
     }
