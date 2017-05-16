@@ -868,4 +868,26 @@ mod test {
         assert_eq!(list[3], 3.into());
         assert_eq!(list[4], 4.into());
     }
+
+    #[test]
+    fn cbv_list_functions() {
+        let l = Term::from(vec![1.into(), 2.into(), 3.into(), 4.into()]);
+
+        assert_eq!(beta(app!( length(), l.clone()), &HA, 0), 4.into());
+        assert_eq!(beta(app!(reverse(), l.clone()), &HA, 0),
+                   Term::from(vec![4.into(), 3.into(), 2.into(), 1.into()])
+        );
+        assert_eq!(beta(app!(list(), 4.into(), 1.into(), 2.into(), 3.into(), 4.into()),
+            &HA, 0), l);
+        assert_eq!(beta(app!(append(), Term::from(vec![1.into(), 2.into()]),
+            Term::from(vec![3.into(), 4.into()])), &HA, 0), l);
+        assert_eq!(beta(app!(map(), succ(), l.clone()), &HA, 0),
+            Term::from(vec![2.into(), 3.into(), 4.into(), 5.into()]));
+        assert_eq!(beta(app!(foldl(), plus(), 0.into(), l.clone()), &HA, 0),
+            10.into());
+        assert_eq!(beta(app!(foldr(), plus(), 0.into(), l.clone()), &HA, 0),
+            10.into());
+        assert_eq!(beta(app!(filter(), is_zero(), l.clone()), &HA, 0),
+             Term::from(vec![]));
+    }
 }
