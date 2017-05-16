@@ -105,7 +105,7 @@ pub fn plus() -> Term {
     ))))
 }
 
-/// Applied to two Church-encoded numbers it produces their product.
+/// Applied to two Church-encoded numbers it yields their product.
 ///
 /// MULT := λmnf.m (n f) = λ λ λ 3 (2 1)
 ///

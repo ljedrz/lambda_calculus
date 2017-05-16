@@ -198,7 +198,10 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// ```
 pub fn omm() -> Term { om().app(om()) }
 
-/// Y - the lazy fixed-point combinator suitable for `NOR` and `HNO` reduction `Order`s.
+/// Y - the lazy fixed-point combinator.
+///
+/// It is suitable for `NOR` (normal), `HNO` (hybrid normal), `CBN` (call-by-name) and `HSP`
+/// (head spine) reduction `Order`s.
 ///
 /// Y := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
 ///
@@ -223,8 +226,13 @@ pub fn y() -> Term {
     ))
 }
 
-/// Z - the strict fixed-point combinator suitable for `NOR`, `HNO`, `CBV` and `HAP` reduction
-/// `Order`s.
+/// Z - the strict fixed-point combinator.
+///
+/// It will work with all the reduction orders suitable for its lazy counterpart (the `Y`
+/// combinator). In addition, it will also work with `CBV` (call-by-value) and `HAP` (hybrid
+/// applicative) reduction `Order`s, but with them it's not a drop-in replacement for the `Y`
+/// combinator - in order for such expressions to work, they need to be modified so that the
+/// evaluation of arguments of conditionals and other terms that need to be lazy is delayed.
 ///
 /// Z := λf.(λx.f (λv.x x v)) (λx.f (λv.x x v)) = λ (λ 2 (λ 2 2 1)) (λ 2 (λ 2 2 1))
 ///
