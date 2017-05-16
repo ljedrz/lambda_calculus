@@ -24,7 +24,7 @@ use term::Term::*;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(i().app(zero()), &Normal, 0), zero());
+/// assert_eq!(beta(i().app(zero()), &NOR, 0), zero());
 /// ```
 pub fn i() -> Term { abs(Var(1)) }
 
@@ -41,7 +41,7 @@ pub fn i() -> Term { abs(Var(1)) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(k(), zero(), one()), &Normal, 0), zero());
+/// assert_eq!(beta(app!(k(), zero(), one()), &NOR, 0), zero());
 /// # }
 /// ```
 pub fn k() -> Term { abs(abs(Var(2))) }
@@ -59,8 +59,8 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(s(), 0.into(), 1.into(), 2.into()), &Normal, 0),
-///            beta(app!(Term::from(0), 2.into(), app!(Term::from(1), 2.into())), &Normal, 0)
+/// assert_eq!(beta(app!(s(), 0.into(), 1.into(), 2.into()), &NOR, 0),
+///            beta(app!(Term::from(0), 2.into(), app!(Term::from(1), 2.into())), &NOR, 0)
 /// );
 /// # }
 /// ```
@@ -82,9 +82,9 @@ pub fn s() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(iota(), iota()), &Normal, 0), i());
-/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), iota()))), &Normal, 0), k());
-/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota())))), &Normal, 0),
+/// assert_eq!(beta(app!(iota(), iota()), &NOR, 0), i());
+/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), iota()))), &NOR, 0), k());
+/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota())))), &NOR, 0),
 ///            s());
 /// # }
 /// ```
@@ -103,8 +103,8 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(b(), 0.into(),           1.into(), 2.into() ), &Normal, 0),
-///            beta(app!(Term::from(0), app!(Term::from(1), 2.into())), &Normal, 0)
+/// assert_eq!(beta(app!(b(), 0.into(),           1.into(), 2.into() ), &NOR, 0),
+///            beta(app!(Term::from(0), app!(Term::from(1), 2.into())), &NOR, 0)
 /// );
 /// # }
 /// ```
@@ -127,8 +127,8 @@ pub fn b() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(c(), 0.into(), 1.into(), 2.into()), &Normal, 0),
-///            beta(app!(Term::from(0), 2.into(), 1.into()), &Normal, 0)
+/// assert_eq!(beta(app!(c(), 0.into(), 1.into(), 2.into()), &NOR, 0),
+///            beta(app!(Term::from(0), 2.into(), 1.into()), &NOR, 0)
 /// );
 /// # }
 /// ```
@@ -151,8 +151,8 @@ pub fn c() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(   w(), zero(), one()), &Normal, 0),
-///            beta(app!(zero(),  one(), one()), &Normal, 0)
+/// assert_eq!(beta(app!(   w(), zero(), one()), &NOR, 0),
+///            beta(app!(zero(),  one(), one()), &NOR, 0)
 /// );
 /// # }
 /// ```
@@ -178,8 +178,8 @@ pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(  om().app(zero()), &Normal, 0),
-///            beta(zero().app(zero()), &Normal, 0)
+/// assert_eq!(beta(  om().app(zero()), &NOR, 0),
+///            beta(zero().app(zero()), &NOR, 0)
 /// );
 /// ```
 pub fn om() -> Term { abs(Var(1).app(Var(1))) }
@@ -194,12 +194,11 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(omm(), &Normal, 3), omm());
+/// assert_eq!(beta(omm(), &NOR, 3), omm());
 /// ```
 pub fn omm() -> Term { om().app(om()) }
 
-/// Y - the lazy fixed-point combinator suitable for `Normal` and `HybridNormal` β-reduction
-/// `Order`s.
+/// Y - the lazy fixed-point combinator suitable for `NOR` and `HNO` reduction `Order`s.
 ///
 /// Y := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
 ///
@@ -212,8 +211,8 @@ pub fn omm() -> Term { om().app(om()) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(             app!(y(), zero() ), &Normal, 0),
-///            beta(app!(zero(), app!(y(), zero())), &Normal, 0)
+/// assert_eq!(beta(             app!(y(), zero() ), &NOR, 0),
+///            beta(app!(zero(), app!(y(), zero())), &NOR, 0)
 /// );
 /// # }
 /// ```
@@ -224,8 +223,8 @@ pub fn y() -> Term {
     ))
 }
 
-/// Z - the strict fixed-point combinator suitable for `Normal`, `HybridNormal`, `CallByValue` and
-/// `HybridApplicative` β-reduction `Order`s.
+/// Z - the strict fixed-point combinator suitable for `NOR`, `HNO`, `CBV` and `HAP` reduction
+/// `Order`s.
 ///
 /// Z := λf.(λx.f (λv.x x v)) (λx.f (λv.x x v)) = λ (λ 2 (λ 2 2 1)) (λ 2 (λ 2 2 1))
 ///
@@ -238,8 +237,8 @@ pub fn y() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(             app!(z(), zero() ), &CallByValue, 0),
-///            beta(app!(zero(), app!(z(), zero())), &CallByValue, 0)
+/// assert_eq!(beta(             app!(z(), zero() ), &CBV, 0),
+///            beta(app!(zero(), app!(z(), zero())), &CBV, 0)
 /// );
 /// # }
 /// ```

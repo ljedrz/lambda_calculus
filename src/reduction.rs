@@ -9,33 +9,32 @@ use std::fmt;
 pub const SHOW_REDUCTIONS: bool = false;
 
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
-/// β-reductions. The default is `Normal`.
+/// β-reductions. The default is `NOR` (normal order).
 ///
 /// They don't always yield the same result:
 ///
-/// - The `Normal`, `HybridNormal`, `Applicative` and `HybridApplicative` orders reduce expressions
-/// to their normal forms
-/// - The `Applicative` order will fail to fully reduce expressions containing functions
-/// without a normal form, e.g. the `Y` combinator (they will expand forever)
-/// - The `CallByName` order reduces to weak head normal form
-/// - The `CallByValue` order reduces to weak normal form
-/// - The `HeadSpine` order reduces to head normal form
+/// - The `NOR`, `HNO`, `APP` and `HAP` orders reduce expressions to their normal forms
+/// - The `APP` order will fail to fully reduce expressions containing functions without a normal
+/// form, e.g. the `Y` combinator (they will expand forever)
+/// - The `CBN` order reduces to weak head normal form
+/// - The `CBV` order reduces to weak normal form
+/// - The `HSP` order reduces to head normal form
 #[derive(Debug, PartialEq)]
 pub enum Order {
-    /// leftmost outermost
-    Normal,
-    /// leftmost outermost, but not inside abstractions
-    CallByName,
-    /// leftmost outermost, but abstractions reduced only in head position
-    HeadSpine,
-    /// a hybrid between `HeadSpine` and `Normal`
-    HybridNormal,
-    /// leftmost innermost
-    Applicative,
-    /// leftmost innermost, but not inside abstractions
-    CallByValue,
-    /// a hybrid between `CallByValue` and `Applicative`
-    HybridApplicative
+    /// Normal - leftmost outermost
+    NOR,
+    /// Call-by-name - leftmost outermost, but not inside abstractions
+    CBN,
+    /// Head spine - leftmost outermost, but abstractions reduced only in head position
+    HSP,
+    /// Hybrid normal - a hybrid between `HSP` and `NOR`
+    HNO,
+    /// Applicative - leftmost innermost
+    APP,
+    /// Call-by-value - leftmost innermost, but not inside abstractions
+    CBV,
+    /// Hybrid applicative - a hybrid between `CBV` and `APP`
+    HAP
 }
 
 /// Applies two `Term`s with substitution and variable update, consuming the first one in the
@@ -99,11 +98,11 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
 /// ```
 /// use lambda_calculus::arithmetic::pred;
 /// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::Normal;
+/// use lambda_calculus::reduction::Order::NOR;
 ///
 /// let pred_one = pred().app(1.into());
 ///
-/// assert_eq!(beta(pred_one, &Normal, 0), 0.into());
+/// assert_eq!(beta(pred_one, &NOR, 0), 0.into());
 /// ```
 pub fn beta(mut term: Term, order: &Order, limit: usize) -> Term {
     term.beta(order, limit);
@@ -121,7 +120,7 @@ pub fn beta(mut term: Term, order: &Order, limit: usize) -> Term {
 /// use lambda_calculus::reduction::benchmark;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// benchmark(&factorial().app(3.into()), &[CallByName, CallByValue, HeadSpine]);
+/// benchmark(&factorial().app(3.into()), &[CBN, CBV, HSP]);
 ///
 /// // stdout:
 ///
@@ -132,39 +131,39 @@ pub fn beta(mut term: Term, order: &Order, limit: usize) -> Term {
 /// ```
 pub fn benchmark(term: &Term, exclude: &[Order]) {
     let mut count = 0;
-    if !exclude.contains(&CallByName) {
+    if !exclude.contains(&CBN) {
         term.clone().beta_cbn(0, 0, &mut count);
-        println!("{}:       {}", CallByName, count);
+        println!("{}:       {}", CBN, count);
         count = 0;
     }
-    if !exclude.contains(&Normal) {
+    if !exclude.contains(&NOR) {
         term.clone().beta_nor(0, 0, &mut count);
-        println!("{}:             {}", Normal, count);
+        println!("{}:             {}", NOR, count);
         count = 0;
     }
-    if !exclude.contains(&CallByValue) {
+    if !exclude.contains(&CBV) {
         term.clone().beta_cbv(0, 0, &mut count);
-        println!("{}:      {}", CallByValue, count);
+        println!("{}:      {}", CBV, count);
         count = 0;
     }
-    if !exclude.contains(&Applicative) {
+    if !exclude.contains(&APP) {
         term.clone().beta_app(0, 0, &mut count);
-        println!("{}:        {}", Applicative, count);
+        println!("{}:        {}", APP, count);
         count = 0;
     }
-    if !exclude.contains(&HeadSpine) {
-        term.clone().beta_hs(0, 0, &mut count);
-        println!("{}:         {}", HeadSpine, count);
+    if !exclude.contains(&HSP) {
+        term.clone().beta_hsp(0, 0, &mut count);
+        println!("{}:         {}", HSP, count);
         count = 0;
     }
-    if !exclude.contains(&HybridNormal) {
-        term.clone().beta_hnor(0, 0, &mut count);
-        println!("{}:      {}", HybridNormal, count);
+    if !exclude.contains(&HNO) {
+        term.clone().beta_hno(0, 0, &mut count);
+        println!("{}:      {}", HNO, count);
         count = 0;
     }
-    if !exclude.contains(&HybridApplicative) {
-        term.clone().beta_happ(0, 0, &mut count);
-        println!("{}: {}", HybridApplicative, count);
+    if !exclude.contains(&HAP) {
+        term.clone().beta_hap(0, 0, &mut count);
+        println!("{}: {}", HAP, count);
     }
 }
 
@@ -228,10 +227,10 @@ impl Term {
     ///
     /// ```
     /// use lambda_calculus::arithmetic::pred;
-    /// use lambda_calculus::reduction::Order::Normal;
+    /// use lambda_calculus::reduction::Order::NOR;
     ///
     /// let mut pred_one = pred().app(1.into());
-    /// pred_one.beta(&Normal, 0);
+    /// pred_one.beta(&NOR, 0);
     ///
     /// assert_eq!(pred_one, 0.into());
     /// ```
@@ -251,13 +250,13 @@ impl Term {
         let mut count = 0;
 
         match *order {
-            CallByName        => self.beta_cbn(0, limit, &mut count),
-            Normal            => self.beta_nor(0, limit, &mut count),
-            CallByValue       => self.beta_cbv(0, limit, &mut count),
-            Applicative       => self.beta_app(0, limit, &mut count),
-            HeadSpine         => self.beta_hs(0, limit, &mut count),
-            HybridNormal      => self.beta_hnor(0, limit, &mut count),
-            HybridApplicative => self.beta_happ(0, limit, &mut count)
+            CBN => self.beta_cbn(0, limit, &mut count),
+            NOR => self.beta_nor(0, limit, &mut count),
+            CBV => self.beta_cbv(0, limit, &mut count),
+            APP => self.beta_app(0, limit, &mut count),
+            HSP => self.beta_hsp(0, limit, &mut count),
+            HNO => self.beta_hno(0, limit, &mut count),
+            HAP => self.beta_hap(0, limit, &mut count)
         }
         if SHOW_REDUCTIONS {
             println!("\nresult after {} reduction{}: {}\n", count,
@@ -340,61 +339,61 @@ impl Term {
         }
     }
 
-    fn beta_happ(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_hap(&mut self, depth: u32, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
             Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap().beta_happ(depth + 1, limit, count),
+            Abs(_) => self.unabs_ref_mut().unwrap().beta_hap(depth + 1, limit, count),
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_cbv(depth, limit, count);
-                self.rhs_ref_mut().unwrap().beta_happ(depth, limit, count);
+                self.rhs_ref_mut().unwrap().beta_hap(depth, limit, count);
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count);
                     *count += 1;
-                    self.beta_happ(depth, limit, count);
+                    self.beta_hap(depth, limit, count);
                 } else {
-                    self.lhs_ref_mut().unwrap().beta_happ(depth, limit, count);
+                    self.lhs_ref_mut().unwrap().beta_hap(depth, limit, count);
                 }
             }
         }
     }
 
-    fn beta_hs(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_hsp(&mut self, depth: u32, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
             Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap().beta_hs(depth + 1, limit, count),
+            Abs(_) => self.unabs_ref_mut().unwrap().beta_hsp(depth + 1, limit, count),
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count);
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count);
                     *count += 1;
-                    self.beta_hs(depth, limit, count)
+                    self.beta_hsp(depth, limit, count)
                 }
             }
         }
     }
 
-    fn beta_hnor(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_hno(&mut self, depth: u32, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
             Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap().beta_hnor(depth + 1, limit, count),
+            Abs(_) => self.unabs_ref_mut().unwrap().beta_hno(depth + 1, limit, count),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_hs(depth, limit, count);
+                self.lhs_ref_mut().unwrap().beta_hsp(depth, limit, count);
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count);
                     *count += 1;
-                    self.beta_hnor(depth, limit, count)
+                    self.beta_hno(depth, limit, count)
                 } else {
-                    self.lhs_ref_mut().unwrap().beta_hnor(depth, limit, count);
-                    self.rhs_ref_mut().unwrap().beta_hnor(depth, limit, count);
+                    self.lhs_ref_mut().unwrap().beta_hno(depth, limit, count);
+                    self.rhs_ref_mut().unwrap().beta_hno(depth, limit, count);
                 }
             }
         }
@@ -404,13 +403,13 @@ impl Term {
 impl fmt::Display for Order {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", match *self {
-            Normal => "normal",
-            CallByName => "call-by-name",
-            HeadSpine => "head spine",
-            HybridNormal => "hybrid normal",
-            Applicative => "applicative",
-            CallByValue => "call-by-value",
-            HybridApplicative => "hybrid applicative"
+            NOR => "normal",
+            CBN => "call-by-name",
+            HSP => "head spine",
+            HNO => "hybrid normal",
+            APP => "applicative",
+            CBV => "call-by-value",
+            HAP => "hybrid applicative"
         })
     }
 }
@@ -424,49 +423,49 @@ mod test {
     #[test]
     fn normal_order() {
         let reduces_instantly = parse(&"(λλ1)((λλλ((32)1))(λλ2))").unwrap();
-        assert_eq!(beta(reduces_instantly.clone(), &Normal, 0),
-                   beta(reduces_instantly,         &Normal, 1)
+        assert_eq!(beta(reduces_instantly.clone(), &NOR, 0),
+                   beta(reduces_instantly,         &NOR, 1)
         );
 
         let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
-        assert_eq!(beta(should_reduce, &Normal, 0), Var(1));
+        assert_eq!(beta(should_reduce, &NOR, 0), Var(1));
 
         let does_reduce = app(abs(Var(2)), omm());
-        assert_eq!(beta(does_reduce, &Normal, 0), Var(1));
+        assert_eq!(beta(does_reduce, &NOR, 0), Var(1));
     }
 
     #[test]
     fn call_by_name_order() {
         let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
-        expr.beta(&CallByName, 1);
+        expr.beta(&CBN, 1);
         assert_eq!(expr, app(i(), app(i(), i())));
-        expr.beta(&CallByName, 1);
+        expr.beta(&CBN, 1);
         assert_eq!(expr, app(i(), i()));
-        expr.beta(&CallByName, 1);
+        expr.beta(&CBN, 1);
         assert_eq!(expr, i());
     }
 
     #[test]
     fn applicative_order() {
         let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
-        assert_eq!(&format!("{}", beta(expr, &Applicative, 1)), "λ1((λλ1)((λλ21)1))");
+        assert_eq!(&format!("{}", beta(expr, &APP, 1)), "λ1((λλ1)((λλ21)1))");
 
         let expands = parse(&"(λ2)((λ111)(λ111))").unwrap();
-        assert_eq!(&format!("{}", beta(expands, &Applicative, 1)), "(λ2)((λ111)(λ111)(λ111))");
+        assert_eq!(&format!("{}", beta(expands, &APP, 1)), "(λ2)((λ111)(λ111)(λ111))");
 
         let mut wont_reduce = app(abs(Var(2)), omm());
-        wont_reduce.beta(&Applicative, 3);
+        wont_reduce.beta(&APP, 3);
         assert_eq!(wont_reduce, app(abs(Var(2)), omm()));
     }
 
     #[test]
     fn call_by_value_order() {
         let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
-        expr.beta(&CallByValue, 1);
+        expr.beta(&CBV, 1);
         assert_eq!(expr, app(abs(app(i(), Var(1))), i()));
-        expr.beta(&CallByValue, 1);
+        expr.beta(&CBV, 1);
         assert_eq!(expr, app(i(), i()));
-        expr.beta(&CallByValue, 1);
+        expr.beta(&CBV, 1);
         assert_eq!(expr, i());
     }
 }

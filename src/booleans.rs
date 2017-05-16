@@ -25,10 +25,10 @@ pub fn fls() -> Term { abs(abs(Var(1))) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(and(), tru(), tru()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(and(), tru(), fls()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(and(), fls(), tru()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(and(), fls(), fls()), &Normal, 0), fls());
+/// assert_eq!(beta(app!(and(), tru(), tru()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(and(), tru(), fls()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(and(), fls(), tru()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(and(), fls(), fls()), &NOR, 0), fls());
 /// # }
 /// ```
 pub fn and() -> Term {
@@ -49,10 +49,10 @@ pub fn and() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(or(), tru(), tru()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(or(), tru(), fls()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(or(), fls(), tru()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(or(), fls(), fls()), &Normal, 0), fls());
+/// assert_eq!(beta(app!(or(), tru(), tru()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(or(), tru(), fls()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(or(), fls(), tru()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(or(), fls(), fls()), &NOR, 0), fls());
 /// # }
 /// ```
 pub fn or() -> Term {
@@ -73,8 +73,8 @@ pub fn or() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(not(), tru()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(not(), fls()), &Normal, 0), tru());
+/// assert_eq!(beta(app!(not(), tru()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(not(), fls()), &NOR, 0), tru());
 /// # }
 /// ```
 pub fn not() -> Term {
@@ -95,10 +95,10 @@ pub fn not() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(xor(), tru(), tru()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(xor(), tru(), fls()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(xor(), fls(), tru()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(xor(), fls(), fls()), &Normal, 0), fls());
+/// assert_eq!(beta(app!(xor(), tru(), tru()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(xor(), tru(), fls()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(xor(), fls(), tru()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(xor(), fls(), fls()), &NOR, 0), fls());
 /// # }
 /// ```
 pub fn xor() -> Term {
@@ -121,8 +121,8 @@ pub fn xor() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(if_else(), tru(), one(), zero()), &Normal, 0), one());
-/// assert_eq!(beta(app!(if_else(), fls(), one(), zero()), &Normal, 0), zero());
+/// assert_eq!(beta(app!(if_else(), tru(), one(), zero()), &NOR, 0),  one());
+/// assert_eq!(beta(app!(if_else(), fls(), one(), zero()), &NOR, 0), zero());
 /// # }
 /// ```
 pub fn if_else() -> Term {

@@ -35,8 +35,8 @@ pub fn zero() -> Term { abs(abs(Var(1))) }
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(is_zero(), 0.into()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(is_zero(), 1.into()), &Normal, 0), fls());
+/// assert_eq!(beta(app!(is_zero(), 0.into()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(is_zero(), 1.into()), &NOR, 0), fls());
 /// # }
 /// ```
 pub fn is_zero() -> Term {
@@ -72,7 +72,7 @@ pub fn one() -> Term {
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = succ().app(0.into());
-/// expr.beta(&Normal, 0);
+/// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, 1.into());
 /// ```
@@ -94,7 +94,7 @@ pub fn succ() -> Term {
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(plus(), 3.into(), 2.into());
-/// expr.beta(&Normal, 0);
+/// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, 5.into());
 /// # }
@@ -117,7 +117,7 @@ pub fn plus() -> Term {
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(mult(), 2.into(), 3.into());
-/// expr.beta(&Normal, 0);
+/// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, 6.into());
 /// # }
@@ -140,7 +140,7 @@ pub fn mult() -> Term {
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(pow(), 2.into(), 3.into());
-/// expr.beta(&Normal, 0);
+/// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, 8.into());
 /// # }
@@ -161,7 +161,7 @@ pub fn pow() -> Term {
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = pred().app(3.into());
-/// expr.beta(&Normal, 0);
+/// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, 2.into());
 /// ```
@@ -188,7 +188,7 @@ pub fn pred() -> Term {
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(sub(), 5.into(), 3.into());
-/// expr.beta(&Normal, 0);
+/// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, 2.into());
 /// # }
@@ -213,10 +213,10 @@ pub fn sub() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(lt(), 0.into(), 0.into()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(lt(), 1.into(), 1.into()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(lt(), 0.into(), 1.into()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(lt(), 1.into(), 0.into()), &Normal, 0), fls());
+/// assert_eq!(beta(app!(lt(), 0.into(), 0.into()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(lt(), 1.into(), 1.into()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(lt(), 0.into(), 1.into()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(lt(), 1.into(), 0.into()), &NOR, 0), fls());
 /// # }
 /// ```
 pub fn lt() -> Term {
@@ -239,10 +239,10 @@ pub fn lt() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(leq(), 0.into(), 0.into()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(leq(), 1.into(), 1.into()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(leq(), 0.into(), 1.into()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(leq(), 1.into(), 0.into()), &Normal, 0), fls());
+/// assert_eq!(beta(app!(leq(), 0.into(), 0.into()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(leq(), 1.into(), 1.into()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(leq(), 0.into(), 1.into()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(leq(), 1.into(), 0.into()), &NOR, 0), fls());
 /// # }
 /// ```
 pub fn leq() -> Term {
@@ -265,10 +265,10 @@ pub fn leq() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(eq(), 0.into(), 0.into()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(eq(), 1.into(), 1.into()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(eq(), 0.into(), 1.into()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(eq(), 1.into(), 0.into()), &Normal, 0), fls());
+/// assert_eq!(beta(app!(eq(), 0.into(), 0.into()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(eq(), 1.into(), 1.into()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(eq(), 0.into(), 1.into()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(eq(), 1.into(), 0.into()), &NOR, 0), fls());
 /// # }
 /// ```
 pub fn eq() -> Term {
@@ -295,10 +295,10 @@ pub fn eq() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(neq(), 0.into(), 0.into()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(neq(), 1.into(), 1.into()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(neq(), 0.into(), 1.into()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(neq(), 1.into(), 0.into()), &Normal, 0), tru());
+/// assert_eq!(beta(app!(neq(), 0.into(), 0.into()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(neq(), 1.into(), 1.into()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(neq(), 0.into(), 1.into()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(neq(), 1.into(), 0.into()), &NOR, 0), tru());
 /// # }
 /// ```
 pub fn neq() -> Term {
@@ -325,10 +325,10 @@ pub fn neq() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(geq(), 0.into(), 0.into()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(geq(), 1.into(), 1.into()), &Normal, 0), tru());
-/// assert_eq!(beta(app!(geq(), 0.into(), 1.into()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(geq(), 1.into(), 0.into()), &Normal, 0), tru());
+/// assert_eq!(beta(app!(geq(), 0.into(), 0.into()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(geq(), 1.into(), 1.into()), &NOR, 0), tru());
+/// assert_eq!(beta(app!(geq(), 0.into(), 1.into()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(geq(), 1.into(), 0.into()), &NOR, 0), tru());
 /// # }
 /// ```
 pub fn geq() -> Term {
@@ -351,10 +351,10 @@ pub fn geq() -> Term {
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(beta(app!(gt(), 0.into(), 0.into()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(gt(), 1.into(), 1.into()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(gt(), 0.into(), 1.into()), &Normal, 0), fls());
-/// assert_eq!(beta(app!(gt(), 1.into(), 0.into()), &Normal, 0), tru());
+/// assert_eq!(beta(app!(gt(), 0.into(), 0.into()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(gt(), 1.into(), 1.into()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(gt(), 0.into(), 1.into()), &NOR, 0), fls());
+/// assert_eq!(beta(app!(gt(), 1.into(), 0.into()), &NOR, 0), tru());
 /// # }
 /// ```
 pub fn gt() -> Term {
@@ -378,7 +378,7 @@ pub fn gt() -> Term {
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(div(), 5.into(), 2.into());
-/// expr.beta(&Normal, 0);
+/// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, Term::from((2.into(), 1.into())));
 /// # }
@@ -419,7 +419,7 @@ pub fn div() -> Term {
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(quot(), 6.into(), 2.into());
-/// expr.beta(&Normal, 0);
+/// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, 3.into());
 /// # }
@@ -461,7 +461,7 @@ pub fn quot() -> Term {
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(rem(), 3.into(), 2.into());
-/// expr.beta(&Normal, 0);
+/// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, 1.into());
 /// # }
@@ -483,7 +483,7 @@ pub fn rem() -> Term {
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = factorial().app(3.into());
-/// expr.beta(&Normal, 0);
+/// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, 6.into());
 /// ```
@@ -582,184 +582,184 @@ mod test {
 
     #[test]
     fn church_successor() {
-        assert_eq!(beta(app!(succ(), 0.into()), &Normal, 0), 1.into());
-        assert_eq!(beta(app!(succ(), 1.into()), &Normal, 0), 2.into());
-        assert_eq!(beta(app!(succ(), 2.into()), &Normal, 0), 3.into());
+        assert_eq!(beta(app!(succ(), 0.into()), &NOR, 0), 1.into());
+        assert_eq!(beta(app!(succ(), 1.into()), &NOR, 0), 2.into());
+        assert_eq!(beta(app!(succ(), 2.into()), &NOR, 0), 3.into());
 
-        assert_eq!(beta(app!(succ(), 0.into()), &HybridNormal, 0), 1.into());
-        assert_eq!(beta(app!(succ(), 1.into()), &HybridNormal, 0), 2.into());
-        assert_eq!(beta(app!(succ(), 2.into()), &HybridNormal, 0), 3.into());
+        assert_eq!(beta(app!(succ(), 0.into()), &HNO, 0), 1.into());
+        assert_eq!(beta(app!(succ(), 1.into()), &HNO, 0), 2.into());
+        assert_eq!(beta(app!(succ(), 2.into()), &HNO, 0), 3.into());
 
-        assert_eq!(beta(app!(succ(), 0.into()), &Applicative, 0), 1.into());
-        assert_eq!(beta(app!(succ(), 1.into()), &Applicative, 0), 2.into());
-        assert_eq!(beta(app!(succ(), 2.into()), &Applicative, 0), 3.into());
+        assert_eq!(beta(app!(succ(), 0.into()), &APP, 0), 1.into());
+        assert_eq!(beta(app!(succ(), 1.into()), &APP, 0), 2.into());
+        assert_eq!(beta(app!(succ(), 2.into()), &APP, 0), 3.into());
 
-        assert_eq!(beta(app!(succ(), 0.into()), &HybridApplicative, 0), 1.into());
-        assert_eq!(beta(app!(succ(), 1.into()), &HybridApplicative, 0), 2.into());
-        assert_eq!(beta(app!(succ(), 2.into()), &HybridApplicative, 0), 3.into());
+        assert_eq!(beta(app!(succ(), 0.into()), &HAP, 0), 1.into());
+        assert_eq!(beta(app!(succ(), 1.into()), &HAP, 0), 2.into());
+        assert_eq!(beta(app!(succ(), 2.into()), &HAP, 0), 3.into());
     }
 
     #[test]
     fn church_predecessor() {
-        assert_eq!(beta(app!(pred(), 0.into()), &Normal, 0), 0.into());
-        assert_eq!(beta(app!(pred(), 1.into()), &Normal, 0), 0.into());
-        assert_eq!(beta(app!(pred(), 5.into()), &Normal, 0), 4.into());
+        assert_eq!(beta(app!(pred(), 0.into()), &NOR, 0), 0.into());
+        assert_eq!(beta(app!(pred(), 1.into()), &NOR, 0), 0.into());
+        assert_eq!(beta(app!(pred(), 5.into()), &NOR, 0), 4.into());
 
-        assert_eq!(beta(app!(pred(), 0.into()), &HybridNormal, 0), 0.into());
-        assert_eq!(beta(app!(pred(), 1.into()), &HybridNormal, 0), 0.into());
-        assert_eq!(beta(app!(pred(), 5.into()), &HybridNormal, 0), 4.into());
+        assert_eq!(beta(app!(pred(), 0.into()), &HNO, 0), 0.into());
+        assert_eq!(beta(app!(pred(), 1.into()), &HNO, 0), 0.into());
+        assert_eq!(beta(app!(pred(), 5.into()), &HNO, 0), 4.into());
 
-        assert_eq!(beta(app!(pred(), 0.into()), &Applicative, 0), 0.into());
-        assert_eq!(beta(app!(pred(), 1.into()), &Applicative, 0), 0.into());
-        assert_eq!(beta(app!(pred(), 5.into()), &Applicative, 0), 4.into());
+        assert_eq!(beta(app!(pred(), 0.into()), &APP, 0), 0.into());
+        assert_eq!(beta(app!(pred(), 1.into()), &APP, 0), 0.into());
+        assert_eq!(beta(app!(pred(), 5.into()), &APP, 0), 4.into());
 
-        assert_eq!(beta(app!(pred(), 0.into()), &HybridApplicative, 0), 0.into());
-        assert_eq!(beta(app!(pred(), 1.into()), &HybridApplicative, 0), 0.into());
-        assert_eq!(beta(app!(pred(), 5.into()), &HybridApplicative, 0), 4.into());
+        assert_eq!(beta(app!(pred(), 0.into()), &HAP, 0), 0.into());
+        assert_eq!(beta(app!(pred(), 1.into()), &HAP, 0), 0.into());
+        assert_eq!(beta(app!(pred(), 5.into()), &HAP, 0), 4.into());
     }
 
     #[test]
     fn church_plus_sub_equivalents() {
         /* PLUS 1 → SUCC & C SUB 1 → PRED */
-        assert_eq!(beta(app!(    plus(), 1.into()), &Normal, 0), succ());
-        assert_eq!(beta(app!(c(), sub(), 1.into()), &Normal, 0), pred());
+        assert_eq!(beta(app!(    plus(), 1.into()), &NOR, 0), succ());
+        assert_eq!(beta(app!(c(), sub(), 1.into()), &NOR, 0), pred());
 
-        assert_eq!(beta(app!(    plus(), 1.into()), &HybridNormal, 0), succ());
-        assert_eq!(beta(app!(c(), sub(), 1.into()), &HybridNormal, 0), pred());
+        assert_eq!(beta(app!(    plus(), 1.into()), &HNO, 0), succ());
+        assert_eq!(beta(app!(c(), sub(), 1.into()), &HNO, 0), pred());
 
-        assert_eq!(beta(app!(    plus(), 1.into()), &Applicative, 0), succ());
-        assert_eq!(beta(app!(c(), sub(), 1.into()), &Applicative, 0), pred());
+        assert_eq!(beta(app!(    plus(), 1.into()), &APP, 0), succ());
+        assert_eq!(beta(app!(c(), sub(), 1.into()), &APP, 0), pred());
 
-        assert_eq!(beta(app!(    plus(), 1.into()), &HybridApplicative, 0), succ());
-        assert_eq!(beta(app!(c(), sub(), 1.into()), &HybridApplicative, 0), pred());
+        assert_eq!(beta(app!(    plus(), 1.into()), &HAP, 0), succ());
+        assert_eq!(beta(app!(c(), sub(), 1.into()), &HAP, 0), pred());
     }
 
     #[test]
     fn church_multiplication() {
-        assert_eq!(beta(app!(mult(), 3.into(), 4.into()), &Normal, 0), 12.into());
-        assert_eq!(beta(app!(mult(), 1.into(), 3.into()), &Normal, 0),  3.into());
-        assert_eq!(beta(app!(mult(), 3.into(), 1.into()), &Normal, 0),  3.into());
-        assert_eq!(beta(app!(mult(), 5.into(), 0.into()), &Normal, 0),  0.into());
-        assert_eq!(beta(app!(mult(), 0.into(), 5.into()), &Normal, 0),  0.into());
+        assert_eq!(beta(app!(mult(), 3.into(), 4.into()), &NOR, 0), 12.into());
+        assert_eq!(beta(app!(mult(), 1.into(), 3.into()), &NOR, 0),  3.into());
+        assert_eq!(beta(app!(mult(), 3.into(), 1.into()), &NOR, 0),  3.into());
+        assert_eq!(beta(app!(mult(), 5.into(), 0.into()), &NOR, 0),  0.into());
+        assert_eq!(beta(app!(mult(), 0.into(), 5.into()), &NOR, 0),  0.into());
 
-        assert_eq!(beta(app!(mult(), 3.into(), 4.into()), &HybridNormal, 0), 12.into());
-        assert_eq!(beta(app!(mult(), 1.into(), 3.into()), &HybridNormal, 0),  3.into());
-        assert_eq!(beta(app!(mult(), 3.into(), 1.into()), &HybridNormal, 0),  3.into());
-        assert_eq!(beta(app!(mult(), 5.into(), 0.into()), &HybridNormal, 0),  0.into());
-        assert_eq!(beta(app!(mult(), 0.into(), 5.into()), &HybridNormal, 0),  0.into());
+        assert_eq!(beta(app!(mult(), 3.into(), 4.into()), &HNO, 0), 12.into());
+        assert_eq!(beta(app!(mult(), 1.into(), 3.into()), &HNO, 0),  3.into());
+        assert_eq!(beta(app!(mult(), 3.into(), 1.into()), &HNO, 0),  3.into());
+        assert_eq!(beta(app!(mult(), 5.into(), 0.into()), &HNO, 0),  0.into());
+        assert_eq!(beta(app!(mult(), 0.into(), 5.into()), &HNO, 0),  0.into());
 
-        assert_eq!(beta(app!(mult(), 3.into(), 4.into()), &Applicative, 0), 12.into());
-        assert_eq!(beta(app!(mult(), 1.into(), 3.into()), &Applicative, 0),  3.into());
-        assert_eq!(beta(app!(mult(), 3.into(), 1.into()), &Applicative, 0),  3.into());
-        assert_eq!(beta(app!(mult(), 5.into(), 0.into()), &Applicative, 0),  0.into());
-        assert_eq!(beta(app!(mult(), 0.into(), 5.into()), &Applicative, 0),  0.into());
+        assert_eq!(beta(app!(mult(), 3.into(), 4.into()), &APP, 0), 12.into());
+        assert_eq!(beta(app!(mult(), 1.into(), 3.into()), &APP, 0),  3.into());
+        assert_eq!(beta(app!(mult(), 3.into(), 1.into()), &APP, 0),  3.into());
+        assert_eq!(beta(app!(mult(), 5.into(), 0.into()), &APP, 0),  0.into());
+        assert_eq!(beta(app!(mult(), 0.into(), 5.into()), &APP, 0),  0.into());
 
-        assert_eq!(beta(app!(mult(), 3.into(), 4.into()), &HybridApplicative, 0), 12.into());
-        assert_eq!(beta(app!(mult(), 1.into(), 3.into()), &HybridApplicative, 0),  3.into());
-        assert_eq!(beta(app!(mult(), 3.into(), 1.into()), &HybridApplicative, 0),  3.into());
-        assert_eq!(beta(app!(mult(), 5.into(), 0.into()), &HybridApplicative, 0),  0.into());
-        assert_eq!(beta(app!(mult(), 0.into(), 5.into()), &HybridApplicative, 0),  0.into());
+        assert_eq!(beta(app!(mult(), 3.into(), 4.into()), &HAP, 0), 12.into());
+        assert_eq!(beta(app!(mult(), 1.into(), 3.into()), &HAP, 0),  3.into());
+        assert_eq!(beta(app!(mult(), 3.into(), 1.into()), &HAP, 0),  3.into());
+        assert_eq!(beta(app!(mult(), 5.into(), 0.into()), &HAP, 0),  0.into());
+        assert_eq!(beta(app!(mult(), 0.into(), 5.into()), &HAP, 0),  0.into());
     }
 
     #[test]
     fn church_exponentiation() {
-        assert_eq!(beta(app!(pow(), 2.into(), 4.into()), &Normal, 0), 16.into());
-        assert_eq!(beta(app!(pow(), 1.into(), 3.into()), &Normal, 0),  1.into());
-        assert_eq!(beta(app!(pow(), 3.into(), 1.into()), &Normal, 0),  3.into());
-        assert_eq!(beta(app!(pow(), 5.into(), 0.into()), &Normal, 0),  1.into());
-        assert_eq!(beta(app!(pow(), 0.into(), 5.into()), &Normal, 0),  0.into());
+        assert_eq!(beta(app!(pow(), 2.into(), 4.into()), &NOR, 0), 16.into());
+        assert_eq!(beta(app!(pow(), 1.into(), 3.into()), &NOR, 0),  1.into());
+        assert_eq!(beta(app!(pow(), 3.into(), 1.into()), &NOR, 0),  3.into());
+        assert_eq!(beta(app!(pow(), 5.into(), 0.into()), &NOR, 0),  1.into());
+        assert_eq!(beta(app!(pow(), 0.into(), 5.into()), &NOR, 0),  0.into());
 
-        assert_eq!(beta(app!(pow(), 2.into(), 4.into()), &HybridNormal, 0), 16.into());
-        assert_eq!(beta(app!(pow(), 1.into(), 3.into()), &HybridNormal, 0),  1.into());
-        assert_eq!(beta(app!(pow(), 3.into(), 1.into()), &HybridNormal, 0),  3.into());
-        assert_eq!(beta(app!(pow(), 5.into(), 0.into()), &HybridNormal, 0),  1.into());
-        assert_eq!(beta(app!(pow(), 0.into(), 5.into()), &HybridNormal, 0),  0.into());
+        assert_eq!(beta(app!(pow(), 2.into(), 4.into()), &HNO, 0), 16.into());
+        assert_eq!(beta(app!(pow(), 1.into(), 3.into()), &HNO, 0),  1.into());
+        assert_eq!(beta(app!(pow(), 3.into(), 1.into()), &HNO, 0),  3.into());
+        assert_eq!(beta(app!(pow(), 5.into(), 0.into()), &HNO, 0),  1.into());
+        assert_eq!(beta(app!(pow(), 0.into(), 5.into()), &HNO, 0),  0.into());
 
-        assert_eq!(beta(app!(pow(), 2.into(), 4.into()), &Applicative, 0), 16.into());
-        assert_eq!(beta(app!(pow(), 1.into(), 3.into()), &Applicative, 0),  1.into());
-        assert_eq!(beta(app!(pow(), 3.into(), 1.into()), &Applicative, 0),  3.into());
-        assert_eq!(beta(app!(pow(), 5.into(), 0.into()), &Applicative, 0),  1.into());
-        assert_eq!(beta(app!(pow(), 0.into(), 5.into()), &Applicative, 0),  0.into());
+        assert_eq!(beta(app!(pow(), 2.into(), 4.into()), &APP, 0), 16.into());
+        assert_eq!(beta(app!(pow(), 1.into(), 3.into()), &APP, 0),  1.into());
+        assert_eq!(beta(app!(pow(), 3.into(), 1.into()), &APP, 0),  3.into());
+        assert_eq!(beta(app!(pow(), 5.into(), 0.into()), &APP, 0),  1.into());
+        assert_eq!(beta(app!(pow(), 0.into(), 5.into()), &APP, 0),  0.into());
 
-        assert_eq!(beta(app!(pow(), 2.into(), 4.into()), &HybridApplicative, 0), 16.into());
-        assert_eq!(beta(app!(pow(), 1.into(), 3.into()), &HybridApplicative, 0),  1.into());
-        assert_eq!(beta(app!(pow(), 3.into(), 1.into()), &HybridApplicative, 0),  3.into());
-        assert_eq!(beta(app!(pow(), 5.into(), 0.into()), &HybridApplicative, 0),  1.into());
-        assert_eq!(beta(app!(pow(), 0.into(), 5.into()), &HybridApplicative, 0),  0.into());
+        assert_eq!(beta(app!(pow(), 2.into(), 4.into()), &HAP, 0), 16.into());
+        assert_eq!(beta(app!(pow(), 1.into(), 3.into()), &HAP, 0),  1.into());
+        assert_eq!(beta(app!(pow(), 3.into(), 1.into()), &HAP, 0),  3.into());
+        assert_eq!(beta(app!(pow(), 5.into(), 0.into()), &HAP, 0),  1.into());
+        assert_eq!(beta(app!(pow(), 0.into(), 5.into()), &HAP, 0),  0.into());
     }
 
     #[test]
     fn church_division() {
-        assert_eq!(beta(app!(div(), 2.into(), 2.into()), &Normal, 0), (1.into(), 0.into()).into());
-        assert_eq!(beta(app!(div(), 3.into(), 2.into()), &Normal, 0), (1.into(), 1.into()).into());
-        assert_eq!(beta(app!(div(), 2.into(), 1.into()), &Normal, 0), (2.into(), 0.into()).into());
-        assert_eq!(beta(app!(div(), 0.into(), 3.into()), &Normal, 0), (0.into(), 0.into()).into());
-     // assert_eq!(beta(app!(div(), 1.into(), 0.into()), &Normal, 0), ); division by 0 hangs
+        assert_eq!(beta(app!(div(), 2.into(), 2.into()), &NOR, 0), (1.into(), 0.into()).into());
+        assert_eq!(beta(app!(div(), 3.into(), 2.into()), &NOR, 0), (1.into(), 1.into()).into());
+        assert_eq!(beta(app!(div(), 2.into(), 1.into()), &NOR, 0), (2.into(), 0.into()).into());
+        assert_eq!(beta(app!(div(), 0.into(), 3.into()), &NOR, 0), (0.into(), 0.into()).into());
+     // assert_eq!(beta(app!(div(), 1.into(), 0.into()), &NOR, 0), ); division by 0 hangs
 
-        assert_eq!(beta(app!(div(), 2.into(), 2.into()), &HybridNormal, 0), (1.into(), 0.into()).into());
-        assert_eq!(beta(app!(div(), 3.into(), 2.into()), &HybridNormal, 0), (1.into(), 1.into()).into());
-        assert_eq!(beta(app!(div(), 2.into(), 1.into()), &HybridNormal, 0), (2.into(), 0.into()).into());
-        assert_eq!(beta(app!(div(), 0.into(), 3.into()), &HybridNormal, 0), (0.into(), 0.into()).into());
+        assert_eq!(beta(app!(div(), 2.into(), 2.into()), &HNO, 0), (1.into(), 0.into()).into());
+        assert_eq!(beta(app!(div(), 3.into(), 2.into()), &HNO, 0), (1.into(), 1.into()).into());
+        assert_eq!(beta(app!(div(), 2.into(), 1.into()), &HNO, 0), (2.into(), 0.into()).into());
+        assert_eq!(beta(app!(div(), 0.into(), 3.into()), &HNO, 0), (0.into(), 0.into()).into());
 
-        assert_eq!(beta(app!(div(), 2.into(), 2.into()), &HybridApplicative, 0), (1.into(), 0.into()).into());
-        assert_eq!(beta(app!(div(), 3.into(), 2.into()), &HybridApplicative, 0), (1.into(), 1.into()).into());
-        assert_eq!(beta(app!(div(), 2.into(), 1.into()), &HybridApplicative, 0), (2.into(), 0.into()).into());
-        assert_eq!(beta(app!(div(), 0.into(), 3.into()), &HybridApplicative, 0), (0.into(), 0.into()).into());
+        assert_eq!(beta(app!(div(), 2.into(), 2.into()), &HAP, 0), (1.into(), 0.into()).into());
+        assert_eq!(beta(app!(div(), 3.into(), 2.into()), &HAP, 0), (1.into(), 1.into()).into());
+        assert_eq!(beta(app!(div(), 2.into(), 1.into()), &HAP, 0), (2.into(), 0.into()).into());
+        assert_eq!(beta(app!(div(), 0.into(), 3.into()), &HAP, 0), (0.into(), 0.into()).into());
     }
 
     #[test]
     fn church_quotient() {
-        assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &Normal, 0), 1.into());
-        assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &Normal, 0), 1.into());
-        assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &Normal, 0), 2.into());
-        assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &Normal, 0), 0.into());
-    //  assert_eq!(beta(app!(quot(), 1.into(), 0.into()), &Normal, 0), ); division by 0 hangs
+        assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &NOR, 0), 1.into());
+        assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &NOR, 0), 1.into());
+        assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &NOR, 0), 2.into());
+        assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &NOR, 0), 0.into());
+    //  assert_eq!(beta(app!(quot(), 1.into(), 0.into()), &NOR, 0), ); division by 0 hangs
 
-        assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &HybridNormal, 0), 1.into());
-        assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &HybridNormal, 0), 1.into());
-        assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &HybridNormal, 0), 2.into());
-        assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &HybridNormal, 0), 0.into());
+        assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &HNO, 0), 1.into());
+        assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &HNO, 0), 1.into());
+        assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &HNO, 0), 2.into());
+        assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &HNO, 0), 0.into());
 
-        assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &HybridApplicative, 0), 1.into());
-        assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &HybridApplicative, 0), 1.into());
-        assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &HybridApplicative, 0), 2.into());
-        assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &HybridApplicative, 0), 0.into());
+        assert_eq!(beta(app!(quot(), 2.into(), 2.into()), &HAP, 0), 1.into());
+        assert_eq!(beta(app!(quot(), 3.into(), 2.into()), &HAP, 0), 1.into());
+        assert_eq!(beta(app!(quot(), 2.into(), 1.into()), &HAP, 0), 2.into());
+        assert_eq!(beta(app!(quot(), 0.into(), 3.into()), &HAP, 0), 0.into());
     }
 
     #[test]
     fn church_remainder() {
-        assert_eq!(beta(app!(rem(), 2.into(), 2.into()), &Normal, 0), 0.into());
-        assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &Normal, 0), 1.into());
-        assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &Normal, 0), 0.into());
-        assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &Normal, 0), 0.into());
-     // assert_eq!(beta(app!(rem(), 1.into(), 0.into()), &Normal, 0), ); division by 0 hangs
+        assert_eq!(beta(app!(rem(), 2.into(), 2.into()), &NOR, 0), 0.into());
+        assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &NOR, 0), 1.into());
+        assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &NOR, 0), 0.into());
+        assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &NOR, 0), 0.into());
+     // assert_eq!(beta(app!(rem(), 1.into(), 0.into()), &NOR, 0), ); division by 0 hangs
 
-        assert_eq!(beta(app!(rem(), 2.into(), 2.into()), &HybridNormal, 0), 0.into());
-        assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &HybridNormal, 0), 1.into());
-        assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &HybridNormal, 0), 0.into());
-        assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &HybridNormal, 0), 0.into());
+        assert_eq!(beta(app!(rem(), 2.into(), 2.into()), &HNO, 0), 0.into());
+        assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &HNO, 0), 1.into());
+        assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &HNO, 0), 0.into());
+        assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &HNO, 0), 0.into());
 
-        assert_eq!(beta(app!(rem(), 2.into(), 2.into()), &HybridApplicative, 0), 0.into());
-        assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &HybridApplicative, 0), 1.into());
-        assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &HybridApplicative, 0), 0.into());
-        assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &HybridApplicative, 0), 0.into());
+        assert_eq!(beta(app!(rem(), 2.into(), 2.into()), &HAP, 0), 0.into());
+        assert_eq!(beta(app!(rem(), 3.into(), 2.into()), &HAP, 0), 1.into());
+        assert_eq!(beta(app!(rem(), 2.into(), 1.into()), &HAP, 0), 0.into());
+        assert_eq!(beta(app!(rem(), 0.into(), 3.into()), &HAP, 0), 0.into());
     }
 
     #[test]
     fn church_factorial() {
-        assert_eq!(beta(app!(factorial(), 0.into()), &Normal, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 1.into()), &Normal, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 2.into()), &Normal, 0), 2.into());
-        assert_eq!(beta(app!(factorial(), 3.into()), &Normal, 0), 6.into());
+        assert_eq!(beta(app!(factorial(), 0.into()), &NOR, 0), 1.into());
+        assert_eq!(beta(app!(factorial(), 1.into()), &NOR, 0), 1.into());
+        assert_eq!(beta(app!(factorial(), 2.into()), &NOR, 0), 2.into());
+        assert_eq!(beta(app!(factorial(), 3.into()), &NOR, 0), 6.into());
 
-        assert_eq!(beta(app!(factorial(), 0.into()), &HybridNormal, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 1.into()), &HybridNormal, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 2.into()), &HybridNormal, 0), 2.into());
-        assert_eq!(beta(app!(factorial(), 3.into()), &HybridNormal, 0), 6.into());
+        assert_eq!(beta(app!(factorial(), 0.into()), &HNO, 0), 1.into());
+        assert_eq!(beta(app!(factorial(), 1.into()), &HNO, 0), 1.into());
+        assert_eq!(beta(app!(factorial(), 2.into()), &HNO, 0), 2.into());
+        assert_eq!(beta(app!(factorial(), 3.into()), &HNO, 0), 6.into());
 
-        assert_eq!(beta(app!(factorial(), 0.into()), &HybridApplicative, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 1.into()), &HybridApplicative, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 2.into()), &HybridApplicative, 0), 2.into());
-        assert_eq!(beta(app!(factorial(), 3.into()), &HybridApplicative, 0), 6.into());
+        assert_eq!(beta(app!(factorial(), 0.into()), &HAP, 0), 1.into());
+        assert_eq!(beta(app!(factorial(), 1.into()), &HAP, 0), 1.into());
+        assert_eq!(beta(app!(factorial(), 2.into()), &HAP, 0), 2.into());
+        assert_eq!(beta(app!(factorial(), 3.into()), &HAP, 0), 6.into());
     }
 }
