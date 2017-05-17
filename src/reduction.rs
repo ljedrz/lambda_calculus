@@ -116,11 +116,11 @@ pub fn beta(mut term: Term, order: &Order, limit: usize) -> Term {
 /// # Example
 ///
 /// ```
-/// use lambda_calculus::arithmetic::factorial;
+/// use lambda_calculus::arithmetic::fac;
 /// use lambda_calculus::reduction::benchmark;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// benchmark(&factorial().app(3.into()), &[CBN, CBV, HSP]);
+/// benchmark(&fac().app(3.into()), &[CBN, CBV, HSP]);
 ///
 /// // stdout:
 ///

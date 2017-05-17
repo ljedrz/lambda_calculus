@@ -489,20 +489,20 @@ pub fn rem() -> Term {
 
 /// Applied to a Church-encoded number it yields its Church-encoded factorial.
 ///
-/// FACTORIAL := λn. n (λfab. f (MULT a b) (SUCC b)) K ONE ONE =
+/// FAC := λn. n (λfab. f (MULT a b) (SUCC b)) K ONE ONE =
 /// λ 1 (λ λ λ 3 (MULT 2 1) (SUCC 1)) K ONE ONE
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::factorial;
+/// use lambda_calculus::arithmetic::fac;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// let mut expr = factorial().app(3.into());
+/// let mut expr = fac().app(3.into());
 /// expr.beta(&NOR, 0);
 ///
 /// assert_eq!(expr, 6.into());
 /// ```
-pub fn factorial() -> Term {
+pub fn fac() -> Term {
     abs(
         app!(
             Var(1),
@@ -770,20 +770,20 @@ mod test {
     }
 
     #[test]
-    fn church_factorial() {
-        assert_eq!(beta(app!(factorial(), 0.into()), &NOR, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 1.into()), &NOR, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 2.into()), &NOR, 0), 2.into());
-        assert_eq!(beta(app!(factorial(), 3.into()), &NOR, 0), 6.into());
+    fn church_fac() {
+        assert_eq!(beta(app!(fac(), 0.into()), &NOR, 0), 1.into());
+        assert_eq!(beta(app!(fac(), 1.into()), &NOR, 0), 1.into());
+        assert_eq!(beta(app!(fac(), 2.into()), &NOR, 0), 2.into());
+        assert_eq!(beta(app!(fac(), 3.into()), &NOR, 0), 6.into());
 
-        assert_eq!(beta(app!(factorial(), 0.into()), &HNO, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 1.into()), &HNO, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 2.into()), &HNO, 0), 2.into());
-        assert_eq!(beta(app!(factorial(), 3.into()), &HNO, 0), 6.into());
+        assert_eq!(beta(app!(fac(), 0.into()), &HNO, 0), 1.into());
+        assert_eq!(beta(app!(fac(), 1.into()), &HNO, 0), 1.into());
+        assert_eq!(beta(app!(fac(), 2.into()), &HNO, 0), 2.into());
+        assert_eq!(beta(app!(fac(), 3.into()), &HNO, 0), 6.into());
 
-        assert_eq!(beta(app!(factorial(), 0.into()), &HAP, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 1.into()), &HAP, 0), 1.into());
-        assert_eq!(beta(app!(factorial(), 2.into()), &HAP, 0), 2.into());
-        assert_eq!(beta(app!(factorial(), 3.into()), &HAP, 0), 6.into());
+        assert_eq!(beta(app!(fac(), 0.into()), &HAP, 0), 1.into());
+        assert_eq!(beta(app!(fac(), 1.into()), &HAP, 0), 1.into());
+        assert_eq!(beta(app!(fac(), 2.into()), &HAP, 0), 2.into());
+        assert_eq!(beta(app!(fac(), 3.into()), &HAP, 0), 6.into());
     }
 }
