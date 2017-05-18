@@ -79,9 +79,9 @@ pub fn null() -> Term {
 /// ```
 pub fn cons() -> Term { pair() }
 
-/// Equivalent to `pair::first()`; applied to a Church list it returns its first element.
+/// Equivalent to `pair::fst()`; applied to a Church list it returns its first element.
 ///
-/// HEAD := FIRST
+/// HEAD := FST
 ///
 /// # Example
 /// ```
@@ -98,12 +98,12 @@ pub fn cons() -> Term { pair() }
 /// assert_eq!(beta(app!(head(), list_110), NOR, 0), one());
 /// # }
 /// ```
-pub fn head() -> Term { first() }
+pub fn head() -> Term { fst() }
 
-/// Equivalent to `pair::second()`; applied to a Church list it returns a new list with all its
+/// Equivalent to `pair::snd()`; applied to a Church list it returns a new list with all its
 /// elements but the first one.
 ///
-/// TAIL := SECOND
+/// TAIL := SND
 ///
 /// # Example
 /// ```
@@ -120,12 +120,12 @@ pub fn head() -> Term { first() }
 /// assert_eq!(beta(app!(tail(), list_110), NOR, 0), Term::from(vec![one(), zero()]));
 /// # }
 /// ```
-pub fn tail() -> Term { second() }
+pub fn tail() -> Term { snd() }
 
 /// Applied to a Church list it returns its Church-encoded length.
 ///
-/// LENGTH := Z (λzal.NULL l (λx.a) (λx.z (SUCC a) (SECOND l)) I) ZERO
-/// = Z (λλλ NULL 1 (λ 3) (λ 4 (SUCC 3) (SECOND 2)) I) ZERO
+/// LENGTH := Z (λzal.NULL l (λx.a) (λx.z (SUCC a) (SND l)) I) ZERO
+/// = Z (λλλ NULL 1 (λ 3) (λ 4 (SUCC 3) (SND 2)) I) ZERO
 ///
 /// # Example
 /// ```
@@ -153,7 +153,7 @@ pub fn length() -> Term {
                 abs(app!(
                     Var(4),
                     app(succ(), Var(3)),
-                    app(second(), Var(2))
+                    app(snd(), Var(2))
                 )),
                 i()
             )
@@ -164,8 +164,8 @@ pub fn length() -> Term {
 
 /// Reverses a Church list.
 ///
-/// REVERSE := Z (λzal.NULL l (λx.a) (λx.z (PAIR (FIRST l) a) (SECOND l) I)) NIL =
-/// Z (λ λ λ NULL 1 (λ 3) (λ 4 (PAIR (FIRST 2) 3) (SECOND 2)) I) NIL
+/// REVERSE := Z (λzal.NULL l (λx.a) (λx.z (PAIR (FST l) a) (SND l) I)) NIL =
+/// Z (λ λ λ NULL 1 (λ 3) (λ 4 (PAIR (FST 2) 3) (SND 2)) I) NIL
 ///
 /// # Example
 /// ```
@@ -194,8 +194,8 @@ pub fn reverse() -> Term {
                 abs(Var(3)),
                 abs(app!(
                     Var(4),
-                    app!(pair(), app(first(), Var(2)), Var(3)),
-                    app(second(), Var(2))
+                    app!(pair(), app(fst(), Var(2)), Var(3)),
+                    app(snd(), Var(2))
                 )),
                 i()
             )
@@ -237,8 +237,8 @@ pub fn list() -> Term {
 
 /// Applied to 2 Church lists it concatenates them.
 ///
-/// APPEND := Z (λzab. NULL a (λx.b) (λx.PAIR (FIRST a) (z (SECOND a) b)) I) =
-/// Z (λ λ λ NULL 2 (λ 2) (λ PAIR (FIRST 3) (4 (SECOND 3) 2)) I)
+/// APPEND := Z (λzab. NULL a (λx.b) (λx.PAIR (FST a) (z (SND a) b)) I) =
+/// Z (λ λ λ NULL 2 (λ 2) (λ PAIR (FST 3) (4 (SND 3) 2)) I)
 ///
 /// # Example
 /// ```
@@ -265,8 +265,8 @@ pub fn append() -> Term {
                 abs(Var(2)),
                 abs(app!(
                     pair(),
-                    app(first(), Var(3)),
-                    app!(Var(4), app(second(), Var(3)), Var(2))
+                    app(fst(), Var(3)),
+                    app!(Var(4), app(snd(), Var(3)), Var(2))
                 )),
                 i()
             )
@@ -277,7 +277,7 @@ pub fn append() -> Term {
 /// Applied to a Church number `i` and a Church list it returns the `i`-th
 /// (zero-indexed) element of the list.
 ///
-/// INDEX := λil. FIRST (l SECOND i) = λ λ FIRST (2 SECOND 1)
+/// INDEX := λil. FST (l SND i) = λ λ FST (2 SND 1)
 ///
 /// # Example
 /// ```
@@ -296,14 +296,14 @@ pub fn append() -> Term {
 /// ```
 pub fn index() -> Term {
     abs(abs(
-        app(first(), app!(Var(2), second(), Var(1)))
+        app(fst(), app!(Var(2), snd(), Var(1)))
     ))
 }
 
 /// Applied to a function and a Church list it maps the function over it.
 ///
-/// MAP := Z (λzfl. NULL l (λx.NIL) (λx.PAIR (f (FIRST l)) (z f (SECOND l))) I) =
-/// Z (λ λ λ NULL 1 (λ NIL) (λ PAIR (3 (FIRST 2)) (4 3 (SECOND 2))) I)
+/// MAP := Z (λzfl. NULL l (λx.NIL) (λx.PAIR (f (FST l)) (z f (SND l))) I) =
+/// Z (λ λ λ NULL 1 (λ NIL) (λ PAIR (3 (FST 2)) (4 3 (SND 2))) I)
 ///
 /// # Example
 /// ```
@@ -330,8 +330,8 @@ pub fn map() -> Term {
                 abs(nil()),
                 abs(app!(
                     pair(),
-                    app(Var(3), app(first(), Var(2))),
-                    app!(Var(4), Var(3), app(second(), Var(2)))
+                    app(Var(3), app(fst(), Var(2))),
+                    app!(Var(4), Var(3), app(snd(), Var(2)))
                 )),
                 i()
             )
@@ -343,8 +343,8 @@ pub fn map() -> Term {
 /// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
 /// list.
 ///
-/// FOLDL := Z (λzfsl. NULL l (λx.s) (λx.z f (f s (FIRST l)) (SECOND l)) I) =
-/// Z (λ λ λ λ NULL 1 (λ 3) (λ 5 4 (4 3 (FIRST 2)) (SECOND 2)) I)
+/// FOLDL := Z (λzfsl. NULL l (λx.s) (λx.z f (f s (FST l)) (SND l)) I) =
+/// Z (λ λ λ λ NULL 1 (λ 3) (λ 5 4 (4 3 (FST 2)) (SND 2)) I)
 ///
 /// # Example
 /// ```
@@ -372,8 +372,8 @@ pub fn foldl() -> Term {
                 abs(app!(
                     Var(5),
                     Var(4),
-                    app!(Var(4), Var(3), app(first(), Var(2))),
-                    app(second(), Var(2))
+                    app!(Var(4), Var(3), app(fst(), Var(2))),
+                    app(snd(), Var(2))
                 )),
                 i()
             )
@@ -385,8 +385,8 @@ pub fn foldl() -> Term {
 /// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
 /// list.
 ///
-/// FOLDR := λfsl. Z (λzt. NULL t (λx.s) (λx.f (FIRST t) (z (SECOND t))) I) l =
-/// λ λ λ Z (λ λ NULL 1 (λ 5) (λ 6 (FIRST 2) (3 (SECOND 2))) I) 1
+/// FOLDR := λfsl. Z (λzt. NULL t (λx.s) (λx.f (FST t) (z (SND t))) I) l =
+/// λ λ λ Z (λ λ NULL 1 (λ 5) (λ 6 (FST 2) (3 (SND 2))) I) 1
 ///
 /// # Example
 /// ```
@@ -415,8 +415,8 @@ pub fn foldr() -> Term {
                     abs(Var(5)),
                     abs(app!(
                         Var(6),
-                        app(first(), Var(2)),
-                        app(Var(3), app(second(), Var(2)))
+                        app(fst(), Var(2)),
+                        app(Var(3), app(snd(), Var(2)))
                     )),
                     i()
                 )
@@ -428,8 +428,8 @@ pub fn foldr() -> Term {
 
 /// Applied to a predicate and a Church list it filters the list based on the predicate.
 ///
-/// FILTER := Z (λzpl. NULL l (λx.NIL) (λx.p (FIRST l) (PAIR (FIRST l)) I (z p (SECOND l))) I) =
-/// Z (λ λ λ NULL 1 (λ NIL) (λ 3 (FIRST 2) (PAIR (FIRST 2)) I (4 3 (SECOND 2))) I)
+/// FILTER := Z (λzpl. NULL l (λx.NIL) (λx.p (FST l) (PAIR (FST l)) I (z p (SND l))) I) =
+/// Z (λ λ λ NULL 1 (λ NIL) (λ 3 (FST 2) (PAIR (FST 2)) I (4 3 (SND 2))) I)
 ///
 /// # Example
 /// ```
@@ -460,10 +460,10 @@ pub fn filter() -> Term {
                 abs(nil()),
                 abs(app!(
                     Var(3),
-                    app(first(), Var(2)),
-                    app(pair(), app(first(), Var(2))),
+                    app(fst(), Var(2)),
+                    app(pair(), app(fst(), Var(2))),
                     i(),
-                    app!(Var(4), Var(3), app(second(), Var(2)))
+                    app!(Var(4), Var(3), app(snd(), Var(2)))
                 )),
                 i()
             )

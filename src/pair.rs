@@ -30,43 +30,43 @@ pub fn pair() -> Term {
 
 /// Applied to a Church-encoded pair `(a, b)` it yields `a`.
 ///
-/// FIRST := λp.p TRUE = λ 1 TRUE
+/// FST := λp.p TRUE = λ 1 TRUE
 ///
 /// # Example
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::pair::{pair, first};
+/// use lambda_calculus::pair::{pair, fst};
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let pair_0_1 = app!(pair(), zero(), one());
 ///
-/// assert_eq!(beta(first().app(pair_0_1), NOR, 0), zero());
+/// assert_eq!(beta(fst().app(pair_0_1), NOR, 0), zero());
 /// # }
 /// ```
-pub fn first() -> Term { abs(Var(1).app(tru())) }
+pub fn fst() -> Term { abs(Var(1).app(tru())) }
 
 /// Applied to a Church-encoded pair `(a, b)` it yields `b`.
 ///
-/// SECOND := λp.p FALSE = λ 1 FALSE
+/// SND := λp.p FALSE = λ 1 FALSE
 ///
 /// # Example
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::pair::{pair, second};
+/// use lambda_calculus::pair::{pair, snd};
 /// use lambda_calculus::arithmetic::{zero, one};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let pair_0_1 = app!(pair(), zero(), one());
 ///
-/// assert_eq!(beta(second().app(pair_0_1), NOR, 0), one());
+/// assert_eq!(beta(snd().app(pair_0_1), NOR, 0), one());
 /// # }
 /// ```
-pub fn second() -> Term { abs(Var(1).app(fls())) }
+pub fn snd() -> Term { abs(Var(1).app(fls())) }
 
 impl Term {
     /// Checks whether `self` is a Church-encoded pair.
