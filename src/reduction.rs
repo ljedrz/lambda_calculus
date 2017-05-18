@@ -208,13 +208,26 @@ impl Term {
             print!("\n{}. {}\n=>", count + 1, show_precedence(self, 0, depth));
             let mut indent_len = ((*count + 1) as f32).log10().trunc() as usize + 3;
             if DISPLAY_CLASSIC { indent_len += 3 }
+            let lhs = self.lhs_ref().unwrap();
+            let rhs = self.rhs_ref().unwrap();
+            if lhs.unabs_ref().unwrap().unvar_ref().is_ok() {
+                if DISPLAY_CLASSIC { indent_len += 3 } else { indent_len += 2 }
+                if rhs.unapp_ref().is_ok() { indent_len += 1 }
+            }
+
             for _ in 0..indent_len { print!(" ") };
         };
 
         let copy = self.clone();
         *self = copy.eval().unwrap();
 
-        if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) };
+        if SHOW_REDUCTIONS {
+            if self.unvar_ref().is_ok() {
+                println!("{}", show_precedence(self, 0, depth - 1))
+            } else {
+                println!("{}", show_precedence(self, 0, depth))
+            }
+        };
     }
 
     fn is_reducible(&self, limit: usize, count: &usize) -> bool {
