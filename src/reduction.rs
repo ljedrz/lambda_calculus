@@ -102,9 +102,9 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
 ///
 /// let pred_one = pred().app(1.into());
 ///
-/// assert_eq!(beta(pred_one, &NOR, 0), 0.into());
+/// assert_eq!(beta(pred_one, NOR, 0), 0.into());
 /// ```
-pub fn beta(mut term: Term, order: &Order, limit: usize) -> Term {
+pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
     term.beta(order, limit);
     term
 }
@@ -230,11 +230,11 @@ impl Term {
     /// use lambda_calculus::reduction::Order::NOR;
     ///
     /// let mut pred_one = pred().app(1.into());
-    /// pred_one.beta(&NOR, 0);
+    /// pred_one.beta(NOR, 0);
     ///
     /// assert_eq!(pred_one, 0.into());
     /// ```
-    pub fn beta(&mut self, order: &Order, limit: usize) {
+    pub fn beta(&mut self, order: Order, limit: usize) {
         if SHOW_REDUCTIONS {
             println!("reducing {} [{} order{}]:", self, order,
                 if limit != 0 {
@@ -249,7 +249,7 @@ impl Term {
 
         let mut count = 0;
 
-        match *order {
+        match order {
             CBN => self.beta_cbn(0, limit, &mut count),
             NOR => self.beta_nor(0, limit, &mut count),
             CBV => self.beta_cbv(0, limit, &mut count),
@@ -425,49 +425,49 @@ mod test {
     #[test]
     fn normal_order() {
         let reduces_instantly = parse(&"(λλ1)((λλλ((32)1))(λλ2))").unwrap();
-        assert_eq!(beta(reduces_instantly.clone(), &NOR, 0),
-                   beta(reduces_instantly,         &NOR, 1)
+        assert_eq!(beta(reduces_instantly.clone(), NOR, 0),
+                   beta(reduces_instantly,         NOR, 1)
         );
 
         let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
-        assert_eq!(beta(should_reduce, &NOR, 0), Var(1));
+        assert_eq!(beta(should_reduce, NOR, 0), Var(1));
 
         let does_reduce = app(abs(Var(2)), omm());
-        assert_eq!(beta(does_reduce, &NOR, 0), Var(1));
+        assert_eq!(beta(does_reduce, NOR, 0), Var(1));
     }
 
     #[test]
     fn call_by_name_order() {
         let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
-        expr.beta(&CBN, 1);
+        expr.beta(CBN, 1);
         assert_eq!(expr, app(i(), app(i(), i())));
-        expr.beta(&CBN, 1);
+        expr.beta(CBN, 1);
         assert_eq!(expr, app(i(), i()));
-        expr.beta(&CBN, 1);
+        expr.beta(CBN, 1);
         assert_eq!(expr, i());
     }
 
     #[test]
     fn applicative_order() {
         let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
-        assert_eq!(&format!("{}", beta(expr, &APP, 1)), "λ1((λλ1)((λλ21)1))");
+        assert_eq!(&format!("{}", beta(expr, APP, 1)), "λ1((λλ1)((λλ21)1))");
 
         let expands = parse(&"(λ2)((λ111)(λ111))").unwrap();
-        assert_eq!(&format!("{}", beta(expands, &APP, 1)), "(λ2)((λ111)(λ111)(λ111))");
+        assert_eq!(&format!("{}", beta(expands, APP, 1)), "(λ2)((λ111)(λ111)(λ111))");
 
         let mut wont_reduce = app(abs(Var(2)), omm());
-        wont_reduce.beta(&APP, 3);
+        wont_reduce.beta(APP, 3);
         assert_eq!(wont_reduce, app(abs(Var(2)), omm()));
     }
 
     #[test]
     fn call_by_value_order() {
         let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
-        expr.beta(&CBV, 1);
+        expr.beta(CBV, 1);
         assert_eq!(expr, app(abs(app(i(), Var(1))), i()));
-        expr.beta(&CBV, 1);
+        expr.beta(CBV, 1);
         assert_eq!(expr, app(i(), i()));
-        expr.beta(&CBV, 1);
+        expr.beta(CBV, 1);
         assert_eq!(expr, i());
     }
 
@@ -477,7 +477,7 @@ mod test {
         let builder = thread::Builder::new().name("reductor".into()).stack_size(2048 * 1024 * 1024);
 
         let handler = builder.spawn(|| {
-            assert_eq!(beta(app!(fac(), 10.into()), &HAP, 0).value(), Ok(3628800));
+            assert_eq!(beta(app!(fac(), 10.into()), HAP, 0).value(), Ok(3628800));
         }).unwrap();
 
         handler.join().unwrap();
