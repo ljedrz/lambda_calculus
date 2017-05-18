@@ -222,13 +222,7 @@ impl Term {
         let copy = self.clone();
         *self = copy.eval().unwrap();
 
-        if SHOW_REDUCTIONS {
-            if self.unvar_ref().is_ok() {
-                println!("{}", show_precedence(self, 0, depth - 1))
-            } else {
-                println!("{}", show_precedence(self, 0, depth))
-            }
-        };
+        if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
     }
 
     fn is_reducible(&self, limit: usize, count: &usize) -> bool {
