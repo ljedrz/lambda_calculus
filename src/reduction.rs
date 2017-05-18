@@ -419,6 +419,8 @@ mod test {
     use super::*;
     use parser::parse;
     use combinators::{i, omm};
+    use arithmetic::fac;
+    use std::thread;
 
     #[test]
     fn normal_order() {
@@ -467,5 +469,17 @@ mod test {
         assert_eq!(expr, app(i(), i()));
         expr.beta(&CBV, 1);
         assert_eq!(expr, i());
+    }
+
+    #[test]
+    #[ignore]
+    fn huge_reduction() {
+        let builder = thread::Builder::new().name("reductor".into()).stack_size(2048 * 1024 * 1024);
+
+        let handler = builder.spawn(|| {
+            assert_eq!(beta(app!(fac(), 10.into()), &HAP, 0).value(), Ok(3628800));
+        }).unwrap();
+
+        handler.join().unwrap();
     }
 }
