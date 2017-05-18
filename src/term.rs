@@ -346,7 +346,9 @@ mod test {
 
     #[test]
     fn app_macro() {
-        assert_eq!(&format!("{}", app!(succ(), app!(Var(1), Var(2), Var(3)))), "(λλλ2(321))(123)");
+        assert_eq!(app!(succ(), app!(Var(1), Var(2), Var(3))),
+                   succ().app(Var(1).app(Var(2)).app(Var(3)))
+        );
     }
 
     #[test]

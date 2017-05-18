@@ -448,12 +448,6 @@ mod test {
 
     #[test]
     fn applicative_order() {
-        let expr = parse(&"λ1(((λλλ1)1)((λλ21)1))").unwrap();
-        assert_eq!(&format!("{}", beta(expr, APP, 1)), "λ1((λλ1)((λλ21)1))");
-
-        let expands = parse(&"(λ2)((λ111)(λ111))").unwrap();
-        assert_eq!(&format!("{}", beta(expands, APP, 1)), "(λ2)((λ111)(λ111)(λ111))");
-
         let mut wont_reduce = app(abs(Var(2)), omm());
         wont_reduce.beta(APP, 3);
         assert_eq!(wont_reduce, app(abs(Var(2)), omm()));
