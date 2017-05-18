@@ -210,14 +210,15 @@ impl Term {
             if DISPLAY_CLASSIC { indent_len += 3 }
             for _ in 0..indent_len { print!(" ") };
         };
+
         let copy = self.clone();
         *self = copy.eval().unwrap();
+
         if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) };
     }
 
     fn is_reducible(&self, limit: usize, count: &usize) -> bool {
-        self.lhs_ref().unwrap().unabs_ref().is_ok() &&
-        (limit == 0 || *count < limit )
+        self.lhs_ref().unwrap().unabs_ref().is_ok() && (limit == 0 || *count < limit )
     }
 
     /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional
@@ -238,9 +239,7 @@ impl Term {
         if SHOW_REDUCTIONS {
             println!("reducing {} [{} order{}]:", self, order,
                 if limit != 0 {
-                    format!(", limit of {} reduction{}", limit,
-                        if limit == 1 { "" } else { "s" }
-                    )
+                    format!(", limit of {} reduction{}", limit, if limit == 1 { "" } else { "s" })
                 } else {
                     "".into()
                 }

@@ -30,6 +30,7 @@ The library is in a good shape and should soon begin to stabilize.
 
 ## TODO
 
+- a parser for classic lambda notation
 - additional tests
 - β-reduction parallelization (at least to some extent)?
 - further optimizations
