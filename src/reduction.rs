@@ -21,19 +21,20 @@ pub const SHOW_REDUCTIONS: bool = false;
 /// - The `HSP` order reduces to head normal form
 #[derive(Debug, PartialEq)]
 pub enum Order {
-    /// Normal - leftmost outermost
+    /// Normal - leftmost outermost; the most popular lambda calculus reduction strategy
     NOR,
-    /// Call-by-name - leftmost outermost, but not inside abstractions
+    /// Call-by-name - leftmost outermost, but no reductions inside abstractions
     CBN,
     /// Head spine - leftmost outermost, but abstractions reduced only in head position
     HSP,
-    /// Hybrid normal - a hybrid between `HSP` and `NOR`
+    /// Hybrid normal - a hybrid between `HSP` (head spine) and `NOR` (normal) strategies
     HNO,
-    /// Applicative - leftmost innermost
+    /// Applicative - leftmost innermost; the most eager strategy; unfit for recursion combinators
     APP,
-    /// Call-by-value - leftmost innermost, but not inside abstractions
+    /// Call-by-value - leftmost innermost, but no reductions inside abstractions
     CBV,
-    /// Hybrid applicative - a hybrid between `CBV` and `APP`
+    /// Hybrid applicative - a hybrid between `CBV` (call-by-value) and `APP` (applicative)
+    /// strategies
     HAP
 }
 

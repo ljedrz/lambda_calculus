@@ -24,6 +24,46 @@ memory-friendly disassembly and referencing their internals.
 
 ## [Documentation](https://docs.rs/lambda_calculus)
 
+## Example usage
+
+code:
+```
+// DISPLAY_CLASSIC [@term.rs]      = true;
+// SHOW_REDUCTIONS [@reduction.rs] = true;
+
+use reduction::beta;
+use reduction::Order::*;
+
+let mut expr = app!(pred(), 1.into());
+
+expr.beta(NOR, 0);
+```
+stdout:
+```
+reducing (λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)) (λa. λb. a b) [normal order]:
+
+1. (λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)) (λa. λb. a b)
+=>      λa. λb. (λc. λd. c d) (λc. λd. d (c a)) (λc. b) (λc. c)
+
+2. (λc. λd. c d) (λc. λd. d (c a))
+=>      λc. (λd. λe. e (d a)) c
+
+3. (λc. (λd. λe. e (d a)) c) (λc. b)
+=>      (λc. λd. d (c a)) (λc. b)
+
+4. (λc. λd. d (c a)) (λc. b)
+=>      λc. c ((λd. b) a)
+
+5. (λc. c ((λd. b) a)) (λc. c)
+=>      (λc. c) ((λc. b) a)
+
+6. (λc. c) ((λc. b) a)
+=>          (λc. b) a
+
+7. (λc. b) a
+=>         a
+```
+
 ## Status
 
 The library is in a good shape and should soon begin to stabilize.

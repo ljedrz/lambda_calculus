@@ -9,8 +9,8 @@ use std::char::from_u32;
 /// Set to `true` for λ or `false` for \ when displaying lambda terms. The default is `true`.
 pub const DISPLAY_PRETTY: bool = true;
 
-/// Set to `true` for classic lambda mode or `false` for the De Bruijn index display mode when
-/// displaying lambda terms. The default is `false`.
+/// Set to `true` for classic lambda calculus notation mode or `false` for the De Bruijn index
+/// mode when displaying lambda terms. The default is `false`.
 pub const DISPLAY_CLASSIC: bool = false;
 
 /// A lambda term that is either a variable with a De Bruijn index, an abstraction over a term or
@@ -255,7 +255,7 @@ impl Term {
 /// ```
 pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 
-/// Produces an `App`lication of its `Term` arguments without any reduction, consuming them in the
+/// Produces an `App`lication of 2 given `Term`s without any reduction, consuming them in the
 /// process.
 ///
 /// # Example
