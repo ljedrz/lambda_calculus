@@ -374,7 +374,7 @@ impl Term {
             Var(_) => (),
             Abs(_) => self.unabs_ref_mut().unwrap().beta_hsp(depth + 1, limit, count),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count);
+                self.lhs_ref_mut().unwrap().beta_hsp(depth, limit, count);
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count);
