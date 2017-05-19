@@ -31,12 +31,17 @@ code:
 // DISPLAY_CLASSIC [@term.rs]      = true;
 // SHOW_REDUCTIONS [@reduction.rs] = true;
 
+#[macro_use]
+extern crate lambda_calculus;
+
 use lambda_calculus::reduction::Order::*;
 use lambda_calculus::arithmetic::pred;
 
-let mut expr = app!(pred(), 1.into());
+fn main() {
+    let mut expr = app!(pred(), 1.into());
 
-expr.beta(NOR, 0);
+    expr.beta(NOR, 0);
+}
 ```
 stdout:
 ```
