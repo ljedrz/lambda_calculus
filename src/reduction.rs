@@ -92,7 +92,7 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
 }
 
 /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit on
-/// number of reductions (`0` means no limit).
+/// number of reductions (`0` means no limit); it returns the `Term` after reductions.
 ///
 /// # Example
 ///
@@ -131,41 +131,13 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
 /// // hybrid applicative: 39
 /// ```
 pub fn benchmark(term: &Term, exclude: &[Order]) {
-    let mut count = 0;
-    if !exclude.contains(&CBN) {
-        term.clone().beta_cbn(0, 0, &mut count);
-        println!("{}:       {}", CBN, count);
-        count = 0;
-    }
-    if !exclude.contains(&NOR) {
-        term.clone().beta_nor(0, 0, &mut count);
-        println!("{}:             {}", NOR, count);
-        count = 0;
-    }
-    if !exclude.contains(&CBV) {
-        term.clone().beta_cbv(0, 0, &mut count);
-        println!("{}:      {}", CBV, count);
-        count = 0;
-    }
-    if !exclude.contains(&APP) {
-        term.clone().beta_app(0, 0, &mut count);
-        println!("{}:        {}", APP, count);
-        count = 0;
-    }
-    if !exclude.contains(&HSP) {
-        term.clone().beta_hsp(0, 0, &mut count);
-        println!("{}:         {}", HSP, count);
-        count = 0;
-    }
-    if !exclude.contains(&HNO) {
-        term.clone().beta_hno(0, 0, &mut count);
-        println!("{}:      {}", HNO, count);
-        count = 0;
-    }
-    if !exclude.contains(&HAP) {
-        term.clone().beta_hap(0, 0, &mut count);
-        println!("{}: {}", HAP, count);
-    }
+    if !exclude.contains(&CBN) { println!("{}:       {}", CBN, term.clone().beta(CBN, 0)) }
+    if !exclude.contains(&NOR) { println!("{}:             {}", NOR, term.clone().beta(NOR, 0)) }
+    if !exclude.contains(&CBV) { println!("{}:      {}", CBV, term.clone().beta(CBV, 0)) }
+    if !exclude.contains(&APP) { println!("{}:        {}", APP, term.clone().beta(APP, 0)) }
+    if !exclude.contains(&HSP) { println!("{}:         {}", HSP, term.clone().beta(HSP, 0)) }
+    if !exclude.contains(&HNO) { println!("{}:      {}", HNO, term.clone().beta(HNO, 0)) }
+    if !exclude.contains(&HAP) { println!("{}: {}", HAP, term.clone().beta(HAP, 0)) }
 }
 
 impl Term {
@@ -206,7 +178,7 @@ impl Term {
 
     fn eval_with_info(&mut self, depth: u32, count: &usize) {
         if SHOW_REDUCTIONS {
-            print!("{}. {}\n=>", count + 1, show_precedence(self, 0, depth));
+            print!("\n{}. {}\n=>", count + 1, show_precedence(self, 0, depth));
             let mut indent_len = ((*count + 1) as f32).log10().trunc() as usize + 3;
             if DISPLAY_CLASSIC { indent_len += 3 }
             let lhs = self.lhs_ref().unwrap();
@@ -222,7 +194,7 @@ impl Term {
         let copy = self.clone();
         *self = copy.eval().unwrap();
 
-        if SHOW_REDUCTIONS { println!("{}\n", show_precedence(self, 0, depth)) }
+        if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
     }
 
     fn is_reducible(&self, limit: usize, count: &usize) -> bool {
@@ -230,7 +202,8 @@ impl Term {
     }
 
     /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional
-    /// limit on number of reductions (`0` means no limit).
+    /// limit on number of reductions (`0` means no limit); it returns the number of performed
+    /// reductions.
     ///
     /// # Example
     ///
@@ -243,9 +216,9 @@ impl Term {
     ///
     /// assert_eq!(pred_one, 0.into());
     /// ```
-    pub fn beta(&mut self, order: Order, limit: usize) {
+    pub fn beta(&mut self, order: Order, limit: usize) -> usize {
         if SHOW_REDUCTIONS {
-            println!("β-reducing {} [{} order{}]:\n", self, order,
+            println!("\nβ-reducing {} [{} order{}]:", self, order,
                 if limit != 0 {
                     format!(", limit of {} reduction{}", limit, if limit == 1 { "" } else { "s" })
                 } else {
@@ -265,10 +238,13 @@ impl Term {
             HNO => self.beta_hno(0, limit, &mut count),
             HAP => self.beta_hap(0, limit, &mut count)
         }
+
         if SHOW_REDUCTIONS {
-            println!("result after {} reduction{}: {}\n", count,
-                if limit == 1 { "" } else { "s" }, self);
+            println!("\nresult after {} reduction{}: {}\n", count,
+                if count == 1 { "" } else { "s" }, self);
         };
+
+        count
     }
 
     fn beta_cbn(&mut self, depth: u32, limit: usize, count: &mut usize) {
