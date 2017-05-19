@@ -33,6 +33,7 @@ code:
 
 use reduction::beta;
 use reduction::Order::*;
+use arithmetic::pred;
 
 let mut expr = app!(pred(), 1.into());
 

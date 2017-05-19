@@ -34,7 +34,7 @@ pub enum Order {
     /// Call-by-value - leftmost innermost, but no reductions inside abstractions
     CBV,
     /// Hybrid applicative - a hybrid between `CBV` (call-by-value) and `APP` (applicative)
-    /// strategies
+    /// strategies; usually the fastest-reducing normalizing strategy
     HAP
 }
 
