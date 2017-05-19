@@ -211,7 +211,7 @@ impl Term {
             if DISPLAY_CLASSIC { indent_len += 3 }
             let lhs = self.lhs_ref().unwrap();
             let rhs = self.rhs_ref().unwrap();
-            if lhs.unabs_ref().unwrap().unvar_ref().is_ok() {
+            if lhs.unabs_ref().unwrap().unvar_ref().is_ok() && !rhs.unvar_ref().is_ok() {
                 if DISPLAY_CLASSIC { indent_len += 3 } else { indent_len += 2 }
                 if rhs.unapp_ref().is_ok() { indent_len += 1 }
             }
