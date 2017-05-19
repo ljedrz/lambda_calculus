@@ -1,4 +1,6 @@
 # lambda_calculus
+![license](https://img.shields.io/badge/license-CC0-blue.svg)
+![current version](https://img.shields.io/crates/v/lambda_calculus.svg)
 
 **lambda_calculus** is a simple implementation of the untyped lambda calculus in Rust.
 

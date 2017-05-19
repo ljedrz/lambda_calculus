@@ -206,7 +206,7 @@ impl Term {
 
     fn eval_with_info(&mut self, depth: u32, count: &usize) {
         if SHOW_REDUCTIONS {
-            print!("\n{}. {}\n=>", count + 1, show_precedence(self, 0, depth));
+            print!("{}. {}\n=>", count + 1, show_precedence(self, 0, depth));
             let mut indent_len = ((*count + 1) as f32).log10().trunc() as usize + 3;
             if DISPLAY_CLASSIC { indent_len += 3 }
             let lhs = self.lhs_ref().unwrap();
@@ -222,7 +222,7 @@ impl Term {
         let copy = self.clone();
         *self = copy.eval().unwrap();
 
-        if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
+        if SHOW_REDUCTIONS { println!("{}\n", show_precedence(self, 0, depth)) }
     }
 
     fn is_reducible(&self, limit: usize, count: &usize) -> bool {
@@ -245,7 +245,7 @@ impl Term {
     /// ```
     pub fn beta(&mut self, order: Order, limit: usize) {
         if SHOW_REDUCTIONS {
-            println!("reducing {} [{} order{}]:", self, order,
+            println!("β-reducing {} [{} order{}]:\n", self, order,
                 if limit != 0 {
                     format!(", limit of {} reduction{}", limit, if limit == 1 { "" } else { "s" })
                 } else {
@@ -266,7 +266,7 @@ impl Term {
             HAP => self.beta_hap(0, limit, &mut count)
         }
         if SHOW_REDUCTIONS {
-            println!("\nresult after {} reduction{}: {}\n", count,
+            println!("result after {} reduction{}: {}\n", count,
                 if limit == 1 { "" } else { "s" }, self);
         };
     }
