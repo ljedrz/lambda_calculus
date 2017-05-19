@@ -62,6 +62,8 @@ reducing (λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)) (λa. λb. a b
 
 7. (λc. b) a
 =>         b
+
+result after 7 reductions: λa. λb. b
 ```
 
 ## Status
