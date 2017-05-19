@@ -31,9 +31,8 @@ code:
 // DISPLAY_CLASSIC [@term.rs]      = true;
 // SHOW_REDUCTIONS [@reduction.rs] = true;
 
-use reduction::beta;
-use reduction::Order::*;
-use arithmetic::pred;
+use lambda_calculus::reduction::Order::*;
+use lambda_calculus::arithmetic::pred;
 
 let mut expr = app!(pred(), 1.into());
 
