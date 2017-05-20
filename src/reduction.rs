@@ -78,8 +78,8 @@ fn _apply(lhs: &mut Term, rhs: &Term, depth: usize) {
 
 fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) {
     match *term {
-        Var(i) => if i > own_depth {
-            *term = Var(i + added_depth)
+        Var(ref mut i) => if *i > own_depth {
+            *i += added_depth
         },
         Abs(_) => {
             update_free_variables(term.unabs_ref_mut().unwrap(), added_depth, own_depth + 1)

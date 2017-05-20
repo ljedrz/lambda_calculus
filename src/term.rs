@@ -73,7 +73,22 @@ impl Term {
     /// ```
     pub fn unvar_ref(&self) -> Result<&usize, Error> {
         match *self {
-            Var(ref n) => Ok(&n),
+            Var(ref n) => Ok(n),
+            _ => Err(NotAVar)
+        }
+    }
+
+    /// Returns a mutable reference to a variable's index.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::term::Term::*;
+    ///
+    /// assert_eq!(Var(1).unvar_ref_mut(), Ok(&mut 1));
+    /// ```
+    pub fn unvar_ref_mut(&mut self) -> Result<&mut usize, Error> {
+        match *self {
+            Var(ref mut n) => Ok(n),
             _ => Err(NotAVar)
         }
     }
