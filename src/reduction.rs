@@ -177,17 +177,16 @@ impl Term {
     }
 
     fn eval_with_info(&mut self, depth: u32, count: &usize) {
-        if SHOW_REDUCTIONS {
-            print!("\n{}. {}\n=>", count + 1, show_precedence(self, 0, depth));
-            let mut indent_len = ((*count + 1) as f32).log10().trunc() as usize + 3;
-            if DISPLAY_CLASSIC { indent_len += 3 }
-            for _ in 0..indent_len { print!(" ") };
-        };
+        if SHOW_REDUCTIONS { print!("\n{}. {}\n", count + 1, show_precedence(self, 0, depth)) }
 
         let copy = self.clone();
         *self = copy.eval().unwrap();
 
-        if SHOW_REDUCTIONS { println!("{}", show_precedence(self, 0, depth)) }
+        if SHOW_REDUCTIONS {
+            let mut indent_len = ((*count + 1) as f32).log10().trunc() as usize + 3;
+            if DISPLAY_CLASSIC { indent_len += 3 }
+            println!("=>{}{}", " ".repeat(indent_len), show_precedence(self, 0, depth))
+        }
     }
 
     fn is_reducible(&self, limit: usize, count: &usize) -> bool {
