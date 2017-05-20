@@ -19,7 +19,7 @@ pub const SHOW_REDUCTIONS: bool = false;
 /// - The `CBN` order reduces to weak head normal form
 /// - The `CBV` order reduces to weak normal form
 /// - The `HSP` order reduces to head normal form
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Order {
     /// Normal - leftmost outermost; the most popular lambda calculus reduction strategy
     NOR,
@@ -131,13 +131,15 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
 /// // hybrid applicative: 39
 /// ```
 pub fn benchmark(term: &Term, exclude: &[Order]) {
-    if !exclude.contains(&CBN) { println!("{}:       {}", CBN, term.clone().beta(CBN, 0)) }
-    if !exclude.contains(&NOR) { println!("{}:             {}", NOR, term.clone().beta(NOR, 0)) }
-    if !exclude.contains(&CBV) { println!("{}:      {}", CBV, term.clone().beta(CBV, 0)) }
-    if !exclude.contains(&APP) { println!("{}:        {}", APP, term.clone().beta(APP, 0)) }
-    if !exclude.contains(&HSP) { println!("{}:         {}", HSP, term.clone().beta(HSP, 0)) }
-    if !exclude.contains(&HNO) { println!("{}:      {}", HNO, term.clone().beta(HNO, 0)) }
-    if !exclude.contains(&HAP) { println!("{}: {}", HAP, term.clone().beta(HAP, 0)) }
+    println!("benchmarking β-reduction strategies for {}:\n", term);
+    for order in [CBN, NOR, CBV, APP, HSP, HNO, HAP].into_iter() {
+        if !exclude.contains(order) {
+            println!("{}:{}{}{}", order,
+                " ".repeat(if !SHOW_REDUCTIONS { 19 - format!("{}", order).len() } else { 1 }),
+                term.clone().beta(*order, 0), if SHOW_REDUCTIONS { "\n" } else { "" }
+            )
+        }
+    }
 }
 
 impl Term {
