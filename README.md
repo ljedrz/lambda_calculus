@@ -47,7 +47,7 @@ fn main() {
 ```
 stdout:
 ```
-reducing (λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)) (λa. λb. a b) [normal order]:
+β-reducing (λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)) (λa. λb. a b) [normal order]:
 
 1. (λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)) (λa. λb. a b)
 =>      λa. λb. (λc. λd. c d) (λc. λd. d (c a)) (λc. b) (λc. c)
@@ -65,10 +65,10 @@ reducing (λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)) (λa. λb. a b
 =>      (λc. c) ((λc. b) a)
 
 6. (λc. c) ((λc. b) a)
-=>          (λc. b) a
+=>      (λc. b) a
 
 7. (λc. b) a
-=>         b
+=>      b
 
 result after 7 reductions: λa. λb. b
 ```

@@ -181,13 +181,6 @@ impl Term {
             print!("\n{}. {}\n=>", count + 1, show_precedence(self, 0, depth));
             let mut indent_len = ((*count + 1) as f32).log10().trunc() as usize + 3;
             if DISPLAY_CLASSIC { indent_len += 3 }
-            let lhs = self.lhs_ref().unwrap();
-            let rhs = self.rhs_ref().unwrap();
-            if lhs.unabs_ref().unwrap().unvar_ref().is_ok() && !rhs.unvar_ref().is_ok() {
-                if DISPLAY_CLASSIC { indent_len += 3 } else { indent_len += 2 }
-                if rhs.unapp_ref().is_ok() { indent_len += 1 }
-            }
-
             for _ in 0..indent_len { print!(" ") };
         };
 
@@ -218,7 +211,7 @@ impl Term {
     /// ```
     pub fn beta(&mut self, order: Order, limit: usize) -> usize {
         if SHOW_REDUCTIONS {
-            println!("\nβ-reducing {} [{} order{}]:", self, order,
+            println!("β-reducing {} [{} order{}]:", self, order,
                 if limit != 0 {
                     format!(", limit of {} reduction{}", limit, if limit == 1 { "" } else { "s" })
                 } else {
