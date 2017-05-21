@@ -120,7 +120,7 @@ impl Term {
     /// ```
     pub fn unabs_ref(&self) -> Result<&Term, Error> {
         match *self {
-            Abs(ref x) => Ok(&*x),
+            Abs(ref x) => Ok(x),
             _ => Err(NotAnAbs)
         }
     }
@@ -136,7 +136,7 @@ impl Term {
     /// ```
     pub fn unabs_ref_mut(&mut self) -> Result<&mut Term, Error> {
         match *self {
-            Abs(ref mut x) => Ok(&mut *x),
+            Abs(ref mut x) => Ok(x),
             _ => Err(NotAnAbs)
         }
     }
@@ -166,7 +166,7 @@ impl Term {
     /// ```
     pub fn unapp_ref(&self) -> Result<(&Term, &Term), Error> {
         match *self {
-            App(ref lhs, ref rhs) => Ok((&*lhs, &*rhs)),
+            App(ref lhs, ref rhs) => Ok((lhs, rhs)),
             _ => Err(NotAnApp)
         }
     }
@@ -181,7 +181,7 @@ impl Term {
     /// ```
     pub fn unapp_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
         match *self {
-            App(ref mut lhs, ref mut rhs) => Ok((&mut *lhs, &mut *rhs)),
+            App(ref mut lhs, ref mut rhs) => Ok((lhs, rhs)),
             _ => Err(NotAnApp)
         }
     }

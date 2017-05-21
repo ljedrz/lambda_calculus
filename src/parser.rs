@@ -119,7 +119,7 @@ pub fn parse(input: &str) -> Result<Term, Error> {
 fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Vec<Term>)
     -> Result<Term, Error>
 {
-    let mut iter = exprs.iter();
+    let mut iter = exprs.into_iter();
 
     while let Some(ref expr) = iter.next() {
         match **expr {
