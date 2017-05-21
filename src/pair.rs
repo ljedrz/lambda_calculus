@@ -102,13 +102,9 @@ impl Term {
     /// # }
     /// ```
     pub fn unpair(self) -> Result<(Term, Term), Error> {
-        if let Abs(abstracted) = self {
-            if let Ok((wrapped_a, b)) = abstracted.unapp() {
-                Ok((try!(wrapped_a.rhs()), b))
-            } else {
-                Err(NotAPair)
-            }
-        } else if let Ok((wrapped_a, b)) = self.unapp() {
+        let candidate = if let Abs(abstracted) = self { *abstracted } else { self };
+
+        if let Ok((wrapped_a, b)) = candidate.unapp() {
             Ok((try!(wrapped_a.rhs()), b))
         } else {
             Err(NotAPair)
@@ -130,13 +126,9 @@ impl Term {
     /// # }
     /// ```
     pub fn unpair_ref(&self) -> Result<(&Term, &Term), Error> {
-        if let Abs(ref abstracted) = *self {
-            if let Ok((wrapped_a, b)) = abstracted.unapp_ref() {
-                Ok((try!(wrapped_a.rhs_ref()), b))
-            } else {
-                Err(NotAPair)
-            }
-        } else if let Ok((wrapped_a, b)) = self.unapp_ref() {
+        let candidate = if let Abs(ref abstracted) = *self { abstracted } else { self };
+
+        if let Ok((wrapped_a, b)) = candidate.unapp_ref() {
             Ok((try!(wrapped_a.rhs_ref()), b))
         } else {
             Err(NotAPair)
@@ -158,13 +150,9 @@ impl Term {
     /// # }
     /// ```
     pub fn unpair_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
-        if let Abs(ref mut abstracted) = *self {
-            if let Ok((wrapped_a, b)) = abstracted.unapp_ref_mut() {
-                Ok((try!(wrapped_a.rhs_ref_mut()), b))
-            } else {
-                Err(NotAPair)
-            }
-        } else if let Ok((wrapped_a, b)) = self.unapp_ref_mut() {
+        let mut candidate = if let Abs(ref mut abstracted) = *self { abstracted } else { self };
+
+        if let Ok((wrapped_a, b)) = candidate.unapp_ref_mut() {
             Ok((try!(wrapped_a.rhs_ref_mut()), b))
         } else {
             Err(NotAPair)
