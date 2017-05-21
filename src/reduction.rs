@@ -66,12 +66,12 @@ fn _apply(lhs: &mut Term, rhs: &Term, depth: usize) {
         } else if i > depth {
             *lhs = Var(i - 1) // decrement a free variable's index
         },
-        Abs(_) => {
-            _apply(lhs.unabs_ref_mut().unwrap(), rhs, depth + 1)
+        Abs(ref mut abstracted) => {
+            _apply(abstracted, rhs, depth + 1)
         },
-        App(_, _) => {
-            _apply(lhs.lhs_ref_mut().unwrap(), rhs, depth);
-            _apply(lhs.rhs_ref_mut().unwrap(), rhs, depth)
+        App(ref mut lhs_lhs, ref mut lhs_rhs) => {
+            _apply(lhs_lhs, rhs, depth);
+            _apply(lhs_rhs, rhs, depth)
         }
     }
 }
@@ -81,12 +81,12 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
         Var(ref mut i) => if *i > own_depth {
             *i += added_depth
         },
-        Abs(_) => {
-            update_free_variables(term.unabs_ref_mut().unwrap(), added_depth, own_depth + 1)
+        Abs(ref mut abstracted) => {
+            update_free_variables(abstracted, added_depth, own_depth + 1)
         },
-        App(_, _) => {
-            update_free_variables(term.lhs_ref_mut().unwrap(), added_depth, own_depth);
-            update_free_variables(term.rhs_ref_mut().unwrap(), added_depth, own_depth)
+        App(ref mut lhs_lhs, ref mut lhs_rhs) => {
+            update_free_variables(lhs_lhs, added_depth, own_depth);
+            update_free_variables(lhs_rhs, added_depth, own_depth)
         }
     }
 }

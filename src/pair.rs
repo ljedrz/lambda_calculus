@@ -102,8 +102,8 @@ impl Term {
     /// # }
     /// ```
     pub fn unpair(self) -> Result<(Term, Term), Error> {
-        if let Abs(_) = self {
-            if let Ok((wrapped_a, b)) = self.unabs().and_then(|t| t.unapp()) {
+        if let Abs(abstracted) = self {
+            if let Ok((wrapped_a, b)) = abstracted.unapp() {
                 Ok((try!(wrapped_a.rhs()), b))
             } else {
                 Err(NotAPair)
@@ -132,8 +132,8 @@ impl Term {
     /// # }
     /// ```
     pub fn unpair_ref(&self) -> Result<(&Term, &Term), Error> {
-        if let Abs(_) = *self {
-            if let Ok((wrapped_a, b)) = self.unabs_ref().and_then(|t| t.unapp_ref()) {
+        if let Abs(ref abstracted) = *self {
+            if let Ok((wrapped_a, b)) = abstracted.unapp_ref() {
                 Ok((try!(wrapped_a.rhs_ref()), b))
             } else {
                 Err(NotAPair)
@@ -162,8 +162,8 @@ impl Term {
     /// # }
     /// ```
     pub fn unpair_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
-        if let Abs(_) = *self {
-            if let Ok((wrapped_a, b)) = self.unabs_ref_mut().and_then(|t| t.unapp_ref_mut()) {
+        if let Abs(ref mut abstracted) = *self {
+            if let Ok((wrapped_a, b)) = abstracted.unapp_ref_mut() {
                 Ok((try!(wrapped_a.rhs_ref_mut()), b))
             } else {
                 Err(NotAPair)
