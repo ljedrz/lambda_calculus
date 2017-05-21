@@ -84,7 +84,7 @@ impl Term {
     /// # }
     /// ```
     pub fn is_pair(&self) -> bool {
-        self.fst_ref().is_ok() && self.snd_ref().is_ok()
+        self.unpair_ref().is_ok()
     }
 
     /// Splits a Church-encoded pair into a pair of terms, consuming `self`.
@@ -108,12 +108,10 @@ impl Term {
             } else {
                 Err(NotAPair)
             }
+        } else if let Ok((wrapped_a, b)) = self.unapp() {
+            Ok((try!(wrapped_a.rhs()), b))
         } else {
-            if let Ok((wrapped_a, b)) = self.unapp() {
-                Ok((try!(wrapped_a.rhs()), b))
-            } else {
-                Err(NotAPair)
-            }
+            Err(NotAPair)
         }
     }
 
@@ -138,12 +136,10 @@ impl Term {
             } else {
                 Err(NotAPair)
             }
+        } else if let Ok((wrapped_a, b)) = self.unapp_ref() {
+            Ok((try!(wrapped_a.rhs_ref()), b))
         } else {
-            if let Ok((wrapped_a, b)) = self.unapp_ref() {
-                Ok((try!(wrapped_a.rhs_ref()), b))
-            } else {
-                Err(NotAPair)
-            }
+            Err(NotAPair)
         }
     }
 
@@ -168,12 +164,10 @@ impl Term {
             } else {
                 Err(NotAPair)
             }
+        } else if let Ok((wrapped_a, b)) = self.unapp_ref_mut() {
+            Ok((try!(wrapped_a.rhs_ref_mut()), b))
         } else {
-            if let Ok((wrapped_a, b)) = self.unapp_ref_mut() {
-                Ok((try!(wrapped_a.rhs_ref_mut()), b))
-            } else {
-                Err(NotAPair)
-            }
+            Err(NotAPair)
         }
     }
 

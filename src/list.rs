@@ -700,7 +700,7 @@ impl Term {
     /// assert_eq!(list_110.push(zero()), Term::from(vec![zero(), one(), one(), zero()]));
     /// ```
     pub fn push(self, term: Term) -> Term {
-        abs(Var(1).app(term).app(self))
+        abs(app!(Var(1), term, self))
     }
 
     /// Removes the first element from a Church list and returns it.
