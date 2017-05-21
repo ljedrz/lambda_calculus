@@ -182,7 +182,7 @@ impl Term {
         if SHOW_REDUCTIONS { print!("\n{}. {}\n", count + 1, show_precedence(self, 0, depth)) }
 
         let copy = self.clone();
-        *self = copy.eval().unwrap();
+        *self = copy.eval().unwrap(); // safe; only called in reduction sites
 
         if SHOW_REDUCTIONS {
             let mut indent_len = ((*count + 1) as f32).log10().trunc() as usize + 3;
@@ -192,7 +192,7 @@ impl Term {
     }
 
     fn is_reducible(&self, limit: usize, count: &usize) -> bool {
-        self.lhs_ref().unwrap().unabs_ref().is_ok() && (limit == 0 || *count < limit )
+        self.lhs_ref().and_then(|t| t.unabs_ref()).is_ok() && (limit == 0 || *count < limit )
     }
 
     /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional
@@ -262,8 +262,7 @@ impl Term {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap().beta_nor(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_nor(depth + 1, limit, count),
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count);
 
@@ -275,7 +274,8 @@ impl Term {
                     self.lhs_ref_mut().unwrap().beta_nor(depth, limit, count);
                     self.rhs_ref_mut().unwrap().beta_nor(depth, limit, count);
                 }
-            }
+            },
+            _ => ()
         }
     }
 
@@ -301,8 +301,7 @@ impl Term {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap().beta_app(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_app(depth + 1, limit, count),
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_app(depth, limit, count);
                 self.rhs_ref_mut().unwrap().beta_app(depth, limit, count);
@@ -312,7 +311,8 @@ impl Term {
                     *count += 1;
                     self.beta_app(depth, limit, count);
                 }
-            }
+            },
+            _ => ()
         }
     }
 
@@ -320,8 +320,7 @@ impl Term {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap().beta_hap(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_hap(depth + 1, limit, count),
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_cbv(depth, limit, count);
                 self.rhs_ref_mut().unwrap().beta_hap(depth, limit, count);
@@ -333,7 +332,8 @@ impl Term {
                 } else {
                     self.lhs_ref_mut().unwrap().beta_hap(depth, limit, count);
                 }
-            }
+            },
+            _ => ()
         }
     }
 
@@ -341,8 +341,7 @@ impl Term {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap().beta_hsp(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_hsp(depth + 1, limit, count),
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_hsp(depth, limit, count);
 
@@ -351,7 +350,8 @@ impl Term {
                     *count += 1;
                     self.beta_hsp(depth, limit, count)
                 }
-            }
+            },
+            _ => ()
         }
     }
 
@@ -359,8 +359,7 @@ impl Term {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Var(_) => (),
-            Abs(_) => self.unabs_ref_mut().unwrap().beta_hno(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_hno(depth + 1, limit, count),
             App(_, _) => {
                 self.lhs_ref_mut().unwrap().beta_hsp(depth, limit, count);
 
@@ -372,7 +371,8 @@ impl Term {
                     self.lhs_ref_mut().unwrap().beta_hno(depth, limit, count);
                     self.rhs_ref_mut().unwrap().beta_hno(depth, limit, count);
                 }
-            }
+            },
+            _ => ()
         }
     }
 }
