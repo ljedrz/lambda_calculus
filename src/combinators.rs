@@ -262,10 +262,17 @@ pub fn z() -> Term {
 ///
 /// # Example
 /// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
 /// use lambda_calculus::combinators::t;
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::arithmetic::{zero, is_zero};
+/// use lambda_calculus::reduction::beta;
+/// use lambda_calculus::reduction::Order::*;
 ///
-/// assert_eq!(t().apply(&zero()).and_then(|t| t.apply(&one())), Ok(one().app(zero())));
+/// let expr = app!(t(), zero(), is_zero());
+///
+/// assert_eq!(beta(expr, NOR, 0), true.into());
+/// # }
 /// ```
 pub fn t() -> Term {
     abs(abs(
