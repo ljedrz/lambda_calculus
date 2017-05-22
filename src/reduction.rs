@@ -186,7 +186,7 @@ impl Term {
 
         if SHOW_REDUCTIONS {
             let mut indent_len = ((*count + 1) as f32).log10().trunc() as usize + 3;
-            if DISPLAY_CLASSIC { indent_len += 3 }
+            if DISPLAY_CLASSIC { indent_len += 2 }
             println!("=>{}{}", " ".repeat(indent_len), show_precedence(self, 0, depth))
         }
     }

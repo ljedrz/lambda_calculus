@@ -47,30 +47,30 @@ fn main() {
 ```
 stdout:
 ```
-β-reducing (λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)) (λa. λb. a b) [normal order]:
+β-reducing (λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)) (λa.λb.a b) [normal order]:
 
-1. (λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)) (λa. λb. a b)
-=>      λa. λb. (λc. λd. c d) (λc. λd. d (c a)) (λc. b) (λc. c)
+1. (λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)) (λa.λb.a b)
+=>     λa.λb.(λc.λd.c d) (λc.λd.d (c a)) (λc.b) (λc.c)
 
-2. (λc. λd. c d) (λc. λd. d (c a))
-=>      λc. (λd. λe. e (d a)) c
+2. (λc.λd.c d) (λc.λd.d (c a))
+=>     λc.(λd.λe.e (d a)) c
 
-3. (λc. (λd. λe. e (d a)) c) (λc. b)
-=>      (λc. λd. d (c a)) (λc. b)
+3. (λc.(λd.λe.e (d a)) c) (λc.b)
+=>     (λc.λd.d (c a)) (λc.b)
 
-4. (λc. λd. d (c a)) (λc. b)
-=>      λc. c ((λd. b) a)
+4. (λc.λd.d (c a)) (λc.b)
+=>     λc.c ((λd.b) a)
 
-5. (λc. c ((λd. b) a)) (λc. c)
-=>      (λc. c) ((λc. b) a)
+5. (λc.c ((λd.b) a)) (λc.c)
+=>     (λc.c) ((λc.b) a)
 
-6. (λc. c) ((λc. b) a)
-=>      (λc. b) a
+6. (λc.c) ((λc.b) a)
+=>     (λc.b) a
 
-7. (λc. b) a
-=>      b
+7. (λc.b) a
+=>     b
 
-result after 7 reductions: λa. λb. b
+result after 7 reductions: λa.λb.b
 ```
 
 ## Status

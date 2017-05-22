@@ -303,7 +303,7 @@ pub fn show_precedence(term: &Term, context_precedence: usize, depth: u32) -> St
         },
         Abs(ref t) => {
             let ret = if DISPLAY_CLASSIC {
-                format!("{}{}. {}", if DISPLAY_PRETTY { 'λ' } else { '\\' },
+                format!("{}{}.{}", if DISPLAY_PRETTY { 'λ' } else { '\\' },
                     from_u32(depth + 97).unwrap(),
                     show_precedence(t, 0, depth + 1)
                 )
