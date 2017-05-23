@@ -4,6 +4,7 @@
 use term::*;
 use term::Term::*;
 use self::Token::*;
+use self::CToken::*;
 use self::Error::*;
 use self::Expression::*;
 
@@ -21,6 +22,14 @@ enum Token {
     Lparen,
     Rparen,
     Number(usize)
+}
+
+#[derive(Debug, PartialEq)]
+enum CToken {
+    CLambda(String),
+    CLparen,
+    CRparen,
+    CName(String)
 }
 
 fn tokenize(input: &str) -> Result<Vec<Token>, Error> {
@@ -47,6 +56,97 @@ fn tokenize(input: &str) -> Result<Vec<Token>, Error> {
     }
 
     Ok(tokens)
+}
+
+fn tokenize_classic(input: &str) -> Result<Vec<CToken>, Error> {
+    let mut chars = input.chars();
+    let mut tokens = Vec::new();
+    let mut position = 0;
+
+    while let Some(c) = chars.next() {
+        match c {
+            '\\' | 'λ' => {
+                let mut name = String::new();
+                while let Some(c) = chars.next() {
+                    if c == '.' { break } else { name.push(c) }
+                }
+                tokens.push(CLambda(name))
+            },
+            '(' => { tokens.push(CLparen) },
+            ')' => { tokens.push(CRparen) },
+             x  => {
+                if x.is_alphabetic() {
+                    let mut name = x.to_string();
+                    while let Some(c) = chars.next() {
+                        if c.is_whitespace() {
+                            break
+                        } else if c == '(' {
+                            tokens.push(CLparen);
+                            break
+                        } else if c == ')' {
+                            tokens.push(CRparen);
+                            break
+                        } else {
+                            name.push(c)
+                        }
+                        position += 1;
+                    }
+                    tokens.push(CName(name))
+                } else if x.is_whitespace() {
+                    ()
+                } else {
+                    return Err(InvalidCharacter((position, x)))
+                }
+            }
+        }
+        position += if c == 'λ' { 2 } else { 1 };
+    }
+
+    Ok(tokens)
+}
+
+fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
+    let mut stack = Vec::new();
+    let mut pos = 0;
+
+    _convert_classic_tokens(tokens, &mut stack, &mut pos)
+}
+
+fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut usize) -> Vec<Token>
+{
+    let mut output = Vec::new();
+    let mut inner_stack_count = 0;
+
+    while *pos < tokens.len() {
+        match tokens[*pos] {
+            CLambda(ref name) => {
+                output.push(Lambda);
+                stack.push(name.clone());
+                inner_stack_count += 1;
+            },
+            CLparen => {
+                output.push(Lparen);
+                *pos += 1;
+                output.append(&mut _convert_classic_tokens(&tokens[*pos..], stack, pos));
+            },
+            CRparen => {
+                output.push(Rparen);
+                for _ in 0..inner_stack_count { stack.pop(); }
+                return output
+            },
+            CName(ref name) => {
+                let number = if stack.contains(name) {
+                    stack.iter().rev().position(|t| t == name).unwrap() + 1
+                } else {
+                    stack.len() + 1
+                };
+                output.push(Number(number));
+            }
+        }
+        *pos += 1;
+    }
+
+    output
 }
 
 #[derive(Debug, PartialEq)]
@@ -173,6 +273,21 @@ mod test {
             Number(1), Rparen, Lparen, Lambda, Lambda, Lambda, Lambda, Lambda, Number(1),
             Number(4), Lparen, Number(3), Lparen, Number(5), Number(5), Rparen, Number(2),
             Rparen, Rparen, Rparen, Number(1)]);
+    }
+
+    #[test]
+    fn tokenization_success_classic() {
+        let pred_1_cla = "λaa.λbe.λcee.aa (λde.λe.e (de be)) (λd.cee) (λd.d)";
+        let pred_1_dbr = "λλλ3(λλ1(24))(λ2)(λ1)";
+        let tokens_cla = tokenize_classic(&pred_1_cla);
+        let tokens_dbr = tokenize(&pred_1_dbr);
+
+        println!("{:?}\n", tokens_cla);
+
+        assert!(tokens_cla.is_ok());
+        assert!(tokens_dbr.is_ok());
+
+        assert_eq!(convert_classic_tokens(&tokens_cla.unwrap()), tokens_dbr.unwrap());
     }
 
     #[test]
