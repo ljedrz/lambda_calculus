@@ -356,7 +356,7 @@ macro_rules! app {
 
 #[cfg(test)]
 mod test {
-    use super::{Var, DISPLAY_CLASSIC};
+    use super::{Var, DISPLAY_CLASSIC, DISPLAY_PRETTY};
     use arithmetic::{zero, succ, pred};
 
     #[test]
@@ -368,14 +368,22 @@ mod test {
 
     #[test]
     fn display_modes() {
-        if DISPLAY_CLASSIC {
-            assert_eq!(&format!("{}", zero()), "λa. λb. b");
-            assert_eq!(&format!("{}", succ()), "λa. λb. λc. b (a b c)");
-            assert_eq!(&format!("{}", pred()), "λa. λb. λc. a (λd. λe. e (d b)) (λd. c) (λd. d)");
-        } else {
+        if DISPLAY_CLASSIC && DISPLAY_PRETTY {
+            assert_eq!(&format!("{}", zero()), "λa.λb.b");
+            assert_eq!(&format!("{}", succ()), "λa.λb.λc.b (a b c)");
+            assert_eq!(&format!("{}", pred()), "λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)");
+        } else if DISPLAY_CLASSIC && !DISPLAY_PRETTY {
+            assert_eq!(&format!("{}", zero()), r#"\a.\b.b"#);
+            assert_eq!(&format!("{}", succ()), r#"\a.\b.\c.b (a b c)"#);
+            assert_eq!(&format!("{}", pred()), r#"\a.\b.\c.a (\d.\e.e (d b)) (\d.c) (\d.d)"#);
+        } else if !DISPLAY_CLASSIC && DISPLAY_PRETTY {
             assert_eq!(&format!("{}", zero()), "λλ1");
             assert_eq!(&format!("{}", succ()), "λλλ2(321)");
             assert_eq!(&format!("{}", pred()), "λλλ3(λλ1(24))(λ2)(λ1)");
+        } else /* if !DISPLAY_CLASSIC && !DISPLAY_PRETTY */ {
+            assert_eq!(&format!("{}", zero()), r#"\\1"#);
+            assert_eq!(&format!("{}", succ()), r#"\\\2(321)"#);
+            assert_eq!(&format!("{}", pred()), r#"\\\3(\\1(24))(\2)(\1)"#);
         }
     }
 }
