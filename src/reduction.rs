@@ -84,9 +84,9 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
         Abs(ref mut abstracted) => {
             update_free_variables(abstracted, added_depth, own_depth + 1)
         },
-        App(ref mut lhs_lhs, ref mut lhs_rhs) => {
-            update_free_variables(lhs_lhs, added_depth, own_depth);
-            update_free_variables(lhs_rhs, added_depth, own_depth)
+        App(ref mut lhs, ref mut rhs) => {
+            update_free_variables(lhs, added_depth, own_depth);
+            update_free_variables(rhs, added_depth, own_depth)
         }
     }
 }
