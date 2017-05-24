@@ -13,6 +13,15 @@ pub const DISPLAY_PRETTY: bool = true;
 /// mode when displaying lambda terms. The default is `false`.
 pub const DISPLAY_CLASSIC: bool = false;
 
+/// The notation used for parsing and displaying purposes.
+#[derive(Debug, PartialEq)]
+pub enum Notation {
+    /// classic lambda calculus notation
+    Classic,
+    /// De Bruijn indices
+    DeBruijn
+}
+
 /// A lambda term that is either a variable with a De Bruijn index, an abstraction over a term or
 /// an applicaction of one term to another.
 #[derive(Debug, PartialEq, Clone)]

@@ -5,10 +5,10 @@
 //! * [Iota](https://en.wikipedia.org/wiki/Iota_and_Jot)
 //! * [BCKW](https://en.wikipedia.org/wiki/B,_C,_K,_W_system)
 // //! * the recursion combinator U - needs more research
-//! * the looping combinator ω
+//! * the self-application combinator ω
 //! * the divergent combinator Ω
 //! * [the fixed-point combinators Y and Z](https://en.wikipedia.org/wiki/Fixed-point_combinator)
-//! * the thrush (reverse application) combinator T
+//! * the reverse application combinator T
 
 use term::*;
 use term::Term::*;
@@ -166,7 +166,7 @@ pub fn w() -> Term {
 /// U := λxy.y (x x y) = λ λ 1 (2 2 1)
 pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
 */
-/// ω - the looping combinator.
+/// ω - the self-application combinator.
 ///
 /// ω := λx.x x = λ 1 1
 ///
@@ -256,7 +256,7 @@ pub fn z() -> Term {
     ))
 }
 
-/// T - the thrush combinator
+/// T - the reverse application combinator.
 ///
 /// T := λxf. f x = λ λ 1 2
 ///
@@ -271,7 +271,7 @@ pub fn z() -> Term {
 ///
 /// let expr = app!(t(), zero(), is_zero());
 ///
-/// assert_eq!(beta(expr, NOR, 0), true.into());
+/// assert_eq!(beta(expr, NOR, 0), true.into()); // is_zero() was applied to zero()
 /// # }
 /// ```
 pub fn t() -> Term {

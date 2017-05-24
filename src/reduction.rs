@@ -45,10 +45,11 @@ pub enum Order {
 /// ```
 /// use lambda_calculus::reduction::apply;
 /// use lambda_calculus::parser::parse;
+/// use lambda_calculus::term::Notation::DeBruijn;
 ///
-/// let lhs    = parse(&"λλ42(λ13)").unwrap();
-/// let rhs    = parse(&"λ51").unwrap();
-/// let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
+/// let lhs    = parse(&"λλ42(λ13)", DeBruijn).unwrap();
+/// let rhs    = parse(&"λ51", DeBruijn).unwrap();
+/// let result = parse(&"λ3(λ61)(λ1(λ71))", DeBruijn).unwrap();
 ///
 /// assert_eq!(apply(lhs, &rhs), Ok(result));
 /// ```
@@ -149,10 +150,11 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::parser::parse;
+    /// use lambda_calculus::term::Notation::DeBruijn;
     ///
-    /// let lhs    = parse(&"λλ42(λ13)").unwrap();
-    /// let rhs    = parse(&"λ51").unwrap();
-    /// let result = parse(&"λ3(λ61)(λ1(λ71))").unwrap();
+    /// let lhs    = parse(&"λλ42(λ13)", DeBruijn).unwrap();
+    /// let rhs    = parse(&"λ51", DeBruijn).unwrap();
+    /// let result = parse(&"λ3(λ61)(λ1(λ71))", DeBruijn).unwrap();
     ///
     /// assert_eq!(lhs.apply(&rhs), Ok(result));
     /// ```
@@ -394,6 +396,7 @@ impl fmt::Display for Order {
 #[cfg(test)]
 mod test {
     use super::*;
+    use term::Notation::*;
     use parser::parse;
     use combinators::{i, omm};
     use arithmetic::fac;
@@ -401,12 +404,12 @@ mod test {
 
     #[test]
     fn normal_order() {
-        let reduces_instantly = parse(&"(λλ1)((λλλ((32)1))(λλ2))").unwrap();
+        let reduces_instantly = parse(&"(λλ1)((λλλ((32)1))(λλ2))", DeBruijn).unwrap();
         assert_eq!(beta(reduces_instantly.clone(), NOR, 0),
                    beta(reduces_instantly,         NOR, 1)
         );
 
-        let should_reduce = parse(&"(λ2)((λ111)(λ111))").unwrap();
+        let should_reduce = parse(&"(λ2)((λ111)(λ111))", DeBruijn).unwrap();
         assert_eq!(beta(should_reduce, NOR, 0), Var(1));
 
         let does_reduce = app(abs(Var(2)), omm());
