@@ -310,7 +310,7 @@ pub fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -
             if depth >= i as u32 {
                 format!("{}", from_u32(depth + 97 - i as u32).unwrap())
             } else {
-                format!("{}", from_u32(depth + 96 + i as u32).unwrap())
+                format!("{}", from_u32(96 + i as u32).unwrap())
             }
         },
         Abs(ref t) => {
@@ -388,6 +388,8 @@ macro_rules! app {
 #[cfg(test)]
 mod test {
     use super::{Var, PRETTY_LAMBDA};
+    use super::Notation::DeBruijn;
+    use parser::parse;
     use arithmetic::{zero, succ, pred};
 
     #[test]
@@ -395,6 +397,14 @@ mod test {
         assert_eq!(app!(succ(), app!(Var(1), Var(2), Var(3))),
                    succ().app(Var(1).app(Var(2)).app(Var(3)))
         );
+    }
+
+    #[test]
+    fn open_term_display() {
+        assert_eq!(&format!("{}", parse("λ2",  DeBruijn).unwrap()), "λa.b");
+        assert_eq!(&format!("{}", parse("λ3",  DeBruijn).unwrap()), "λa.c");
+        assert_eq!(&format!("{}", parse("λλ3", DeBruijn).unwrap()), "λa.λb.c");
+        assert_eq!(&format!("{}", parse("λλ4", DeBruijn).unwrap()), "λa.λb.d");
     }
 
     #[test]
