@@ -7,24 +7,29 @@ use std::borrow::Cow;
 use std::char::from_u32;
 
 /// Set to `true` for λ or `false` for \ when displaying lambda terms. The default is `true`.
-pub const DISPLAY_PRETTY: bool = true;
-
-/// Set to `true` for classic lambda calculus notation mode or `false` for the De Bruijn index
-/// mode when displaying lambda terms. The default is `false`.
-pub const DISPLAY_CLASSIC: bool = false;
+pub const PRETTY_LAMBDA: bool = true;
 
 /// The notation used for parsing and displaying purposes.
+///
+/// # Example
+/// ```
+/// use lambda_calculus::term::Notation::*;
+/// use lambda_calculus::arithmetic::succ;
+///
+/// assert_eq!(&format!(  "{}", succ()), "λa.λb.λc.b (a b c)");
+/// assert_eq!(&format!("{:?}", succ()), "λλλ2(321)");
+/// ```
 #[derive(Debug, PartialEq)]
 pub enum Notation {
-    /// classic lambda calculus notation
+    /// classic lambda calculus notation; the default `fmt::Display` mode
     Classic,
-    /// De Bruijn indices
+    /// De Bruijn indices; the `fmt::Debug` display mode
     DeBruijn
 }
 
 /// A lambda term that is either a variable with a De Bruijn index, an abstraction over a term or
 /// an applicaction of one term to another.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(PartialEq, Clone)]
 pub enum Term {
     /// a variable
     Var(usize),
@@ -293,40 +298,55 @@ pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", show_precedence(self, 0, 0))
+        write!(f, "{}", show_precedence_cla(self, 0, 0))
     }
 }
 
 // TODO: make it safer (unwraps)
 #[doc(hidden)]
-pub fn show_precedence(term: &Term, context_precedence: usize, depth: u32) -> String {
+pub fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
-        Var(i) => if DISPLAY_CLASSIC {
+        Var(i) => {
             if depth >= i as u32 {
                 format!("{}", from_u32(depth + 97 - i as u32).unwrap())
             } else {
                 format!("{}", from_u32(depth + 96 + i as u32).unwrap())
             }
-        } else {
-            format!("{:X}", i)
         },
         Abs(ref t) => {
-            let ret = if DISPLAY_CLASSIC {
-                format!("{}{}.{}", if DISPLAY_PRETTY { 'λ' } else { '\\' },
+            let ret = {
+                format!("{}{}.{}", if PRETTY_LAMBDA { 'λ' } else { '\\' },
                     from_u32(depth + 97).unwrap(),
-                    show_precedence(t, 0, depth + 1)
+                    show_precedence_cla(t, 0, depth + 1)
                 )
-            } else {
-                format!("{}{}", if DISPLAY_PRETTY { 'λ' } else { '\\' }, t)
             };
             parenthesize_if(&ret, context_precedence > 1).into()
         },
         App(ref t1, ref t2) => {
-            let ret = if DISPLAY_CLASSIC {
-                format!("{} {}", show_precedence(t1, 2, depth), show_precedence(t2, 3, depth))
-            } else {
-                format!("{}{}", show_precedence(t1, 2, depth), show_precedence(t2, 3, depth))
-            };
+            let ret = format!("{} {}", show_precedence_cla(t1, 2, depth), show_precedence_cla(t2, 3, depth));
+            parenthesize_if(&ret, context_precedence == 3).into()
+        }
+    }
+}
+
+impl fmt::Debug for Term {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", show_precedence_dbr(self, 0, 0))
+    }
+}
+
+#[doc(hidden)]
+pub fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -> String {
+    match *term {
+        Var(i) => {
+            format!("{:X}", i)
+        },
+        Abs(ref t) => {
+            let ret = format!("{}{:?}", if PRETTY_LAMBDA { 'λ' } else { '\\' }, t);
+            parenthesize_if(&ret, context_precedence > 1).into()
+        },
+        App(ref t1, ref t2) => {
+            let ret = format!("{}{}", show_precedence_dbr(t1, 2, depth), show_precedence_dbr(t2, 3, depth));
             parenthesize_if(&ret, context_precedence == 3).into()
         }
     }
@@ -365,7 +385,7 @@ macro_rules! app {
 
 #[cfg(test)]
 mod test {
-    use super::{Var, DISPLAY_CLASSIC, DISPLAY_PRETTY};
+    use super::{Var, PRETTY_LAMBDA};
     use arithmetic::{zero, succ, pred};
 
     #[test]
@@ -377,22 +397,22 @@ mod test {
 
     #[test]
     fn display_modes() {
-        if DISPLAY_CLASSIC && DISPLAY_PRETTY {
+        if PRETTY_LAMBDA {
             assert_eq!(&format!("{}", zero()), "λa.λb.b");
             assert_eq!(&format!("{}", succ()), "λa.λb.λc.b (a b c)");
             assert_eq!(&format!("{}", pred()), "λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)");
-        } else if DISPLAY_CLASSIC && !DISPLAY_PRETTY {
+
+            assert_eq!(&format!("{:?}", zero()), "λλ1");
+            assert_eq!(&format!("{:?}", succ()), "λλλ2(321)");
+            assert_eq!(&format!("{:?}", pred()), "λλλ3(λλ1(24))(λ2)(λ1)");
+        } else {
             assert_eq!(&format!("{}", zero()), r#"\a.\b.b"#);
             assert_eq!(&format!("{}", succ()), r#"\a.\b.\c.b (a b c)"#);
             assert_eq!(&format!("{}", pred()), r#"\a.\b.\c.a (\d.\e.e (d b)) (\d.c) (\d.d)"#);
-        } else if !DISPLAY_CLASSIC && DISPLAY_PRETTY {
-            assert_eq!(&format!("{}", zero()), "λλ1");
-            assert_eq!(&format!("{}", succ()), "λλλ2(321)");
-            assert_eq!(&format!("{}", pred()), "λλλ3(λλ1(24))(λ2)(λ1)");
-        } else /* if !DISPLAY_CLASSIC && !DISPLAY_PRETTY */ {
-            assert_eq!(&format!("{}", zero()), r#"\\1"#);
-            assert_eq!(&format!("{}", succ()), r#"\\\2(321)"#);
-            assert_eq!(&format!("{}", pred()), r#"\\\3(\\1(24))(\2)(\1)"#);
+
+            assert_eq!(&format!("{:?}", zero()), r#"\\1"#);
+            assert_eq!(&format!("{:?}", succ()), r#"\\\2(321)"#);
+            assert_eq!(&format!("{:?}", pred()), r#"\\\3(\\1(24))(\2)(\1)"#);
         }
     }
 }

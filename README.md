@@ -5,9 +5,9 @@
 **lambda_calculus** is a simple implementation of the untyped lambda calculus in Rust.
 
 The data and operators follow the Church encoding. The terms are implemented using De Bruijn
-indices, but can also be parsed and displayed using the classic lambda notation. Library functions
-utilizing the fixed-point combinator use its call-by-value variant and are built for compatibility
-with as many β-reduction strategies as possible.
+indices, but are displayed using the classic lambda notation and can be parsed both ways. Library
+functions utilizing the fixed-point combinator use its call-by-value variant and are built for
+compatibility with as many β-reduction strategies as possible.
 
 The library contains:
 
@@ -15,7 +15,7 @@ The library contains:
 - Church booleans
 - Church pairs
 - Church lists
-- standard lambda terms and combinators
+- standard terms (combinators)
 - a parser for lambda expressions
 - 7 β-reduction strategies with optional display of reduction steps
 
@@ -30,7 +30,6 @@ memory-friendly disassembly and referencing their internals.
 
 code:
 ```
-// DISPLAY_CLASSIC [@term.rs]      = true;
 // SHOW_REDUCTIONS [@reduction.rs] = true;
 
 #[macro_use]
@@ -79,5 +78,6 @@ The library is in a good shape and should soon begin to stabilize.
 
 ## TODO
 
+- shortened display mode (λa.λb.λc. => λabc.)
 - additional tests
 - further optimizations; β-reduction parallelization (at least to some extent)?
