@@ -102,10 +102,7 @@ fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
 }
 
 fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
-    let mut stack = Vec::new();
-    let mut pos = 0;
-
-    _convert_classic_tokens(tokens, &mut stack, &mut pos)
+    _convert_classic_tokens(tokens, &mut Vec::new(), &mut 0)
 }
 
 fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut usize) -> Vec<Token>
@@ -152,6 +149,10 @@ enum Expression {
     Variable(usize)
 }
 
+fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
+    _get_ast(tokens, &mut 0)
+}
+
 fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
     let mut expr = Vec::new();
 
@@ -178,12 +179,6 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
     }
 
     Ok(Sequence(expr))
-}
-
-fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
-    let mut pos = 0;
-
-    _get_ast(tokens, &mut pos)
 }
 
 /// Parses the input `&str` as a lambda `Term`.
