@@ -279,10 +279,12 @@ mod test {
 
     #[test]
     fn tokenization_success_classic() {
-        let pred_1_cla = "λaa.λbe.λcee.aa (λde.λe.e (de be)) (λd.cee) (λd.d)";
-        let pred_1_dbr = "λλλ3(λλ1(24))(λ2)(λ1)";
-        let tokens_cla = tokenize_classic(&pred_1_cla);
-        let tokens_dbr = tokenize(&pred_1_dbr);
+        let blc_dbr = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
+            (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
+        let blc_cla = format!("{}", parse(&blc_dbr).unwrap());
+
+        let tokens_cla = tokenize_classic(&blc_cla);
+        let tokens_dbr = tokenize(&blc_dbr);
 
         assert!(tokens_cla.is_ok());
         assert!(tokens_dbr.is_ok());
