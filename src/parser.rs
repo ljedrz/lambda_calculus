@@ -59,7 +59,7 @@ fn tokenize(input: &str) -> Result<Vec<Token>, Error> {
 }
 
 fn tokenize_classic(input: &str) -> Result<Vec<CToken>, Error> {
-    let mut chars = input.chars();
+    let mut chars = input.chars().peekable();
     let mut tokens = Vec::new();
     let mut position = 0;
 
@@ -68,32 +68,34 @@ fn tokenize_classic(input: &str) -> Result<Vec<CToken>, Error> {
             '\\' | 'λ' => {
                 let mut name = String::new();
                 while let Some(c) = chars.next() {
-                    if c == '.' { break } else { name.push(c) }
+                    if c == '.' {
+                        break
+                    } else if "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(c) {
+                        name.push(c)
+                    } else {
+                        return Err(InvalidCharacter((position, c)))
+                    }
+                    position += 1;
                 }
                 tokens.push(CLambda(name))
             },
             '(' => { tokens.push(CLparen) },
             ')' => { tokens.push(CRparen) },
              x  => {
-                if x.is_alphabetic() {
+                if x.is_whitespace() {
+                    ()
+                } else if "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(x) {
                     let mut name = x.to_string();
-                    while let Some(c) = chars.next() {
-                        if c.is_whitespace() {
-                            break
-                        } else if c == '(' {
-                            tokens.push(CLparen);
-                            break
-                        } else if c == ')' {
-                            tokens.push(CRparen);
+                    while let Some(&c) = chars.peek() {
+                        if c.is_whitespace() || c == '(' || c == ')' {
                             break
                         } else {
-                            name.push(c)
+                            name.push(c);
+                            chars.next();
                         }
                         position += 1;
                     }
                     tokens.push(CName(name))
-                } else if x.is_whitespace() {
-                    ()
                 } else {
                     return Err(InvalidCharacter((position, x)))
                 }
@@ -127,7 +129,7 @@ fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut
             CLparen => {
                 output.push(Lparen);
                 *pos += 1;
-                output.append(&mut _convert_classic_tokens(&tokens[*pos..], stack, pos));
+                output.append(&mut _convert_classic_tokens(tokens, stack, pos));
             },
             CRparen => {
                 output.push(Rparen);
@@ -281,8 +283,6 @@ mod test {
         let pred_1_dbr = "λλλ3(λλ1(24))(λ2)(λ1)";
         let tokens_cla = tokenize_classic(&pred_1_cla);
         let tokens_dbr = tokenize(&pred_1_dbr);
-
-        println!("{:?}\n", tokens_cla);
 
         assert!(tokens_cla.is_ok());
         assert!(tokens_dbr.is_ok());
