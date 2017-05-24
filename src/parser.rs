@@ -32,10 +32,10 @@ enum CToken {
     CName(String)
 }
 
-fn tokenize(input: &str) -> Result<Vec<Token>, Error> {
+fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
     let mut chars = input.chars();
     let mut tokens = Vec::new();
-    let mut position = 0;
+    let mut position = 1;
 
     while let Some(c) = chars.next() {
         match c {
@@ -52,22 +52,23 @@ fn tokenize(input: &str) -> Result<Vec<Token>, Error> {
                 }
             }
         }
-        position += if c == 'λ' { 2 } else { 1 };
+        position += 1;
     }
 
     Ok(tokens)
 }
 
-fn tokenize_classic(input: &str) -> Result<Vec<CToken>, Error> {
+fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
     let mut chars = input.chars().peekable();
     let mut tokens = Vec::new();
-    let mut position = 0;
+    let mut position = 1;
 
     while let Some(c) = chars.next() {
         match c {
             '\\' | 'λ' => {
                 let mut name = String::new();
                 while let Some(c) = chars.next() {
+                    position += 1;
                     if c == '.' {
                         break
                     } else if "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(c) {
@@ -75,7 +76,6 @@ fn tokenize_classic(input: &str) -> Result<Vec<CToken>, Error> {
                     } else {
                         return Err(InvalidCharacter((position, c)))
                     }
-                    position += 1;
                 }
                 tokens.push(CLambda(name))
             },
@@ -92,8 +92,8 @@ fn tokenize_classic(input: &str) -> Result<Vec<CToken>, Error> {
                         } else {
                             name.push(c);
                             chars.next();
+                            position += 1;
                         }
-                        position += 1;
                     }
                     tokens.push(CName(name))
                 } else {
@@ -101,7 +101,7 @@ fn tokenize_classic(input: &str) -> Result<Vec<CToken>, Error> {
                 }
             }
         }
-        position += if c == 'λ' { 2 } else { 1 };
+        position += 1;
     }
 
     Ok(tokens)
@@ -215,9 +215,9 @@ fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
 /// ```
 pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
     let tokens = if notation == DeBruijn {
-        try!(tokenize(input))
+        try!(tokenize_dbr(input))
     } else {
-        convert_classic_tokens(&try!(tokenize_classic(input)))
+        convert_classic_tokens(&try!(tokenize_cla(input)))
     };
     let ast = try!(get_ast(&tokens));
 
@@ -274,13 +274,14 @@ mod test {
 
     #[test]
     fn tokenization_error() {
-        assert_eq!(tokenize(&"λλx2"), Err(InvalidCharacter((4, 'x'))))
+        assert_eq!(tokenize_dbr(&"λλx2"),    Err(InvalidCharacter((3, 'x'))));
+        assert_eq!(tokenize_cla(&"λa.λb a"), Err(InvalidCharacter((6, ' '))));
     }
 
     #[test]
     fn tokenization_success() {
         let quine = "λ 1 ( (λ 1 1) (λ λ λ λ λ 1 4 (3 (5 5) 2) ) ) 1";
-        let tokens = tokenize(&quine);
+        let tokens = tokenize_dbr(&quine);
 
         assert!(tokens.is_ok());
         assert_eq!(tokens.unwrap(), vec![Lambda, Number(1), Lparen, Lparen, Lambda, Number(1),
@@ -295,8 +296,8 @@ mod test {
             (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
         let blc_cla = format!("{}", parse(&blc_dbr, DeBruijn).unwrap());
 
-        let tokens_cla = tokenize_classic(&blc_cla);
-        let tokens_dbr = tokenize(&blc_dbr);
+        let tokens_cla = tokenize_cla(&blc_cla);
+        let tokens_dbr = tokenize_dbr(&blc_dbr);
 
         assert!(tokens_cla.is_ok());
         assert!(tokens_dbr.is_ok());
@@ -311,7 +312,7 @@ mod test {
 
     #[test]
     fn succ_ast() {
-        let tokens = tokenize(&"λλλ2(321)").unwrap();
+        let tokens = tokenize_dbr(&"λλλ2(321)").unwrap();
         let ast = get_ast(&tokens);
 
         assert_eq!(ast,
