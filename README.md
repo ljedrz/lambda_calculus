@@ -78,6 +78,6 @@ The library is in a good shape and should soon begin to stabilize.
 
 ## TODO
 
-- shortened display mode (λa.λb.λc. => λabc.)
+- shortened display mode/function (λa.λb.λc. => λabc.)
 - additional tests
 - further optimizations; β-reduction parallelization (at least to some extent)?
