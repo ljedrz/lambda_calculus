@@ -1,5 +1,4 @@
-//! A parser for lambda expressions with
-//! [De Bruijn indices](https://en.wikipedia.org/wiki/De_Bruijn_index)
+//! A parser for lambda expressions
 
 use term::*;
 use term::Term::*;
@@ -193,10 +192,13 @@ fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
     _get_ast(tokens, &mut pos)
 }
 
-/// Parses the input `&str` as a lambda `Term`. The lambdas can be represented either with the
-/// greek letter (λ) or a backslash (\\ - less aesthetic, but only one byte in size) and whitespaces
-///  are ignored. The indices in the `DeBruijn` notation mode start with 1 and are hexadecimal
-/// digits.
+/// Parses the input `&str` as a lambda `Term`.
+///
+/// - lambdas can be represented either with the greek letter (λ) or a backslash (\\ -
+/// less aesthetic, but only one byte in size)
+/// - `Classic` mode ignores whitespaces where unambiguous
+/// - `DeBruijn` mode ignores all whitespaces (since indices > 15 are very unlikely)
+/// - the indices in the `DeBruijn` notation mode start with 1 and are hexadecimal digits
 ///
 /// # Example
 /// ```
@@ -204,9 +206,11 @@ fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
 /// use lambda_calculus::term::Notation::*;
 /// use lambda_calculus::arithmetic::{succ, pred};
 ///
-/// assert_eq!(parse(&"λ λ λ 2 (3 2 1)", DeBruijn), Ok(succ()));
-/// assert_eq!(parse(&r#"\ \ \ 2 (3 2 1)"#, DeBruijn), Ok(succ()));
-/// assert_eq!(parse(&"λn.λf.λx.n (λg.λh.h (g f)) (λu.x) (λu.u)", Classic), Ok(pred()));
+/// assert_eq!(parse(&"λn. λf. λx. n (λg. λh. h (g f)) (λu. x) (λu. u)", Classic), Ok(pred()));
+/// assert_eq!(parse(&"λn.λf.λx.n(λg.λh.h(g f))(λu.x)(λu.u)", Classic), Ok(pred()));
+///
+/// assert_eq!(parse(  &"λλλ2(321)",  DeBruijn), Ok(succ()));
+/// assert_eq!(parse(&r#"\\\2(321)"#, DeBruijn), Ok(succ()));
 /// ```
 pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
     let tokens = if notation == DeBruijn {
