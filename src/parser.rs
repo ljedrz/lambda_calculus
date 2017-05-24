@@ -129,7 +129,7 @@ fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut
             },
             CName(ref name) => {
                 let number = if stack.contains(name) {
-                    stack.iter().rev().position(|t| t == name).unwrap() + 1
+                    stack.iter().rev().position(|t| t == name).unwrap() + 1 // safe; ensured above
                 } else {
                     stack.len() + 1
                 };
@@ -251,7 +251,7 @@ fn fold_terms(mut terms: Vec<Term>) -> Result<Term, Error> {
         let fst = terms.remove(0);
         Ok( terms.into_iter().fold(fst, |acc, t| app(acc, t)) )
     } else if terms.len() == 1 {
-        Ok( terms.pop().unwrap() )
+        Ok( terms.pop().unwrap() ) // safe; ensured above
     } else {
         Err(EmptyExpression)
     }

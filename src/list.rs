@@ -742,7 +742,7 @@ impl Iterator for Term {
         if self.is_empty() {
             None
         } else {
-            Some(self.pop().unwrap())
+            Some(self.pop().unwrap()) // safe; ensured above
         }
     }
 }

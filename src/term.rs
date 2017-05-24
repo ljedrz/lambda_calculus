@@ -308,15 +308,15 @@ pub fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -
     match *term {
         Var(i) => {
             if depth >= i as u32 {
-                format!("{}", from_u32(depth + 97 - i as u32).unwrap())
+                format!("{}", from_u32(depth + 97 - i as u32).expect("error while printing term"))
             } else {
-                format!("{}", from_u32(96 + i as u32).unwrap())
+                format!("{}", from_u32(96 + i as u32).expect("error while printing term"))
             }
         },
         Abs(ref t) => {
             let ret = {
                 format!("{}{}.{}", if PRETTY_LAMBDA { 'λ' } else { '\\' },
-                    from_u32(depth + 97).unwrap(),
+                    from_u32(depth + 97).expect("error while printing term"),
                     show_precedence_cla(t, 0, depth + 1)
                 )
             };
