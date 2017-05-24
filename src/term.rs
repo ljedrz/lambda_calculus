@@ -302,7 +302,6 @@ impl fmt::Display for Term {
     }
 }
 
-// TODO: make it safer (unwraps)
 #[doc(hidden)]
 pub fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
