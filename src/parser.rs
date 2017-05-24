@@ -3,6 +3,7 @@
 
 use term::*;
 use term::Term::*;
+use term::Notation::*;
 use self::Token::*;
 use self::CToken::*;
 use self::Error::*;
@@ -193,20 +194,26 @@ fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
 }
 
 /// Parses the input `&str` as a lambda `Term`. The lambdas can be represented either with the
-/// greek letter (λ) or a backslash (\\ - less aesthetic, but only one byte in size), the De Bruijn
-/// indices start with 1 and are hexadecimal digits, and whitespaces are ignored.
+/// greek letter (λ) or a backslash (\\ - less aesthetic, but only one byte in size) and whitespaces
+///  are ignored. The indices in the `DeBruijn` notation mode start with 1 and are hexadecimal
+/// digits.
 ///
 /// # Example
 /// ```
 /// use lambda_calculus::parser::parse;
+/// use lambda_calculus::term::Notation::*;
 /// use lambda_calculus::arithmetic::{succ, pred};
 ///
-/// assert_eq!(parse(&"λ λ λ 2 (3 2 1)"), Ok(succ()));
-/// assert_eq!(parse(&r#"\ \ \ 2 (3 2 1)"#), Ok(succ()));
-/// assert_eq!(parse(&"λλλ3(λλ1(24))(λ2)(λ1)"), Ok(pred()));
+/// assert_eq!(parse(&"λ λ λ 2 (3 2 1)", DeBruijn), Ok(succ()));
+/// assert_eq!(parse(&r#"\ \ \ 2 (3 2 1)"#, DeBruijn), Ok(succ()));
+/// assert_eq!(parse(&"λn.λf.λx.n (λg.λh.h (g f)) (λu.x) (λu.u)", Classic), Ok(pred()));
 /// ```
-pub fn parse(input: &str) -> Result<Term, Error> {
-    let tokens = try!(tokenize(input));
+pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
+    let tokens = if notation == DeBruijn {
+        try!(tokenize(input))
+    } else {
+        convert_classic_tokens(&try!(tokenize_classic(input)))
+    };
     let ast = try!(get_ast(&tokens));
 
     let exprs = try!(if let Sequence(exprs) = ast { Ok(exprs) } else { Err(InvalidExpression) });
@@ -279,22 +286,24 @@ mod test {
 
     #[test]
     fn tokenization_success_classic() {
-        let blc_dbr = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
-            (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
-        let blc_cla = format!("{}", parse(&blc_dbr).unwrap());
+        if DISPLAY_CLASSIC {
+            let blc_dbr = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
+                (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
+            let blc_cla = format!("{}", parse(&blc_dbr, DeBruijn).unwrap());
 
-        let tokens_cla = tokenize_classic(&blc_cla);
-        let tokens_dbr = tokenize(&blc_dbr);
+            let tokens_cla = tokenize_classic(&blc_cla);
+            let tokens_dbr = tokenize(&blc_dbr);
 
-        assert!(tokens_cla.is_ok());
-        assert!(tokens_dbr.is_ok());
+            assert!(tokens_cla.is_ok());
+            assert!(tokens_dbr.is_ok());
 
-        assert_eq!(convert_classic_tokens(&tokens_cla.unwrap()), tokens_dbr.unwrap());
+            assert_eq!(convert_classic_tokens(&tokens_cla.unwrap()), tokens_dbr.unwrap());
+        }
     }
 
     #[test]
     fn alternative_lambda_parsing() {
-        assert_eq!(parse(&"\\\\\\2(321)"), parse(&"λλλ2(321)"))
+        assert_eq!(parse(&"\\\\\\2(321)", DeBruijn), parse(&"λλλ2(321)", DeBruijn))
     }
 
     #[test]
@@ -320,7 +329,7 @@ mod test {
     #[test]
     fn parse_y() {
         let y = "λ(λ2(11))(λ2(11))";
-        assert_eq!(parse(&y).expect("parsing Y failed!"),
+        assert_eq!(parse(&y, DeBruijn).expect("parsing Y failed!"),
             abs(
                 app(
                     abs(
@@ -343,7 +352,7 @@ mod test {
     #[test]
     fn parse_quine() {
         let quine = "λ1((λ11)(λλλλλ14(3(55)2)))1";
-        assert_eq!(parse(&quine).expect("parsing QUINE failed!"),
+        assert_eq!(parse(&quine, DeBruijn).expect("parsing QUINE failed!"),
             abs(app(app(Var(1), app(abs(app(Var(1), Var(1))), abs(abs(abs(abs(abs(app(app(Var(1),
             Var(4)), app(app(Var(3), app(Var(5), Var(5))), Var(2)))))))))), Var(1)))
         );
@@ -353,7 +362,7 @@ mod test {
     fn parse_blc() {
         let blc = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
                    (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
-        assert_eq!(parse(&blc).expect("parsing BLC failed!"),
+        assert_eq!(parse(&blc, DeBruijn).expect("parsing BLC failed!"),
             app(app(abs(app(Var(1), Var(1))), abs(abs(abs(app(app(app(Var(1),
             abs(abs(abs(abs(app(Var(3), abs(app(app(Var(5), app(Var(3), abs(app(app(Var(2),
             app(Var(3), abs(abs(app(Var(3), abs(app(app(Var(1), Var(2)), Var(3)))))))), app(Var(4),
