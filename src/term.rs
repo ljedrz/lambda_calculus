@@ -323,7 +323,8 @@ pub fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -
             parenthesize_if(&ret, context_precedence > 1).into()
         },
         App(ref t1, ref t2) => {
-            let ret = format!("{} {}", show_precedence_cla(t1, 2, depth), show_precedence_cla(t2, 3, depth));
+            let ret = format!("{} {}",
+                show_precedence_cla(t1, 2, depth), show_precedence_cla(t2, 3, depth));
             parenthesize_if(&ret, context_precedence == 3).into()
         }
     }
@@ -346,7 +347,8 @@ pub fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -
             parenthesize_if(&ret, context_precedence > 1).into()
         },
         App(ref t1, ref t2) => {
-            let ret = format!("{}{}", show_precedence_dbr(t1, 2, depth), show_precedence_dbr(t2, 3, depth));
+            let ret = format!("{}{}",
+                show_precedence_dbr(t1, 2, depth), show_precedence_dbr(t2, 3, depth));
             parenthesize_if(&ret, context_precedence == 3).into()
         }
     }
