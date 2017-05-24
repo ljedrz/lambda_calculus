@@ -33,11 +33,10 @@ enum CToken {
 }
 
 fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
-    let mut chars = input.chars();
+    let mut chars = input.chars().enumerate();
     let mut tokens = Vec::new();
-    let mut position = 1;
 
-    while let Some(c) = chars.next() {
+    while let Some((i, c)) = chars.next() {
         match c {
      '\\' | 'λ' => { tokens.push(Lambda) },
             '(' => { tokens.push(Lparen) },
@@ -48,33 +47,30 @@ fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
                 } else if x.is_whitespace() {
                     ()
                 } else {
-                    return Err(InvalidCharacter((position, x)))
+                    return Err(InvalidCharacter((i + 1, x)))
                 }
             }
         }
-        position += 1;
     }
 
     Ok(tokens)
 }
 
 fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
-    let mut chars = input.chars().peekable();
+    let mut chars = input.chars().enumerate().peekable();
     let mut tokens = Vec::new();
-    let mut position = 1;
 
-    while let Some(c) = chars.next() {
+    while let Some((i, c)) = chars.next() {
         match c {
             '\\' | 'λ' => {
                 let mut name = String::new();
-                while let Some(c) = chars.next() {
-                    position += 1;
+                while let Some((i, c)) = chars.next() {
                     if c == '.' {
                         break
                     } else if "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(c) {
                         name.push(c)
                     } else {
-                        return Err(InvalidCharacter((position, c)))
+                        return Err(InvalidCharacter((i + 1, c)))
                     }
                 }
                 tokens.push(CLambda(name))
@@ -86,22 +82,20 @@ fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
                     ()
                 } else if "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(x) {
                     let mut name = x.to_string();
-                    while let Some(&c) = chars.peek() {
+                    while let Some(&(_, c)) = chars.peek() {
                         if c.is_whitespace() || c == '(' || c == ')' {
                             break
                         } else {
                             name.push(c);
                             chars.next();
-                            position += 1;
                         }
                     }
                     tokens.push(CName(name))
                 } else {
-                    return Err(InvalidCharacter((position, x)))
+                    return Err(InvalidCharacter((i + 1, x)))
                 }
             }
         }
-        position += 1;
     }
 
     Ok(tokens)
