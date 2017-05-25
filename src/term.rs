@@ -385,7 +385,7 @@ macro_rules! app {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::{Var, PRETTY_LAMBDA};
     use super::Notation::DeBruijn;
     use parser::parse;

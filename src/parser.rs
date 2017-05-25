@@ -254,7 +254,7 @@ fn fold_terms(mut terms: Vec<Term>) -> Result<Term, Error> {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
     #[test]

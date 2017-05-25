@@ -577,7 +577,7 @@ impl From<usize> for Term {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
     use reduction::beta;
     use reduction::Order::*;
