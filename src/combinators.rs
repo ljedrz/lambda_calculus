@@ -11,7 +11,6 @@
 //! * the reverse application combinator T
 
 use term::*;
-use term::Term::*;
 
 /// I - the identity combinator.
 ///

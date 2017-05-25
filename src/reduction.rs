@@ -1,9 +1,8 @@
 //! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form) for lambda `Term`s
 
 use term::*;
-use term::Term::*;
-use self::Order::*;
 use std::fmt;
+pub use self::Order::*;
 
 /// Set to `true` to see all the steps of β-reductions. The default is `false`.
 pub const SHOW_REDUCTIONS: bool = false;

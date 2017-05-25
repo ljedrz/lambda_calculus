@@ -2,7 +2,6 @@
 //! arithmetic operations
 
 use term::*;
-use term::Term::*;
 use term::Error::*;
 use booleans::*;
 use pair::pair;

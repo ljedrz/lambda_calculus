@@ -1,7 +1,6 @@
 //! [Church pair](https://en.wikipedia.org/wiki/Church_encoding#Church_pairs)
 
 use term::*;
-use term::Term::*;
 use term::Error::*;
 use booleans::*;
 

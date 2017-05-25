@@ -1,6 +1,7 @@
 //! [Lambda terms](https://en.wikipedia.org/wiki/Lambda_calculus#Lambda_terms)
 
-use self::Term::*;
+pub use self::Term::*;
+pub use self::Notation::*;
 use self::Error::*;
 use std::fmt;
 use std::borrow::Cow;
