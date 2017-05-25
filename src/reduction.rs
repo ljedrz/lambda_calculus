@@ -394,7 +394,6 @@ impl fmt::Display for Order {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use term::Notation::*;
     use parser::parse;
     use combinators::{i, omm};
     use arithmetic::fac;
