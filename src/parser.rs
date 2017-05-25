@@ -77,11 +77,11 @@ fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
             },
             '(' => { tokens.push(CLparen) },
             ')' => { tokens.push(CRparen) },
-             x  => {
-                if x.is_whitespace() {
+             _  => {
+                if c.is_whitespace() {
                     ()
-                } else if "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(x) {
-                    let mut name = x.to_string();
+                } else if "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(c) {
+                    let mut name = c.to_string();
                     while let Some(&(_, c)) = chars.peek() {
                         if c.is_whitespace() || c == '(' || c == ')' {
                             break
@@ -92,7 +92,7 @@ fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
                     }
                     tokens.push(CName(name))
                 } else {
-                    return Err(InvalidCharacter((i + 1, x)))
+                    return Err(InvalidCharacter((i + 1, c)))
                 }
             }
         }
@@ -212,9 +212,7 @@ pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
 
     let exprs = try!(if let Sequence(exprs) = ast { Ok(exprs) } else { Err(InvalidExpression) });
 
-    let mut stack = Vec::new();
-    let mut output = Vec::new();
-    let term = fold_exprs(&exprs, &mut stack, &mut output);
+    let term = fold_exprs(&exprs, &mut Vec::new(), &mut Vec::new());
 
     term
 }
@@ -229,9 +227,7 @@ fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Ve
             Variable(i) => output.push(Var(i)),
             Abstraction => stack.push(Abstraction),
             Sequence(ref exprs) => {
-                let mut stack2 = Vec::new();
-                let mut output2 = Vec::new();
-                let subexpr = try!(fold_exprs(&exprs, &mut stack2, &mut output2));
+                let subexpr = try!(fold_exprs(&exprs, &mut Vec::new(), &mut Vec::new()));
                 output.push(subexpr)
             }
         }
