@@ -41,13 +41,13 @@ fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
      '\\' | 'λ' => { tokens.push(Lambda) },
             '(' => { tokens.push(Lparen) },
             ')' => { tokens.push(Rparen) },
-             x  => {
-                if let Some(n) = x.to_digit(16) {
+             _  => {
+                if let Some(n) = c.to_digit(16) {
                     tokens.push(Number(n as usize))
-                } else if x.is_whitespace() {
+                } else if c.is_whitespace() {
                     ()
                 } else {
-                    return Err(InvalidCharacter((i + 1, x)))
+                    return Err(InvalidCharacter((i + 1, c)))
                 }
             }
         }
@@ -292,7 +292,7 @@ mod tests {
 
     #[test]
     fn alternative_lambda_parsing() {
-        assert_eq!(parse(&"\\\\\\2(321)", DeBruijn), parse(&"λλλ2(321)", DeBruijn))
+        assert_eq!(parse(&r#"\\\2(321)"#, DeBruijn), parse(&"λλλ2(321)", DeBruijn))
     }
 
     #[test]
@@ -321,18 +321,8 @@ mod tests {
         assert_eq!(parse(&y, DeBruijn).expect("parsing Y failed!"),
             abs(
                 app(
-                    abs(
-                        app(
-                            Var(2),
-                            app(Var(1), Var(1))
-                        )
-                    ),
-                    abs(
-                        app(
-                            Var(2),
-                            app(Var(1), Var(1))
-                        )
-                    )
+                    abs(app(Var(2), app(Var(1), Var(1)))),
+                    abs(app(Var(2), app(Var(1), Var(1))))
                 )
             )
         );

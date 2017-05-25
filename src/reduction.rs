@@ -181,7 +181,7 @@ impl Term {
     }
 
     fn eval_with_info(&mut self, depth: u32, count: &usize) {
-        if SHOW_REDUCTIONS { print!("\n{}. {}\n", count + 1, show_precedence_cla(self, 0, depth)) }
+        if SHOW_REDUCTIONS { println!("\n{}. {}", count + 1, show_precedence_cla(self, 0, depth)) }
 
         let copy = self.clone();
         *self = copy.eval().unwrap(); // safe; only called in reduction sites
