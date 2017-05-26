@@ -42,11 +42,17 @@ pub enum Term {
 /// An error that can be returned when an inapplicable function is applied to a term.
 #[derive(Debug, PartialEq)]
 pub enum Error {
+    /// the term is not a variable
     NotAVar,
+    /// the term is not an abstraction
     NotAnAbs,
+    /// the term is not an application
     NotAnApp,
+    /// the term is not a Church number
     NotANum,
+    /// the term is not a Church pair
     NotAPair,
+    /// the term is not a Church list
     NotAList
 }
 

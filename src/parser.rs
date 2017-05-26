@@ -10,24 +10,35 @@ pub use term::Notation::*;
 /// A type to represent a parsing error.
 #[derive(Debug, PartialEq)]
 pub enum Error {
+    /// an invalid character was encountered
     InvalidCharacter((usize, char)),
+    /// the expression is invalid
     InvalidExpression,
+    /// the expression is empty
     EmptyExpression
 }
 
 #[derive(Debug, PartialEq)]
 enum Token {
+    /// λ or \
     Lambda,
+    /// left parenthesis
     Lparen,
+    /// right parenthesis
     Rparen,
+    /// a number
     Number(usize)
 }
 
 #[derive(Debug, PartialEq)]
 enum CToken {
+    /// an abstraction with a bound variable
     CLambda(String),
+    /// left parenthesis
     CLparen,
+    /// right parenthesis
     CRparen,
+    /// a variable with an identifier
     CName(String)
 }
 
@@ -143,8 +154,11 @@ fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut
 
 #[derive(Debug, PartialEq)]
 enum Expression {
+    /// an abstraction
     Abstraction,
+    /// a sequence of Expressions
     Sequence(Vec<Expression>),
+    /// a variable with a De Bruijn index
     Variable(usize)
 }
 
