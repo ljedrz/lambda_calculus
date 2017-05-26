@@ -31,7 +31,7 @@ compatibility with as many β-reduction strategies as possible.
 Include the library by adding the following to your Cargo.toml:
 ```
 [dependencies]
-lambda_calculus = "0.11.0"
+lambda_calculus = "0.12.0"
 ```
 
 And the following to your code:
