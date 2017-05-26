@@ -4,9 +4,6 @@ use term::*;
 use std::fmt;
 pub use self::Order::*;
 
-/// Set to `true` to see all the steps of β-reductions. The default is `false`.
-pub const SHOW_REDUCTIONS: bool = false;
-
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
 /// β-reductions. The default is `NOR` (normal order).
 ///
@@ -91,8 +88,9 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
     }
 }
 
-/// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit on
-/// number of reductions (`0` means no limit); it returns the `Term` after reductions.
+/// Performs β-reduction on a `Term` with the specified evaluation `Order`, an optional limit on
+/// number of reductions (`0` means no limit) and optional display of reduction steps; it returns
+/// the `Term` after reductions.
 ///
 /// # Example
 ///
@@ -103,25 +101,24 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
 ///
 /// let pred_one = pred().app(1.into());
 ///
-/// assert_eq!(beta(pred_one, NOR, 0), 0.into());
+/// assert_eq!(beta(pred_one, NOR, 0, false), 0.into());
 /// ```
-pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
-    term.beta(order, limit);
+pub fn beta(mut term: Term, order: Order, limit: usize, verbose: bool) -> Term {
+    term.beta(order, limit, verbose);
     term
 }
 
-/// Prints the number of reductions required for `term` to reach the final form with all the
-/// available reduction strategies, optionally excluding the ones from the given list. Such
-/// exclusions might be necessary, especially if the expression contains the fixed-point combinator.
+/// Prints the number of reductions required for a `Term` to reach the final form with the given
+/// reduction strategies and optionally displaying the applicable reduction steps.
 ///
 /// # Example
 ///
 /// ```
 /// use lambda_calculus::arithmetic::fac;
-/// use lambda_calculus::reduction::benchmark;
+/// use lambda_calculus::reduction::compare;
 /// use lambda_calculus::reduction::Order::*;
 ///
-/// benchmark(&fac().app(3.into()), &[CBN, CBV, HSP]);
+/// compare(&fac().app(3.into()), &[NOR, APP, HNO, HAP], false); // compare normalizing strategies
 ///
 /// // stdout:
 ///
@@ -130,15 +127,13 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
 /// // hybrid normal:      46
 /// // hybrid applicative: 39
 /// ```
-pub fn benchmark(term: &Term, exclude: &[Order]) {
-    println!("benchmarking β-reduction strategies for {}:\n", term);
-    for order in [CBN, NOR, CBV, APP, HSP, HNO, HAP].into_iter() {
-        if !exclude.contains(order) {
-            println!("{}:{}{}{}", order,
-                " ".repeat(if !SHOW_REDUCTIONS { 19 - format!("{}", order).len() } else { 1 }),
-                term.clone().beta(*order, 0), if SHOW_REDUCTIONS { "\n" } else { "" }
-            )
-        }
+pub fn compare(term: &Term, orders: &[Order], verbose: bool) {
+    println!("comparing β-reduction strategies for {}:\n", term);
+    for order in orders {
+        println!("{}:{}{}{}", order,
+            " ".repeat(if !verbose { 19 - format!("{}", order).len() } else { 1 }),
+            term.clone().beta(*order, 0, verbose), if verbose { "\n" } else { "" }
+        )
     }
 }
 
@@ -179,13 +174,13 @@ impl Term {
         apply(lhs, &rhs)
     }
 
-    fn eval_with_info(&mut self, depth: u32, count: &usize) {
-        if SHOW_REDUCTIONS { println!("\n{}. {}", count + 1, show_precedence_cla(self, 0, depth)) }
+    fn eval_with_info(&mut self, depth: u32, count: &usize, verbose: bool) {
+        if verbose { println!("\n{}. {}", count + 1, show_precedence_cla(self, 0, depth)) }
 
         let copy = self.clone();
         *self = copy.eval().unwrap(); // safe; only called in reduction sites
 
-        if SHOW_REDUCTIONS {
+        if verbose {
             let indent_len = ((*count + 1) as f32).log10().trunc() as usize + 5;
             println!("=>{}{}", " ".repeat(indent_len), show_precedence_cla(self, 0, depth))
         }
@@ -195,9 +190,9 @@ impl Term {
         self.lhs_ref().and_then(|t| t.unabs_ref()).is_ok() && (limit == 0 || *count < limit )
     }
 
-    /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional
-    /// limit on number of reductions (`0` means no limit); it returns the number of performed
-    /// reductions.
+    /// Performs β-reduction on a `Term` with the specified evaluation `Order`, an optional limit
+    /// on number of reductions (`0` means no limit) and optional display of reduction steps; it
+    /// returns the number of performed reductions.
     ///
     /// # Example
     ///
@@ -206,12 +201,12 @@ impl Term {
     /// use lambda_calculus::reduction::Order::NOR;
     ///
     /// let mut pred_one = pred().app(1.into());
-    /// pred_one.beta(NOR, 0);
+    /// pred_one.beta(NOR, 0, false);
     ///
     /// assert_eq!(pred_one, 0.into());
     /// ```
-    pub fn beta(&mut self, order: Order, limit: usize) -> usize {
-        if SHOW_REDUCTIONS {
+    pub fn beta(&mut self, order: Order, limit: usize, verbose: bool) -> usize {
+        if verbose {
             println!("β-reducing {} [{} order{}]:", self, order,
                 if limit != 0 {
                     format!(", limit of {} reduction{}", limit, if limit == 1 { "" } else { "s" })
@@ -224,16 +219,16 @@ impl Term {
         let mut count = 0;
 
         match order {
-            CBN => self.beta_cbn(0, limit, &mut count),
-            NOR => self.beta_nor(0, limit, &mut count),
-            CBV => self.beta_cbv(0, limit, &mut count),
-            APP => self.beta_app(0, limit, &mut count),
-            HSP => self.beta_hsp(0, limit, &mut count),
-            HNO => self.beta_hno(0, limit, &mut count),
-            HAP => self.beta_hap(0, limit, &mut count)
+            CBN => self.beta_cbn(0, limit, &mut count, verbose),
+            NOR => self.beta_nor(0, limit, &mut count, verbose),
+            CBV => self.beta_cbv(0, limit, &mut count, verbose),
+            APP => self.beta_app(0, limit, &mut count, verbose),
+            HSP => self.beta_hsp(0, limit, &mut count, verbose),
+            HNO => self.beta_hno(0, limit, &mut count, verbose),
+            HAP => self.beta_hap(0, limit, &mut count, verbose)
         }
 
-        if SHOW_REDUCTIONS {
+        if verbose {
             println!("\nresult after {} reduction{}: {}\n", count,
                 if count == 1 { "" } else { "s" }, self);
         };
@@ -241,135 +236,135 @@ impl Term {
         count
     }
 
-    fn beta_cbn(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_cbn(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
         if limit != 0 && *count == limit { return }
 
         match *self {
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count);
+                self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count);
+                    self.eval_with_info(depth, count, verbose);
                     *count += 1;
-                    self.beta_cbn(depth, limit, count);
+                    self.beta_cbn(depth, limit, count, verbose);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_nor(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_nor(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_nor(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_nor(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count);
+                self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count);
+                    self.eval_with_info(depth, count, verbose);
                     *count += 1;
-                    self.beta_nor(depth, limit, count);
+                    self.beta_nor(depth, limit, count, verbose);
                 } else {
-                    self.lhs_ref_mut().unwrap().beta_nor(depth, limit, count);
-                    self.rhs_ref_mut().unwrap().beta_nor(depth, limit, count);
+                    self.lhs_ref_mut().unwrap().beta_nor(depth, limit, count, verbose);
+                    self.rhs_ref_mut().unwrap().beta_nor(depth, limit, count, verbose);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_cbv(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_cbv(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
         if limit != 0 && *count == limit { return }
 
         match *self {
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_cbv(depth, limit, count);
-                self.rhs_ref_mut().unwrap().beta_cbv(depth, limit, count);
+                self.lhs_ref_mut().unwrap().beta_cbv(depth, limit, count, verbose);
+                self.rhs_ref_mut().unwrap().beta_cbv(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count);
+                    self.eval_with_info(depth, count, verbose);
                     *count += 1;
-                    self.beta_cbv(depth, limit, count);
+                    self.beta_cbv(depth, limit, count, verbose);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_app(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_app(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_app(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_app(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_app(depth, limit, count);
-                self.rhs_ref_mut().unwrap().beta_app(depth, limit, count);
+                self.lhs_ref_mut().unwrap().beta_app(depth, limit, count, verbose);
+                self.rhs_ref_mut().unwrap().beta_app(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count);
+                    self.eval_with_info(depth, count, verbose);
                     *count += 1;
-                    self.beta_app(depth, limit, count);
+                    self.beta_app(depth, limit, count, verbose);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hap(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_hap(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_hap(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_hap(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_cbv(depth, limit, count);
-                self.rhs_ref_mut().unwrap().beta_hap(depth, limit, count);
+                self.lhs_ref_mut().unwrap().beta_cbv(depth, limit, count, verbose);
+                self.rhs_ref_mut().unwrap().beta_hap(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count);
+                    self.eval_with_info(depth, count, verbose);
                     *count += 1;
-                    self.beta_hap(depth, limit, count);
+                    self.beta_hap(depth, limit, count, verbose);
                 } else {
-                    self.lhs_ref_mut().unwrap().beta_hap(depth, limit, count);
+                    self.lhs_ref_mut().unwrap().beta_hap(depth, limit, count, verbose);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hsp(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_hsp(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_hsp(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_hsp(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_hsp(depth, limit, count);
+                self.lhs_ref_mut().unwrap().beta_hsp(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count);
+                    self.eval_with_info(depth, count, verbose);
                     *count += 1;
-                    self.beta_hsp(depth, limit, count)
+                    self.beta_hsp(depth, limit, count, verbose)
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hno(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_hno(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_hno(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_hno(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_hsp(depth, limit, count);
+                self.lhs_ref_mut().unwrap().beta_hsp(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count);
+                    self.eval_with_info(depth, count, verbose);
                     *count += 1;
-                    self.beta_hno(depth, limit, count)
+                    self.beta_hno(depth, limit, count, verbose)
                 } else {
-                    self.lhs_ref_mut().unwrap().beta_hno(depth, limit, count);
-                    self.rhs_ref_mut().unwrap().beta_hno(depth, limit, count);
+                    self.lhs_ref_mut().unwrap().beta_hno(depth, limit, count, verbose);
+                    self.rhs_ref_mut().unwrap().beta_hno(depth, limit, count, verbose);
                 }
             },
             _ => ()
@@ -403,43 +398,43 @@ mod tests {
     #[test]
     fn normal_order() {
         let reduces_instantly = parse(&"(λλ1)((λλλ((32)1))(λλ2))", DeBruijn).unwrap();
-        assert_eq!(beta(reduces_instantly.clone(), NOR, 0),
-                   beta(reduces_instantly,         NOR, 1)
+        assert_eq!(beta(reduces_instantly.clone(), NOR, 0, false),
+                   beta(reduces_instantly,         NOR, 1, false)
         );
 
         let should_reduce = parse(&"(λ2)((λ111)(λ111))", DeBruijn).unwrap();
-        assert_eq!(beta(should_reduce, NOR, 0), Var(1));
+        assert_eq!(beta(should_reduce, NOR, 0, false), Var(1));
 
         let does_reduce = app(abs(Var(2)), omm());
-        assert_eq!(beta(does_reduce, NOR, 0), Var(1));
+        assert_eq!(beta(does_reduce, NOR, 0, false), Var(1));
     }
 
     #[test]
     fn call_by_name_order() {
         let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
-        expr.beta(CBN, 1);
+        expr.beta(CBN, 1, false);
         assert_eq!(expr, app(i(), app(i(), i())));
-        expr.beta(CBN, 1);
+        expr.beta(CBN, 1, false);
         assert_eq!(expr, app(i(), i()));
-        expr.beta(CBN, 1);
+        expr.beta(CBN, 1, false);
         assert_eq!(expr, i());
     }
 
     #[test]
     fn applicative_order() {
         let mut wont_reduce = app(abs(Var(2)), omm());
-        wont_reduce.beta(APP, 3);
+        wont_reduce.beta(APP, 3, false);
         assert_eq!(wont_reduce, app(abs(Var(2)), omm()));
     }
 
     #[test]
     fn call_by_value_order() {
         let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
-        expr.beta(CBV, 1);
+        expr.beta(CBV, 1, false);
         assert_eq!(expr, app(abs(app(i(), Var(1))), i()));
-        expr.beta(CBV, 1);
+        expr.beta(CBV, 1, false);
         assert_eq!(expr, app(i(), i()));
-        expr.beta(CBV, 1);
+        expr.beta(CBV, 1, false);
         assert_eq!(expr, i());
     }
 
@@ -449,7 +444,7 @@ mod tests {
         let builder = thread::Builder::new().name("reductor".into()).stack_size(2048 * 1024 * 1024);
 
         let handler = builder.spawn(|| {
-            assert_eq!(beta(app!(fac(), 10.into()), HAP, 0).value(), Ok(3628800));
+            assert_eq!(beta(app!(fac(), 10.into()), HAP, 0, false).value(), Ok(3628800));
         }).unwrap();
 
         handler.join().unwrap();
