@@ -77,10 +77,7 @@ impl Term {
     /// assert_eq!(Var(1).unvar(), Ok(1));
     /// ```
     pub fn unvar(self) -> Result<usize, Error> {
-        match self {
-            Var(n) => Ok(n),
-            _ => Err(NotAVar)
-        }
+        if let Var(n) = self { Ok(n) } else { Err(NotAVar) }
     }
 
     /// Returns a reference to a variable's index.
@@ -92,10 +89,7 @@ impl Term {
     /// assert_eq!(Var(1).unvar_ref(), Ok(&1));
     /// ```
     pub fn unvar_ref(&self) -> Result<&usize, Error> {
-        match *self {
-            Var(ref n) => Ok(n),
-            _ => Err(NotAVar)
-        }
+        if let Var(ref n) = *self { Ok(n) } else { Err(NotAVar) }
     }
 
     /// Returns a mutable reference to a variable's index.
@@ -107,10 +101,7 @@ impl Term {
     /// assert_eq!(Var(1).unvar_ref_mut(), Ok(&mut 1));
     /// ```
     pub fn unvar_ref_mut(&mut self) -> Result<&mut usize, Error> {
-        match *self {
-            Var(ref mut n) => Ok(n),
-            _ => Err(NotAVar)
-        }
+        if let Var(ref mut n) = *self { Ok(n) } else { Err(NotAVar) }
     }
 
     /// Consumes an abstraction and returns its underlying term.
@@ -123,10 +114,7 @@ impl Term {
     /// assert_eq!(abs(Var(1)).unabs(), Ok(Var(1)));
     /// ```
     pub fn unabs(self) -> Result<Term, Error> {
-        match self {
-            Abs(x) => Ok(*x),
-            _ => Err(NotAnAbs)
-        }
+        if let Abs(x) = self { Ok(*x) } else { Err(NotAnAbs) }
     }
 
     /// Returns a reference to an abstraction's underlying term.
@@ -139,10 +127,7 @@ impl Term {
     /// assert_eq!(abs(Var(1)).unabs_ref(), Ok(&Var(1)));
     /// ```
     pub fn unabs_ref(&self) -> Result<&Term, Error> {
-        match *self {
-            Abs(ref x) => Ok(x),
-            _ => Err(NotAnAbs)
-        }
+        if let Abs(ref x) = *self { Ok(x) } else { Err(NotAnAbs) }
     }
 
     /// Returns a mutable reference to an abstraction's underlying term.
@@ -155,10 +140,7 @@ impl Term {
     /// assert_eq!(abs(Var(1)).unabs_ref_mut(), Ok(&mut Var(1)));
     /// ```
     pub fn unabs_ref_mut(&mut self) -> Result<&mut Term, Error> {
-        match *self {
-            Abs(ref mut x) => Ok(x),
-            _ => Err(NotAnAbs)
-        }
+        if let Abs(ref mut x) = *self { Ok(x) } else { Err(NotAnAbs) }
     }
 
     /// Consumes an application and returns a pair containing its underlying terms.
@@ -170,10 +152,7 @@ impl Term {
     /// assert_eq!(Var(1).app(Var(2)).unapp(), Ok((Var(1), Var(2))));
     /// ```
     pub fn unapp(self) -> Result<(Term, Term), Error> {
-        match self {
-            App(lhs, rhs) => Ok((*lhs, *rhs)),
-            _ => Err(NotAnApp)
-        }
+        if let App(lhs, rhs) = self { Ok((*lhs, *rhs)) } else { Err(NotAnApp) }
     }
 
     /// Returns a pair containing references to an application's underlying terms.
@@ -185,10 +164,7 @@ impl Term {
     /// assert_eq!(Var(1).app(Var(2)).unapp_ref(), Ok((&Var(1), &Var(2))));
     /// ```
     pub fn unapp_ref(&self) -> Result<(&Term, &Term), Error> {
-        match *self {
-            App(ref lhs, ref rhs) => Ok((lhs, rhs)),
-            _ => Err(NotAnApp)
-        }
+        if let App(ref lhs, ref rhs) = *self { Ok((lhs, rhs)) } else { Err(NotAnApp) }
     }
 
     /// Returns a pair containing mutable references to an application's underlying terms.
@@ -200,10 +176,7 @@ impl Term {
     /// assert_eq!(Var(1).app(Var(2)).unapp_ref_mut(), Ok((&mut Var(1), &mut Var(2))));
     /// ```
     pub fn unapp_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
-        match *self {
-            App(ref mut lhs, ref mut rhs) => Ok((lhs, rhs)),
-            _ => Err(NotAnApp)
-        }
+        if let App(ref mut lhs, ref mut rhs) = *self { Ok((lhs, rhs)) } else { Err(NotAnApp) }
     }
 
     /// Returns the left-hand side term of an application. Consumes `self`.

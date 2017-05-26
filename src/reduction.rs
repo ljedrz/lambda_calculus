@@ -239,17 +239,14 @@ impl Term {
     fn beta_cbn(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
         if limit != 0 && *count == limit { return }
 
-        match *self {
-            App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count, verbose);
+        if let App(_, _) = *self {
+            self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count, verbose);
 
-                if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
-                    *count += 1;
-                    self.beta_cbn(depth, limit, count, verbose);
-                }
-            },
-            _ => ()
+            if self.is_reducible(limit, count) {
+                self.eval_with_info(depth, count, verbose);
+                *count += 1;
+                self.beta_cbn(depth, limit, count, verbose);
+            }
         }
     }
 
@@ -277,18 +274,15 @@ impl Term {
     fn beta_cbv(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
         if limit != 0 && *count == limit { return }
 
-        match *self {
-            App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_cbv(depth, limit, count, verbose);
-                self.rhs_ref_mut().unwrap().beta_cbv(depth, limit, count, verbose);
+        if let App(_, _) = *self {
+            self.lhs_ref_mut().unwrap().beta_cbv(depth, limit, count, verbose);
+            self.rhs_ref_mut().unwrap().beta_cbv(depth, limit, count, verbose);
 
-                if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
-                    *count += 1;
-                    self.beta_cbv(depth, limit, count, verbose);
-                }
-            },
-            _ => ()
+            if self.is_reducible(limit, count) {
+                self.eval_with_info(depth, count, verbose);
+                *count += 1;
+                self.beta_cbv(depth, limit, count, verbose);
+            }
         }
     }
 
