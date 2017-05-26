@@ -4,12 +4,14 @@
 
 **lambda_calculus** is a simple implementation of the untyped lambda calculus in Rust.
 
-The data and operators follow the Church encoding. The terms are implemented using De Bruijn
-indices, but are displayed using the classic lambda notation and can be parsed both ways. Library
-functions utilizing the fixed-point combinator use its call-by-value variant and are built for
-compatibility with as many β-reduction strategies as possible.
+The library tries to find a compromise between the spirit of the lambda calculus and Rust's
+best practices; the lambda `Term`s implemented by the library are produced by functions (in order
+to allow arbitrary application), but they are not `Copy`able and the methods they provide allow
+memory-friendly disassembly and referencing their internals.
 
-The library contains:
+## [Documentation](https://docs.rs/lambda_calculus)
+
+## Features
 
 - Church numerals and arithmetic operations
 - Church booleans
@@ -19,29 +21,66 @@ The library contains:
 - a parser for lambda expressions
 - 7 β-reduction strategies with optional display of reduction steps
 
-The implementation tries to find a compromise between the spirit of the lambda calculus and Rust's
-best practices; the lambda `Term`s implemented by the library are produced by functions (in order
-to allow arbitrary application), but they are not `Copy`able and the methods they provide allow
-memory-friendly disassembly and referencing their internals.
+The data and operators follow the Church encoding. The terms are implemented using De Bruijn
+indices, but are displayed using the classic lambda notation and can be parsed both ways. Library
+functions utilizing the fixed-point combinator use its call-by-value variant and are built for
+compatibility with as many β-reduction strategies as possible.
 
-## [Documentation](https://docs.rs/lambda_calculus)
+## Installation
 
-## Example usage
+Include the library by adding the following to your Cargo.toml:
+```
+[dependencies]
+lambda_calculus = "0.11.0"
+```
+
+And the following to your code:
+```
+#[macro_use]
+extern crate lambda_calculus;
+```
+
+## Usage
+
+### Comparing classic and De Bruijn index notation
 
 code:
 ```
-// SHOW_REDUCTIONS [@reduction.rs] = true;
+use lambda_calculus::arithmetic::{succ, pred};
 
-#[macro_use]
-extern crate lambda_calculus;
+fn main() {
+    println!("SUCC := {0} = {0:?}", succ());
+    println!("PRED := {0} = {0:?}", pred());
+}
+```
+stdout:
+```
+SUCC := λa.λb.λc.b (a b c) = λλλ2(321)
+PRED := λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d) = λλλ3(λλ1(24))(λ2)(λ1)
+```
 
-use lambda_calculus::reduction::Order::*;
+### Parsing lambda expressions
+
+code:
+```
+use lambda_calculus::parser::*;
+
+fn main() {
+    assert_eq!(parse(&"λa.λb.λc.b (a b c)", Classic), parse(&"λλλ2(321)", DeBruijn));
+}
+```
+
+### Showing β-reduction steps
+
+code:
+```
+use lambda_calculus::reduction::*;
 use lambda_calculus::arithmetic::pred;
 
 fn main() {
     let mut expr = app!(pred(), 1.into());
 
-    expr.beta(NOR, 0);
+    expr.beta(NOR, 0, true);
 }
 ```
 stdout:
@@ -70,6 +109,29 @@ stdout:
 =>     b
 
 result after 7 reductions: λa.λb.b
+```
+
+### Comparing the reduction steps of different reduction strategies
+
+code:
+```
+use lambda_calculus::reduction::*;
+use lambda_calculus::arithmetic::fac;
+
+fn main() {
+    let expr = app!(fac(), 4.into());
+
+    compare(&expr, &[NOR, APP, HNO, HAP], false);
+}
+```
+stdout:
+```
+comparing β-reduction strategies for (λa.a (λb.λc.λd.b ((λe.λf.λg.e (f g)) c d) ((λe.λf.λg.f (e f g)) d)) (λb.λc.b) (λb.λc.b c) (λb.λc.b c)) (λa.λb.a (a (a (a b)))):
+
+normal:             118
+applicative:        68
+hybrid normal:      118
+hybrid applicative: 52
 ```
 
 ## Status
