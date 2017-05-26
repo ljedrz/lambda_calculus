@@ -14,11 +14,10 @@ pub const PRETTY_LAMBDA: bool = true;
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::term::Notation::*;
 /// use lambda_calculus::arithmetic::succ;
 ///
-/// assert_eq!(&format!(  "{}", succ()), "λa.λb.λc.b (a b c)");
-/// assert_eq!(&format!("{:?}", succ()), "λλλ2(321)");
+/// assert_eq!(&format!(  "{}", succ()), "λa.λb.λc.b (a b c)"); // Classic notation
+/// assert_eq!(&format!("{:?}", succ()), "λλλ2(321)");          // DeBruijn index notation
 /// ```
 #[derive(Debug, PartialEq)]
 pub enum Notation {
