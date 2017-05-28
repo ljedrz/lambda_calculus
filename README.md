@@ -1,5 +1,5 @@
 # lambda_calculus
-[![license](https://img.shields.io/badge/license-CC0-blue.svg)](LICENSE)
+[![license](https://img.shields.io/badge/license-CC0-blue.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![current version](https://img.shields.io/crates/v/lambda_calculus.svg)](https://crates.io/crates/lambda_calculus)
 
 **lambda_calculus** is a simple implementation of the untyped lambda calculus in Rust.
@@ -111,7 +111,7 @@ stdout:
 result after 7 reductions: λa.λb.b
 ```
 
-### Comparing the reduction steps of different reduction strategies
+### Comparing the number of steps of different reduction strategies
 
 code:
 ```
