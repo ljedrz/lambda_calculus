@@ -29,7 +29,7 @@ pub enum Notation {
 
 /// A lambda term that is either a variable with a De Bruijn index, an abstraction over a term or
 /// an applicaction of one term to another.
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Clone, Hash, Eq)]
 pub enum Term {
     /// a variable
     Var(usize),
