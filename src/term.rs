@@ -19,7 +19,7 @@ pub const PRETTY_LAMBDA: bool = true;
 /// assert_eq!(&format!(  "{}", succ()), "λa.λb.λc.b (a b c)"); // Classic notation
 /// assert_eq!(&format!("{:?}", succ()), "λλλ2(321)");          // DeBruijn index notation
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Notation {
     /// classic lambda calculus notation; the default `fmt::Display` mode
     Classic,

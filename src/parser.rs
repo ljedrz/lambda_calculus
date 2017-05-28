@@ -43,10 +43,10 @@ enum CToken {
 }
 
 fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
-    let mut chars = input.chars().enumerate();
+    let chars = input.chars().enumerate();
     let mut tokens = Vec::new();
 
-    while let Some((i, c)) = chars.next() {
+    for (i, c) in chars {
         match c {
      '\\' | 'λ' => { tokens.push(Lambda) },
             '(' => { tokens.push(Lparen) },
@@ -181,7 +181,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
             },
             Lparen => {
                 *pos += 1;
-                let subtree = try!(_get_ast(&tokens, pos));
+                let subtree = try!(_get_ast(tokens, pos));
                 expr.push(subtree);
             },
             Rparen => {
@@ -224,22 +224,20 @@ pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
 
     let exprs = try!(if let Sequence(exprs) = ast { Ok(exprs) } else { Err(InvalidExpression) });
 
-    let term = fold_exprs(&exprs, &mut Vec::new(), &mut Vec::new());
-
-    term
+    fold_exprs(&exprs, &mut Vec::new(), &mut Vec::new())
 }
 
 fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Vec<Term>)
     -> Result<Term, Error>
 {
-    let mut iter = exprs.into_iter();
+    let iter = exprs.into_iter();
 
-    while let Some(ref expr) = iter.next() {
-        match **expr {
+    for expr in iter {
+        match *expr {
             Variable(i) => output.push(Var(i)),
             Abstraction => stack.push(Abstraction),
             Sequence(ref exprs) => {
-                let subexpr = try!(fold_exprs(&exprs, &mut Vec::new(), &mut Vec::new()));
+                let subexpr = try!(fold_exprs(exprs, &mut Vec::new(), &mut Vec::new()));
                 output.push(subexpr)
             }
         }
@@ -257,7 +255,7 @@ fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Ve
 fn fold_terms(mut terms: Vec<Term>) -> Result<Term, Error> {
     if terms.len() > 1 {
         let fst = terms.remove(0);
-        Ok( terms.into_iter().fold(fst, |acc, t| app(acc, t)) )
+        Ok( terms.into_iter().fold(fst, app) )
     } else if terms.len() == 1 {
         Ok( terms.pop().unwrap() ) // safe; ensured above
     } else {

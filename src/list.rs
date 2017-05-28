@@ -489,8 +489,8 @@ impl Term {
 
         let mut last_candidate = try!(self.snd_ref());
 
-        while let Ok(ref second) = last_candidate.snd_ref() {
-            last_candidate = *second;
+        while let Ok(second) = last_candidate.snd_ref() {
+            last_candidate = second;
         }
 
         Ok(last_candidate)

@@ -529,7 +529,7 @@ impl Term {
     /// assert_eq!(one().value(), Ok(1));
     /// ```
     pub fn value(&self) -> Result<usize, Error> {
-        if let Ok(ref inner) = self.unabs_ref().and_then(|t| t.unabs_ref()) {
+        if let Ok(inner) = self.unabs_ref().and_then(|t| t.unabs_ref()) {
             Ok(try!(inner._value()))
         } else {
             Err(NotANum)
