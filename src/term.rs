@@ -98,9 +98,9 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(1).unvar_ref_mut(), Ok(&mut 1));
+    /// assert_eq!(Var(1).unvar_mut(), Ok(&mut 1));
     /// ```
-    pub fn unvar_ref_mut(&mut self) -> Result<&mut usize, Error> {
+    pub fn unvar_mut(&mut self) -> Result<&mut usize, Error> {
         if let Var(ref mut n) = *self { Ok(n) } else { Err(NotAVar) }
     }
 
@@ -137,9 +137,9 @@ impl Term {
     /// use lambda_calculus::term::Term::*;
     /// use lambda_calculus::term::abs;
     ///
-    /// assert_eq!(abs(Var(1)).unabs_ref_mut(), Ok(&mut Var(1)));
+    /// assert_eq!(abs(Var(1)).unabs_mut(), Ok(&mut Var(1)));
     /// ```
-    pub fn unabs_ref_mut(&mut self) -> Result<&mut Term, Error> {
+    pub fn unabs_mut(&mut self) -> Result<&mut Term, Error> {
         if let Abs(ref mut x) = *self { Ok(x) } else { Err(NotAnAbs) }
     }
 
@@ -173,9 +173,9 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).unapp_ref_mut(), Ok((&mut Var(1), &mut Var(2))));
+    /// assert_eq!(Var(1).app(Var(2)).unapp_mut(), Ok((&mut Var(1), &mut Var(2))));
     /// ```
-    pub fn unapp_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
+    pub fn unapp_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
         if let App(ref mut lhs, ref mut rhs) = *self { Ok((lhs, rhs)) } else { Err(NotAnApp) }
     }
 
@@ -209,10 +209,10 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).lhs_ref_mut(), Ok(&mut Var(1)));
+    /// assert_eq!(Var(1).app(Var(2)).lhs_mut(), Ok(&mut Var(1)));
     /// ```
-    pub fn lhs_ref_mut(&mut self) -> Result<&mut Term, Error> {
-        if let Ok((lhs, _)) = self.unapp_ref_mut() { Ok(lhs) } else { Err(NotAnApp) }
+    pub fn lhs_mut(&mut self) -> Result<&mut Term, Error> {
+        if let Ok((lhs, _)) = self.unapp_mut() { Ok(lhs) } else { Err(NotAnApp) }
     }
 
     /// Returns the right-hand side term of an application. Consumes `self`.
@@ -245,10 +245,10 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::Term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).rhs_ref_mut(), Ok(&mut Var(2)));
+    /// assert_eq!(Var(1).app(Var(2)).rhs_mut(), Ok(&mut Var(2)));
     /// ```
-    pub fn rhs_ref_mut(&mut self) -> Result<&mut Term, Error> {
-        if let Ok((_, rhs)) = self.unapp_ref_mut() { Ok(rhs) } else { Err(NotAnApp) }
+    pub fn rhs_mut(&mut self) -> Result<&mut Term, Error> {
+        if let Ok((_, rhs)) = self.unapp_mut() { Ok(rhs) } else { Err(NotAnApp) }
     }
 }
 

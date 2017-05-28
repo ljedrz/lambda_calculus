@@ -145,14 +145,14 @@ impl Term {
     ///
     /// let mut pair01 = app!(pair(), zero(), one());
     ///
-    /// assert_eq!(pair01.unpair_ref_mut(), Ok((&mut zero(), &mut one())));
+    /// assert_eq!(pair01.unpair_mut(), Ok((&mut zero(), &mut one())));
     /// # }
     /// ```
-    pub fn unpair_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
+    pub fn unpair_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
         let mut candidate = if let Abs(ref mut abstracted) = *self { abstracted } else { self };
 
-        if let Ok((wrapped_a, b)) = candidate.unapp_ref_mut() {
-            Ok((try!(wrapped_a.rhs_ref_mut()), b))
+        if let Ok((wrapped_a, b)) = candidate.unapp_mut() {
+            Ok((try!(wrapped_a.rhs_mut()), b))
         } else {
             Err(NotAPair)
         }
@@ -206,11 +206,11 @@ impl Term {
     ///
     /// let mut pair01 = app!(pair(), zero(), one());
     ///
-    /// assert_eq!(pair01.fst_ref_mut(), Ok(&mut zero()));
+    /// assert_eq!(pair01.fst_mut(), Ok(&mut zero()));
     /// # }
     /// ```
-    pub fn fst_ref_mut(&mut self) -> Result<&mut Term, Error> {
-        Ok(try!(self.unpair_ref_mut()).0)
+    pub fn fst_mut(&mut self) -> Result<&mut Term, Error> {
+        Ok(try!(self.unpair_mut()).0)
     }
 
     /// Returns the second term from a Church-encoded pair, consuming `self`.
@@ -260,11 +260,11 @@ impl Term {
     ///
     /// let mut pair01 = app!(pair(), zero(), one());
     ///
-    /// assert_eq!(pair01.snd_ref_mut(), Ok(&mut one()));
+    /// assert_eq!(pair01.snd_mut(), Ok(&mut one()));
     /// # }
     /// ```
-    pub fn snd_ref_mut(&mut self) -> Result<&mut Term, Error> {
-        Ok(try!(self.unpair_ref_mut()).1)
+    pub fn snd_mut(&mut self) -> Result<&mut Term, Error> {
+        Ok(try!(self.unpair_mut()).1)
     }
 }
 

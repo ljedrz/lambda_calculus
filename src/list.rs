@@ -561,14 +561,14 @@ impl Term {
     ///
     /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
     ///
-    /// assert_eq!(list_110.uncons_ref_mut(),
+    /// assert_eq!(list_110.uncons_mut(),
     ///            Ok((&mut one(), &mut Term::from(vec![one(), zero()]))));
     /// ```
-    pub fn uncons_ref_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
+    pub fn uncons_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
         if !self.is_list() {
             Err(NotAList)
         } else {
-            self.unpair_ref_mut()
+            self.unpair_mut()
         }
     }
 
@@ -611,10 +611,10 @@ impl Term {
     ///
     /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
     ///
-    /// assert_eq!(list_110.head_ref_mut(), Ok(&mut one()));
+    /// assert_eq!(list_110.head_mut(), Ok(&mut one()));
     /// ```
-    pub fn head_ref_mut(&mut self) -> Result<&mut Term, Error> {
-        Ok(try!(self.uncons_ref_mut()).0)
+    pub fn head_mut(&mut self) -> Result<&mut Term, Error> {
+        Ok(try!(self.uncons_mut()).0)
     }
 
     /// Returns a list of all the terms of a Church list but the first one, consuming `self`.
@@ -657,10 +657,10 @@ impl Term {
     ///
     /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
     ///
-    /// assert_eq!(list_110.tail_ref_mut(), Ok(&mut Term::from(vec![one(), zero()])));
+    /// assert_eq!(list_110.tail_mut(), Ok(&mut Term::from(vec![one(), zero()])));
     /// ```
-    pub fn tail_ref_mut(&mut self) -> Result<&mut Term, Error> {
-        Ok(try!(self.uncons_ref_mut()).1)
+    pub fn tail_mut(&mut self) -> Result<&mut Term, Error> {
+        Ok(try!(self.uncons_mut()).1)
     }
 
     /// Returns the length of a Church list

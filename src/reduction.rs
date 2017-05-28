@@ -240,7 +240,7 @@ impl Term {
         if limit != 0 && *count == limit { return }
 
         if let App(_, _) = *self {
-            self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count, verbose);
+            self.lhs_mut().unwrap().beta_cbn(depth, limit, count, verbose);
 
             if self.is_reducible(limit, count) {
                 self.eval_with_info(depth, count, verbose);
@@ -256,15 +256,15 @@ impl Term {
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_nor(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_cbn(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_cbn(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count, verbose);
                     *count += 1;
                     self.beta_nor(depth, limit, count, verbose);
                 } else {
-                    self.lhs_ref_mut().unwrap().beta_nor(depth, limit, count, verbose);
-                    self.rhs_ref_mut().unwrap().beta_nor(depth, limit, count, verbose);
+                    self.lhs_mut().unwrap().beta_nor(depth, limit, count, verbose);
+                    self.rhs_mut().unwrap().beta_nor(depth, limit, count, verbose);
                 }
             },
             _ => ()
@@ -275,8 +275,8 @@ impl Term {
         if limit != 0 && *count == limit { return }
 
         if let App(_, _) = *self {
-            self.lhs_ref_mut().unwrap().beta_cbv(depth, limit, count, verbose);
-            self.rhs_ref_mut().unwrap().beta_cbv(depth, limit, count, verbose);
+            self.lhs_mut().unwrap().beta_cbv(depth, limit, count, verbose);
+            self.rhs_mut().unwrap().beta_cbv(depth, limit, count, verbose);
 
             if self.is_reducible(limit, count) {
                 self.eval_with_info(depth, count, verbose);
@@ -292,8 +292,8 @@ impl Term {
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_app(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_app(depth, limit, count, verbose);
-                self.rhs_ref_mut().unwrap().beta_app(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_app(depth, limit, count, verbose);
+                self.rhs_mut().unwrap().beta_app(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count, verbose);
@@ -311,15 +311,15 @@ impl Term {
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hap(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_cbv(depth, limit, count, verbose);
-                self.rhs_ref_mut().unwrap().beta_hap(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_cbv(depth, limit, count, verbose);
+                self.rhs_mut().unwrap().beta_hap(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count, verbose);
                     *count += 1;
                     self.beta_hap(depth, limit, count, verbose);
                 } else {
-                    self.lhs_ref_mut().unwrap().beta_hap(depth, limit, count, verbose);
+                    self.lhs_mut().unwrap().beta_hap(depth, limit, count, verbose);
                 }
             },
             _ => ()
@@ -332,7 +332,7 @@ impl Term {
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hsp(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_hsp(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_hsp(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count, verbose);
@@ -350,15 +350,15 @@ impl Term {
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hno(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_ref_mut().unwrap().beta_hsp(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_hsp(depth, limit, count, verbose);
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count, verbose);
                     *count += 1;
                     self.beta_hno(depth, limit, count, verbose)
                 } else {
-                    self.lhs_ref_mut().unwrap().beta_hno(depth, limit, count, verbose);
-                    self.rhs_ref_mut().unwrap().beta_hno(depth, limit, count, verbose);
+                    self.lhs_mut().unwrap().beta_hno(depth, limit, count, verbose);
+                    self.rhs_mut().unwrap().beta_hno(depth, limit, count, verbose);
                 }
             },
             _ => ()
