@@ -43,6 +43,7 @@ pub enum Order {
 /// use lambda_calculus::parser::parse;
 /// use lambda_calculus::term::Notation::DeBruijn;
 ///
+/// // these are valid terms, but be careful with unwraps in your code
 /// let lhs    = parse(&"λλ42(λ13)", DeBruijn).unwrap();
 /// let rhs    = parse(&"λ51", DeBruijn).unwrap();
 /// let result = parse(&"λ3(λ61)(λ1(λ71))", DeBruijn).unwrap();
@@ -50,6 +51,8 @@ pub enum Order {
 /// assert_eq!(apply(lhs, &rhs), Ok(result));
 /// ```
 pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, Error> {
+    if lhs.unabs_ref().is_err() { return Err(Error::NotAnAbs) }
+
     _apply(&mut lhs, rhs, 0);
 
     lhs.unabs()
