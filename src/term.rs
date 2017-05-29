@@ -76,6 +76,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).unvar(), Ok(1));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a `Var`iable.
     pub fn unvar(self) -> Result<usize, Error> {
         if let Var(n) = self { Ok(n) } else { Err(NotAVar) }
     }
@@ -88,6 +91,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).unvar_ref(), Ok(&1));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a `Var`iable.
     pub fn unvar_ref(&self) -> Result<&usize, Error> {
         if let Var(ref n) = *self { Ok(n) } else { Err(NotAVar) }
     }
@@ -100,6 +106,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).unvar_mut(), Ok(&mut 1));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a `Var`iable.
     pub fn unvar_mut(&mut self) -> Result<&mut usize, Error> {
         if let Var(ref mut n) = *self { Ok(n) } else { Err(NotAVar) }
     }
@@ -113,6 +122,9 @@ impl Term {
     ///
     /// assert_eq!(abs(Var(1)).unabs(), Ok(Var(1)));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `Abs`traction.
     pub fn unabs(self) -> Result<Term, Error> {
         if let Abs(x) = self { Ok(*x) } else { Err(NotAnAbs) }
     }
@@ -126,6 +138,9 @@ impl Term {
     ///
     /// assert_eq!(abs(Var(1)).unabs_ref(), Ok(&Var(1)));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `Abs`traction.
     pub fn unabs_ref(&self) -> Result<&Term, Error> {
         if let Abs(ref x) = *self { Ok(x) } else { Err(NotAnAbs) }
     }
@@ -139,6 +154,9 @@ impl Term {
     ///
     /// assert_eq!(abs(Var(1)).unabs_mut(), Ok(&mut Var(1)));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `Abs`traction.
     pub fn unabs_mut(&mut self) -> Result<&mut Term, Error> {
         if let Abs(ref mut x) = *self { Ok(x) } else { Err(NotAnAbs) }
     }
@@ -151,6 +169,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).app(Var(2)).unapp(), Ok((Var(1), Var(2))));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `App`lication.
     pub fn unapp(self) -> Result<(Term, Term), Error> {
         if let App(lhs, rhs) = self { Ok((*lhs, *rhs)) } else { Err(NotAnApp) }
     }
@@ -163,6 +184,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).app(Var(2)).unapp_ref(), Ok((&Var(1), &Var(2))));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `App`lication.
     pub fn unapp_ref(&self) -> Result<(&Term, &Term), Error> {
         if let App(ref lhs, ref rhs) = *self { Ok((lhs, rhs)) } else { Err(NotAnApp) }
     }
@@ -175,6 +199,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).app(Var(2)).unapp_mut(), Ok((&mut Var(1), &mut Var(2))));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `App`lication.
     pub fn unapp_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
         if let App(ref mut lhs, ref mut rhs) = *self { Ok((lhs, rhs)) } else { Err(NotAnApp) }
     }
@@ -187,6 +214,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).app(Var(2)).lhs(), Ok(Var(1)));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `App`lication.
     pub fn lhs(self) -> Result<Term, Error> {
         if let Ok((lhs, _)) = self.unapp() { Ok(lhs) } else { Err(NotAnApp) }
     }
@@ -199,6 +229,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).app(Var(2)).lhs_ref(), Ok(&Var(1)));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `App`lication.
     pub fn lhs_ref(&self) -> Result<&Term, Error> {
         if let Ok((lhs, _)) = self.unapp_ref() { Ok(lhs) } else { Err(NotAnApp) }
     }
@@ -223,6 +256,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).app(Var(2)).rhs(), Ok(Var(2)));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `App`lication.
     pub fn rhs(self) -> Result<Term, Error> {
         if let Ok((_, rhs)) = self.unapp() { Ok(rhs) } else { Err(NotAnApp) }
     }
@@ -235,6 +271,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).app(Var(2)).rhs_ref(), Ok(&Var(2)));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `App`lication.
     pub fn rhs_ref(&self) -> Result<&Term, Error> {
         if let Ok((_, rhs)) = self.unapp_ref() { Ok(rhs) } else { Err(NotAnApp) }
     }
@@ -247,6 +286,9 @@ impl Term {
     ///
     /// assert_eq!(Var(1).app(Var(2)).rhs_mut(), Ok(&mut Var(2)));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `App`lication.
     pub fn rhs_mut(&mut self) -> Result<&mut Term, Error> {
         if let Ok((_, rhs)) = self.unapp_mut() { Ok(rhs) } else { Err(NotAnApp) }
     }

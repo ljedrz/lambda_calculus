@@ -523,6 +523,9 @@ impl Term {
     ///
     /// assert_eq!(list_110.uncons(), Ok((one(), Term::from(vec![one(), zero()]))));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn uncons(self) -> Result<(Term, Term), Error> {
         if !self.is_list() {
             Err(NotAList)
@@ -543,6 +546,9 @@ impl Term {
     ///
     /// assert_eq!(list_110.uncons_ref(), Ok((&one(), &Term::from(vec![one(), zero()]))));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn uncons_ref(&self) -> Result<(&Term, &Term), Error> {
         if !self.is_list() {
             Err(NotAList)
@@ -564,6 +570,9 @@ impl Term {
     /// assert_eq!(list_110.uncons_mut(),
     ///            Ok((&mut one(), &mut Term::from(vec![one(), zero()]))));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn uncons_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
         if !self.is_list() {
             Err(NotAList)
@@ -583,6 +592,9 @@ impl Term {
     ///
     /// assert_eq!(list_110.head(), Ok(one()));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn head(self) -> Result<Term, Error> {
         Ok(try!(self.uncons()).0)
     }
@@ -598,6 +610,9 @@ impl Term {
     ///
     /// assert_eq!(list_110.head_ref(), Ok(&one()));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn head_ref(&self) -> Result<&Term, Error> {
         Ok(try!(self.uncons_ref()).0)
     }
@@ -613,6 +628,9 @@ impl Term {
     ///
     /// assert_eq!(list_110.head_mut(), Ok(&mut one()));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn head_mut(&mut self) -> Result<&mut Term, Error> {
         Ok(try!(self.uncons_mut()).0)
     }
@@ -628,6 +646,9 @@ impl Term {
     ///
     /// assert_eq!(list_110.tail(), Ok(Term::from(vec![one(), zero()])));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn tail(self) -> Result<Term, Error> {
         Ok(try!(self.uncons()).1)
     }
@@ -643,6 +664,9 @@ impl Term {
     ///
     /// assert_eq!(list_110.tail_ref(), Ok(&Term::from(vec![one(), zero()])));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn tail_ref(&self) -> Result<&Term, Error> {
         Ok(try!(self.uncons_ref()).1)
     }
@@ -659,6 +683,9 @@ impl Term {
     ///
     /// assert_eq!(list_110.tail_mut(), Ok(&mut Term::from(vec![one(), zero()])));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn tail_mut(&mut self) -> Result<&mut Term, Error> {
         Ok(try!(self.uncons_mut()).1)
     }
@@ -674,6 +701,9 @@ impl Term {
     ///
     /// assert_eq!(list_110.len(), Ok(3));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn len(&self) -> Result<usize, Error> {
         let mut inner = self;
         let mut n = 0;
@@ -714,6 +744,9 @@ impl Term {
     /// assert_eq!(list_110.pop(), Ok(one()));
     /// assert_eq!(list_110, Term::from(vec![one(), zero()]));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list.
     pub fn pop(&mut self) -> Result<Term, Error> {
         let (head, tail) = try!(self.clone().uncons()); // TODO: drop clone()?
         *self = tail;

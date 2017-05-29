@@ -35,7 +35,7 @@ pub enum Order {
 }
 
 /// Applies two `Term`s with substitution and variable update, consuming the first one in the
-/// process. It produces an `Error` if the first `Term` is not an `Abs`traction.
+/// process.
 ///
 /// # Example
 /// ```
@@ -50,6 +50,9 @@ pub enum Order {
 ///
 /// assert_eq!(apply(lhs, &rhs), Ok(result));
 /// ```
+/// # Errors
+///
+/// The function will return an error if the `lhs` term is not an `Abs`traction.
 pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, Error> {
     if lhs.unabs_ref().is_err() { return Err(Error::NotAnAbs) }
 
@@ -142,7 +145,6 @@ pub fn compare(term: &Term, orders: &[Order], verbose: bool) {
 
 impl Term {
     /// Applies `self` to another `Term` and performs substitution, consuming `self` in the process.
-    /// It produces an `Error` if `self` is not an `Abs`traction.
     ///
     /// # Example
     /// ```
@@ -155,12 +157,14 @@ impl Term {
     ///
     /// assert_eq!(lhs.apply(&rhs), Ok(result));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `Abs`traction.
     pub fn apply(self, rhs: &Term) -> Result<Term, Error> {
         apply(self, rhs)
     }
 
-    /// Reduces an `App`lication by substitution and variable update. It produces an `Error` if
-    /// `self` is not an `App`lication.
+    /// Reduces an `App`lication by substitution and variable update.
     ///
     /// # Example
     /// ```
@@ -171,6 +175,10 @@ impl Term {
     ///
     /// assert_eq!(app(i(), zero()).eval(), Ok(zero()));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not an `App`lication or if its left hand
+    /// side term is not an `Abs`traction.
     pub fn eval(self) -> Result<Term, Error> {
         let (lhs, rhs) = try!(self.unapp());
 

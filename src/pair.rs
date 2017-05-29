@@ -100,6 +100,9 @@ impl Term {
     /// assert_eq!(pair01.unpair(), Ok((zero(), one())));
     /// # }
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church pair.
     pub fn unpair(self) -> Result<(Term, Term), Error> {
         let candidate = if let Abs(abstracted) = self { *abstracted } else { self };
 
@@ -124,6 +127,9 @@ impl Term {
     /// assert_eq!(pair01.unpair_ref(), Ok((&zero(), &one())));
     /// # }
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church pair.
     pub fn unpair_ref(&self) -> Result<(&Term, &Term), Error> {
         let candidate = if let Abs(ref abstracted) = *self { abstracted } else { self };
 
@@ -148,6 +154,9 @@ impl Term {
     /// assert_eq!(pair01.unpair_mut(), Ok((&mut zero(), &mut one())));
     /// # }
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church pair.
     pub fn unpair_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
         let mut candidate = if let Abs(ref mut abstracted) = *self { abstracted } else { self };
 
@@ -172,6 +181,9 @@ impl Term {
     /// assert_eq!(pair01.fst(), Ok(zero()));
     /// # }
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church pair.
     pub fn fst(self) -> Result<Term, Error> {
         Ok(try!(self.unpair()).0)
     }
@@ -190,6 +202,9 @@ impl Term {
     /// assert_eq!(pair01.fst_ref(), Ok(&zero()));
     /// # }
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church pair.
     pub fn fst_ref(&self) -> Result<&Term, Error> {
         Ok(try!(self.unpair_ref()).0)
     }
@@ -209,6 +224,9 @@ impl Term {
     /// assert_eq!(pair01.fst_mut(), Ok(&mut zero()));
     /// # }
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church pair.
     pub fn fst_mut(&mut self) -> Result<&mut Term, Error> {
         Ok(try!(self.unpair_mut()).0)
     }
@@ -227,6 +245,9 @@ impl Term {
     /// assert_eq!(pair01.snd(), Ok(one()));
     /// # }
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church pair.
     pub fn snd(self) -> Result<Term, Error> {
         Ok(try!(self.unpair()).1)
     }
@@ -245,6 +266,9 @@ impl Term {
     /// assert_eq!(pair01.snd_ref(), Ok(&one()));
     /// # }
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church pair.
     pub fn snd_ref(&self) -> Result<&Term, Error> {
         Ok(try!(self.unpair_ref()).1)
     }
@@ -263,6 +287,9 @@ impl Term {
     /// assert_eq!(pair01.snd_mut(), Ok(&mut one()));
     /// # }
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church pair.
     pub fn snd_mut(&mut self) -> Result<&mut Term, Error> {
         Ok(try!(self.unpair_mut()).1)
     }

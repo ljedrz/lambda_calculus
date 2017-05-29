@@ -528,6 +528,9 @@ impl Term {
     ///
     /// assert_eq!(one().value(), Ok(1));
     /// ```
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church number.
     pub fn value(&self) -> Result<usize, Error> {
         if let Ok(inner) = self.unabs_ref().and_then(|t| t.unabs_ref()) {
             Ok(try!(inner._value()))
