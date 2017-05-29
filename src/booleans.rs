@@ -106,6 +106,36 @@ pub fn xor() -> Term {
     ))
 }
 
+/// Applied to a Church-encoded boolean it returns its Church-encoded joint denial.
+///
+/// NOR := λab.a a b (λab.b) (λab.a) = λ λ 2 2 1 (λ λ 1) (λ λ 2)
+///
+/// # Examples
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::booleans::{nor, tru, fls};
+/// use lambda_calculus::reduction::beta;
+/// use lambda_calculus::reduction::Order::*;
+///
+/// assert_eq!(beta(app!(nor(), tru(), tru()), NOR, 0, false), fls());
+/// assert_eq!(beta(app!(nor(), tru(), fls()), NOR, 0, false), fls());
+/// assert_eq!(beta(app!(nor(), fls(), tru()), NOR, 0, false), fls());
+/// assert_eq!(beta(nor(), NOR, 0, false), nor());
+/// # }
+/// ```
+pub fn nor() -> Term {
+    abs(abs(
+        app!(
+            Var(2),
+            Var(2),
+            Var(1),
+            abs(abs(Var(1))),
+            abs(abs(Var(2)))
+        )
+    ))
+}
+
 /// Applied to a Church encoded predicate and two terms it returns the first one if the predicate
 /// is true or the second one if the predicate is false.
 ///
