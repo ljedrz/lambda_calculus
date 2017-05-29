@@ -121,7 +121,7 @@ pub fn xor() -> Term {
 /// assert_eq!(beta(app!(nor(), tru(), tru()), NOR, 0, false), fls());
 /// assert_eq!(beta(app!(nor(), tru(), fls()), NOR, 0, false), fls());
 /// assert_eq!(beta(app!(nor(), fls(), tru()), NOR, 0, false), fls());
-/// assert_eq!(beta(nor(), NOR, 0, false), nor());
+/// assert_eq!(beta(app!(nor(), fls(), fls()), NOR, 0, false), tru());
 /// # }
 /// ```
 pub fn nor() -> Term {
