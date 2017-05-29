@@ -84,7 +84,7 @@ pub fn not() -> Term {
 
 /// Applied to a Church-encoded boolean it returns its Church-encoded exclusive disjunction.
 ///
-/// XOR := λab.a (NOT b) b = λ λ 2 (NOT 1) 1
+/// XOR := λpq.p (NOT q) q = λ λ 2 (NOT 1) 1
 ///
 /// # Examples
 /// ```
@@ -102,13 +102,21 @@ pub fn not() -> Term {
 /// ```
 pub fn xor() -> Term {
     abs(abs(
-        app!(Var(2), app(not(), Var(1)), Var(1))
+        app!(
+            Var(2),
+            app!(
+                Var(1),
+                abs(abs(Var(1))),
+                abs(abs(Var(2)))
+            ),
+            Var(1)
+        )
     ))
 }
 
 /// Applied to a Church-encoded boolean it returns its Church-encoded joint denial.
 ///
-/// NOR := λab.a a b (λab.b) (λab.a) = λ λ 2 2 1 (λ λ 1) (λ λ 2)
+/// NOR := λpq.NOT (OR p q) = λ λ NOT (OR 2 1)
 ///
 /// # Examples
 /// ```

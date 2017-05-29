@@ -141,6 +141,8 @@ The library is in a good shape and should soon begin to stabilize.
 
 ## TODO
 
-- shortened display mode/function (λa.λb.λc. => λabc.)
+- normalize `Term`-producing functions
+- further optimizations
 - additional tests
-- further optimizations; β-reduction parallelization (at least to some extent)?
+- β-reduction parallelization (at least to some extent)?
+- shortened display mode/function (λa.λb.λc. => λabc.)?
