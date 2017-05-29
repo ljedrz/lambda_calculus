@@ -144,6 +144,36 @@ pub fn nor() -> Term {
     ))
 }
 
+/// Applied to two Church-encoded booleans it returns their Church-encoded alternative denial.
+///
+/// NAND := λpq.NOT (AND p q) = λ λ NOT (AND 2 1)
+///
+/// # Examples
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::booleans::{nand, tru, fls};
+/// use lambda_calculus::reduction::beta;
+/// use lambda_calculus::reduction::Order::*;
+///
+/// assert_eq!(beta(app!(nand(), tru(), tru()), NOR, 0, false), fls());
+/// assert_eq!(beta(app!(nand(), tru(), fls()), NOR, 0, false), tru());
+/// assert_eq!(beta(app!(nand(), fls(), tru()), NOR, 0, false), tru());
+/// assert_eq!(beta(app!(nand(), fls(), fls()), NOR, 0, false), tru());
+/// # }
+/// ```
+pub fn nand() -> Term {
+    abs(abs(
+        app!(
+            Var(2),
+            Var(1),
+            Var(2),
+            abs(abs(Var(1))),
+            abs(abs(Var(2)))
+        )
+    ))
+}
+
 /// Applied to a Church encoded predicate and two terms it returns the first one if the predicate
 /// is true or the second one if the predicate is false.
 ///
