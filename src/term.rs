@@ -7,8 +7,15 @@ use std::fmt;
 use std::borrow::Cow;
 use std::char::from_u32;
 
-/// Set to `true` for λ or `false` for \ when displaying lambda terms. The default is `true`.
-pub const PRETTY_LAMBDA: bool = true;
+/// The character used to display lambda abstractions (a backslash).
+#[cfg(feature = "backslash_lambda")]
+pub const LAMBDA: char = '\\';
+
+/// The character used to display lambda abstractions. The default is the Greek letter 'λ', but it
+/// can also be set to a '\' (backslash) using conditional compilation with
+/// `feature = "backslash_lambda"`.
+#[cfg(not(feature = "backslash_lambda"))]
+pub const LAMBDA: char = 'λ';
 
 /// The notation used for parsing and displaying purposes.
 ///
@@ -335,7 +342,7 @@ pub fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -
         },
         Abs(ref t) => {
             let ret = {
-                format!("{}{}.{}", if PRETTY_LAMBDA { 'λ' } else { '\\' },
+                format!("{}{}.{}", LAMBDA,
                     from_u32(depth + 97).expect("error while printing term"),
                     show_precedence_cla(t, 0, depth + 1)
                 )
@@ -363,7 +370,7 @@ pub fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -
             format!("{:X}", i)
         },
         Abs(ref t) => {
-            let ret = format!("{}{:?}", if PRETTY_LAMBDA { 'λ' } else { '\\' }, t);
+            let ret = format!("{}{:?}", LAMBDA, t);
             parenthesize_if(&ret, context_precedence > 1).into()
         },
         App(ref t1, ref t2) => {
@@ -407,7 +414,7 @@ macro_rules! app {
 
 #[cfg(test)]
 mod tests {
-    use super::{Var, PRETTY_LAMBDA};
+    use super::{Var, LAMBDA};
     use super::Notation::DeBruijn;
     use parser::parse;
     use arithmetic::{zero, succ, pred};
@@ -429,7 +436,7 @@ mod tests {
 
     #[test]
     fn display_modes() {
-        if PRETTY_LAMBDA {
+        if LAMBDA == 'λ' {
             assert_eq!(&format!("{}", zero()), "λa.λb.b");
             assert_eq!(&format!("{}", succ()), "λa.λb.λc.b (a b c)");
             assert_eq!(&format!("{}", pred()), "λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)");

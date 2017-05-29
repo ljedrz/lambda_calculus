@@ -10,6 +10,9 @@ keywords = ["lambda", "calculus", "church", "functional", "mathematics"]
 authors = ["ljedrz <ljedrz@gmail.com>"]
 exclude = [".cargo/*"]
 
+[features]
+backslash_lambda = []
+
 [badges]
 travis-ci = { repository = "ljedrz/lambda_calculus", branch = "master" }
 
