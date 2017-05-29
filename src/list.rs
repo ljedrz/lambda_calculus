@@ -726,10 +726,15 @@ impl Term {
     ///
     /// let list_110 = Term::from(vec![one(), one(), zero()]);
     ///
-    /// assert_eq!(list_110.push(zero()), Term::from(vec![zero(), one(), one(), zero()]));
+    /// assert_eq!(list_110.push(zero()), Ok(Term::from(vec![zero(), one(), one(), zero()])));
     /// ```
-    pub fn push(self, term: Term) -> Term {
-        abs(app!(Var(1), term, self))
+    /// # Errors
+    ///
+    /// The function will return an error if `self` is not a Church list or a `nil()`.
+    pub fn push(self, term: Term) -> Result<Term, Error> {
+        if !self.is_list() && self != nil() { return Err(NotAList) }
+
+        Ok(abs(app!(Var(1), term, self)))
     }
 
     /// Removes the first element from a Church list and returns it.
@@ -760,7 +765,7 @@ impl From<Vec<Term>> for Term {
         let mut output = nil();
 
         for term in terms.into_iter().rev() {
-            output = output.push(term);
+            output = output.push(term).unwrap(); // safe - built from nil()
         }
 
         output
@@ -812,7 +817,11 @@ mod tests {
 
     #[test]
     fn list_push() {
-        let list_pushed = nil().push(0.into()).push(1.into()).push(1.into());
+        let list_pushed = nil()
+            .push(0.into())
+            .and_then(|t| t.push(1.into()))
+            .and_then(|t| t.push(1.into()))
+            .unwrap();
         let list_consed = beta(
             app!(
                 cons(),
@@ -834,7 +843,11 @@ mod tests {
     #[test]
     fn list_from_vector() {
         let list_from_vec = Term::from(vec![1.into(), 1.into(), 0.into()]);
-        let list_pushed = nil().push(0.into()).push(1.into()).push(1.into());
+        let list_pushed = nil()
+            .push(0.into())
+            .and_then(|t| t.push(1.into()))
+            .and_then(|t| t.push(1.into()))
+            .unwrap();
 
         assert_eq!(list_from_vec, list_pushed);
     }
@@ -843,11 +856,11 @@ mod tests {
     fn list_length() {
         let list0 = nil();
         assert_eq!(list0.len(), Ok(0));
-        let list1 = list0.push(1.into());
+        let list1 = list0.push(1.into()).unwrap();
         assert_eq!(list1.len(), Ok(1));
-        let list2 = list1.push(1.into());
+        let list2 = list1.push(1.into()).unwrap();
         assert_eq!(list2.len(), Ok(2));
-        let list3 = list2.push(1.into());
+        let list3 = list2.push(1.into()).unwrap();
         assert_eq!(list3.len(), Ok(3));
     }
 
