@@ -300,30 +300,3 @@ impl From<(Term, Term)> for Term {
         abs(app!(Var(1), t1, t2))
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use reduction::beta;
-    use reduction::Order::*;
-
-    #[test]
-    fn pair_from_pair() {
-        assert_eq!(Term::from((0.into(), 1.into())),
-                   beta(app!(pair(), 0.into(), 1.into()), NOR, 0, false));
-    }
-
-    #[test]
-    fn pair_operations() {
-        let pair_four_three = beta(app!(pair(), 4.into(), 3.into()), NOR, 0, false);
-
-        assert!(pair_four_three.is_pair());
-
-        assert_eq!(pair_four_three.fst_ref(), Ok(&4.into()));
-        assert_eq!(pair_four_three.snd_ref(), Ok(&3.into()));
-
-        let unpaired = pair_four_three.unpair();
-        assert_eq!(unpaired, Ok((4.into(), 3.into())));
-    }
-}
-
