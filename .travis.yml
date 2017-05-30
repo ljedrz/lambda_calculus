@@ -10,6 +10,3 @@ rust:
 matrix:
   allow_failures:
     - rust: nightly
-
-after_success:
-  cargo coveralls --verbose;
