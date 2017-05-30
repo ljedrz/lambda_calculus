@@ -19,6 +19,8 @@ use std::ops::Index;
 /// use lambda_calculus::booleans::fls;
 ///
 /// assert_eq!(nil(), fls());
+/// assert!(!nil().is_list());
+/// assert!(nil().is_empty());
 /// ```
 pub fn nil() -> Term { fls() }
 
@@ -753,6 +755,12 @@ impl Term {
     ///
     /// assert_eq!(list_110.pop(), Ok(one()));
     /// assert_eq!(list_110, Term::from(vec![one(), zero()]));
+    /// assert_eq!(list_110.pop(), Ok(one()));
+    /// assert_eq!(list_110, Term::from(vec![zero()]));
+    /// assert_eq!(list_110.pop(), Ok(zero()));
+    /// assert_eq!(list_110, Term::from(vec![]));
+    ///
+    /// assert!(list_110.is_empty())
     /// ```
     /// # Errors
     ///
@@ -815,37 +823,6 @@ mod tests {
     use arithmetic::{is_zero, plus};
 
     #[test]
-    fn empty_list() {
-        assert!(!nil().is_list());
-        assert!(nil().is_empty());
-    }
-
-    #[test]
-    fn list_push() {
-        let list_pushed = nil()
-            .push(0.into())
-            .and_then(|t| t.push(1.into()))
-            .and_then(|t| t.push(1.into()))
-            .unwrap();
-        let list_consed = beta(
-            app!(
-                cons(),
-                1.into(),
-                app!(
-                    cons(),
-                    1.into(),
-                    app!(
-                        cons(),
-                        0.into(),
-                        nil()
-                    )
-                )
-            ), NOR, 0, false
-        );
-        assert_eq!(list_pushed, list_consed);
-    }
-
-    #[test]
     fn list_from_vector() {
         let list_from_vec = Term::from(vec![1.into(), 1.into(), 0.into()]);
         let list_pushed = nil()
@@ -885,17 +862,6 @@ mod tests {
 
         let unconsed = list_354.uncons();
         assert_eq!(unconsed, Ok((3.into(), Term::from(vec![5.into(), 4.into()]))));
-    }
-
-
-    #[test]
-    fn list_pop() {
-        let mut list_poppable = Term::from(vec![1.into(), 0.into(), 0.into()]);
-
-        assert_eq!(list_poppable.pop(), Ok(1.into()));
-        assert_eq!(list_poppable.pop(), Ok(0.into()));
-        assert_eq!(list_poppable.pop(), Ok(0.into()));
-        assert_eq!(list_poppable.pop(), Err(NotAList));
     }
 
     #[test]
