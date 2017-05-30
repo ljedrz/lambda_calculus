@@ -503,23 +503,41 @@ pub fn div() -> Term {
 pub fn quot() -> Term {
     app(
         z(),
-        abs(abs(abs(
-            app!(
-                lt(),
+        abs(abs(abs(app!(
+            Var(2),
+            abs(abs(abs(app!(
+                Var(3),
+                abs(abs(app(Var(1), app(Var(2), Var(4))))),
+                abs(Var(2)),
+                abs(Var(1))
+            )))),
+            Var(1),
+            abs(abs(abs(Var(1)))),
+            abs(abs(Var(2))),
+            abs(abs(Var(1))),
+            abs(abs(Var(2))),
+            abs(abs(abs(Var(1)))),
+            abs(abs(abs(app(
                 Var(2),
-                Var(1),
-                abs(zero()),
-                abs(app(
-                    succ(),
+                app!(
+                    Var(6),
                     app!(
                         Var(4),
-                        app!(sub(), Var(3), Var(2)),
-                        Var(2)
-                    )
-                )),
-                i()
-            )
-        )))
+                        abs(abs(abs(app!(
+                            Var(3),
+                            abs(abs(app(Var(1), app(Var(2), Var(4))))),
+                            abs(Var(2)),
+                            abs(Var(1))
+                        )))),
+                        Var(5)
+                    ),
+                    Var(4),
+                    Var(2),
+                    Var(1)
+                )
+            )))),
+            abs(Var(1))
+        ))))
     )
 }
 
@@ -544,22 +562,36 @@ pub fn quot() -> Term {
 pub fn rem() -> Term {
     app(
         z(),
-        abs(abs(abs(
-            app!(
-                lt(),
-                Var(2),
-                Var(1),
-                abs(Var(3)),
-                abs(
-                    app!(
-                        Var(4),
-                        app!(sub(), Var(3), Var(2)),
-                        Var(2)
-                    )
+        abs(abs(abs(app!(
+            Var(2),
+            abs(abs(abs(app!(
+                Var(3),
+                abs(abs(app(Var(1), app(Var(2), Var(4))))),
+                abs(Var(2)),
+                abs(Var(1))
+            )))),
+            Var(1),
+            abs(abs(abs(Var(1)))),
+            abs(abs(Var(2))),
+            abs(abs(Var(1))),
+            abs(abs(Var(2))),
+            abs(Var(3)),
+            abs(app!(
+                Var(4),
+                app!(
+                    Var(2),
+                    abs(abs(abs(app!(
+                        Var(3),
+                        abs(abs(app(Var(1), app(Var(2), Var(4))))),
+                        abs(Var(2)),
+                        abs(Var(1))
+                    )))),
+                    Var(3)
                 ),
-                i()
-            )
-        )))
+                Var(2)
+            )),
+            abs(Var(1))
+        ))))
     )
 }
 
