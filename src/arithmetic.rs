@@ -5,7 +5,7 @@ use term::*;
 use term::Error::*;
 use booleans::*;
 use pair::pair;
-use combinators::{i, k, z};
+use combinators::{i, z};
 
 /// Produces a Church-encoded number zero.
 ///
@@ -145,9 +145,13 @@ pub fn mult() -> Term {
 /// # }
 /// ```
 pub fn pow() -> Term {
-    abs(abs(
-        app!(is_zero(), Var(1), one(), app(Var(1), Var(2)))
-    ))
+    abs(abs(app!(
+        Var(1),
+        abs(abs(abs(Var(1)))),
+        abs(abs(Var(2))),
+        one(),
+        app(Var(1), Var(2))
+    )))
 }
 
 /// Applied to a Church-encoded number it produces its predecessor.
@@ -165,14 +169,12 @@ pub fn pow() -> Term {
 /// assert_eq!(expr, 2.into());
 /// ```
 pub fn pred() -> Term {
-    abs(abs(abs(
-        app!(
-            Var(3),
-            abs(abs(app(Var(1), app(Var(2), Var(4))))),
-            abs(Var(2)),
-            abs(Var(1))
-        )
-    )))
+    abs(abs(abs(app!(
+        Var(3),
+        abs(abs(app(Var(1), app(Var(2), Var(4))))),
+        abs(Var(2)),
+        abs(Var(1))
+    ))))
 }
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
@@ -219,9 +221,17 @@ pub fn sub() -> Term {
 /// # }
 /// ```
 pub fn lt() -> Term {
-    abs(abs(
-        app(not(), app!(leq(), Var(1), Var(2)))
-    ))
+    abs(abs(app!(
+        Var(2),
+        abs(abs(abs(
+            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+        ))),
+        Var(1),
+        abs(abs(abs(Var(1)))),
+        abs(abs(Var(2))),
+        abs(abs(Var(1))),
+        abs(abs(Var(2)))
+    )))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -245,9 +255,15 @@ pub fn lt() -> Term {
 /// # }
 /// ```
 pub fn leq() -> Term {
-    abs(abs(
-        app(is_zero(), app!(sub(), Var(2), Var(1)))
-    ))
+    abs(abs(app!(
+        Var(1),
+        abs(abs(abs(
+            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+        ))),
+        Var(2),
+        abs(abs(abs(Var(1)))),
+        abs(abs(Var(2)))
+    )))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -268,16 +284,37 @@ pub fn leq() -> Term {
 /// assert_eq!(beta(app!(eq(), 1.into(), 1.into()), NOR, 0, false), tru());
 /// assert_eq!(beta(app!(eq(), 0.into(), 1.into()), NOR, 0, false), fls());
 /// assert_eq!(beta(app!(eq(), 1.into(), 0.into()), NOR, 0, false), fls());
+/// assert_eq!(beta(eq(), NOR, 0, false), eq());
 /// # }
 /// ```
 pub fn eq() -> Term {
-    abs(abs(
+    abs(abs(app!(
+        Var(1),
+        abs(abs(abs(
+            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+        ))),
+        Var(2),
+        abs(abs(abs(Var(1)))),
+        abs(abs(Var(2))),
         app!(
-            and(),
-            app!(leq(), Var(2), Var(1)),
-            app!(leq(), Var(1), Var(2))
+            Var(2),
+            abs(abs(abs(
+                app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+            ))),
+            Var(1),
+            abs(abs(abs(Var(1)))),
+            abs(abs(Var(2)))
+        ),
+        app!(
+            Var(1),
+            abs(abs(abs(
+                app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+            ))),
+            Var(2),
+            abs(abs(abs(Var(1)))),
+            abs(abs(Var(2)))
         )
-    ))
+    )))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -301,13 +338,39 @@ pub fn eq() -> Term {
 /// # }
 /// ```
 pub fn neq() -> Term {
-    abs(abs(
+    abs(abs(app!(
+        Var(1),
+        abs(abs(abs(
+            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+        ))),
+        Var(2),
+        abs(abs(abs(Var(1)))),
+        abs(abs(Var(2))),
+        abs(abs(Var(1))),
+        abs(abs(Var(2))),
         app!(
-            or(),
-            app(not(), app!(leq(), Var(2), Var(1))),
-            app(not(), app!(leq(), Var(1), Var(2)))
+            Var(1),
+            abs(abs(abs(
+                app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+            ))),
+            Var(2),
+            abs(abs(abs(Var(1)))),
+            abs(abs(Var(2))),
+            abs(abs(Var(1))),
+            abs(abs(Var(2)))
+        ),
+        app!(
+            Var(2),
+            abs(abs(abs(
+                app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+            ))),
+            Var(1),
+            abs(abs(abs(Var(1)))),
+            abs(abs(Var(2))),
+            abs(abs(Var(1))),
+            abs(abs(Var(2)))
         )
-    ))
+    )))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -331,9 +394,15 @@ pub fn neq() -> Term {
 /// # }
 /// ```
 pub fn geq() -> Term {
-    abs(abs(
-        app!(leq(), Var(1), Var(2))
-    ))
+    abs(abs(app!(
+        Var(2),
+        abs(abs(abs(
+            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+        ))),
+        Var(1),
+        abs(abs(abs(Var(1)))),
+        abs(abs(Var(2)))
+    )))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -345,7 +414,7 @@ pub fn geq() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::{zero, one, gt};
+/// use lambda_calculus::arithmetic::gt;
 /// use lambda_calculus::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
@@ -357,9 +426,17 @@ pub fn geq() -> Term {
 /// # }
 /// ```
 pub fn gt() -> Term {
-    abs(abs(
-        app(not(), app!(leq(), Var(2), Var(1)))
-    ))
+    abs(abs(app!(
+        Var(1),
+        abs(abs(abs(
+            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+        ))),
+        Var(2),
+        abs(abs(abs(Var(1)))),
+        abs(abs(Var(2))),
+        abs(abs(Var(1))),
+        abs(abs(Var(2)))
+    )))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
@@ -494,29 +571,26 @@ pub fn rem() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::arithmetic::fac;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::reduction::*;
 ///
 /// let mut expr = fac().app(3.into());
 /// expr.beta(NOR, 0, false);
 ///
 /// assert_eq!(expr, 6.into());
+/// assert_eq!(beta(fac(), NOR, 0, false), fac());
 /// ```
 pub fn fac() -> Term {
-    abs(
-        app!(
-            Var(1),
-            abs(abs(abs(
-                app!(
-                    Var(3),
-                    app!(mult(), Var(2), Var(1)),
-                    app!(succ(), Var(1))
-                )
-            ))),
-            k(),
-            one(),
-            one()
-        )
-    )
+    abs(app!(
+        Var(1),
+        abs(abs(abs(app!(
+            Var(3),
+            abs(app(Var(3), app(Var(2), Var(1)))),
+            abs(abs(app(Var(2), app!(Var(3), Var(2), Var(1)))))
+        )))),
+        abs(abs(Var(2))),
+        abs(abs(app(Var(2), Var(1)))),
+        abs(abs(app(Var(2), Var(1))))
+    ))
 }
 
 impl Term {

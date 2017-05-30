@@ -143,10 +143,10 @@ The library is in a good shape and should soon begin to stabilize.
 
 - normalize `Term`-producing functions
   - [x] booleans.rs
-  - [ ] combinators.rs
-  - [ ] pair.rs
-  - [ ] list.rs
-  - [ ] arithmetic.rs
+  - [x] combinators.rs
+  - [x] pair.rs
+  - [ ] list.rs (Z combinator ones left)
+  - [ ] arithmetic.rs (Z combinator ones left)
 - further optimizations
 - additional tests
 - β-reduction parallelization (at least to some extent)?

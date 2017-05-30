@@ -295,7 +295,12 @@ pub fn append() -> Term {
 /// ```
 pub fn index() -> Term {
     abs(abs(
-        app(fst(), app!(Var(2), snd(), Var(1)))
+        app!(
+            Var(2),
+            abs(app(Var(1), abs(abs(Var(1))))),
+            Var(1),
+            abs(abs(Var(2)))
+        )
     ))
 }
 
