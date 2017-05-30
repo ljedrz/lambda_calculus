@@ -128,10 +128,10 @@ pub fn beta(mut term: Term, order: Order, limit: usize, verbose: bool) -> Term {
 ///
 /// // stdout:
 ///
-/// // normal:             46
-/// // applicative:        39
-/// // hybrid normal:      46
-/// // hybrid applicative: 39
+/// // normal:             35
+/// // applicative:        36
+/// // hybrid normal:      35
+/// // hybrid applicative: 30
 /// ```
 pub fn compare(term: &Term, orders: &[Order], verbose: bool) {
     println!("comparing β-reduction strategies for {}:\n", term);
@@ -398,7 +398,6 @@ mod tests {
     use combinators::{i, omm};
     use arithmetic::fac;
     use std::thread;
-
 
     #[test]
     fn normal_order() {
