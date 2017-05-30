@@ -4,8 +4,8 @@ use term::*;
 use term::Error::*;
 use booleans::*;
 use pair::*;
-use arithmetic::{zero, succ};
-use combinators::{i, z};
+use arithmetic::zero;
+use combinators::z;
 use std::ops::Index;
 
 /// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last link of a
@@ -146,19 +146,18 @@ pub fn tail() -> Term { snd() }
 pub fn length() -> Term {
     app!(
         z(),
-        abs(abs(abs(
-            app!(
-                null(),
-                Var(1),
-                abs(Var(3)),
-                abs(app!(
-                    Var(4),
-                    app(succ(), Var(3)),
-                    app(snd(), Var(2))
-                )),
-                i()
-            )
-        ))),
+        abs(abs(abs(app!(
+            Var(1),
+            abs(abs(abs(abs(abs(Var(1)))))),
+            abs(abs(Var(2))),
+            abs(Var(3)),
+            abs(app!(
+                Var(4),
+                abs(abs(app(Var(2), app!(Var(5), Var(2), Var(1))))),
+                app(Var(2), abs(abs(Var(1))))
+            )),
+            abs(Var(1))
+        )))),
         zero()
     )
 }
@@ -188,19 +187,22 @@ pub fn length() -> Term {
 pub fn reverse() -> Term {
     app!(
         z(),
-        abs(abs(abs(
-            app!(
-                null(),
-                Var(1),
-                abs(Var(3)),
+        abs(abs(abs(app!(
+            Var(1),
+            abs(abs(abs(abs(abs(Var(1)))))),
+            abs(abs(Var(2))),
+            abs(Var(3)),
+            abs(app!(
+                Var(4),
                 abs(app!(
-                    Var(4),
-                    app!(pair(), app(fst(), Var(2)), Var(3)),
-                    app(snd(), Var(2))
+                    Var(1),
+                    app(Var(3), abs(abs(Var(2)))),
+                    Var(4)
                 )),
-                i()
-            )
-        ))),
+                app(Var(2), abs(abs(Var(1))))
+            )),
+            abs(Var(1))
+        )))),
         nil()
     )
 }
@@ -224,16 +226,14 @@ pub fn reverse() -> Term {
 /// # }
 /// ```
 pub fn list() -> Term {
-    abs(
-        app!(
-            Var(1),
-            abs(abs(abs(
-                app(Var(3), app!(pair(), Var(1), Var(2)))
-            ))),
-            reverse(),
-            nil()
-        )
-    )
+    abs(app!(
+        Var(1),
+        abs(abs(abs(
+            app(Var(3), app!(pair(), Var(1), Var(2)))
+        ))),
+        reverse(),
+        nil()
+    ))
 }
 
 /// Applied to 2 Church lists it concatenates them.
@@ -259,19 +259,22 @@ pub fn list() -> Term {
 /// ```
 pub fn append() -> Term {
     z().app(
-        abs(abs(abs(
-            app!(
-                null(),
-                Var(2),
-                abs(Var(2)),
-                abs(app!(
-                    pair(),
-                    app(fst(), Var(3)),
-                    app!(Var(4), app(snd(), Var(3)), Var(2))
-                )),
-                i()
-            )
-        )))
+        abs(abs(abs(app!(
+            Var(2),
+            abs(abs(abs(abs(abs(Var(1)))))),
+            abs(abs(Var(2))),
+            abs(Var(2)),
+            abs(abs(app!(
+                Var(1),
+                app(Var(4), abs(abs(Var(2)))),
+                app!(
+                    Var(5),
+                    app(Var(4), abs(abs(Var(1)))),
+                    Var(3)
+                )
+            ))),
+            Var(1)
+        ))))
     )
 }
 
@@ -329,19 +332,25 @@ pub fn index() -> Term {
 /// ```
 pub fn map() -> Term {
     z().app(
-        abs(abs(abs(
-            app!(
-                null(),
+        abs(abs(abs(app!(
+            Var(1),
+            abs(abs(abs(abs(abs(Var(1)))))),
+            abs(abs(Var(2))),
+            abs(abs(abs(Var(1)))),
+            abs(abs(app!(
                 Var(1),
-                abs(nil()),
-                abs(app!(
-                    pair(),
-                    app(Var(3), app(fst(), Var(2))),
-                    app!(Var(4), Var(3), app(snd(), Var(2)))
-                )),
-                i()
-            )
-        )))
+                app(
+                    Var(4),
+                    app(Var(3), abs(abs(Var(2))))
+                ),
+                app!(
+                    Var(5),
+                    Var(4),
+                    app(Var(3), abs(abs(Var(1))))
+                )
+            ))),
+            abs(Var(1))
+        ))))
     )
 }
 
@@ -370,20 +379,23 @@ pub fn map() -> Term {
 /// ```
 pub fn foldl() -> Term {
     z().app(
-        abs(abs(abs(abs(
-            app!(
-                null(),
-                Var(1),
-                abs(Var(3)),
-                abs(app!(
-                    Var(5),
+        abs(abs(abs(abs(app!(
+            Var(1),
+            abs(abs(abs(abs(abs(Var(1)))))),
+            abs(abs(Var(2))),
+            abs(Var(3)),
+            abs(app!(
+                Var(5),
+                Var(4),
+                app!(
                     Var(4),
-                    app!(Var(4), Var(3), app(fst(), Var(2))),
-                    app(snd(), Var(2))
-                )),
-                i()
-            )
-        ))))
+                    Var(3),
+                    app(Var(2), abs(abs(Var(2))))
+                ),
+                app(Var(2), abs(abs(Var(1))))
+            )),
+            abs(Var(1))
+        )))))
     )
 }
 
@@ -414,19 +426,18 @@ pub fn foldr() -> Term {
     abs(abs(abs(
         app!(
             z(),
-            abs(abs(
-                app!(
-                    null(),
-                    Var(1),
-                    abs(Var(5)),
-                    abs(app!(
-                        Var(6),
-                        app(fst(), Var(2)),
-                        app(Var(3), app(snd(), Var(2)))
-                    )),
-                    i()
-                )
-            )),
+            abs(abs(app!(
+                Var(1),
+                abs(abs(abs(abs(abs(Var(1)))))),
+                abs(abs(Var(2))),
+                abs(Var(5)),
+                abs(app!(
+                    Var(6),
+                    app(Var(2), abs(abs(Var(2)))),
+                    app(Var(3), app(Var(2), abs(abs(Var(1)))))
+                )),
+                abs(Var(1))
+            ))),
             Var(1)
         )
     )))
@@ -459,21 +470,28 @@ pub fn foldr() -> Term {
 /// ```
 pub fn filter() -> Term {
     z().app(
-        abs(abs(abs(
-            app!(
-                null(),
-                Var(1),
-                abs(nil()),
-                abs(app!(
+        abs(abs(abs(app!(
+            Var(1),
+            abs(abs(abs(abs(abs(Var(1)))))),
+            abs(abs(Var(2))),
+            abs(abs(abs(Var(1)))),
+            abs(app!(
+                Var(3),
+                app(Var(2), abs(abs(Var(2)))),
+                abs(abs(app!(
+                    Var(1),
+                    app(Var(4), abs(abs(Var(2)))),
+                    Var(2)
+                ))),
+                abs(Var(1)),
+                app!(
+                    Var(4),
                     Var(3),
-                    app(fst(), Var(2)),
-                    app(pair(), app(fst(), Var(2))),
-                    i(),
-                    app!(Var(4), Var(3), app(snd(), Var(2)))
-                )),
-                i()
-            )
-        )))
+                    app(Var(2), abs(abs(Var(1))))
+                )
+            )),
+            abs(Var(1))
+        ))))
     )
 }
 
