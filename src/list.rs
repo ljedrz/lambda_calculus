@@ -838,7 +838,7 @@ mod tests {
     use super::*;
     use reduction::beta;
     use reduction::Order::*;
-    use arithmetic::{is_zero, plus};
+    use arithmetic::{is_zero, plus, succ};
 
     #[test]
     fn list_from_vector() {
