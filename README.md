@@ -14,31 +14,45 @@ memory-friendly disassembly and referencing their internals.
 
 ## Features
 
+- a parser for lambda expressions
+- 7 β-reduction strategies with optional display of reduction steps
+- standard terms (combinators)
 - Church numerals and arithmetic operations
 - Church booleans
 - Church pairs
 - Church lists
-- standard terms (combinators)
-- a parser for lambda expressions
-- 7 β-reduction strategies with optional display of reduction steps
 
-The data and operators follow the Church encoding. The terms are implemented using De Bruijn
-indices, but are displayed using the classic lambda notation and can be parsed both ways. Library
-functions utilizing the fixed-point combinator use its call-by-value variant and are built for
-compatibility with as many β-reduction strategies as possible.
+The terms are implemented using De Bruijn indices, but are displayed using the classic lambda
+notation and can be parsed both ways.
+
+The data and operators follow the Church encoding. Library functions utilizing the fixed-point
+combinator use its call-by-value variant and are built for compatibility with as many β-reduction
+strategies as possible. The bodies of functions are normalized for maximum performance.
 
 ## Installation
 
 Include the library by adding the following to your Cargo.toml:
 ```
 [dependencies]
-lambda_calculus = "0.12.0"
+lambda_calculus = "^1.0"
 ```
 
 And the following to your code:
 ```
 #[macro_use]
 extern crate lambda_calculus;
+```
+
+Compilation features:
+- `backslash_lambda`: changes the display of lambdas from `λ` to `\`
+- `no_church`: doesn't build the `church` module; useful if you want to implement it on your own or
+introduce a different data encoding
+
+To apply a feature setup the dependency in your Cargo.toml like this:
+```
+[dependencies.lambda_calculus]
+version = "^1.0"
+features = ["no_church"]
 ```
 
 ## Usage
@@ -122,26 +136,21 @@ use lambda_calculus::arithmetic::fac;
 fn main() {
     let expr = app!(fac(), 4.into());
 
-    compare(&expr, &[NOR, APP, HNO, HAP], false);
+    compare(&expr, &[NOR, APP, HNO, HAP], false); // compare normalizing strategies
 }
 ```
 stdout:
 ```
-comparing β-reduction strategies for (λa.a (λb.λc.λd.b ((λe.λf.λg.e (f g)) c d) ((λe.λf.λg.f (e f g)) d)) (λb.λc.b) (λb.λc.b c) (λb.λc.b c)) (λa.λb.a (a (a (a b)))):
+comparing β-reduction strategies for (λa.a (λb.λc.λd.b (λe.c (d e)) (λe.λf.e (d e f))) (λb.λc.b) (λb.λc.b c) (λb.λc.b c)) (λa.λb.a (a (a (a b)))):
 
-normal:             118
-applicative:        68
-hybrid normal:      118
-hybrid applicative: 52
+normal:             87
+applicative:        65
+hybrid normal:      87
+hybrid applicative: 40
 ```
-
-## Status
-
-The library is in a good shape and should soon begin to stabilize.
 
 ## TODO
 
+- a few more tests
+- more independent tests (less integration)
 - further optimizations
-- additional tests
-- β-reduction parallelization (at least to some extent)?
-- shortened display mode/function (λa.λb.λc. => λabc.)?
