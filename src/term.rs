@@ -12,8 +12,7 @@ use std::char::from_u32;
 pub const LAMBDA: char = '\\';
 
 /// The character used to display lambda abstractions. The default is the Greek letter 'λ', but it
-/// can also be set to a '\' (backslash) using conditional compilation with
-/// `feature = "backslash_lambda"`.
+/// can also be set to a '\' (backslash) using `features = ["backslash_lambda"]`.
 #[cfg(not(feature = "backslash_lambda"))]
 pub const LAMBDA: char = 'λ';
 
