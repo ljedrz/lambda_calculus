@@ -355,7 +355,7 @@ pub fn map() -> Term {
 }
 
 /// Applied to a function, a starting value and a Church list it performs a
-/// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_Church::lists) on the
+/// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
 /// list.
 ///
 /// FOLDL := Z (λzfsl. NULL l (λx.s) (λx.z f (f s (FST l)) (SND l)) I) =
@@ -400,7 +400,7 @@ pub fn foldl() -> Term {
 }
 
 /// Applied to a function, a starting value and a Church list it performs a
-/// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_Church::lists) on the
+/// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
 /// list.
 ///
 /// FOLDR := λfsl. Z (λzt. NULL t (λx.s) (λx.f (FST t) (z (SND t))) I) l =
