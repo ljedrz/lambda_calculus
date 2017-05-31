@@ -344,7 +344,9 @@ pub fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -
         },
         App(ref t1, ref t2) => {
             let ret = format!("{} {}",
-                show_precedence_cla(t1, 2, depth), show_precedence_cla(t2, 3, depth));
+                show_precedence_cla(t1, 2, depth),
+                show_precedence_cla(t2, 3, depth)
+            );
             parenthesize_if(&ret, context_precedence == 3).into()
         }
     }
@@ -368,7 +370,9 @@ pub fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -
         },
         App(ref t1, ref t2) => {
             let ret = format!("{}{}",
-                show_precedence_dbr(t1, 2, depth), show_precedence_dbr(t2, 3, depth));
+                show_precedence_dbr(t1, 2, depth),
+                show_precedence_dbr(t2, 3, depth)
+            );
             parenthesize_if(&ret, context_precedence == 3).into()
         }
     }
@@ -417,8 +421,8 @@ mod tests {
 
     #[test]
     fn open_term_display() {
-        assert_eq!(&format!("{}",     abs(Var(2))) ,  "λa.b");
-        assert_eq!(&format!("{}",     abs(Var(3))) ,  "λa.c");
+        assert_eq!(&format!("{}",     abs(Var(2))) , "λa.b");
+        assert_eq!(&format!("{}",     abs(Var(3))) , "λa.c");
         assert_eq!(&format!("{}", abs(abs(Var(3)))), "λa.λb.c");
         assert_eq!(&format!("{}", abs(abs(Var(4)))), "λa.λb.d");
     }
