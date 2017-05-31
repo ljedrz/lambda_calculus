@@ -101,7 +101,7 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
 /// # Example
 ///
 /// ```
-/// use lambda_calculus::arithmetic::pred;
+/// use lambda_calculus::church::numerals::pred;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::NOR;
 ///
@@ -120,7 +120,7 @@ pub fn beta(mut term: Term, order: Order, limit: usize, verbose: bool) -> Term {
 /// # Example
 ///
 /// ```
-/// use lambda_calculus::arithmetic::fac;
+/// use lambda_calculus::church::numerals::fac;
 /// use lambda_calculus::reduction::compare;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -170,7 +170,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::{app, abs};
     /// use lambda_calculus::term::Term::Var;
-    /// use lambda_calculus::arithmetic::zero;
+    /// use lambda_calculus::church::numerals::zero;
     /// use lambda_calculus::combinators::i;
     ///
     /// assert_eq!(app(i(), zero()).eval(), Ok(zero()));
@@ -208,7 +208,7 @@ impl Term {
     /// # Example
     ///
     /// ```
-    /// use lambda_calculus::arithmetic::pred;
+    /// use lambda_calculus::church::numerals::pred;
     /// use lambda_calculus::reduction::Order::NOR;
     ///
     /// let mut pred_one = pred().app(1.into());
@@ -396,7 +396,7 @@ mod tests {
     use super::*;
     use parser::parse;
     use combinators::{i, omm};
-    use arithmetic::fac;
+    use church::numerals::fac;
     use std::thread;
 
     #[test]

@@ -12,7 +12,7 @@ pub fn tru() -> Term { abs(abs(Var(2))) }
 /// FALSE := λab.b = λ λ 1
 pub fn fls() -> Term { abs(abs(Var(1))) }
 
-/// Applied to two Church-encoded booleans it returns their Church-encoded conjunction.
+/// Applied to two Church booleans it returns their Church-encoded conjunction.
 ///
 /// AND := λpq.p q p = λ λ 2 1 2
 ///
@@ -20,7 +20,7 @@ pub fn fls() -> Term { abs(abs(Var(1))) }
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::booleans::{and, tru, fls};
+/// use lambda_calculus::church::booleans::{and, tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -36,7 +36,7 @@ pub fn and() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded booleans it returns their Church-encoded disjunction.
+/// Applied to two Church booleans it returns their Church-encoded disjunction.
 ///
 /// OR := λpq.p p q = λ λ 2 2 1
 ///
@@ -44,7 +44,7 @@ pub fn and() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::booleans::{or, tru, fls};
+/// use lambda_calculus::church::booleans::{or, tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -60,7 +60,7 @@ pub fn or() -> Term {
     ))
 }
 
-/// Applied to a Church-encoded boolean it returns its Church-encoded negation.
+/// Applied to a Church boolean it returns its Church-encoded negation.
 ///
 /// NOT := λp.p FALSE TRUE = λ 1 FALSE TRUE
 ///
@@ -68,7 +68,7 @@ pub fn or() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::booleans::{not, tru, fls};
+/// use lambda_calculus::church::booleans::{not, tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -82,7 +82,7 @@ pub fn not() -> Term {
     )
 }
 
-/// Applied to a Church-encoded boolean it returns its Church-encoded exclusive disjunction.
+/// Applied to two Church booleans it returns their Church-encoded exclusive disjunction.
 ///
 /// XOR := λpq.p (NOT q) q = λ λ 2 (NOT 1) 1
 ///
@@ -90,7 +90,7 @@ pub fn not() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::booleans::{xor, tru, fls};
+/// use lambda_calculus::church::booleans::{xor, tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -114,7 +114,7 @@ pub fn xor() -> Term {
     ))
 }
 
-/// Applied to a Church-encoded boolean it returns its Church-encoded joint denial.
+/// Applied to two Church booleans it returns their Church-encoded joint denial.
 ///
 /// NOR := λpq.NOT (OR p q) = λ λ NOT (OR 2 1)
 ///
@@ -122,7 +122,7 @@ pub fn xor() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::booleans::{nor, tru, fls};
+/// use lambda_calculus::church::booleans::{nor, tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -144,7 +144,7 @@ pub fn nor() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded booleans it returns their Church-encoded alternative denial.
+/// Applied to two Church booleans it returns their Church-encoded alternative denial.
 ///
 /// NAND := λpq.NOT (AND p q) = λ λ NOT (AND 2 1)
 ///
@@ -152,7 +152,7 @@ pub fn nor() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::booleans::{nand, tru, fls};
+/// use lambda_calculus::church::booleans::{nand, tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -174,7 +174,7 @@ pub fn nand() -> Term {
     ))
 }
 
-/// Applied to a Church encoded predicate and two terms it returns the first one if the predicate
+/// Applied to a Church-encoded predicate and two terms it returns the first one if the predicate
 /// is true or the second one if the predicate is false.
 ///
 /// IF_ELSE := λpab.p a b = λ λ λ 3 2 1
@@ -183,8 +183,8 @@ pub fn nand() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::booleans::{if_else, tru, fls};
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::church::booleans::{if_else, tru, fls};
+/// use lambda_calculus::church::numerals::{zero, one};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///

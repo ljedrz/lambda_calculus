@@ -1,9 +1,8 @@
-//! [Church-encoded numerals](https://en.wikipedia.org/wiki/Church_encoding#Church_numerals) and
-//! arithmetic operations
+//! [Church numerals](https://en.wikipedia.org/wiki/Church_encoding#Church_numerals)
 
 use term::*;
 use term::Error::*;
-use booleans::*;
+use church::booleans::*;
 use combinators::z;
 
 /// Produces a Church-encoded number zero.
@@ -12,7 +11,7 @@ use combinators::z;
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::zero;
+/// use lambda_calculus::church::numerals::zero;
 /// use lambda_calculus::term::Term;
 ///
 /// assert_eq!(zero(), Term::from(0));
@@ -28,8 +27,8 @@ pub fn zero() -> Term { abs(abs(Var(1))) }
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::is_zero;
-/// use lambda_calculus::booleans::{tru, fls};
+/// use lambda_calculus::church::numerals::is_zero;
+/// use lambda_calculus::church::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -49,7 +48,7 @@ pub fn is_zero() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::one;
+/// use lambda_calculus::church::numerals::one;
 /// use lambda_calculus::term::Term;
 ///
 /// assert_eq!(one(), Term::from(1));
@@ -66,7 +65,7 @@ pub fn one() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::succ;
+/// use lambda_calculus::church::numerals::succ;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = succ().app(0.into());
@@ -88,7 +87,7 @@ pub fn succ() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::plus;
+/// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(plus(), 3.into(), 2.into());
@@ -111,7 +110,7 @@ pub fn plus() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::mult;
+/// use lambda_calculus::church::numerals::mult;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(mult(), 2.into(), 3.into());
@@ -134,7 +133,7 @@ pub fn mult() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::pow;
+/// use lambda_calculus::church::numerals::pow;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(pow(), 2.into(), 3.into());
@@ -159,7 +158,7 @@ pub fn pow() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::pred;
+/// use lambda_calculus::church::numerals::pred;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = pred().app(3.into());
@@ -184,7 +183,7 @@ pub fn pred() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::sub;
+/// use lambda_calculus::church::numerals::sub;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(sub(), 5.into(), 3.into());
@@ -208,8 +207,8 @@ pub fn sub() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::lt;
-/// use lambda_calculus::booleans::{tru, fls};
+/// use lambda_calculus::church::numerals::lt;
+/// use lambda_calculus::church::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -242,8 +241,8 @@ pub fn lt() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::leq;
-/// use lambda_calculus::booleans::{tru, fls};
+/// use lambda_calculus::church::numerals::leq;
+/// use lambda_calculus::church::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -274,8 +273,8 @@ pub fn leq() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::eq;
-/// use lambda_calculus::booleans::{tru, fls};
+/// use lambda_calculus::church::numerals::eq;
+/// use lambda_calculus::church::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -325,8 +324,8 @@ pub fn eq() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::neq;
-/// use lambda_calculus::booleans::{tru, fls};
+/// use lambda_calculus::church::numerals::neq;
+/// use lambda_calculus::church::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -381,8 +380,8 @@ pub fn neq() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::geq;
-/// use lambda_calculus::booleans::{tru, fls};
+/// use lambda_calculus::church::numerals::geq;
+/// use lambda_calculus::church::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -413,8 +412,8 @@ pub fn geq() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::gt;
-/// use lambda_calculus::booleans::{tru, fls};
+/// use lambda_calculus::church::numerals::gt;
+/// use lambda_calculus::church::booleans::{tru, fls};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -448,7 +447,7 @@ pub fn gt() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::div;
+/// use lambda_calculus::church::numerals::div;
 /// use lambda_calculus::term::Term;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -509,7 +508,7 @@ pub fn div() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::quot;
+/// use lambda_calculus::church::numerals::quot;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(quot(), 6.into(), 2.into());
@@ -568,7 +567,7 @@ pub fn quot() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::arithmetic::rem;
+/// use lambda_calculus::church::numerals::rem;
 /// use lambda_calculus::reduction::Order::*;
 ///
 /// let mut expr = app!(rem(), 3.into(), 2.into());
@@ -620,7 +619,7 @@ pub fn rem() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::fac;
+/// use lambda_calculus::church::numerals::fac;
 /// use lambda_calculus::reduction::*;
 ///
 /// let mut expr = fac().app(3.into());
@@ -648,7 +647,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::arithmetic::one;
+    /// use lambda_calculus::church::numerals::one;
     ///
     /// assert_eq!(one().value(), Ok(1));
     /// ```
@@ -681,7 +680,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::arithmetic::one;
+    /// use lambda_calculus::church::numerals::one;
     ///
     /// assert!(one().is_cnum());
     /// ```

@@ -1,10 +1,10 @@
-//! [Church single-pair list](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
+//! [Church single-pair lists](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
 
 use term::*;
 use term::Error::*;
-use booleans::*;
-use pair::*;
-use arithmetic::zero;
+use church::booleans::*;
+use church::pairs::*;
+use church::numerals::zero;
 use combinators::z;
 use std::ops::Index;
 
@@ -15,8 +15,8 @@ use std::ops::Index;
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::list::nil;
-/// use lambda_calculus::booleans::fls;
+/// use lambda_calculus::church::lists::nil;
+/// use lambda_calculus::church::booleans::fls;
 ///
 /// assert_eq!(nil(), fls());
 /// assert!(!nil().is_list());
@@ -32,8 +32,8 @@ pub fn nil() -> Term { fls() }
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::list::{nil, null};
-/// use lambda_calculus::booleans::tru;
+/// use lambda_calculus::church::lists::{nil, null};
+/// use lambda_calculus::church::booleans::tru;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -53,8 +53,8 @@ pub fn null() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::arithmetic::{zero, one};
-/// use lambda_calculus::list::{nil, cons};
+/// use lambda_calculus::church::numerals::{zero, one};
+/// use lambda_calculus::church::lists::{nil, cons};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -89,8 +89,8 @@ pub fn cons() -> Term { pair() }
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::head;
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::church::lists::head;
+/// use lambda_calculus::church::numerals::{zero, one};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -111,8 +111,8 @@ pub fn head() -> Term { fst() }
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::tail;
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::church::lists::tail;
+/// use lambda_calculus::church::numerals::{zero, one};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -133,7 +133,7 @@ pub fn tail() -> Term { snd() }
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::{length, nil};
+/// use lambda_calculus::church::lists::{length, nil};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -172,8 +172,8 @@ pub fn length() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::reverse;
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::church::lists::reverse;
+/// use lambda_calculus::church::numerals::{zero, one};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -217,7 +217,7 @@ pub fn reverse() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::list;
+/// use lambda_calculus::church::lists::list;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -246,7 +246,7 @@ pub fn list() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::append;
+/// use lambda_calculus::church::lists::append;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -288,7 +288,7 @@ pub fn append() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::index;
+/// use lambda_calculus::church::lists::index;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -319,8 +319,8 @@ pub fn index() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::map;
-/// use lambda_calculus::arithmetic::succ;
+/// use lambda_calculus::church::lists::map;
+/// use lambda_calculus::church::numerals::succ;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -355,7 +355,7 @@ pub fn map() -> Term {
 }
 
 /// Applied to a function, a starting value and a Church list it performs a
-/// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
+/// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_Church::lists) on the
 /// list.
 ///
 /// FOLDL := Z (λzfsl. NULL l (λx.s) (λx.z f (f s (FST l)) (SND l)) I) =
@@ -366,8 +366,8 @@ pub fn map() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::{foldl, nil};
-/// use lambda_calculus::arithmetic::plus;
+/// use lambda_calculus::church::lists::{foldl, nil};
+/// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -400,7 +400,7 @@ pub fn foldl() -> Term {
 }
 
 /// Applied to a function, a starting value and a Church list it performs a
-/// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
+/// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_Church::lists) on the
 /// list.
 ///
 /// FOLDR := λfsl. Z (λzt. NULL t (λx.s) (λx.f (FST t) (z (SND t))) I) l =
@@ -411,8 +411,8 @@ pub fn foldl() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::{foldr, nil};
-/// use lambda_calculus::arithmetic::plus;
+/// use lambda_calculus::church::lists::{foldr, nil};
+/// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -453,8 +453,8 @@ pub fn foldr() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::term::Term;
-/// use lambda_calculus::list::{filter, nil};
-/// use lambda_calculus::arithmetic::{is_zero, gt};
+/// use lambda_calculus::church::lists::{filter, nil};
+/// use lambda_calculus::church::numerals::{is_zero, gt};
 /// use lambda_calculus::combinators::c;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
@@ -500,7 +500,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::list::nil;
+    /// use lambda_calculus::church::lists::nil;
     ///
     /// assert!(nil().is_empty());
     /// ```
@@ -526,7 +526,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -542,7 +542,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -565,7 +565,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -588,7 +588,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -611,7 +611,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -629,7 +629,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -647,7 +647,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -665,7 +665,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -683,7 +683,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -702,7 +702,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -720,7 +720,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -747,7 +747,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -767,7 +767,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
     ///
@@ -838,7 +838,7 @@ mod tests {
     use super::*;
     use reduction::beta;
     use reduction::Order::*;
-    use arithmetic::{is_zero, plus, succ};
+    use church::numerals::{is_zero, plus, succ};
 
     #[test]
     fn list_from_vector() {

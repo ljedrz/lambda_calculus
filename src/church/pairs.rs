@@ -1,8 +1,8 @@
-//! [Church pair](https://en.wikipedia.org/wiki/Church_encoding#Church_pairs)
+//! [Church pairs](https://en.wikipedia.org/wiki/Church_encoding#Church_pairs)
 
 use term::*;
 use term::Error::*;
-use booleans::*;
+use church::booleans::*;
 
 /// Produces a Church-encoded pair; applying it to two other terms puts them inside it.
 ///
@@ -12,8 +12,8 @@ use booleans::*;
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::pair::pair;
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::church::pairs::pair;
+/// use lambda_calculus::church::numerals::{zero, one};
 ///
 /// let pair01 = app!(pair(), zero(), one());
 ///
@@ -35,8 +35,8 @@ pub fn pair() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::pair::{pair, fst};
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::church::pairs::{pair, fst};
+/// use lambda_calculus::church::numerals::{zero, one};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -55,8 +55,8 @@ pub fn fst() -> Term { abs(Var(1).app(tru())) }
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::pair::{pair, snd};
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::church::pairs::{pair, snd};
+/// use lambda_calculus::church::numerals::{zero, one};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -74,8 +74,8 @@ impl Term {
     /// ```
     /// # #[macro_use] extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::pair::pair;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::pairs::pair;
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let pair01 = app!(pair(), zero(), one());
     ///
@@ -92,8 +92,8 @@ impl Term {
     /// ```
     /// # #[macro_use] extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::pair::pair;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::pairs::pair;
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let pair01 = app!(pair(), zero(), one());
     ///
@@ -119,8 +119,8 @@ impl Term {
     /// ```
     /// # #[macro_use] extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::pair::pair;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::pairs::pair;
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let pair01 = app!(pair(), zero(), one());
     ///
@@ -146,8 +146,8 @@ impl Term {
     /// ```
     /// # #[macro_use] extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::pair::pair;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::pairs::pair;
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let mut pair01 = app!(pair(), zero(), one());
     ///
@@ -173,8 +173,8 @@ impl Term {
     /// ```
     /// # #[macro_use] extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::pair::pair;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::pairs::pair;
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let pair01 = app!(pair(), zero(), one());
     ///
@@ -194,8 +194,8 @@ impl Term {
     /// ```
     /// # #[macro_use] extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::pair::pair;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::pairs::pair;
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let pair01 = app!(pair(), zero(), one());
     ///
@@ -216,8 +216,8 @@ impl Term {
     /// ```
     /// # #[macro_use] extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::pair::pair;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::pairs::pair;
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let mut pair01 = app!(pair(), zero(), one());
     ///
@@ -237,8 +237,8 @@ impl Term {
     /// ```
     /// # #[macro_use] extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::pair::pair;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::pairs::pair;
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let pair01 = app!(pair(), zero(), one());
     ///
@@ -258,8 +258,8 @@ impl Term {
     /// ```
     /// # #[macro_use] extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::pair::pair;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::pairs::pair;
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let pair01 = app!(pair(), zero(), one());
     ///
@@ -279,8 +279,8 @@ impl Term {
     /// ```
     /// # #[macro_use] extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::pair::pair;
-    /// use lambda_calculus::arithmetic::{zero, one};
+    /// use lambda_calculus::church::pairs::pair;
+    /// use lambda_calculus::church::numerals::{zero, one};
     ///
     /// let mut pair01 = app!(pair(), zero(), one());
     ///

@@ -19,7 +19,7 @@ use term::*;
 /// # Example
 /// ```
 /// use lambda_calculus::combinators::i;
-/// use lambda_calculus::arithmetic::zero;
+/// use lambda_calculus::church::numerals::zero;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -36,7 +36,7 @@ pub fn i() -> Term { abs(Var(1)) }
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::k;
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::church::numerals::{zero, one};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -145,7 +145,7 @@ pub fn c() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::w;
-/// use lambda_calculus::arithmetic::{zero, one};
+/// use lambda_calculus::church::numerals::{zero, one};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -172,7 +172,7 @@ pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
 /// # Example
 /// ```
 /// use lambda_calculus::combinators::om;
-/// use lambda_calculus::arithmetic::zero;
+/// use lambda_calculus::church::numerals::zero;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -208,7 +208,7 @@ pub fn omm() -> Term { om().app(om()) }
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::y;
-/// use lambda_calculus::arithmetic::zero;
+/// use lambda_calculus::church::numerals::zero;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -239,7 +239,7 @@ pub fn y() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::z;
-/// use lambda_calculus::arithmetic::zero;
+/// use lambda_calculus::church::numerals::zero;
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///
@@ -264,7 +264,7 @@ pub fn z() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::t;
-/// use lambda_calculus::arithmetic::{zero, is_zero};
+/// use lambda_calculus::church::numerals::{zero, is_zero};
 /// use lambda_calculus::reduction::beta;
 /// use lambda_calculus::reduction::Order::*;
 ///

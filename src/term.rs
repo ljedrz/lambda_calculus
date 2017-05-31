@@ -21,7 +21,7 @@ pub const LAMBDA: char = 'λ';
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::arithmetic::succ;
+/// use lambda_calculus::church::numerals::succ;
 ///
 /// assert_eq!(&format!(  "{}", succ()), "λa.λb.λc.b (a b c)"); // Classic notation
 /// assert_eq!(&format!("{:?}", succ()), "λλλ2(321)");          // DeBruijn index notation
@@ -69,7 +69,7 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::term::Term::*;
-    /// use lambda_calculus::arithmetic::{zero, succ};
+    /// use lambda_calculus::church::numerals::{zero, succ};
     ///
     /// assert_eq!(succ().app(zero()), App(Box::new(succ()), Box::new(zero())));
     /// ```
@@ -312,7 +312,7 @@ impl Term {
 /// ```
 pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 
-/// Produces an `App`lication of 2 given `Term`s without any reduction, consuming them in the
+/// Produces an `App`lication of two given `Term`s without any reduction, consuming them in the
 /// process.
 ///
 /// # Example
@@ -415,12 +415,11 @@ macro_rules! app {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use arithmetic::{zero, succ, pred};
 
     #[test]
     fn app_macro() {
-        assert_eq!(app!(succ(), app!(Var(1), Var(2), Var(3))),
-                   succ().app(Var(1).app(Var(2)).app(Var(3)))
+        assert_eq!(app!(Var(4), app!(Var(1), Var(2), Var(3))),
+                   Var(4).app(Var(1).app(Var(2)).app(Var(3)))
         );
     }
 
@@ -434,12 +433,21 @@ mod tests {
 
     #[test]
     fn display_modes() {
-        assert_eq!(&format!("{}", zero()), "λa.λb.b");
-        assert_eq!(&format!("{}", succ()), "λa.λb.λc.b (a b c)");
-        assert_eq!(&format!("{}", pred()), "λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)");
+        let zero = abs(abs(Var(1)));
+        let succ = abs(abs(abs(app(Var(2), app!(Var(3), Var(2), Var(1))))));
+        let pred = abs(abs(abs(app!(
+            Var(3),
+            abs(abs(app(Var(1), app(Var(2), Var(4))))),
+            abs(Var(2)),
+            abs(Var(1))
+        ))));
 
-        assert_eq!(&format!("{:?}", zero()), "λλ1");
-        assert_eq!(&format!("{:?}", succ()), "λλλ2(321)");
-        assert_eq!(&format!("{:?}", pred()), "λλλ3(λλ1(24))(λ2)(λ1)");
+        assert_eq!(&format!("{}", zero), "λa.λb.b");
+        assert_eq!(&format!("{}", succ), "λa.λb.λc.b (a b c)");
+        assert_eq!(&format!("{}", pred), "λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)");
+
+        assert_eq!(&format!("{:?}", zero), "λλ1");
+        assert_eq!(&format!("{:?}", succ), "λλλ2(321)");
+        assert_eq!(&format!("{:?}", pred), "λλλ3(λλ1(24))(λ2)(λ1)");
     }
 }

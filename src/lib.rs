@@ -5,10 +5,7 @@
 #[macro_use]
 
 pub mod term;
-pub mod reduction;
-pub mod arithmetic;
-pub mod booleans;
-pub mod pair;
-pub mod list;
-pub mod combinators;
 pub mod parser;
+pub mod reduction;
+pub mod combinators;
+pub mod church;

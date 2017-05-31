@@ -206,7 +206,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
 /// # Example
 /// ```
 /// use lambda_calculus::parser::*;
-/// use lambda_calculus::arithmetic::{succ, pred};
+/// use lambda_calculus::church::numerals::{succ, pred};
 ///
 /// assert_eq!(parse(&"λn. λf. λx. n (λg. λh. h (g f)) (λu. x) (λu. u)", Classic), Ok(pred()));
 /// assert_eq!(parse(&"λn.λf.λx.n(λg.λh.h(g f))(λu.x)(λu.u)", Classic), Ok(pred()));
