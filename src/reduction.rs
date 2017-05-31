@@ -138,7 +138,8 @@ pub fn compare(term: &Term, orders: &[Order], verbose: bool) {
     for order in orders {
         println!("{}:{}{}{}", order,
             " ".repeat(if !verbose { 19 - format!("{}", order).len() } else { 1 }),
-            term.clone().beta(*order, 0, verbose), if verbose { "\n" } else { "" }
+            term.clone().beta(*order, 0, verbose),
+            if verbose { "\n" } else { "" }
         )
     }
 }
