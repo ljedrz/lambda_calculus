@@ -67,10 +67,9 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
-    /// use lambda_calculus::church::numerals::{zero, succ};
+    /// use lambda_calculus::term::*;
     ///
-    /// assert_eq!(succ().app(zero()), App(Box::new(succ()), Box::new(zero())));
+    /// assert_eq!(Var(1).app(Var(2)), App(Box::new(Var(1)), Box::new(Var(2))));
     /// ```
     pub fn app(self, argument: Term) -> Term { App(Box::new(self), Box::new(argument)) }
 
@@ -78,7 +77,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).unvar(), Ok(1));
     /// ```
@@ -93,7 +92,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).unvar_ref(), Ok(&1));
     /// ```
@@ -108,7 +107,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).unvar_mut(), Ok(&mut 1));
     /// ```
@@ -123,8 +122,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
-    /// use lambda_calculus::term::abs;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(abs(Var(1)).unabs(), Ok(Var(1)));
     /// ```
@@ -139,8 +137,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
-    /// use lambda_calculus::term::abs;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(abs(Var(1)).unabs_ref(), Ok(&Var(1)));
     /// ```
@@ -155,8 +152,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
-    /// use lambda_calculus::term::abs;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(abs(Var(1)).unabs_mut(), Ok(&mut Var(1)));
     /// ```
@@ -171,7 +167,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).app(Var(2)).unapp(), Ok((Var(1), Var(2))));
     /// ```
@@ -186,7 +182,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).app(Var(2)).unapp_ref(), Ok((&Var(1), &Var(2))));
     /// ```
@@ -201,7 +197,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).app(Var(2)).unapp_mut(), Ok((&mut Var(1), &mut Var(2))));
     /// ```
@@ -216,7 +212,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).app(Var(2)).lhs(), Ok(Var(1)));
     /// ```
@@ -231,7 +227,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).app(Var(2)).lhs_ref(), Ok(&Var(1)));
     /// ```
@@ -246,7 +242,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).app(Var(2)).lhs_mut(), Ok(&mut Var(1)));
     /// ```
@@ -258,7 +254,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).app(Var(2)).rhs(), Ok(Var(2)));
     /// ```
@@ -273,7 +269,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).app(Var(2)).rhs_ref(), Ok(&Var(2)));
     /// ```
@@ -288,7 +284,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term::*;
+    /// use lambda_calculus::term::*;
     ///
     /// assert_eq!(Var(1).app(Var(2)).rhs_mut(), Ok(&mut Var(2)));
     /// ```
@@ -304,8 +300,7 @@ impl Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::term::Term::*;
-/// use lambda_calculus::term::abs;
+/// use lambda_calculus::term::*;
 ///
 /// assert_eq!(abs(Var(1)), Abs(Box::new(Var(1))));
 /// ```
@@ -316,8 +311,7 @@ pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::term::Term::*;
-/// use lambda_calculus::term::app;
+/// use lambda_calculus::term::*;
 ///
 /// assert_eq!(app(Var(1), Var(2)), App(Box::new(Var(1)), Box::new(Var(2))));
 /// ```
@@ -394,8 +388,7 @@ fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term::*;
-/// use lambda_calculus::term::app;
+/// use lambda_calculus::term::*;
 ///
 /// assert_eq!(app!(Var(1), Var(2), Var(3)), Var(1).app(Var(2)).app(Var(3)));
 /// # }
