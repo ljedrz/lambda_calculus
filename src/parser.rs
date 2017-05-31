@@ -69,6 +69,7 @@ fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
 fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
     let mut chars = input.chars().enumerate().peekable();
     let mut tokens = Vec::new();
+    let valid_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     while let Some((i, c)) = chars.next() {
         match c {
@@ -77,7 +78,7 @@ fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
                 while let Some((i, c)) = chars.next() {
                     if c == '.' {
                         break
-                    } else if "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(c) {
+                    } else if valid_chars.contains(c) {
                         name.push(c)
                     } else {
                         return Err(InvalidCharacter((i + 1, c)))
@@ -90,7 +91,7 @@ fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
              _  => {
                 if c.is_whitespace() {
                     ()
-                } else if "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(c) {
+                } else if valid_chars.contains(c) {
                     let mut name = c.to_string();
                     while let Some(&(_, c)) = chars.peek() {
                         if c.is_whitespace() || c == '(' || c == ')' {
