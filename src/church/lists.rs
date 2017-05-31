@@ -44,7 +44,7 @@ pub fn null() -> Term {
     abs(app!(Var(1), abs(abs(abs(fls()))), tru()))
 }
 
-/// Equivalent to `pair::pair()`; applied to two terms it returns them contained in a Church list.
+/// Equivalent to `pairs::pair()`; applied to two terms it returns them contained in a Church list.
 ///
 /// CONS := PAIR
 ///
@@ -80,7 +80,7 @@ pub fn null() -> Term {
 /// ```
 pub fn cons() -> Term { pair() }
 
-/// Equivalent to `pair::fst()`; applied to a Church list it returns its first element.
+/// Equivalent to `pairs::fst()`; applied to a Church list it returns its first element.
 ///
 /// HEAD := FST
 ///
@@ -101,7 +101,7 @@ pub fn cons() -> Term { pair() }
 /// ```
 pub fn head() -> Term { fst() }
 
-/// Equivalent to `pair::snd()`; applied to a Church list it returns a new list with all its
+/// Equivalent to `pairs::snd()`; applied to a Church list it returns a new list with all its
 /// elements but the first one.
 ///
 /// TAIL := SND
