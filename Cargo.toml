@@ -6,7 +6,7 @@ repository = "https://github.com/ljedrz/lambda_calculus"
 documentation = "https://docs.rs/lambda_calculus"
 readme = "README.md"
 license = "CC0-1.0"
-keywords = ["lambda", "calculus", "church", "functional", "math", "mathematics", "combinators"]
+keywords = ["lambda", "calculus", "functional", "mathematics", "combinators"]
 authors = ["ljedrz <ljedrz@gmail.com>"]
 exclude = [".cargo/*"]
 
