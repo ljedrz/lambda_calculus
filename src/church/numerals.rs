@@ -895,7 +895,7 @@ mod tests {
     }
 
     #[test]
-    fn church_fac() {
+    fn church_factorial() {
         assert_eq!(beta(app!(fac(), 0.into()), NOR, 0, false), 1.into());
         assert_eq!(beta(app!(fac(), 1.into()), NOR, 0, false), 1.into());
         assert_eq!(beta(app!(fac(), 2.into()), NOR, 0, false), 2.into());
