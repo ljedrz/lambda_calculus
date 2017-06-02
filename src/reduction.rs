@@ -190,14 +190,22 @@ impl Term {
     }
 
     fn eval_with_info(&mut self, depth: u32, count: &usize, verbose: bool) {
-        if verbose { println!("\n{}. {}", count + 1, show_precedence_cla(self, 0, depth)) }
+        let stdout = stdout();
+        let mut buf = BufWriter::new(stdout.lock());
+
+        if verbose {
+            writeln!(buf, "\n{}. {}", count + 1, show_precedence_cla(self, 0, depth)).unwrap()
+        }
 
         let copy = self.clone();
         *self = copy.eval().unwrap(); // safe; only called in reduction sites
 
         if verbose {
             let indent_len = ((*count + 1) as f32).log10().trunc() as usize + 5;
-            println!("=>{}{}", " ".repeat(indent_len), show_precedence_cla(self, 0, depth))
+            writeln!(buf, "=>{}{}",
+                " ".repeat(indent_len),
+                show_precedence_cla(self, 0, depth)
+            ).unwrap()
         }
     }
 
