@@ -2,6 +2,7 @@
 
 use term::*;
 use std::fmt;
+use std::io::{Write, BufWriter, stdout};
 pub use self::Order::*;
 
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
@@ -134,13 +135,16 @@ pub fn beta(mut term: Term, order: Order, limit: usize, verbose: bool) -> Term {
 /// // hybrid applicative: 30
 /// ```
 pub fn compare(term: &Term, orders: &[Order], verbose: bool) {
-    println!("comparing β-reduction strategies for {}:\n", term);
+    let stdout = stdout();
+    let handle = stdout.lock();
+    let mut buf = BufWriter::new(handle);
+
+    let _ = writeln!(buf, "comparing β-reduction strategies for {}:\n", term);
     for order in orders {
-        println!("{}:{}{}{}", order,
-            " ".repeat(if !verbose { 19 - format!("{}", order).len() } else { 1 }),
-            term.clone().beta(*order, 0, verbose),
-            if verbose { "\n" } else { "" }
-        )
+        let _ = writeln!(buf, "{}:{}{}", order,
+            " ".repeat(19 - format!("{}", order).len()),
+            term.clone().beta(*order, 0, verbose)
+        );
     }
 }
 
