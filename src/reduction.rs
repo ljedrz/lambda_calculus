@@ -136,15 +136,14 @@ pub fn beta(mut term: Term, order: Order, limit: usize, verbose: bool) -> Term {
 /// ```
 pub fn compare(term: &Term, orders: &[Order], verbose: bool) {
     let stdout = stdout();
-    let handle = stdout.lock();
-    let mut buf = BufWriter::new(handle);
+    let mut buf = BufWriter::new(stdout.lock());
 
-    let _ = writeln!(buf, "comparing β-reduction strategies for {}:\n", term);
+    writeln!(buf, "comparing β-reduction strategies for {}:\n", term).unwrap();
     for order in orders {
-        let _ = writeln!(buf, "{}:{}{}", order,
+        writeln!(buf, "{}:{}{}", order,
             " ".repeat(19 - format!("{}", order).len()),
             term.clone().beta(*order, 0, verbose)
-        );
+        ).unwrap();
     }
 }
 
