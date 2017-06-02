@@ -228,14 +228,13 @@ pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
 }
 
 fn fold_exprs(exprs: &[Expression]) -> Result<Term, Error> {
-    let iter = exprs.into_iter();
-    let mut stack  = Vec::new();
+    let mut depth  = 0;
     let mut output = Vec::new();
 
-    for expr in iter {
+    for expr in exprs.iter() {
         match *expr {
             Variable(i) => output.push(Var(i)),
-            Abstraction => stack.push(Abstraction),
+            Abstraction => depth += 1,
             Sequence(ref exprs) => {
                 let subexpr = try!(fold_exprs(exprs));
                 output.push(subexpr)
@@ -245,7 +244,7 @@ fn fold_exprs(exprs: &[Expression]) -> Result<Term, Error> {
 
     let mut ret = try!(fold_terms(output));
 
-    while let Some(Abstraction) = stack.pop() {
+    for _ in 0..depth {
         ret = abs(ret);
     }
 
