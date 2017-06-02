@@ -121,8 +121,8 @@ fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut
     let mut output = Vec::with_capacity(tokens[*pos..].len());
     let mut inner_stack_count = 0;
 
-    while *pos < tokens.len() {
-        match tokens[*pos] {
+    while let Some(token) = tokens.get(*pos) {
+        match *token {
             CLambda(ref name) => {
                 output.push(Lambda);
                 stack.push(name.clone());
@@ -167,12 +167,12 @@ fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
 }
 
 fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
-    let mut expr = Vec::new();
-
     if tokens.is_empty() { return Err(EmptyExpression) }
 
-    while *pos < tokens.len() {
-        match tokens[*pos] {
+    let mut expr = Vec::new();
+
+    while let Some(token) = tokens.get(*pos) {
+        match *token {
             Lambda => {
                 expr.push(Abstraction)
             },
