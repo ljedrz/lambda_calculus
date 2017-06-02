@@ -65,7 +65,7 @@ pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, Error> {
 fn _apply(lhs: &mut Term, rhs: &Term, depth: usize) {
     match *lhs {
         Var(i) => if i == depth {
-            *lhs = rhs.clone(); // substitute a top-level variable from lhs with rhs
+            *lhs = rhs.to_owned(); // substitute a top-level variable from lhs with rhs
             update_free_variables(lhs, depth - 1, 0); // update indices of free variables from rhs
         } else if i > depth {
             *lhs = Var(i - 1) // decrement a free variable's index
@@ -142,7 +142,7 @@ pub fn compare(term: &Term, orders: &[Order], verbose: bool) {
     for order in orders {
         writeln!(buf, "{}:{}{}", order,
             " ".repeat(19 - format!("{}", order).len()),
-            term.clone().beta(*order, 0, verbose)
+            term.to_owned().beta(*order, 0, verbose)
         ).unwrap();
     }
 }

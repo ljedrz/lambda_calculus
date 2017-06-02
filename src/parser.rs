@@ -125,7 +125,7 @@ fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut
         match *token {
             CLambda(ref name) => {
                 output.push(Lambda);
-                stack.push(name.clone());
+                stack.push(name.to_owned());
                 inner_stack_count += 1;
             },
             CLparen => {
