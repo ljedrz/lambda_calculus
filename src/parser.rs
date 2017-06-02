@@ -118,7 +118,7 @@ fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
 
 fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut usize) -> Vec<Token>
 {
-    let mut output = Vec::new();
+    let mut output = Vec::with_capacity(tokens[*pos..].len());
     let mut inner_stack_count = 0;
 
     while *pos < tokens.len() {
