@@ -224,26 +224,26 @@ pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
 
     let exprs = try!(if let Sequence(exprs) = ast { Ok(exprs) } else { Err(InvalidExpression) });
 
-    fold_exprs(&exprs, &mut Vec::new(), &mut Vec::new())
+    fold_exprs(&exprs)
 }
 
-fn fold_exprs(exprs: &[Expression], stack: &mut Vec<Expression>, output: &mut Vec<Term>)
-    -> Result<Term, Error>
-{
+fn fold_exprs(exprs: &[Expression]) -> Result<Term, Error> {
     let iter = exprs.into_iter();
+    let mut stack  = Vec::new();
+    let mut output = Vec::new();
 
     for expr in iter {
         match *expr {
             Variable(i) => output.push(Var(i)),
             Abstraction => stack.push(Abstraction),
             Sequence(ref exprs) => {
-                let subexpr = try!(fold_exprs(exprs, &mut Vec::new(), &mut Vec::new()));
+                let subexpr = try!(fold_exprs(exprs));
                 output.push(subexpr)
             }
         }
     }
 
-    let mut ret = try!(fold_terms(output.drain(..).collect()));
+    let mut ret = try!(fold_terms(output));
 
     while let Some(Abstraction) = stack.pop() {
         ret = abs(ret);
