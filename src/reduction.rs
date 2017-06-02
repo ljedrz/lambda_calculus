@@ -189,11 +189,12 @@ impl Term {
         apply(lhs, &rhs)
     }
 
-    fn eval_with_info(&mut self, depth: u32, count: &usize, verbose: bool) {
-        if verbose { println!("\n{}. {}", count + 1, show_precedence_cla(self, 0, depth)) }
+    fn eval_with_info(&mut self, depth: u32, count: &mut usize, verbose: bool) {
+        if verbose { println!("\n{}. {}", *count + 1, show_precedence_cla(self, 0, depth)) }
 
         let copy = self.clone();
         *self = copy.eval().unwrap(); // safe; only called in reduction sites
+        *count += 1;
 
         if verbose {
             let indent_len = ((*count + 1) as f32).log10().trunc() as usize + 5;
@@ -259,7 +260,6 @@ impl Term {
 
             if self.is_reducible(limit, count) {
                 self.eval_with_info(depth, count, verbose);
-                *count += 1;
                 self.beta_cbn(depth, limit, count, verbose);
             }
         }
@@ -275,7 +275,6 @@ impl Term {
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count, verbose);
-                    *count += 1;
                     self.beta_nor(depth, limit, count, verbose);
                 } else {
                     self.lhs_mut().unwrap().beta_nor(depth, limit, count, verbose);
@@ -295,7 +294,6 @@ impl Term {
 
             if self.is_reducible(limit, count) {
                 self.eval_with_info(depth, count, verbose);
-                *count += 1;
                 self.beta_cbv(depth, limit, count, verbose);
             }
         }
@@ -312,7 +310,6 @@ impl Term {
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count, verbose);
-                    *count += 1;
                     self.beta_app(depth, limit, count, verbose);
                 }
             },
@@ -331,7 +328,6 @@ impl Term {
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count, verbose);
-                    *count += 1;
                     self.beta_hap(depth, limit, count, verbose);
                 } else {
                     self.lhs_mut().unwrap().beta_hap(depth, limit, count, verbose);
@@ -351,7 +347,6 @@ impl Term {
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count, verbose);
-                    *count += 1;
                     self.beta_hsp(depth, limit, count, verbose)
                 }
             },
@@ -369,7 +364,6 @@ impl Term {
 
                 if self.is_reducible(limit, count) {
                     self.eval_with_info(depth, count, verbose);
-                    *count += 1;
                     self.beta_hno(depth, limit, count, verbose)
                 } else {
                     self.lhs_mut().unwrap().beta_hno(depth, limit, count, verbose);
