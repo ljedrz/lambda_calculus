@@ -139,12 +139,11 @@ fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut
                 return output
             },
             CName(ref name) => {
-                let number = if stack.contains(name) {
-                    stack.iter().rev().position(|t| t == name).unwrap() + 1 // safe; ensured above
+                if let Some(index) = stack.iter().rev().position(|t| t == name) {
+                    output.push(Number(index + 1))
                 } else {
-                    stack.len() + 1
-                };
-                output.push(Number(number));
+                    output.push(Number(stack.len() + 1))
+                }
             }
         }
         *pos += 1;
