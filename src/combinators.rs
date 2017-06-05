@@ -10,7 +10,8 @@
 //! * [the fixed-point combinators Y and Z](https://en.wikipedia.org/wiki/Fixed-point_combinator)
 //! * the reverse application combinator T
 
-use term::*;
+use term::{Term, abs, app};
+use term::Term::*;
 
 /// I - the identity combinator.
 ///

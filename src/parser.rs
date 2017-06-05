@@ -1,6 +1,7 @@
 //! A parser for lambda expressions
 
-use term::*;
+use term::{Term, Notation, abs, app};
+use term::Term::*;
 use self::Token::*;
 use self::CToken::*;
 use self::Error::*;

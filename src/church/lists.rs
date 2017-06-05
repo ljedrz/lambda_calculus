@@ -1,9 +1,10 @@
 //! [Church single-pair lists](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
 
-use term::*;
+use term::{Term, Error, abs, app};
+use term::Term::*;
 use term::Error::*;
-use church::booleans::*;
-use church::pairs::*;
+use church::booleans::{tru, fls};
+use church::pairs::{pair, fst, snd};
 use church::numerals::zero;
 use combinators::z;
 use std::ops::Index;

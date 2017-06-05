@@ -1,6 +1,7 @@
 //! [Church booleans](https://en.wikipedia.org/wiki/Church_encoding#Church_Booleans)
 
-use term::*;
+use term::{Term, abs};
+use term::Term::*;
 
 /// A Church-encoded boolean `true`.
 ///

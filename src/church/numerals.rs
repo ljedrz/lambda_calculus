@@ -1,8 +1,9 @@
 //! [Church numerals](https://en.wikipedia.org/wiki/Church_encoding#Church_numerals)
 
-use term::*;
+use term::{Term, Error, abs, app};
+use term::Term::*;
 use term::Error::*;
-use church::booleans::*;
+use church::booleans::{tru, fls};
 use combinators::z;
 
 /// Produces a Church-encoded number zero.

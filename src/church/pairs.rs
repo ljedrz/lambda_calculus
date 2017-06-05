@@ -1,8 +1,9 @@
 //! [Church pairs](https://en.wikipedia.org/wiki/Church_encoding#Church_pairs)
 
-use term::*;
+use term::{Term, Error, abs};
+use term::Term::*;
 use term::Error::*;
-use church::booleans::*;
+use church::booleans::{tru, fls};
 
 /// Produces a Church-encoded pair; applying it to two other terms puts them inside it.
 ///

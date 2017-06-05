@@ -1,6 +1,7 @@
 //! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form) for lambda `Term`s
 
-use term::*;
+use term::{Term, Error, show_precedence_cla};
+use term::Term::*;
 use std::fmt;
 use std::io::{Write, BufWriter, stdout};
 pub use self::Order::*;
@@ -392,6 +393,8 @@ impl fmt::Display for Order {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use term::{abs, app};
+    use term::Notation::*;
     use parser::parse;
     use combinators::{i, omm};
     use church::numerals::fac;
