@@ -42,8 +42,7 @@ pub enum Order {
 /// # Example
 /// ```
 /// use lambda_calculus::reduction::apply;
-/// use lambda_calculus::parser::parse;
-/// use lambda_calculus::term::Notation::DeBruijn;
+/// use lambda_calculus::*;
 ///
 /// // these are valid terms, but be careful with unwraps in your code
 /// let lhs    = parse(&"λλ42(λ13)", DeBruijn).unwrap();
@@ -103,13 +102,14 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
 /// # Example
 ///
 /// ```
-/// use lambda_calculus::church::numerals::pred;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::NOR;
+/// use lambda_calculus::*;
 ///
-/// let pred_one = pred().app(1.into());
+/// let expression = parse(&"(λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)) (λa.λb.a b)", Classic);
+/// let reduced    = parse(&"λa.λb.b", Classic);
 ///
-/// assert_eq!(beta(pred_one, NOR, 0, false), 0.into());
+/// assert!(expression.is_ok());
+/// assert!(reduced.is_ok());
+/// assert_eq!(beta(expression.unwrap(), NOR, 0, false), reduced.unwrap());
 /// ```
 pub fn beta(mut term: Term, order: Order, limit: usize, verbose: bool) -> Term {
     term.beta(order, limit, verbose);
@@ -122,11 +122,14 @@ pub fn beta(mut term: Term, order: Order, limit: usize, verbose: bool) -> Term {
 /// # Example
 ///
 /// ```
-/// use lambda_calculus::church::numerals::fac;
 /// use lambda_calculus::reduction::compare;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// compare(&fac().app(3.into()), &[NOR, APP, HNO, HAP], false); // compare normalizing strategies
+/// let expression = parse(&"(λa.a (λb.λc.λd.b (λe.c (d e)) (λe.λf.e (d e f))) (λb.λc.b)\
+///     (λb.λc.b c) (λb.λc.b c)) (λa.λb.a (a (a b)))", Classic); // Church-encoded factorial of 3
+///
+/// assert!(expression.is_ok());
+/// compare(&expression.unwrap(), &[NOR, APP, HNO, HAP], false); // compare normalizing strategies
 ///
 /// // stdout:
 ///
@@ -153,8 +156,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::parser::parse;
-    /// use lambda_calculus::term::Notation::DeBruijn;
+    /// use lambda_calculus::parser::*;
     ///
     /// let lhs    = parse(&"λλ42(λ13)", DeBruijn).unwrap();
     /// let rhs    = parse(&"λ51", DeBruijn).unwrap();
@@ -173,12 +175,10 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::{app, abs};
-    /// use lambda_calculus::term::Term::Var;
-    /// use lambda_calculus::church::numerals::zero;
+    /// use lambda_calculus::*;
     /// use lambda_calculus::combinators::i;
     ///
-    /// assert_eq!(app(i(), zero()).eval(), Ok(zero()));
+    /// assert_eq!(app(i(), Var(1)).eval(), Ok(Var(1)));
     /// ```
     /// # Errors
     ///
@@ -214,13 +214,18 @@ impl Term {
     /// # Example
     ///
     /// ```
-    /// use lambda_calculus::church::numerals::pred;
-    /// use lambda_calculus::reduction::Order::NOR;
+    /// use lambda_calculus::*;
     ///
-    /// let mut pred_one = pred().app(1.into());
-    /// pred_one.beta(NOR, 0, false);
+    /// let expression = parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic);
+    /// let reduced    = parse(&"λa.λb.a b", Classic);
     ///
-    /// assert_eq!(pred_one, 0.into());
+    /// assert!(expression.is_ok());
+    /// assert!(reduced.is_ok());
+    ///
+    /// let mut expression = expression.unwrap();
+    /// expression.beta(NOR, 0, false);
+    ///
+    /// assert_eq!(expression, reduced.unwrap());
     /// ```
     pub fn beta(&mut self, order: Order, limit: usize, verbose: bool) -> usize {
         if verbose {
@@ -397,7 +402,6 @@ mod tests {
     use term::Notation::*;
     use parser::parse;
     use combinators::{i, omm};
-    use church::numerals::fac;
     use std::thread;
 
     #[test]
@@ -446,11 +450,14 @@ mod tests {
     #[test]
     #[ignore]
     fn huge_reduction() {
-        let builder = thread::Builder::new().name("reductor".into()).stack_size(2048 * 1024 * 1024);
+        let builder = thread::Builder::new().name("reductor".into()).stack_size(1024 * 1024 * 1024);
 
-        let handler = builder.spawn(|| {
-            assert_eq!(beta(app!(fac(), 10.into()), HAP, 0, false).value(), Ok(3628800));
-        }).unwrap();
+        let factorial  = parse(&"λ1(λλλ3(λ3(21))(λλ2(321)))(λλ2)(λλ21)(λλ21)", DeBruijn).unwrap();
+        let church_ten = parse(&"λλ2(2(2(2(2(2(2(2(2(21)))))))))", DeBruijn).unwrap();
+
+        let handler = builder
+            .spawn(|| { beta(app!(factorial, church_ten), HAP, 0, false); })
+            .unwrap();
 
         handler.join().unwrap();
     }
