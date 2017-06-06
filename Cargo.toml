@@ -8,7 +8,7 @@ readme = "README.md"
 license = "CC0-1.0"
 keywords = ["lambda", "calculus", "functional", "mathematics", "combinators"]
 authors = ["ljedrz <ljedrz@gmail.com>"]
-exclude = [".cargo/*", "benches"]
+exclude = [".cargo/*"]
 
 [features]
 backslash_lambda = []
