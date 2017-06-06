@@ -20,11 +20,9 @@ use term::Term::*;
 /// # Example
 /// ```
 /// use lambda_calculus::combinators::i;
-/// use lambda_calculus::church::numerals::zero;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(i().app(zero()), NOR, 0, false), zero());
+/// assert_eq!(beta(i().app(Var(1)), NOR, 0, false), Var(1));
 /// ```
 pub fn i() -> Term { abs(Var(1)) }
 
@@ -37,11 +35,9 @@ pub fn i() -> Term { abs(Var(1)) }
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::k;
-/// use lambda_calculus::church::numerals::{zero, one};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(k(), zero(), one()), NOR, 0, false), zero());
+/// assert_eq!(beta(app!(k(), Var(1), Var(2)), NOR, 0, false), Var(1));
 /// # }
 /// ```
 pub fn k() -> Term { abs(abs(Var(2))) }
@@ -54,13 +50,11 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::s;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(s(), 0.into(), 1.into(), 2.into()), NOR, 0, false),
-///            beta(app!(Term::from(0), 2.into(), app!(Term::from(1), 2.into())), NOR, 0, false)
+/// assert_eq!(beta(app!(s(), Var(1), Var(2), Var(3)              ), NOR, 0, false),
+///            beta(app!(     Var(1), Var(3), app!(Var(2), Var(3))), NOR, 0, false)
 /// );
 /// # }
 /// ```
@@ -79,8 +73,7 @@ pub fn s() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::{iota, i, k, s};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(iota(), iota()), NOR, 0, false), i());
 /// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), iota()))), NOR, 0, false), k());
@@ -97,13 +90,11 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::b;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(b(), 0.into(),           1.into(), 2.into() ), NOR, 0, false),
-///            beta(app!(Term::from(0), app!(Term::from(1), 2.into())), NOR, 0, false)
+/// assert_eq!(beta(app!(b(), Var(1),      Var(2), Var(3) ), NOR, 0, false),
+///            beta(app!(     Var(1), app!(Var(2), Var(3))), NOR, 0, false)
 /// );
 /// # }
 /// ```
@@ -121,13 +112,11 @@ pub fn b() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::combinators::c;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(c(), 0.into(), 1.into(), 2.into()), NOR, 0, false),
-///            beta(app!(Term::from(0), 2.into(), 1.into()), NOR, 0, false)
+/// assert_eq!(beta(app!(c(), Var(1), Var(2), Var(3)), NOR, 0, false),
+///            beta(app!(     Var(1), Var(3), Var(2)), NOR, 0, false)
 /// );
 /// # }
 /// ```
@@ -146,12 +135,10 @@ pub fn c() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::w;
-/// use lambda_calculus::church::numerals::{zero, one};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(   w(), zero(), one()), NOR, 0, false),
-///            beta(app!(zero(),  one(), one()), NOR, 0, false)
+/// assert_eq!(beta(app!(   w(), Var(1), Var(2)), NOR, 0, false),
+///            beta(app!(Var(1), Var(2), Var(2)), NOR, 0, false)
 /// );
 /// # }
 /// ```
@@ -173,12 +160,10 @@ pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
 /// # Example
 /// ```
 /// use lambda_calculus::combinators::om;
-/// use lambda_calculus::church::numerals::zero;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(  om().app(zero()), NOR, 0, false),
-///            beta(zero().app(zero()), NOR, 0, false)
+/// assert_eq!(beta(  om().app(Var(1)), NOR, 0, false),
+///            beta(Var(1).app(Var(1)), NOR, 0, false)
 /// );
 /// ```
 pub fn om() -> Term { abs(Var(1).app(Var(1))) }
@@ -190,8 +175,7 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// # Example
 /// ```
 /// use lambda_calculus::combinators::omm;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(omm(), NOR, 3, false), omm());
 /// ```
@@ -209,12 +193,12 @@ pub fn omm() -> Term { om().app(om()) }
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::y;
-/// use lambda_calculus::church::numerals::zero;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(             app!(y(), zero() ), NOR, 0, false),
-///            beta(app!(zero(), app!(y(), zero())), NOR, 0, false)
+/// fn dummy() -> Term { abs(Var(2)) } // a dummy term that won't easily reduce
+///
+/// assert_eq!(beta(              app!(y(), dummy() ), NOR, 0, false),
+///            beta(app!(dummy(), app!(y(), dummy())), NOR, 0, false)
 /// );
 /// # }
 /// ```
@@ -240,12 +224,12 @@ pub fn y() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::z;
-/// use lambda_calculus::church::numerals::zero;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(             app!(z(), zero() ), CBV, 0, false),
-///            beta(app!(zero(), app!(z(), zero())), CBV, 0, false)
+/// fn dummy() -> Term { abs(Var(2)) } // a dummy term that won't easily reduce
+///
+/// assert_eq!(beta(              app!(z(), dummy() ), CBV, 0, false),
+///            beta(app!(dummy(), app!(z(), dummy())), CBV, 0, false)
 /// );
 /// # }
 /// ```
@@ -265,13 +249,11 @@ pub fn z() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::t;
-/// use lambda_calculus::church::numerals::{zero, is_zero};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let expr = app!(t(), zero(), is_zero());
-///
-/// assert_eq!(beta(expr, NOR, 0, false), true.into()); // is_zero() was applied to zero()
+/// assert_eq!(beta(app!(t(), Var(1), Var(2)), NOR, 0, false),
+///                 app!(     Var(2), Var(1))
+/// );
 /// # }
 /// ```
 pub fn t() -> Term {
