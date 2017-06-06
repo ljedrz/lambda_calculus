@@ -207,13 +207,13 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
 /// # Example
 /// ```
 /// use lambda_calculus::parser::*;
-/// use lambda_calculus::church::numerals::{succ, pred};
+/// use lambda_calculus::combinators::{s, y};
 ///
-/// assert_eq!(parse(&"λn. λf. λx. n (λg. λh. h (g f)) (λu. x) (λu. u)", Classic), Ok(pred()));
-/// assert_eq!(parse(&"λn.λf.λx.n(λg.λh.h(g f))(λu.x)(λu.u)", Classic), Ok(pred()));
+/// assert_eq!(parse(&"λf.(λx.f (x x)) (λx.f (x x))", Classic), Ok(y()));
+/// assert_eq!(parse(&"λf.(λx.f(x x))(λx.f(x x))", Classic),    Ok(y()));
 ///
-/// assert_eq!(parse(  &"λλλ2(321)",  DeBruijn), Ok(succ()));
-/// assert_eq!(parse(&r#"\\\2(321)"#, DeBruijn), Ok(succ()));
+/// assert_eq!(parse(  &"λλλ31(21)",     DeBruijn), Ok(s()));
+/// assert_eq!(parse(&r#"\\\3 1 (2 1)"#, DeBruijn), Ok(s()));
 /// ```
 pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
     let tokens = if notation == DeBruijn {
