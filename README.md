@@ -61,7 +61,7 @@ features = ["no_church"]
 
 code:
 ```
-use lambda_calculus::arithmetic::{succ, pred};
+use lambda_calculus::church::numerals::{succ, pred};
 
 fn main() {
     println!("SUCC := {0} = {0:?}", succ());
@@ -90,7 +90,7 @@ fn main() {
 code:
 ```
 use lambda_calculus::reduction::*;
-use lambda_calculus::arithmetic::pred;
+use lambda_calculus::church::numerals::pred;
 
 fn main() {
     let mut expr = app!(pred(), 1.into());
@@ -131,7 +131,7 @@ result after 7 reductions: λa.λb.b
 code:
 ```
 use lambda_calculus::reduction::*;
-use lambda_calculus::arithmetic::fac;
+use lambda_calculus::church::numerals::fac;
 
 fn main() {
     let expr = app!(fac(), 4.into());
