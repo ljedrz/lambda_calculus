@@ -1,14 +1,14 @@
 [package]
 name = "lambda_calculus"
 version = "1.1.0"
-description = "A simple implementation of the untyped lambda calculus in Rust."
+description = "A simple implementation of the untyped lambda calculus"
 repository = "https://github.com/ljedrz/lambda_calculus"
 documentation = "https://docs.rs/lambda_calculus"
 readme = "README.md"
 license = "CC0-1.0"
 keywords = ["lambda", "calculus", "functional", "mathematics", "combinators"]
 authors = ["ljedrz <ljedrz@gmail.com>"]
-exclude = [".cargo/*"]
+exclude = [".cargo/*", "target/*"]
 
 [features]
 backslash_lambda = []
