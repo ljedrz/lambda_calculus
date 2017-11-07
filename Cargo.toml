@@ -16,5 +16,7 @@ no_church = []
 
 [badges]
 travis-ci = { repository = "ljedrz/lambda_calculus", branch = "master" }
+maintenance = { status = "passively-maintained" }
+is-it-maintained-open-issues = { repository = "ljedrz/lambda_calculus" }
 
 [dependencies]
