@@ -159,7 +159,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church pair.
     pub fn unpair_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
-        let mut candidate = if let Abs(ref mut abstracted) = *self { abstracted } else { self };
+        let candidate = if let Abs(ref mut abstracted) = *self { abstracted } else { self };
 
         if let Ok((wrapped_a, b)) = candidate.unapp_mut() {
             Ok((try!(wrapped_a.rhs_mut()), b))
