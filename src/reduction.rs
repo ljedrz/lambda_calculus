@@ -5,6 +5,9 @@ use term::Term::*;
 use std::fmt;
 use std::io::{Write, BufWriter, stdout};
 pub use self::Order::*;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use rayon;
 
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
 /// β-reductions. The default is `NOR` (normal order).
@@ -33,7 +36,9 @@ pub enum Order {
     CBV,
     /// Hybrid applicative - a hybrid between `CBV` (call-by-value) and `APP` (applicative)
     /// strategies; usually the fastest-reducing normalizing strategy
-    HAP
+    HAP,
+    /// Parallel applicative
+    PAP
 }
 
 /// Applies two `Term`s with substitution and variable update, consuming the first one in the
@@ -203,6 +208,19 @@ impl Term {
         }
     }
 
+    fn eval_with_info_par(&mut self, depth: u32, count: Arc<AtomicUsize>, verbose: bool) {
+        if verbose { println!("\n{}. {}", (*count).load(Ordering::SeqCst) + 1, show_precedence_cla(self, 0, depth)) }
+
+        let copy = self.clone();
+        *self = copy.eval().unwrap(); // safe; only called in reduction sites
+        (*count).fetch_add(1, Ordering::SeqCst);
+
+        if verbose {
+            let indent_len = (((*count).load(Ordering::SeqCst) + 1) as f32).log10().trunc() as usize + 5;
+            println!("=>{}{}", " ".repeat(indent_len), show_precedence_cla(self, 0, depth))
+        }
+    }
+
     fn is_reducible(&self, limit: usize, count: &usize) -> bool {
         self.lhs_ref().and_then(|t| t.unabs_ref()).is_ok() && (limit == 0 || *count < limit )
     }
@@ -247,7 +265,8 @@ impl Term {
             APP => self.beta_app(0, limit, &mut count, verbose),
             HSP => self.beta_hsp(0, limit, &mut count, verbose),
             HNO => self.beta_hno(0, limit, &mut count, verbose),
-            HAP => self.beta_hap(0, limit, &mut count, verbose)
+            HAP => self.beta_hap(0, limit, &mut count, verbose),
+            PAP => self.beta_pap(0, limit, Arc::new(AtomicUsize::new(0)), verbose)
         }
 
         if verbose {
@@ -379,6 +398,29 @@ impl Term {
             _ => ()
         }
     }
+
+    fn beta_pap(&mut self, depth: u32, limit: usize, count: Arc<AtomicUsize>, verbose: bool) {
+        if limit != 0 && (*count).load(Ordering::SeqCst) == limit { return }
+
+        match *self {
+            Abs(ref mut abstracted) => abstracted.beta_pap(depth + 1, limit, Arc::clone(&count), verbose),
+            App(_, _) => {
+                {
+                    let (lhs, rhs) = self.unapp_mut().unwrap();
+                    rayon::join(
+                        || lhs.beta_pap(depth, limit, Arc::clone(&count), verbose),
+                        || rhs.beta_pap(depth, limit, Arc::clone(&count), verbose)
+                    );
+                }
+
+                if self.is_reducible(limit, &(*count).load(Ordering::SeqCst)) {
+                    self.eval_with_info_par(depth, Arc::clone(&count), verbose);
+                    self.beta_pap(depth, limit, Arc::clone(&count), verbose);
+                }
+            },
+            _ => ()
+        }
+    }
 }
 
 impl fmt::Display for Order {
@@ -390,7 +432,8 @@ impl fmt::Display for Order {
             HNO => "hybrid normal",
             APP => "applicative",
             CBV => "call-by-value",
-            HAP => "hybrid applicative"
+            HAP => "hybrid applicative",
+            PAP => "parallel applicative"
         })
     }
 }
@@ -433,6 +476,13 @@ mod tests {
     fn applicative_order() {
         let mut wont_reduce = app(abs(Var(2)), omm());
         wont_reduce.beta(APP, 3, false);
+        assert_eq!(wont_reduce, app(abs(Var(2)), omm()));
+    }
+
+    #[test]
+    fn parallel_applicative_order() {
+        let mut wont_reduce = app(abs(Var(2)), omm());
+        wont_reduce.beta(PAP, 3, false);
         assert_eq!(wont_reduce, app(abs(Var(2)), omm()));
     }
 

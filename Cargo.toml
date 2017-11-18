@@ -20,3 +20,4 @@ maintenance = { status = "passively-maintained" }
 is-it-maintained-open-issues = { repository = "ljedrz/lambda_calculus" }
 
 [dependencies]
+rayon = "0.9"
