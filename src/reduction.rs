@@ -36,9 +36,7 @@ pub enum Order {
     CBV,
     /// Hybrid applicative - a hybrid between `CBV` (call-by-value) and `APP` (applicative)
     /// strategies; usually the fastest-reducing normalizing strategy
-    HAP,
-    /// Parallel applicative
-    PAP
+    HAP
 }
 
 /// Applies two `Term`s with substitution and variable update, consuming the first one in the
@@ -62,25 +60,27 @@ pub enum Order {
 pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, Error> {
     if lhs.unabs_ref().is_err() { return Err(Error::NotAnAbs) }
 
-    _apply(&mut lhs, rhs, 0);
+    _apply(&mut lhs, rhs, Arc::new(AtomicUsize::new(0)));
 
     lhs.unabs()
 }
 
-fn _apply(lhs: &mut Term, rhs: &Term, depth: usize) {
+fn _apply(lhs: &mut Term, rhs: &Term, depth: Arc<AtomicUsize>) {
     match *lhs {
-        Var(i) => if i == depth {
+        Var(i) => if i == (*depth).load(Ordering::SeqCst) {
             *lhs = rhs.to_owned(); // substitute a top-level variable from lhs with rhs
-            update_free_variables(lhs, depth - 1, 0); // update indices of free variables from rhs
-        } else if i > depth {
+            update_free_variables(lhs, (*depth).load(Ordering::SeqCst) - 1, 0); // update indices of free variables from rhs
+        } else if i > (*depth).load(Ordering::SeqCst) {
             *lhs = Var(i - 1) // decrement a free variable's index
         },
         Abs(ref mut abstracted) => {
-            _apply(abstracted, rhs, depth + 1)
+            _apply(abstracted, rhs, Arc::new(AtomicUsize::new((*depth).load(Ordering::SeqCst) + 1)))
         },
         App(ref mut lhs_lhs, ref mut lhs_rhs) => {
-            _apply(lhs_lhs, rhs, depth);
-            _apply(lhs_rhs, rhs, depth)
+            rayon::join(
+                || _apply(lhs_lhs, rhs, Arc::clone(&depth)),
+                || _apply(lhs_rhs, rhs, Arc::clone(&depth))
+            );
         }
     }
 }
@@ -94,8 +94,10 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
             update_free_variables(abstracted, added_depth, own_depth + 1)
         },
         App(ref mut lhs, ref mut rhs) => {
-            update_free_variables(lhs, added_depth, own_depth);
-            update_free_variables(rhs, added_depth, own_depth)
+            rayon::join(
+                || update_free_variables(lhs, added_depth, own_depth),
+                || update_free_variables(rhs, added_depth, own_depth)
+            );
         }
     }
 }
@@ -195,20 +197,7 @@ impl Term {
         apply(lhs, &rhs)
     }
 
-    fn eval_with_info(&mut self, depth: u32, count: &mut usize, verbose: bool) {
-        if verbose { println!("\n{}. {}", *count + 1, show_precedence_cla(self, 0, depth)) }
-
-        let copy = self.clone();
-        *self = copy.eval().unwrap(); // safe; only called in reduction sites
-        *count += 1;
-
-        if verbose {
-            let indent_len = ((*count + 1) as f32).log10().trunc() as usize + 5;
-            println!("=>{}{}", " ".repeat(indent_len), show_precedence_cla(self, 0, depth))
-        }
-    }
-
-    fn eval_with_info_par(&mut self, depth: u32, count: Arc<AtomicUsize>, verbose: bool) {
+    fn eval_with_info(&mut self, depth: u32, count: Arc<AtomicUsize>, verbose: bool) {
         if verbose { println!("\n{}. {}", (*count).load(Ordering::SeqCst) + 1, show_precedence_cla(self, 0, depth)) }
 
         let copy = self.clone();
@@ -256,122 +245,139 @@ impl Term {
             );
         };
 
-        let mut count = 0;
+        let count = Arc::new(AtomicUsize::new(0));
 
         match order {
-            CBN => self.beta_cbn(0, limit, &mut count, verbose),
-            NOR => self.beta_nor(0, limit, &mut count, verbose),
-            CBV => self.beta_cbv(0, limit, &mut count, verbose),
-            APP => self.beta_app(0, limit, &mut count, verbose),
-            HSP => self.beta_hsp(0, limit, &mut count, verbose),
-            HNO => self.beta_hno(0, limit, &mut count, verbose),
-            HAP => self.beta_hap(0, limit, &mut count, verbose),
-            PAP => self.beta_pap(0, limit, Arc::new(AtomicUsize::new(0)), verbose)
+            CBN => self.beta_cbn(0, limit, Arc::clone(&count), verbose),
+            NOR => self.beta_nor(0, limit, Arc::clone(&count), verbose),
+            CBV => self.beta_cbv(0, limit, Arc::clone(&count), verbose),
+            APP => self.beta_app(0, limit, Arc::clone(&count), verbose),
+            HSP => self.beta_hsp(0, limit, Arc::clone(&count), verbose),
+            HNO => self.beta_hno(0, limit, Arc::clone(&count), verbose),
+            HAP => self.beta_hap(0, limit, Arc::clone(&count), verbose)
         }
 
         if verbose {
-            println!("\nresult after {} reduction{}: {}\n", count,
-                if count == 1 { "" } else { "s" }, self);
+            println!("\nresult after {} reduction{}: {}\n", (*count).load(Ordering::SeqCst),
+                if (*count).load(Ordering::SeqCst) == 1 { "" } else { "s" }, self);
         };
 
-        count
+        (*count).load(Ordering::SeqCst)
     }
 
-    fn beta_cbn(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
-        if limit != 0 && *count == limit { return }
+    fn beta_cbn(&mut self, depth: u32, limit: usize, count: Arc<AtomicUsize>, verbose: bool) {
+        if limit != 0 && (*count).load(Ordering::SeqCst) == limit { return }
 
         if let App(_, _) = *self {
-            self.lhs_mut().unwrap().beta_cbn(depth, limit, count, verbose);
+            self.lhs_mut().unwrap().beta_cbn(depth, limit, Arc::clone(&count), verbose);
 
-            if self.is_reducible(limit, count) {
-                self.eval_with_info(depth, count, verbose);
+            if self.is_reducible(limit, &(*count).load(Ordering::SeqCst)) {
+                self.eval_with_info(depth, Arc::clone(&count), verbose);
                 self.beta_cbn(depth, limit, count, verbose);
             }
         }
     }
 
-    fn beta_nor(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
-        if limit != 0 && *count == limit { return }
+    fn beta_nor(&mut self, depth: u32, limit: usize, count: Arc<AtomicUsize>, verbose: bool) {
+        if limit != 0 && (*count).load(Ordering::SeqCst) == limit { return }
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_nor(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_cbn(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_cbn(depth, limit, Arc::clone(&count), verbose);
 
-                if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
+                if self.is_reducible(limit, &(*count).load(Ordering::SeqCst)) {
+                    self.eval_with_info(depth, Arc::clone(&count), verbose);
                     self.beta_nor(depth, limit, count, verbose);
                 } else {
-                    self.lhs_mut().unwrap().beta_nor(depth, limit, count, verbose);
-                    self.rhs_mut().unwrap().beta_nor(depth, limit, count, verbose);
+                    let (lhs, rhs) = self.unapp_mut().unwrap();
+                    rayon::join(
+                        || lhs.beta_nor(depth, limit, Arc::clone(&count), verbose),
+                        || rhs.beta_nor(depth, limit, Arc::clone(&count), verbose)
+                    );
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_cbv(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
-        if limit != 0 && *count == limit { return }
+    fn beta_cbv(&mut self, depth: u32, limit: usize, count: Arc<AtomicUsize>, verbose: bool) {
+        if limit != 0 && (*count).load(Ordering::SeqCst) == limit { return }
 
         if let App(_, _) = *self {
-            self.lhs_mut().unwrap().beta_cbv(depth, limit, count, verbose);
-            self.rhs_mut().unwrap().beta_cbv(depth, limit, count, verbose);
+            {
+                let (lhs, rhs) = self.unapp_mut().unwrap();
+                rayon::join(
+                    || lhs.beta_cbv(depth, limit, Arc::clone(&count), verbose),
+                    || rhs.beta_cbv(depth, limit, Arc::clone(&count), verbose)
+                );
+            }
 
-            if self.is_reducible(limit, count) {
-                self.eval_with_info(depth, count, verbose);
-                self.beta_cbv(depth, limit, count, verbose);
+            if self.is_reducible(limit, &(*count).load(Ordering::SeqCst)) {
+                self.eval_with_info(depth, Arc::clone(&count), verbose);
+                self.beta_cbv(depth, limit, Arc::clone(&count), verbose);
             }
         }
     }
 
-    fn beta_app(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
-        if limit != 0 && *count == limit { return }
+    fn beta_app(&mut self, depth: u32, limit: usize, count: Arc<AtomicUsize>, verbose: bool) {
+        if limit != 0 && (*count).load(Ordering::SeqCst) == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_app(depth + 1, limit, count, verbose),
+            Abs(ref mut abstracted) => abstracted.beta_app(depth + 1, limit, Arc::clone(&count), verbose),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_app(depth, limit, count, verbose);
-                self.rhs_mut().unwrap().beta_app(depth, limit, count, verbose);
+                {
+                    let (lhs, rhs) = self.unapp_mut().unwrap();
+                    rayon::join(
+                        || lhs.beta_app(depth, limit, Arc::clone(&count), verbose),
+                        || rhs.beta_app(depth, limit, Arc::clone(&count), verbose)
+                    );
+                }
 
-                if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
-                    self.beta_app(depth, limit, count, verbose);
+                if self.is_reducible(limit, &(*count).load(Ordering::SeqCst)) {
+                    self.eval_with_info(depth, Arc::clone(&count), verbose);
+                    self.beta_app(depth, limit, Arc::clone(&count), verbose);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hap(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
-        if limit != 0 && *count == limit { return }
+    fn beta_hap(&mut self, depth: u32, limit: usize, count: Arc<AtomicUsize>, verbose: bool) {
+        if limit != 0 && (*count).load(Ordering::SeqCst) == limit { return }
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hap(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_cbv(depth, limit, count, verbose);
-                self.rhs_mut().unwrap().beta_hap(depth, limit, count, verbose);
+                {
+                    let (lhs, rhs) = self.unapp_mut().unwrap();
+                    rayon::join(
+                        || lhs.beta_cbv(depth, limit, Arc::clone(&count), verbose),
+                        || rhs.beta_hap(depth, limit, Arc::clone(&count), verbose)
+                    );
+                }
 
-                if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
-                    self.beta_hap(depth, limit, count, verbose);
+                if self.is_reducible(limit, &(*count).load(Ordering::SeqCst)) {
+                    self.eval_with_info(depth, Arc::clone(&count), verbose);
+                    self.beta_hap(depth, limit, Arc::clone(&count), verbose);
                 } else {
-                    self.lhs_mut().unwrap().beta_hap(depth, limit, count, verbose);
+                    self.lhs_mut().unwrap().beta_hap(depth, limit, Arc::clone(&count), verbose);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hsp(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
-        if limit != 0 && *count == limit { return }
+    fn beta_hsp(&mut self, depth: u32, limit: usize, count: Arc<AtomicUsize>, verbose: bool) {
+        if limit != 0 && (*count).load(Ordering::SeqCst) == limit { return }
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hsp(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_hsp(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_hsp(depth, limit, Arc::clone(&count), verbose);
 
-                if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
+                if self.is_reducible(limit, &(*count).load(Ordering::SeqCst)) {
+                    self.eval_with_info(depth, Arc::clone(&count), verbose);
                     self.beta_hsp(depth, limit, count, verbose)
                 }
             },
@@ -379,43 +385,23 @@ impl Term {
         }
     }
 
-    fn beta_hno(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
-        if limit != 0 && *count == limit { return }
+    fn beta_hno(&mut self, depth: u32, limit: usize, count: Arc<AtomicUsize>, verbose: bool) {
+        if limit != 0 && (*count).load(Ordering::SeqCst) == limit { return }
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hno(depth + 1, limit, count, verbose),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_hsp(depth, limit, count, verbose);
-
-                if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
-                    self.beta_hno(depth, limit, count, verbose)
-                } else {
-                    self.lhs_mut().unwrap().beta_hno(depth, limit, count, verbose);
-                    self.rhs_mut().unwrap().beta_hno(depth, limit, count, verbose);
-                }
-            },
-            _ => ()
-        }
-    }
-
-    fn beta_pap(&mut self, depth: u32, limit: usize, count: Arc<AtomicUsize>, verbose: bool) {
-        if limit != 0 && (*count).load(Ordering::SeqCst) == limit { return }
-
-        match *self {
-            Abs(ref mut abstracted) => abstracted.beta_pap(depth + 1, limit, Arc::clone(&count), verbose),
-            App(_, _) => {
-                {
-                    let (lhs, rhs) = self.unapp_mut().unwrap();
-                    rayon::join(
-                        || lhs.beta_pap(depth, limit, Arc::clone(&count), verbose),
-                        || rhs.beta_pap(depth, limit, Arc::clone(&count), verbose)
-                    );
-                }
+                self.lhs_mut().unwrap().beta_hsp(depth, limit, Arc::clone(&count), verbose);
 
                 if self.is_reducible(limit, &(*count).load(Ordering::SeqCst)) {
-                    self.eval_with_info_par(depth, Arc::clone(&count), verbose);
-                    self.beta_pap(depth, limit, Arc::clone(&count), verbose);
+                    self.eval_with_info(depth, Arc::clone(&count), verbose);
+                    self.beta_hno(depth, limit, count, verbose)
+                } else {
+                    let (lhs, rhs) = self.unapp_mut().unwrap();
+                    rayon::join(
+                        || lhs.beta_hno(depth, limit, Arc::clone(&count), verbose),
+                        || rhs.beta_hno(depth, limit, Arc::clone(&count), verbose)
+                    );
                 }
             },
             _ => ()
@@ -432,8 +418,7 @@ impl fmt::Display for Order {
             HNO => "hybrid normal",
             APP => "applicative",
             CBV => "call-by-value",
-            HAP => "hybrid applicative",
-            PAP => "parallel applicative"
+            HAP => "hybrid applicative"
         })
     }
 }
@@ -476,13 +461,6 @@ mod tests {
     fn applicative_order() {
         let mut wont_reduce = app(abs(Var(2)), omm());
         wont_reduce.beta(APP, 3, false);
-        assert_eq!(wont_reduce, app(abs(Var(2)), omm()));
-    }
-
-    #[test]
-    fn parallel_applicative_order() {
-        let mut wont_reduce = app(abs(Var(2)), omm());
-        wont_reduce.beta(PAP, 3, false);
         assert_eq!(wont_reduce, app(abs(Var(2)), omm()));
     }
 
