@@ -645,7 +645,7 @@ pub fn fac() -> Term {
 
 /// Applied to two Church-encoded numbers it returns their minimum.
 ///
-/// MIN := λλ.(LEQ 2 1) 2 1
+/// MIN := λaλb.(LEQ a b) a b = λ λ (LEQ 2 1) 2 1
 ///
 /// # Example
 /// ```
@@ -677,7 +677,7 @@ pub fn min() -> Term {
 
 /// Applied to two Church-encoded numbers it returns their maximum.
 ///
-/// MAX := λλ.(LEQ 2 1) 1 2
+/// MAX := λaλb.(LEQ a b) b a = λ λ (LEQ 2 1) 1 2
 ///
 /// # Example
 /// ```
@@ -704,6 +704,76 @@ pub fn max() -> Term {
         abs(abs(Var(2))),
         Var(1),
         Var(2)
+    )))
+}
+
+/// Applied to two Church-encoded numbers `a` and `b` it returns the left [logical
+/// shift](https://en.wikipedia.org/wiki/Logical_shift) of `a` performed `b` times.
+///
+/// LSHIFT := λaλb.MULT a (POW (SUCC ONE a)) = λ λ MULT 2 (POW (SUCC ONE) 1)
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::church::numerals::lshift;
+/// use lambda_calculus::reduction::*;
+///
+/// let mut expr = app!(lshift(), 3.into(), 2.into());
+/// expr.beta(NOR, 0, false);
+///
+/// assert_eq!(expr, 12.into());
+/// assert_eq!(beta(lshift(), NOR, 0, false), lshift());
+/// # }
+/// ```
+pub fn lshift() -> Term {
+    abs(abs(abs(app(
+        Var(3),
+        app!(
+            Var(2),
+            abs(abs(abs(Var(1)))),
+            abs(abs(Var(2))),
+            abs(abs(app(Var(2), Var(1)))),
+            app(Var(2), abs(abs(app(Var(2), app(Var(2), Var(1)))))),
+            Var(1)
+        )
+    ))))
+}
+
+/// Applied to two Church-encoded numbers `a` and `b` it returns the right [logical
+/// shift](https://en.wikipedia.org/wiki/Logical_shift) of `a` performed `b` times.
+///
+/// RSHIFT := λaλb.(IS_ZERO b) a (QUOT a (POW (SUCC ONE) b)) =
+/// λ λ (IS_ZERO 1) 2 (QUOT 2 (POW (SUCC ONE) 1))
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::church::numerals::rshift;
+/// use lambda_calculus::reduction::*;
+///
+/// let mut expr = app!(rshift(), 6.into(), 1.into());
+/// expr.beta(NOR, 0, false);
+///
+/// assert_eq!(expr, 3.into());
+/// # }
+/// ```
+pub fn rshift() -> Term {
+    abs(abs(app!(
+        abs(app!(Var(1), abs(fls()), tru())),
+        Var(1),
+        Var(2),
+        app!(
+            quot(),
+            Var(2),
+            app!(
+                app(Var(1), abs(abs(abs(Var(1))))),
+                abs(abs(Var(2))),
+                abs(abs(app(Var(2), Var(1)))),
+                app(Var(1), abs(abs(app(Var(2), app(Var(2), Var(1))))))
+            )
+        )
     )))
 }
 
@@ -1017,5 +1087,65 @@ mod tests {
         assert_eq!(beta(app!(max(), 2.into(), 3.into()), HAP, 0, false), 3.into());
         assert_eq!(beta(app!(max(), 5.into(), 3.into()), HAP, 0, false), 5.into());
         assert_eq!(beta(app!(max(), 0.into(), 1.into()), HAP, 0, false), 1.into());
+    }
+
+    #[test]
+    fn church_lshift() {
+         assert_eq!(beta(app!(lshift(), 0.into(), 2.into()), NOR, 0, false), 0.into());
+         assert_eq!(beta(app!(lshift(), 1.into(), 0.into()), NOR, 0, false), 1.into());
+         assert_eq!(beta(app!(lshift(), 2.into(), 0.into()), NOR, 0, false), 2.into());
+         assert_eq!(beta(app!(lshift(), 2.into(), 2.into()), NOR, 0, false), 8.into());
+         assert_eq!(beta(app!(lshift(), 3.into(), 2.into()), NOR, 0, false), 12.into());
+         assert_eq!(beta(app!(lshift(), 2.into(), 3.into()), NOR, 0, false), 16.into());
+         assert_eq!(beta(app!(lshift(), 5.into(), 1.into()), NOR, 0, false), 10.into());
+
+         assert_eq!(beta(app!(lshift(), 0.into(), 2.into()), HNO, 0, false), 0.into());
+         assert_eq!(beta(app!(lshift(), 1.into(), 0.into()), HNO, 0, false), 1.into());
+         assert_eq!(beta(app!(lshift(), 2.into(), 0.into()), HNO, 0, false), 2.into());
+         assert_eq!(beta(app!(lshift(), 2.into(), 2.into()), HNO, 0, false), 8.into());
+         assert_eq!(beta(app!(lshift(), 3.into(), 2.into()), HNO, 0, false), 12.into());
+         assert_eq!(beta(app!(lshift(), 2.into(), 3.into()), HNO, 0, false), 16.into());
+         assert_eq!(beta(app!(lshift(), 5.into(), 1.into()), HNO, 0, false), 10.into());
+
+         assert_eq!(beta(app!(lshift(), 0.into(), 2.into()), HAP, 0, false), 0.into());
+         assert_eq!(beta(app!(lshift(), 1.into(), 0.into()), HAP, 0, false), 1.into());
+         assert_eq!(beta(app!(lshift(), 2.into(), 0.into()), HAP, 0, false), 2.into());
+         assert_eq!(beta(app!(lshift(), 2.into(), 2.into()), HAP, 0, false), 8.into());
+         assert_eq!(beta(app!(lshift(), 3.into(), 2.into()), HAP, 0, false), 12.into());
+         assert_eq!(beta(app!(lshift(), 2.into(), 3.into()), HAP, 0, false), 16.into());
+         assert_eq!(beta(app!(lshift(), 5.into(), 1.into()), HAP, 0, false), 10.into());
+    }
+
+    #[test]
+    fn church_rshift() {
+         assert_eq!(beta(app!(rshift(), 1.into(), 0.into()), NOR, 0, false), 1.into());
+         assert_eq!(beta(app!(rshift(), 2.into(), 0.into()), NOR, 0, false), 2.into());
+         assert_eq!(beta(app!(rshift(), 0.into(), 2.into()), NOR, 0, false), 0.into());
+         assert_eq!(beta(app!(rshift(), 2.into(), 1.into()), NOR, 0, false), 1.into());
+         assert_eq!(beta(app!(rshift(), 2.into(), 2.into()), NOR, 0, false), 0.into());
+         assert_eq!(beta(app!(rshift(), 5.into(), 1.into()), NOR, 0, false), 2.into());
+         assert_eq!(beta(app!(rshift(), 9.into(), 1.into()), NOR, 0, false), 4.into());
+         assert_eq!(beta(app!(rshift(), 9.into(), 2.into()), NOR, 0, false), 2.into());
+         assert_eq!(beta(app!(rshift(), 7.into(), 1.into()), NOR, 0, false), 3.into());
+
+         assert_eq!(beta(app!(rshift(), 1.into(), 0.into()), HNO, 0, false), 1.into());
+         assert_eq!(beta(app!(rshift(), 2.into(), 0.into()), HNO, 0, false), 2.into());
+         assert_eq!(beta(app!(rshift(), 0.into(), 2.into()), HNO, 0, false), 0.into());
+         assert_eq!(beta(app!(rshift(), 2.into(), 1.into()), HNO, 0, false), 1.into());
+         assert_eq!(beta(app!(rshift(), 2.into(), 2.into()), HNO, 0, false), 0.into());
+         assert_eq!(beta(app!(rshift(), 5.into(), 1.into()), HNO, 0, false), 2.into());
+         assert_eq!(beta(app!(rshift(), 9.into(), 1.into()), HNO, 0, false), 4.into());
+         assert_eq!(beta(app!(rshift(), 9.into(), 2.into()), HNO, 0, false), 2.into());
+         assert_eq!(beta(app!(rshift(), 7.into(), 1.into()), HNO, 0, false), 3.into());
+
+         assert_eq!(beta(app!(rshift(), 1.into(), 0.into()), HAP, 0, false), 1.into());
+         assert_eq!(beta(app!(rshift(), 2.into(), 0.into()), HAP, 0, false), 2.into());
+         assert_eq!(beta(app!(rshift(), 0.into(), 2.into()), HAP, 0, false), 0.into());
+         assert_eq!(beta(app!(rshift(), 2.into(), 1.into()), HAP, 0, false), 1.into());
+         assert_eq!(beta(app!(rshift(), 2.into(), 2.into()), HAP, 0, false), 0.into());
+         assert_eq!(beta(app!(rshift(), 5.into(), 1.into()), HAP, 0, false), 2.into());
+         assert_eq!(beta(app!(rshift(), 9.into(), 1.into()), HAP, 0, false), 4.into());
+         assert_eq!(beta(app!(rshift(), 9.into(), 2.into()), HAP, 0, false), 2.into());
+         assert_eq!(beta(app!(rshift(), 7.into(), 1.into()), HAP, 0, false), 3.into());
     }
 }
