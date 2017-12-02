@@ -643,6 +643,70 @@ pub fn fac() -> Term {
     ))
 }
 
+/// Applied to two Church-encoded numbers it returns their minimum.
+///
+/// MIN := λλ.(LEQ 2 1) 2 1
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::church::numerals::min;
+/// use lambda_calculus::reduction::*;
+///
+/// let mut expr = app!(min(), 4.into(), 3.into());
+/// expr.beta(NOR, 0, false);
+///
+/// assert_eq!(expr, 3.into());
+/// assert_eq!(beta(min(), NOR, 0, false), min());
+/// # }
+/// ```
+pub fn min() -> Term {
+	abs(abs(app!(
+        Var(1),
+        abs(abs(abs(
+            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+        ))),
+        Var(2),
+        abs(abs(abs(Var(1)))),
+        abs(abs(Var(2))),
+        Var(2),
+        Var(1)
+    )))
+}
+
+/// Applied to two Church-encoded numbers it returns their maximum.
+///
+/// MAX := λλ.(LEQ 2 1) 1 2
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::church::numerals::max;
+/// use lambda_calculus::reduction::*;
+///
+/// let mut expr = app!(max(), 4.into(), 3.into());
+/// expr.beta(NOR, 0, false);
+///
+/// assert_eq!(expr, 4.into());
+/// assert_eq!(beta(max(), NOR, 0, false), max());
+/// # }
+/// ```
+pub fn max() -> Term {
+	abs(abs(app!(
+        Var(1),
+        abs(abs(abs(
+            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
+        ))),
+        Var(2),
+        abs(abs(abs(Var(1)))),
+        abs(abs(Var(2))),
+        Var(1),
+        Var(2)
+    )))
+}
+
 impl Term {
     /// Returns the value of `self` if it's a Church-encoded number.
     ///
@@ -911,5 +975,47 @@ mod tests {
         assert_eq!(beta(app!(fac(), 1.into()), HAP, 0, false), 1.into());
         assert_eq!(beta(app!(fac(), 2.into()), HAP, 0, false), 2.into());
         assert_eq!(beta(app!(fac(), 3.into()), HAP, 0, false), 6.into());
+    }
+
+    #[test]
+    fn church_min() {
+        assert_eq!(beta(app!(min(), 0.into(), 0.into()), NOR, 0, false), 0.into());
+        assert_eq!(beta(app!(min(), 4.into(), 4.into()), NOR, 0, false), 4.into());
+        assert_eq!(beta(app!(min(), 2.into(), 3.into()), NOR, 0, false), 2.into());
+        assert_eq!(beta(app!(min(), 5.into(), 3.into()), NOR, 0, false), 3.into());
+        assert_eq!(beta(app!(min(), 0.into(), 1.into()), NOR, 0, false), 0.into());
+
+        assert_eq!(beta(app!(min(), 0.into(), 0.into()), HNO, 0, false), 0.into());
+        assert_eq!(beta(app!(min(), 4.into(), 4.into()), HNO, 0, false), 4.into());
+        assert_eq!(beta(app!(min(), 2.into(), 3.into()), HNO, 0, false), 2.into());
+        assert_eq!(beta(app!(min(), 5.into(), 3.into()), HNO, 0, false), 3.into());
+        assert_eq!(beta(app!(min(), 0.into(), 1.into()), HNO, 0, false), 0.into());
+
+        assert_eq!(beta(app!(min(), 0.into(), 0.into()), HAP, 0, false), 0.into());
+        assert_eq!(beta(app!(min(), 4.into(), 4.into()), HAP, 0, false), 4.into());
+        assert_eq!(beta(app!(min(), 2.into(), 3.into()), HAP, 0, false), 2.into());
+        assert_eq!(beta(app!(min(), 5.into(), 3.into()), HAP, 0, false), 3.into());
+        assert_eq!(beta(app!(min(), 0.into(), 1.into()), HAP, 0, false), 0.into());
+    }
+
+    #[test]
+    fn church_max() {
+        assert_eq!(beta(app!(max(), 0.into(), 0.into()), NOR, 0, false), 0.into());
+        assert_eq!(beta(app!(max(), 4.into(), 4.into()), NOR, 0, false), 4.into());
+        assert_eq!(beta(app!(max(), 2.into(), 3.into()), NOR, 0, false), 3.into());
+        assert_eq!(beta(app!(max(), 5.into(), 3.into()), NOR, 0, false), 5.into());
+        assert_eq!(beta(app!(max(), 0.into(), 1.into()), NOR, 0, false), 1.into());
+
+        assert_eq!(beta(app!(max(), 0.into(), 0.into()), HNO, 0, false), 0.into());
+        assert_eq!(beta(app!(max(), 4.into(), 4.into()), HNO, 0, false), 4.into());
+        assert_eq!(beta(app!(max(), 2.into(), 3.into()), HNO, 0, false), 3.into());
+        assert_eq!(beta(app!(max(), 5.into(), 3.into()), HNO, 0, false), 5.into());
+        assert_eq!(beta(app!(max(), 0.into(), 1.into()), HNO, 0, false), 1.into());
+
+        assert_eq!(beta(app!(max(), 0.into(), 0.into()), HAP, 0, false), 0.into());
+        assert_eq!(beta(app!(max(), 4.into(), 4.into()), HAP, 0, false), 4.into());
+        assert_eq!(beta(app!(max(), 2.into(), 3.into()), HAP, 0, false), 3.into());
+        assert_eq!(beta(app!(max(), 5.into(), 3.into()), HAP, 0, false), 5.into());
+        assert_eq!(beta(app!(max(), 0.into(), 1.into()), HAP, 0, false), 1.into());
     }
 }
