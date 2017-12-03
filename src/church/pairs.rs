@@ -68,6 +68,33 @@ pub fn fst() -> Term { abs(Var(1).app(tru())) }
 /// ```
 pub fn snd() -> Term { abs(Var(1).app(fls())) }
 
+/// Applied to a function and a Church-encoded pair `(a, b)` it uncurrys the pair and applies the
+/// function to `a` and then `b`.
+///
+/// UNCURRY := λf.λp.f (FST p) (SND p) = λ λ 2 (FST 1) (SND 1)
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::church::pairs::{pair, uncurry};
+/// use lambda_calculus::church::numerals::{succ, one, plus};
+/// use lambda_calculus::reduction::beta;
+/// use lambda_calculus::reduction::Order::*;
+///
+/// let pair_3_5 = app!(pair(), 3.into(), 5.into());
+///
+/// assert_eq!(beta(app!(uncurry(), plus(), pair_3_5), NOR, 0, false), 8.into());
+/// assert_eq!(beta(uncurry(), NOR, 0, false), uncurry());
+/// # }
+/// ```
+/// λλ2(1(λλ2))(1(λλ1))
+pub fn uncurry() -> Term {
+    abs(abs(
+        app!(Var(2), Var(1).app(abs(abs(Var(2)))), Var(1).app(abs(abs(Var(1)))))
+    ))
+}
+
 impl Term {
     /// Checks whether `self` is a Church-encoded pair.
     ///
