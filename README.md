@@ -152,5 +152,6 @@ hybrid applicative: 40
 ## TODO
 
 - a few more tests
-- more independent tests (less integration)
+- move integration tests into a tests folder
 - further optimizations
+- an `abs!(n, expr)` macro for multiple abstractions
