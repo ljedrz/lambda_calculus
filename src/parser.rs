@@ -342,8 +342,8 @@ mod tests {
     fn parse_quine() {
         let quine = "λ1((λ11)(λλλλλ14(3(55)2)))1";
         assert_eq!(parse(&quine, DeBruijn).unwrap(),
-            abs(app(app(Var(1), app(abs(app(Var(1), Var(1))), abs(abs(abs(abs(abs(app(app(Var(1),
-            Var(4)), app(app(Var(3), app(Var(5), Var(5))), Var(2)))))))))), Var(1)))
+            abs(app(app(Var(1), app(abs(app(Var(1), Var(1))), abs!(5, app(app(Var(1),
+            Var(4)), app(app(Var(3), app(Var(5), Var(5))), Var(2)))))), Var(1)))
         );
     }
 
@@ -352,13 +352,13 @@ mod tests {
         let blc = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
                    (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
         assert_eq!(parse(&blc, DeBruijn).unwrap(),
-            app(app(abs(app(Var(1), Var(1))), abs(abs(abs(app(app(app(Var(1),
-            abs(abs(abs(abs(app(Var(3), abs(app(app(Var(5), app(Var(3), abs(app(app(Var(2),
-            app(Var(3), abs(abs(app(Var(3), abs(app(app(Var(1), Var(2)), Var(3)))))))), app(Var(4),
+            app(app(abs(app(Var(1), Var(1))), abs!(3, app(app(app(Var(1),
+            abs!(4, app(Var(3), abs(app(app(Var(5), app(Var(3), abs(app(app(Var(2),
+            app(Var(3), abs!(2, app(Var(3), abs(app(app(Var(1), Var(2)), Var(3))))))), app(Var(4),
             abs(app(Var(4), abs(app(app(Var(3), Var(1)), app(Var(2), Var(1))))))))))),
             app(app(Var(1), app(Var(2), abs(app(Var(1), Var(2))))), abs(app(app(Var(4),
-            abs(app(Var(4), abs(app(Var(2), app(Var(1), Var(4))))))), Var(5)))))))))))),
-            app(Var(3), Var(3))), Var(2)))))), abs(app(Var(1), app(abs(app(Var(1), Var(1))),
+            abs(app(Var(4), abs(app(Var(2), app(Var(1), Var(4))))))), Var(5))))))))),
+            app(Var(3), Var(3))), Var(2)))), abs(app(Var(1), app(abs(app(Var(1), Var(1))),
             abs(app(Var(1), Var(1)))))))
         );
     }
