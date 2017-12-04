@@ -7,6 +7,8 @@ Changes
 - add `min()` and `max()` for Church numerals
 - add `lshift()` and `rshift()` for Church numerals
 - add `uncurry()` for Church pairs
+- add `is_even()` and `is_odd()` for Church numerals
+- add `abs!()` macro for multiple abstraction
 
 Version 1.1.1
 =============

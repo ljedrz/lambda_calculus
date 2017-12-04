@@ -154,4 +154,3 @@ hybrid applicative: 40
 - a few more tests
 - move integration tests into a tests folder
 - further optimizations
-- an `abs!(n, expr)` macro for multiple abstractions
