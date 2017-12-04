@@ -460,20 +460,20 @@ mod tests {
     fn open_term_display() {
         assert_eq!(&format!("{}",     abs(Var(2))) , "λa.b");
         assert_eq!(&format!("{}",     abs(Var(3))) , "λa.c");
-        assert_eq!(&format!("{}", abs(abs(Var(3)))), "λa.λb.c");
-        assert_eq!(&format!("{}", abs(abs(Var(4)))), "λa.λb.d");
+        assert_eq!(&format!("{}", abs!(2, Var(3))), "λa.λb.c");
+        assert_eq!(&format!("{}", abs!(2, Var(4))), "λa.λb.d");
     }
 
     #[test]
     fn display_modes() {
-        let zero = abs(abs(Var(1)));
-        let succ = abs(abs(abs(app(Var(2), app!(Var(3), Var(2), Var(1))))));
-        let pred = abs(abs(abs(app!(
+        let zero = abs!(2, Var(1));
+        let succ = abs!(3, app(Var(2), app!(Var(3), Var(2), Var(1))));
+        let pred = abs!(3, app!(
             Var(3),
-            abs(abs(app(Var(1), app(Var(2), Var(4))))),
+            abs!(2, app(Var(1), app(Var(2), Var(4)))),
             abs(Var(2)),
             abs(Var(1))
-        ))));
+        ));
 
         assert_eq!(&format!("{}", zero), "λa.λb.b");
         assert_eq!(&format!("{}", succ), "λa.λb.λc.b (a b c)");
