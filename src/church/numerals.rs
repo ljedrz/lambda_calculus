@@ -777,6 +777,52 @@ pub fn rshift() -> Term {
     )))
 }
 
+/// Applied to a Church-encoded number it produces a Church-encoded boolean, indicating whether its
+/// argument is even.
+///
+/// IS_EVEN := NOT TRUE
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::church::numerals::is_even;
+/// use lambda_calculus::reduction::*;
+///
+/// let mut expr = app!(is_even(), 4.into());
+/// expr.beta(NOR, 0, false);
+///
+/// assert_eq!(expr, true.into());
+/// assert_eq!(beta(is_even(), NOR, 0, false), is_even());
+/// # }
+/// ```
+pub fn is_even() -> Term {
+    abs(app!(Var(1), abs(app!(Var(1), fls(), tru())), tru()))
+}
+
+/// Applied to a Church-encoded number it produces a Church-encoded boolean, indicating whether its
+/// argument is odd.
+///
+/// IS_ODD := NOT FALSE
+///
+/// # Example
+/// ```
+/// # #[macro_use] extern crate lambda_calculus;
+/// # fn main() {
+/// use lambda_calculus::church::numerals::is_odd;
+/// use lambda_calculus::reduction::*;
+///
+/// let mut expr = app!(is_odd(), 3.into());
+/// expr.beta(NOR, 0, false);
+///
+/// assert_eq!(expr, true.into());
+/// assert_eq!(beta(is_odd(), NOR, 0, false), is_odd());
+/// # }
+/// ```
+pub fn is_odd() -> Term {
+    abs(app!(Var(1), abs(app!(Var(1), fls(), tru())), fls()))
+}
+
 impl Term {
     /// Returns the value of `self` if it's a Church-encoded number.
     ///
@@ -1147,5 +1193,47 @@ mod tests {
          assert_eq!(beta(app!(rshift(), 9.into(), 1.into()), HAP, 0, false), 4.into());
          assert_eq!(beta(app!(rshift(), 9.into(), 2.into()), HAP, 0, false), 2.into());
          assert_eq!(beta(app!(rshift(), 7.into(), 1.into()), HAP, 0, false), 3.into());
+    }
+
+    #[test]
+    fn church_is_even() {
+         assert_eq!(beta(app!(is_even(), 0.into()), NOR, 0, false), true.into());
+         assert_eq!(beta(app!(is_even(), 1.into()), NOR, 0, false), false.into());
+         assert_eq!(beta(app!(is_even(), 2.into()), NOR, 0, false), true.into());
+         assert_eq!(beta(app!(is_even(), 8.into()), NOR, 0, false), true.into());
+         assert_eq!(beta(app!(is_even(), 9.into()), NOR, 0, false), false.into());
+
+         assert_eq!(beta(app!(is_even(), 0.into()), HNO, 0, false), true.into());
+         assert_eq!(beta(app!(is_even(), 1.into()), HNO, 0, false), false.into());
+         assert_eq!(beta(app!(is_even(), 2.into()), HNO, 0, false), true.into());
+         assert_eq!(beta(app!(is_even(), 8.into()), HNO, 0, false), true.into());
+         assert_eq!(beta(app!(is_even(), 9.into()), HNO, 0, false), false.into());
+
+         assert_eq!(beta(app!(is_even(), 0.into()), HAP, 0, false), true.into());
+         assert_eq!(beta(app!(is_even(), 1.into()), HAP, 0, false), false.into());
+         assert_eq!(beta(app!(is_even(), 2.into()), HAP, 0, false), true.into());
+         assert_eq!(beta(app!(is_even(), 8.into()), HAP, 0, false), true.into());
+         assert_eq!(beta(app!(is_even(), 9.into()), HAP, 0, false), false.into());
+    }
+
+    #[test]
+    fn church_is_odd() {
+         assert_eq!(beta(app!(is_odd(), 0.into()), NOR, 0, false), false.into());
+         assert_eq!(beta(app!(is_odd(), 1.into()), NOR, 0, false), true.into());
+         assert_eq!(beta(app!(is_odd(), 2.into()), NOR, 0, false), false.into());
+         assert_eq!(beta(app!(is_odd(), 8.into()), NOR, 0, false), false.into());
+         assert_eq!(beta(app!(is_odd(), 9.into()), NOR, 0, false), true.into());
+
+         assert_eq!(beta(app!(is_odd(), 0.into()), HNO, 0, false), false.into());
+         assert_eq!(beta(app!(is_odd(), 1.into()), HNO, 0, false), true.into());
+         assert_eq!(beta(app!(is_odd(), 2.into()), HNO, 0, false), false.into());
+         assert_eq!(beta(app!(is_odd(), 8.into()), HNO, 0, false), false.into());
+         assert_eq!(beta(app!(is_odd(), 9.into()), HNO, 0, false), true.into());
+
+         assert_eq!(beta(app!(is_odd(), 0.into()), HAP, 0, false), false.into());
+         assert_eq!(beta(app!(is_odd(), 1.into()), HAP, 0, false), true.into());
+         assert_eq!(beta(app!(is_odd(), 2.into()), HAP, 0, false), false.into());
+         assert_eq!(beta(app!(is_odd(), 8.into()), HAP, 0, false), false.into());
+         assert_eq!(beta(app!(is_odd(), 9.into()), HAP, 0, false), true.into());
     }
 }
