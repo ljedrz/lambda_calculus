@@ -40,7 +40,7 @@ pub fn i() -> Term { abs(Var(1)) }
 /// assert_eq!(beta(app!(k(), Var(1), Var(2)), NOR, 0, false), Var(1));
 /// # }
 /// ```
-pub fn k() -> Term { abs(abs(Var(2))) }
+pub fn k() -> Term { abs!(2, Var(2)) }
 
 /// S - the substitution combinator.
 ///
@@ -59,9 +59,7 @@ pub fn k() -> Term { abs(abs(Var(2))) }
 /// # }
 /// ```
 pub fn s() -> Term {
-    abs(abs(abs(
-        app!(Var(3), Var(1), app(Var(2), Var(1)))
-    )))
+    abs!(3, app!(Var(3), Var(1), app(Var(2), Var(1))))
 }
 
 /// Iota - the universal combinator.
@@ -99,9 +97,7 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 /// # }
 /// ```
 pub fn b() -> Term {
-    abs(abs(abs(
-        app(Var(3), app(Var(2), Var(1)))
-    )))
+    abs!(3, app(Var(3), app(Var(2), Var(1))))
 }
 
 /// C - the swapping combinator.
@@ -121,9 +117,7 @@ pub fn b() -> Term {
 /// # }
 /// ```
 pub fn c() -> Term {
-    abs(abs(abs(
-        app!(Var(3), Var(1), Var(2))
-    )))
+    abs!(3, app!(Var(3), Var(1), Var(2)))
 }
 
 /// W - the duplicating combinator.
@@ -143,15 +137,13 @@ pub fn c() -> Term {
 /// # }
 /// ```
 pub fn w() -> Term {
-    abs(abs(
-        app!(Var(2), Var(1), Var(1))
-    ))
+    abs!(2, app!(Var(2), Var(1), Var(1)))
 }
 /*
 /// U - the recursion combinator.
 ///
 /// U := λxy.y (x x y) = λ λ 1 (2 2 1)
-pub fn u() -> Term { abs(abs(Var(1).app(Var(2).app(Var(2)).app(Var(1))))) }
+pub fn u() -> Term { abs!(2, app(Var(1), app!(Var(2), Var(2), Var(1)))) }
 */
 /// ω - the self-application combinator.
 ///
@@ -257,7 +249,5 @@ pub fn z() -> Term {
 /// # }
 /// ```
 pub fn t() -> Term {
-    abs(abs(
-        app(Var(1), Var(2))
-    ))
+    abs!(2, app(Var(1), Var(2)))
 }
