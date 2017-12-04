@@ -761,14 +761,16 @@ pub fn lshift() -> Term {
 /// ```
 pub fn rshift() -> Term {
     abs(abs(app!(
-        abs(app!(Var(1), abs(fls()), tru())),
         Var(1),
+        abs(abs(abs(Var(1)))),
+        abs(abs(Var(2))),
         Var(2),
         app!(
             quot(),
             Var(2),
             app!(
-                app(Var(1), abs(abs(abs(Var(1))))),
+                Var(1),
+                abs(abs(abs(Var(1)))),
                 abs(abs(Var(2))),
                 abs(abs(app(Var(2), Var(1)))),
                 app(Var(1), abs(abs(app(Var(2), app(Var(2), Var(1))))))
