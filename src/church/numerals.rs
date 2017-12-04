@@ -17,7 +17,7 @@ use combinators::z;
 ///
 /// assert_eq!(zero(), Term::from(0));
 /// ```
-pub fn zero() -> Term { abs(abs(Var(1))) }
+pub fn zero() -> Term { abs!(2, Var(1)) }
 
 /// Applied to a Church-encoded number it produces a Church-encoded boolean, indicating whether its
 /// argument is equal to zero.
@@ -38,9 +38,7 @@ pub fn zero() -> Term { abs(abs(Var(1))) }
 /// # }
 /// ```
 pub fn is_zero() -> Term {
-    abs(
-        app!(Var(1), abs(fls()), tru())
-    )
+    abs(app!(Var(1), abs(fls()), tru()))
 }
 
 /// Produces a Church-encoded number one.
@@ -55,9 +53,7 @@ pub fn is_zero() -> Term {
 /// assert_eq!(one(), Term::from(1));
 /// ```
 pub fn one() -> Term {
-    abs(abs(
-        app(Var(2), Var(1))
-    ))
+    abs!(2, app(Var(2), Var(1)))
 }
 
 /// Applied to a Church-encoded number it produces its successor.
@@ -75,9 +71,7 @@ pub fn one() -> Term {
 /// assert_eq!(expr, 1.into());
 /// ```
 pub fn succ() -> Term {
-    abs(abs(abs(
-        app(Var(2), app!(Var(3), Var(2), Var(1)))
-    )))
+    abs!(3, app(Var(2), app!(Var(3), Var(2), Var(1))))
 }
 
 /// Applied to two Church-encoded numbers it produces their sum.
@@ -98,9 +92,7 @@ pub fn succ() -> Term {
 /// # }
 /// ```
 pub fn plus() -> Term {
-    abs(abs(abs(abs(
-        app!(Var(4), Var(2), app!(Var(3), Var(2), Var(1)))
-    ))))
+    abs!(4, app!(Var(4), Var(2), app!(Var(3), Var(2), Var(1))))
 }
 
 /// Applied to two Church-encoded numbers it yields their product.
@@ -121,9 +113,7 @@ pub fn plus() -> Term {
 /// # }
 /// ```
 pub fn mult() -> Term {
-    abs(abs(abs(
-        app(Var(3), app(Var(2), Var(1)))
-    )))
+    abs!(3, app(Var(3), app(Var(2), Var(1))))
 }
 
 /// Applied to two Church-encoded numbers it raises the first one to the power of the second one.
@@ -144,13 +134,13 @@ pub fn mult() -> Term {
 /// # }
 /// ```
 pub fn pow() -> Term {
-    abs(abs(app!(
+    abs!(2, app!(
         Var(1),
-        abs(abs(abs(Var(1)))),
-        abs(abs(Var(2))),
+        abs!(3, Var(1)),
+        abs!(2, Var(2)),
         one(),
         app(Var(1), Var(2))
-    )))
+    ))
 }
 
 /// Applied to a Church-encoded number it produces its predecessor.
@@ -168,12 +158,12 @@ pub fn pow() -> Term {
 /// assert_eq!(expr, 2.into());
 /// ```
 pub fn pred() -> Term {
-    abs(abs(abs(app!(
+    abs!(3, app!(
         Var(3),
-        abs(abs(app(Var(1), app(Var(2), Var(4))))),
+        abs!(2, app(Var(1), app(Var(2), Var(4)))),
         abs(Var(2)),
         abs(Var(1))
-    ))))
+    ))
 }
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
@@ -194,9 +184,7 @@ pub fn pred() -> Term {
 /// # }
 /// ```
 pub fn sub() -> Term {
-    abs(abs(
-        app!(Var(1), pred(), Var(2))
-    ))
+    abs!(2, app!(Var(1), pred(), Var(2)))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -220,17 +208,19 @@ pub fn sub() -> Term {
 /// # }
 /// ```
 pub fn lt() -> Term {
-    abs(abs(app!(
+    abs!(2, app!(
         Var(2),
-        abs(abs(abs(
-            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-        ))),
+        abs!(3, app!(
+            Var(3),
+            abs!(2, app(Var(1), app(Var(2), Var(4)))),
+            abs(Var(2)), abs(Var(1))
+        )),
         Var(1),
-        abs(abs(abs(Var(1)))),
-        abs(abs(Var(2))),
-        abs(abs(Var(1))),
-        abs(abs(Var(2)))
-    )))
+        abs!(3, Var(1)),
+        abs!(2, Var(2)),
+        abs!(2, Var(1)),
+        abs!(2, Var(2))
+    ))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -254,15 +244,18 @@ pub fn lt() -> Term {
 /// # }
 /// ```
 pub fn leq() -> Term {
-    abs(abs(app!(
+    abs!(2, app!(
         Var(1),
-        abs(abs(abs(
-            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-        ))),
+        abs!(3, app!(
+            Var(3),
+            abs!(2, app(Var(1), app(Var(2), Var(4)))),
+            abs(Var(2)),
+            abs(Var(1))
+        )),
         Var(2),
-        abs(abs(abs(Var(1)))),
-        abs(abs(Var(2)))
-    )))
+        abs!(3, Var(1)),
+        abs!(2, Var(2))
+    ))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -287,33 +280,42 @@ pub fn leq() -> Term {
 /// # }
 /// ```
 pub fn eq() -> Term {
-    abs(abs(app!(
+    abs!(2, app!(
         Var(1),
-        abs(abs(abs(
-            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-        ))),
+        abs!(3, app!(
+            Var(3),
+            abs!(2, app(Var(1), app(Var(2), Var(4)))),
+            abs(Var(2)),
+            abs(Var(1))
+        )),
         Var(2),
-        abs(abs(abs(Var(1)))),
-        abs(abs(Var(2))),
+        abs!(3, Var(1)),
+        abs!(2, Var(2)),
         app!(
             Var(2),
-            abs(abs(abs(
-                app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-            ))),
+            abs!(3, app!(
+                Var(3),
+                abs!(2, app(Var(1), app(Var(2), Var(4)))),
+                abs(Var(2)),
+                abs(Var(1))
+            )),
             Var(1),
-            abs(abs(abs(Var(1)))),
-            abs(abs(Var(2)))
+            abs!(3, Var(1)),
+            abs!(2, Var(2))
         ),
         app!(
             Var(1),
-            abs(abs(abs(
-                app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-            ))),
+            abs!(3, app!(
+                Var(3),
+                abs!(2, app(Var(1), app(Var(2), Var(4)))),
+                abs(Var(2)),
+                abs(Var(1))
+            )),
             Var(2),
-            abs(abs(abs(Var(1)))),
-            abs(abs(Var(2)))
+            abs!(3, Var(1)),
+            abs!(2, Var(2))
         )
-    )))
+    ))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -337,39 +339,48 @@ pub fn eq() -> Term {
 /// # }
 /// ```
 pub fn neq() -> Term {
-    abs(abs(app!(
+    abs!(2, app!(
         Var(1),
-        abs(abs(abs(
-            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-        ))),
+        abs!(3, app!(
+            Var(3),
+            abs!(2, app(Var(1), app(Var(2), Var(4)))),
+            abs(Var(2)),
+            abs(Var(1))
+        )),
         Var(2),
-        abs(abs(abs(Var(1)))),
-        abs(abs(Var(2))),
-        abs(abs(Var(1))),
-        abs(abs(Var(2))),
+        abs!(3, Var(1)),
+        abs!(2, Var(2)),
+        abs!(2, Var(1)),
+        abs!(2, Var(2)),
         app!(
             Var(1),
-            abs(abs(abs(
-                app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-            ))),
+            abs!(3, app!(
+                Var(3),
+                abs!(2, app(Var(1), app(Var(2), Var(4)))),
+                abs(Var(2)),
+                abs(Var(1))
+            )),
             Var(2),
-            abs(abs(abs(Var(1)))),
-            abs(abs(Var(2))),
-            abs(abs(Var(1))),
-            abs(abs(Var(2)))
+            abs!(3, Var(1)),
+            abs!(2, Var(2)),
+            abs!(2, Var(1)),
+            abs!(2, Var(2))
         ),
         app!(
             Var(2),
-            abs(abs(abs(
-                app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-            ))),
+            abs!(3, app!(
+                Var(3),
+                abs!(2, app(Var(1), app(Var(2), Var(4)))),
+                abs(Var(2)),
+                abs(Var(1))
+            )),
             Var(1),
-            abs(abs(abs(Var(1)))),
-            abs(abs(Var(2))),
-            abs(abs(Var(1))),
-            abs(abs(Var(2)))
+            abs!(3, Var(1)),
+            abs!(2, Var(2)),
+            abs!(2, Var(1)),
+            abs!(2, Var(2))
         )
-    )))
+    ))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -393,15 +404,18 @@ pub fn neq() -> Term {
 /// # }
 /// ```
 pub fn geq() -> Term {
-    abs(abs(app!(
+    abs!(2, app!(
         Var(2),
-        abs(abs(abs(
-            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-        ))),
+        abs!(3, app!(
+            Var(3),
+            abs!(2, app(Var(1), app(Var(2), Var(4)))),
+            abs(Var(2)),
+            abs(Var(1))
+        )),
         Var(1),
-        abs(abs(abs(Var(1)))),
-        abs(abs(Var(2)))
-    )))
+        abs!(3, Var(1)),
+        abs!(2, Var(2))
+    ))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
@@ -425,17 +439,20 @@ pub fn geq() -> Term {
 /// # }
 /// ```
 pub fn gt() -> Term {
-    abs(abs(app!(
+    abs!(2, app!(
         Var(1),
-        abs(abs(abs(
-            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-        ))),
+        abs!(3, app!(
+            Var(3),
+            abs!(2, app(Var(1), app(Var(2), Var(4)))),
+            abs(Var(2)),
+            abs(Var(1))
+        )),
         Var(2),
-        abs(abs(abs(Var(1)))),
-        abs(abs(Var(2))),
-        abs(abs(Var(1))),
-        abs(abs(Var(2)))
-    )))
+        abs!(3, Var(1)),
+        abs!(2, Var(2)),
+        abs!(2, Var(1)),
+        abs!(2, Var(2))
+    ))
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
@@ -461,40 +478,40 @@ pub fn gt() -> Term {
 pub fn div() -> Term {
     app!(
         z(),
-        abs(abs(abs(abs(app!(
+        abs!(4, app!(
             Var(2),
-            abs(abs(abs(app!(
+            abs!(3, app!(
                 Var(3),
-                abs(abs(app(Var(1), app(Var(2), Var(4))))),
+                abs!(2, app(Var(1), app(Var(2), Var(4)))),
                 abs(Var(2)),
                 abs(Var(1))
-            )))),
+            )),
             Var(1),
-            abs(abs(abs(Var(1)))),
-            abs(abs(Var(2))),
-            abs(abs(Var(1))),
-            abs(abs(Var(2))),
-            abs(abs(app!(Var(1), Var(5), Var(4)))),
+            abs!(3, Var(1)),
+            abs!(2, Var(2)),
+            abs!(2, Var(1)),
+            abs!(2, Var(2)),
+            abs!(2, app!(Var(1), Var(5), Var(4))),
             abs(app!(
                 Var(5),
-                abs(abs(app(
+                abs!(2, app(
                     Var(2),
                     app!(Var(6), Var(2), Var(1))
-                ))),
+                )),
                 app!(
                     Var(2),
-                    abs(abs(abs(app!(
+                    abs!(3, app!(
                         Var(3),
-                        abs(abs(app(Var(1), app(Var(2), Var(4))))),
+                        abs!(2, app(Var(1), app(Var(2), Var(4)))),
                         abs(Var(2)),
                         abs(Var(1))
-                    )))),
+                    )),
                     Var(3)
                 ),
                 Var(2)
             )),
             abs(Var(1))
-        ))))),
+        )),
         zero()
     )
 }
@@ -521,41 +538,41 @@ pub fn div() -> Term {
 pub fn quot() -> Term {
     app(
         z(),
-        abs(abs(abs(app!(
+        abs!(3, app!(
             Var(2),
-            abs(abs(abs(app!(
+            abs!(3, app!(
                 Var(3),
-                abs(abs(app(Var(1), app(Var(2), Var(4))))),
+                abs!(2, app(Var(1), app(Var(2), Var(4)))),
                 abs(Var(2)),
                 abs(Var(1))
-            )))),
+            )),
             Var(1),
-            abs(abs(abs(Var(1)))),
-            abs(abs(Var(2))),
-            abs(abs(Var(1))),
-            abs(abs(Var(2))),
-            abs(abs(abs(Var(1)))),
-            abs(abs(abs(app(
+            abs!(3, Var(1)),
+            abs!(2, Var(2)),
+            abs!(2, Var(1)),
+            abs!(2, Var(2)),
+            abs!(3, Var(1)),
+            abs!(3, app(
                 Var(2),
                 app!(
                     Var(6),
                     app!(
                         Var(4),
-                        abs(abs(abs(app!(
+                        abs!(3, app!(
                             Var(3),
-                            abs(abs(app(Var(1), app(Var(2), Var(4))))),
+                            abs!(2, app(Var(1), app(Var(2), Var(4)))),
                             abs(Var(2)),
                             abs(Var(1))
-                        )))),
+                        )),
                         Var(5)
                     ),
                     Var(4),
                     Var(2),
                     Var(1)
                 )
-            )))),
+            )),
             abs(Var(1))
-        ))))
+        ))
     )
 }
 
@@ -580,36 +597,36 @@ pub fn quot() -> Term {
 pub fn rem() -> Term {
     app(
         z(),
-        abs(abs(abs(app!(
+        abs!(3, app!(
             Var(2),
-            abs(abs(abs(app!(
+            abs!(3, app!(
                 Var(3),
-                abs(abs(app(Var(1), app(Var(2), Var(4))))),
+                abs!(2, app(Var(1), app(Var(2), Var(4)))),
                 abs(Var(2)),
                 abs(Var(1))
-            )))),
+            )),
             Var(1),
-            abs(abs(abs(Var(1)))),
-            abs(abs(Var(2))),
-            abs(abs(Var(1))),
-            abs(abs(Var(2))),
+            abs!(3, Var(1)),
+            abs!(2, Var(2)),
+            abs!(2, Var(1)),
+            abs!(2, Var(2)),
             abs(Var(3)),
             abs(app!(
                 Var(4),
                 app!(
                     Var(2),
-                    abs(abs(abs(app!(
+                    abs!(3, app!(
                         Var(3),
-                        abs(abs(app(Var(1), app(Var(2), Var(4))))),
+                        abs!(2, app(Var(1), app(Var(2), Var(4)))),
                         abs(Var(2)),
                         abs(Var(1))
-                    )))),
+                    )),
                     Var(3)
                 ),
                 Var(2)
             )),
             abs(Var(1))
-        ))))
+        ))
     )
 }
 
@@ -632,14 +649,14 @@ pub fn rem() -> Term {
 pub fn fac() -> Term {
     abs(app!(
         Var(1),
-        abs(abs(abs(app!(
+        abs!(3, app!(
             Var(3),
             abs(app(Var(3), app(Var(2), Var(1)))),
-            abs(abs(app(Var(2), app!(Var(3), Var(2), Var(1)))))
-        )))),
-        abs(abs(Var(2))),
-        abs(abs(app(Var(2), Var(1)))),
-        abs(abs(app(Var(2), Var(1))))
+            abs!(2, app(Var(2), app!(Var(3), Var(2), Var(1))))
+        )),
+        abs!(2, Var(2)),
+        abs!(2, app(Var(2), Var(1))),
+        abs!(2, app(Var(2), Var(1)))
     ))
 }
 
@@ -662,17 +679,20 @@ pub fn fac() -> Term {
 /// # }
 /// ```
 pub fn min() -> Term {
-	abs(abs(app!(
+	abs!(2, app!(
         Var(1),
-        abs(abs(abs(
-            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-        ))),
+        abs!(3, app!(
+            Var(3),
+            abs!(2, app(Var(1), app(Var(2), Var(4)))),
+            abs(Var(2)),
+            abs(Var(1))
+        )),
         Var(2),
-        abs(abs(abs(Var(1)))),
-        abs(abs(Var(2))),
+        abs!(3, Var(1)),
+        abs!(2, Var(2)),
         Var(2),
         Var(1)
-    )))
+    ))
 }
 
 /// Applied to two Church-encoded numbers it returns their maximum.
@@ -694,17 +714,20 @@ pub fn min() -> Term {
 /// # }
 /// ```
 pub fn max() -> Term {
-	abs(abs(app!(
+	abs!(2, app!(
         Var(1),
-        abs(abs(abs(
-            app!(Var(3), abs(abs(app(Var(1), app(Var(2), Var(4))))), abs(Var(2)), abs(Var(1)))
-        ))),
+        abs!(3, app!(
+            Var(3),
+            abs!(2, app(Var(1), app(Var(2), Var(4)))),
+            abs(Var(2)),
+            abs(Var(1))
+        )),
         Var(2),
-        abs(abs(abs(Var(1)))),
-        abs(abs(Var(2))),
+        abs!(3, Var(1)),
+        abs!(2, Var(2)),
         Var(1),
         Var(2)
-    )))
+    ))
 }
 
 /// Applied to two Church-encoded numbers `a` and `b` it returns the left [logical
@@ -727,17 +750,17 @@ pub fn max() -> Term {
 /// # }
 /// ```
 pub fn lshift() -> Term {
-    abs(abs(abs(app(
+    abs!(3, app(
         Var(3),
         app!(
             Var(2),
-            abs(abs(abs(Var(1)))),
-            abs(abs(Var(2))),
-            abs(abs(app(Var(2), Var(1)))),
-            app(Var(2), abs(abs(app(Var(2), app(Var(2), Var(1)))))),
+            abs!(3, Var(1)),
+            abs!(2, Var(2)),
+            abs!(2, app(Var(2), Var(1))),
+            app(Var(2), abs!(2, app(Var(2), app(Var(2), Var(1))))),
             Var(1)
         )
-    ))))
+    ))
 }
 
 /// Applied to two Church-encoded numbers `a` and `b` it returns the right [logical
@@ -760,23 +783,23 @@ pub fn lshift() -> Term {
 /// # }
 /// ```
 pub fn rshift() -> Term {
-    abs(abs(app!(
+    abs!(2, app!(
         Var(1),
-        abs(abs(abs(Var(1)))),
-        abs(abs(Var(2))),
+        abs!(3, Var(1)),
+        abs!(2, Var(2)),
         Var(2),
         app!(
             quot(),
             Var(2),
             app!(
                 Var(1),
-                abs(abs(abs(Var(1)))),
-                abs(abs(Var(2))),
-                abs(abs(app(Var(2), Var(1)))),
-                app(Var(1), abs(abs(app(Var(2), app(Var(2), Var(1))))))
+                abs!(3, Var(1)),
+                abs!(2, Var(2)),
+                abs!(2, app(Var(2), Var(1))),
+                app(Var(1), abs!(2, app(Var(2), app(Var(2), Var(1)))))
             )
         )
-    )))
+    ))
 }
 
 /// Applied to a Church-encoded number it produces a Church-encoded boolean, indicating whether its
@@ -880,7 +903,7 @@ impl From<usize> for Term {
             count -= 1;
         }
 
-        abs(abs(inner))
+        abs!(2, inner)
     }
 }
 
