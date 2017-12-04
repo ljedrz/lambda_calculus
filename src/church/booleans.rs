@@ -6,12 +6,12 @@ use term::Term::*;
 /// A Church-encoded boolean `true`.
 ///
 /// TRUE := λab.a = λ λ 2
-pub fn tru() -> Term { abs(abs(Var(2))) }
+pub fn tru() -> Term { abs!(2, Var(2)) }
 
 /// A Church-encoded boolean `false`.
 ///
 /// FALSE := λab.b = λ λ 1
-pub fn fls() -> Term { abs(abs(Var(1))) }
+pub fn fls() -> Term { abs!(2, Var(1)) }
 
 /// Applied to two Church booleans it returns their Church-encoded conjunction.
 ///
@@ -32,9 +32,7 @@ pub fn fls() -> Term { abs(abs(Var(1))) }
 /// # }
 /// ```
 pub fn and() -> Term {
-    abs(abs(
-        app!(Var(2), Var(1), Var(2))
-    ))
+    abs!(2, app!(Var(2), Var(1), Var(2)))
 }
 
 /// Applied to two Church booleans it returns their Church-encoded disjunction.
@@ -56,9 +54,7 @@ pub fn and() -> Term {
 /// # }
 /// ```
 pub fn or() -> Term {
-    abs(abs(
-        app!(Var(2), Var(2), Var(1))
-    ))
+    abs!(2, app!(Var(2), Var(2), Var(1)))
 }
 
 /// Applied to a Church boolean it returns its Church-encoded negation.
@@ -78,9 +74,7 @@ pub fn or() -> Term {
 /// # }
 /// ```
 pub fn not() -> Term {
-    abs(
-        app!(Var(1), fls(), tru())
-    )
+    abs(app!(Var(1), fls(), tru()))
 }
 
 /// Applied to two Church booleans it returns their Church-encoded exclusive disjunction.
@@ -102,17 +96,17 @@ pub fn not() -> Term {
 /// # }
 /// ```
 pub fn xor() -> Term {
-    abs(abs(
+    abs!(2, 
         app!(
             Var(2),
             app!(
                 Var(1),
-                abs(abs(Var(1))),
-                abs(abs(Var(2)))
+                abs!(2, Var(1)),
+                abs!(2, Var(2))
             ),
             Var(1)
         )
-    ))
+    )
 }
 
 /// Applied to two Church booleans it returns their Church-encoded joint denial.
@@ -134,15 +128,15 @@ pub fn xor() -> Term {
 /// # }
 /// ```
 pub fn nor() -> Term {
-    abs(abs(
+    abs!(2, 
         app!(
             Var(2),
             Var(2),
             Var(1),
-            abs(abs(Var(1))),
-            abs(abs(Var(2)))
+            abs!(2, Var(1)),
+            abs!(2, Var(2))
         )
-    ))
+    )
 }
 
 /// Applied to two Church booleans it returns their Church-encoded alternative denial.
@@ -164,15 +158,15 @@ pub fn nor() -> Term {
 /// # }
 /// ```
 pub fn nand() -> Term {
-    abs(abs(
+    abs!(2, 
         app!(
             Var(2),
             Var(1),
             Var(2),
-            abs(abs(Var(1))),
-            abs(abs(Var(2)))
+            abs!(2, Var(1)),
+            abs!(2, Var(2))
         )
-    ))
+    )
 }
 
 /// Applied to a Church-encoded predicate and two terms it returns the first one if the predicate
@@ -194,9 +188,7 @@ pub fn nand() -> Term {
 /// # }
 /// ```
 pub fn if_else() -> Term {
-    abs(abs(abs(
-        app!(Var(3), Var(2), Var(1))
-    )))
+    abs!(3, app!(Var(3), Var(2), Var(1)))
 }
 
 impl From<bool> for Term {
