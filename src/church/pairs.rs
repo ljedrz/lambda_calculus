@@ -1,6 +1,6 @@
 //! [Church pairs](https://en.wikipedia.org/wiki/Church_encoding#Church_pairs)
 
-use term::{Term, Error, abs};
+use term::{Term, Error, abs, app};
 use term::Term::*;
 use term::Error::*;
 use church::booleans::{tru, fls};
@@ -23,9 +23,7 @@ use church::booleans::{tru, fls};
 /// # }
 /// ```
 pub fn pair() -> Term {
-    abs(abs(abs(
-        app!(Var(1), Var(3), Var(2))
-    )))
+    abs!(3, app!(Var(1), Var(3), Var(2)))
 }
 
 /// Applied to a Church-encoded pair `(a, b)` it yields `a`.
@@ -46,7 +44,7 @@ pub fn pair() -> Term {
 /// assert_eq!(beta(fst().app(pair_0_1), NOR, 0, false), zero());
 /// # }
 /// ```
-pub fn fst() -> Term { abs(Var(1).app(tru())) }
+pub fn fst() -> Term { abs(app(Var(1), tru())) }
 
 /// Applied to a Church-encoded pair `(a, b)` it yields `b`.
 ///
@@ -66,7 +64,7 @@ pub fn fst() -> Term { abs(Var(1).app(tru())) }
 /// assert_eq!(beta(snd().app(pair_0_1), NOR, 0, false), one());
 /// # }
 /// ```
-pub fn snd() -> Term { abs(Var(1).app(fls())) }
+pub fn snd() -> Term { abs(app(Var(1), fls())) }
 
 /// Applied to a function and a Church-encoded pair `(a, b)` it uncurrys the pair and applies the
 /// function to `a` and then `b`.
@@ -90,8 +88,10 @@ pub fn snd() -> Term { abs(Var(1).app(fls())) }
 /// ```
 /// λλ2(1(λλ2))(1(λλ1))
 pub fn uncurry() -> Term {
-    abs(abs(
-        app!(Var(2), Var(1).app(abs(abs(Var(2)))), Var(1).app(abs(abs(Var(1)))))
+    abs!(2, app!(
+        Var(2), 
+        app(Var(1), abs!(2, Var(2))), 
+        app(Var(1), abs!(2, Var(1)))
     ))
 }
 
