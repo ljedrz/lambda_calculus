@@ -86,12 +86,11 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 /// assert_eq!(beta(uncurry(), NOR, 0, false), uncurry());
 /// # }
 /// ```
-/// λλ2(1(λλ2))(1(λλ1))
 pub fn uncurry() -> Term {
     abs!(2, app!(
         Var(2), 
-        app(Var(1), abs!(2, Var(2))), 
-        app(Var(1), abs!(2, Var(1)))
+        app(Var(1), tru()), 
+        app(Var(1), fls())
     ))
 }
 
