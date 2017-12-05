@@ -8,7 +8,9 @@ Changes
 - add `lshift()` and `rshift()` for Church numerals
 - add `uncurry()` for Church pairs
 - add `is_even()` and `is_odd()` for Church numerals
-- add `abs!()` macro for multiple abstraction
+- add `abs!()` macro for multiple abstraction and use it internally
+- simplify many functions in numerals.rs with `pred()` and `one()`
+- move integration tests to a [tests](https://github.com/ljedrz/lambda_calculus/tree/master/tests) folder
 
 Version 1.1.1
 =============
