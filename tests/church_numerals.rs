@@ -3,9 +3,8 @@
 #[macro_use]
 extern crate lambda_calculus as lambda;
 
+use lambda::*;
 use lambda::church::numerals::*;
-use lambda::reduction::beta;
-use lambda::reduction::Order::*;
 use lambda::combinators::c;
 
 #[test]

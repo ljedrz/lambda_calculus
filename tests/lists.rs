@@ -3,10 +3,8 @@
 #[macro_use]
 extern crate lambda_calculus as lambda;
 
-use lambda::term::Term;
+use lambda::*;
 use lambda::church::lists::*;
-use lambda::reduction::beta;
-use lambda::reduction::Order::*;
 use lambda::church::numerals::{is_zero, plus, succ};
 
 #[test]

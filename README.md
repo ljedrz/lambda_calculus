@@ -152,5 +152,4 @@ hybrid applicative: 40
 ## TODO
 
 - a few more tests
-- move integration tests into a tests folder
 - further optimizations

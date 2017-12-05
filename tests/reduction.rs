@@ -1,11 +1,7 @@
 #[macro_use]
 extern crate lambda_calculus as lambda;
 
-use lambda::reduction::beta;
-use lambda::reduction::Order::*;
-use lambda::term::{abs, app, Var};
-use lambda::term::Notation::*;
-use lambda::parser::parse;
+use lambda::*;
 use lambda::combinators::{i, omm};
 use std::thread;
 
