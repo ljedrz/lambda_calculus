@@ -210,11 +210,7 @@ pub fn sub() -> Term {
 pub fn lt() -> Term {
     abs!(2, app!(
         Var(2),
-        abs!(3, app!(
-            Var(3),
-            abs!(2, app(Var(1), app(Var(2), Var(4)))),
-            abs(Var(2)), abs(Var(1))
-        )),
+        pred(),
         Var(1),
         abs!(3, Var(1)),
         abs!(2, Var(2)),
@@ -246,12 +242,7 @@ pub fn lt() -> Term {
 pub fn leq() -> Term {
     abs!(2, app!(
         Var(1),
-        abs!(3, app!(
-            Var(3),
-            abs!(2, app(Var(1), app(Var(2), Var(4)))),
-            abs(Var(2)),
-            abs(Var(1))
-        )),
+        pred(),
         Var(2),
         abs!(3, Var(1)),
         abs!(2, Var(2))
@@ -282,35 +273,20 @@ pub fn leq() -> Term {
 pub fn eq() -> Term {
     abs!(2, app!(
         Var(1),
-        abs!(3, app!(
-            Var(3),
-            abs!(2, app(Var(1), app(Var(2), Var(4)))),
-            abs(Var(2)),
-            abs(Var(1))
-        )),
+        pred(),
         Var(2),
         abs!(3, Var(1)),
         abs!(2, Var(2)),
         app!(
             Var(2),
-            abs!(3, app!(
-                Var(3),
-                abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                abs(Var(2)),
-                abs(Var(1))
-            )),
+            pred(),
             Var(1),
             abs!(3, Var(1)),
             abs!(2, Var(2))
         ),
         app!(
             Var(1),
-            abs!(3, app!(
-                Var(3),
-                abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                abs(Var(2)),
-                abs(Var(1))
-            )),
+            pred(),
             Var(2),
             abs!(3, Var(1)),
             abs!(2, Var(2))
@@ -341,12 +317,7 @@ pub fn eq() -> Term {
 pub fn neq() -> Term {
     abs!(2, app!(
         Var(1),
-        abs!(3, app!(
-            Var(3),
-            abs!(2, app(Var(1), app(Var(2), Var(4)))),
-            abs(Var(2)),
-            abs(Var(1))
-        )),
+        pred(),
         Var(2),
         abs!(3, Var(1)),
         abs!(2, Var(2)),
@@ -354,12 +325,7 @@ pub fn neq() -> Term {
         abs!(2, Var(2)),
         app!(
             Var(1),
-            abs!(3, app!(
-                Var(3),
-                abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                abs(Var(2)),
-                abs(Var(1))
-            )),
+            pred(),
             Var(2),
             abs!(3, Var(1)),
             abs!(2, Var(2)),
@@ -368,12 +334,7 @@ pub fn neq() -> Term {
         ),
         app!(
             Var(2),
-            abs!(3, app!(
-                Var(3),
-                abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                abs(Var(2)),
-                abs(Var(1))
-            )),
+            pred(),
             Var(1),
             abs!(3, Var(1)),
             abs!(2, Var(2)),
@@ -406,12 +367,7 @@ pub fn neq() -> Term {
 pub fn geq() -> Term {
     abs!(2, app!(
         Var(2),
-        abs!(3, app!(
-            Var(3),
-            abs!(2, app(Var(1), app(Var(2), Var(4)))),
-            abs(Var(2)),
-            abs(Var(1))
-        )),
+        pred(),
         Var(1),
         abs!(3, Var(1)),
         abs!(2, Var(2))
@@ -441,12 +397,7 @@ pub fn geq() -> Term {
 pub fn gt() -> Term {
     abs!(2, app!(
         Var(1),
-        abs!(3, app!(
-            Var(3),
-            abs!(2, app(Var(1), app(Var(2), Var(4)))),
-            abs(Var(2)),
-            abs(Var(1))
-        )),
+        pred(),
         Var(2),
         abs!(3, Var(1)),
         abs!(2, Var(2)),
@@ -480,12 +431,7 @@ pub fn div() -> Term {
         z(),
         abs!(4, app!(
             Var(2),
-            abs!(3, app!(
-                Var(3),
-                abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                abs(Var(2)),
-                abs(Var(1))
-            )),
+            pred(),
             Var(1),
             abs!(3, Var(1)),
             abs!(2, Var(2)),
@@ -500,12 +446,7 @@ pub fn div() -> Term {
                 )),
                 app!(
                     Var(2),
-                    abs!(3, app!(
-                        Var(3),
-                        abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                        abs(Var(2)),
-                        abs(Var(1))
-                    )),
+                    pred(),
                     Var(3)
                 ),
                 Var(2)
@@ -540,12 +481,7 @@ pub fn quot() -> Term {
         z(),
         abs!(3, app!(
             Var(2),
-            abs!(3, app!(
-                Var(3),
-                abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                abs(Var(2)),
-                abs(Var(1))
-            )),
+            pred(),
             Var(1),
             abs!(3, Var(1)),
             abs!(2, Var(2)),
@@ -558,12 +494,7 @@ pub fn quot() -> Term {
                     Var(6),
                     app!(
                         Var(4),
-                        abs!(3, app!(
-                            Var(3),
-                            abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                            abs(Var(2)),
-                            abs(Var(1))
-                        )),
+                        pred(),
                         Var(5)
                     ),
                     Var(4),
@@ -599,12 +530,7 @@ pub fn rem() -> Term {
         z(),
         abs!(3, app!(
             Var(2),
-            abs!(3, app!(
-                Var(3),
-                abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                abs(Var(2)),
-                abs(Var(1))
-            )),
+            pred(),
             Var(1),
             abs!(3, Var(1)),
             abs!(2, Var(2)),
@@ -615,12 +541,7 @@ pub fn rem() -> Term {
                 Var(4),
                 app!(
                     Var(2),
-                    abs!(3, app!(
-                        Var(3),
-                        abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                        abs(Var(2)),
-                        abs(Var(1))
-                    )),
+                    pred(),
                     Var(3)
                 ),
                 Var(2)
@@ -655,8 +576,8 @@ pub fn fac() -> Term {
             abs!(2, app(Var(2), app!(Var(3), Var(2), Var(1))))
         )),
         abs!(2, Var(2)),
-        abs!(2, app(Var(2), Var(1))),
-        abs!(2, app(Var(2), Var(1)))
+        one(),
+        one()
     ))
 }
 
@@ -681,12 +602,7 @@ pub fn fac() -> Term {
 pub fn min() -> Term {
 	abs!(2, app!(
         Var(1),
-        abs!(3, app!(
-            Var(3),
-            abs!(2, app(Var(1), app(Var(2), Var(4)))),
-            abs(Var(2)),
-            abs(Var(1))
-        )),
+        pred(),
         Var(2),
         abs!(3, Var(1)),
         abs!(2, Var(2)),
@@ -716,12 +632,7 @@ pub fn min() -> Term {
 pub fn max() -> Term {
 	abs!(2, app!(
         Var(1),
-        abs!(3, app!(
-            Var(3),
-            abs!(2, app(Var(1), app(Var(2), Var(4)))),
-            abs(Var(2)),
-            abs(Var(1))
-        )),
+        pred(),
         Var(2),
         abs!(3, Var(1)),
         abs!(2, Var(2)),
@@ -756,7 +667,7 @@ pub fn lshift() -> Term {
             Var(2),
             abs!(3, Var(1)),
             abs!(2, Var(2)),
-            abs!(2, app(Var(2), Var(1))),
+            one(),
             app(Var(2), abs!(2, app(Var(2), app(Var(2), Var(1))))),
             Var(1)
         )
@@ -795,7 +706,7 @@ pub fn rshift() -> Term {
                 Var(1),
                 abs!(3, Var(1)),
                 abs!(2, Var(2)),
-                abs!(2, app(Var(2), Var(1))),
+                one(),
                 app(Var(1), abs!(2, app(Var(2), app(Var(2), Var(1)))))
             )
         )
