@@ -720,10 +720,14 @@ impl Term {
     /// ```
     /// use lambda_calculus::*;
     ///
-    /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).push(0.into()),
-    ///     Ok(vec![0.into(), 1.into(), 2.into(), 3.into()].into())
-    /// );
+    /// let list_from_vec = Term::from(vec![1.into(), 2.into(), 3.into()]);
+    /// let list_pushed = Term::from(vec![])
+    ///                   .push(3.into())
+    ///                   .and_then(|t| t.push(2.into()))
+    ///                   .and_then(|t| t.push(1.into()))
+    ///                   .unwrap();
+    ///
+    /// assert_eq!(list_from_vec, list_pushed);
     /// ```
     /// # Errors
     ///
@@ -808,18 +812,6 @@ impl Index<usize> for Term {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn list_from_vector() {
-        let list_from_vec = Term::from(vec![1.into(), 2.into(), 3.into()]);
-        let list_pushed = nil()
-            .push(3.into())
-            .and_then(|t| t.push(2.into()))
-            .and_then(|t| t.push(1.into()))
-            .unwrap();
-
-        assert_eq!(list_from_vec, list_pushed);
-    }
 
     #[test]
     fn list_length() {
