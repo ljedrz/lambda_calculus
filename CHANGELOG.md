@@ -1,3 +1,14 @@
+Version 1.2.1
+=============
+
+Changes
+-------
+
+- change all instances of `try!()` to `?`
+- replace 2 `clone()`s with `replace()`s (**big** performance wins)
+- simplify doctest imports in booleans.rs
+- simplify and improve doctests in combinators.rs, lists.rs, pairs.rs and numerals.rs
+
 Version 1.2.0
 =============
 
