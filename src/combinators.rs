@@ -22,7 +22,8 @@ use term::Term::*;
 /// use lambda_calculus::combinators::i;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(i().app(Var(1)), NOR, 0, false), Var(1));
+/// assert_eq!(beta(app(i(), Var(1)), NOR, 0, false), Var(1));
+/// assert_eq!(beta(app(i(), abs(Var(1))), NOR, 0, false), abs(Var(1)));
 /// ```
 pub fn i() -> Term { abs(Var(1)) }
 
@@ -38,6 +39,7 @@ pub fn i() -> Term { abs(Var(1)) }
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(k(), Var(1), Var(2)), NOR, 0, false), Var(1));
+/// assert_eq!(beta(app!(k(), Var(2), Var(1)), NOR, 0, false), Var(2));
 /// # }
 /// ```
 pub fn k() -> Term { abs!(2, Var(2)) }
@@ -53,8 +55,9 @@ pub fn k() -> Term { abs!(2, Var(2)) }
 /// use lambda_calculus::combinators::s;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(s(), Var(1), Var(2), Var(3)              ), NOR, 0, false),
-///            beta(app!(     Var(1), Var(3), app!(Var(2), Var(3))), NOR, 0, false)
+/// assert_eq!(
+///     beta(app!(s(), Var(1), Var(2), Var(3)), NOR, 0, false),
+///     app!(Var(1), Var(3), app(Var(2), Var(3)))
 /// );
 /// # }
 /// ```
@@ -68,14 +71,14 @@ pub fn s() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::{iota, i, k, s};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(iota(), iota()), NOR, 0, false), i());
-/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), iota()))), NOR, 0, false), k());
-/// assert_eq!(beta(app!(iota(), app!(iota(), app!(iota(), app!(iota(), iota())))), NOR, 0, false), s());
+/// assert_eq!(beta(app(iota(), iota()), NOR, 0, false), i());
+/// assert_eq!(beta(app(iota(), app(iota(), app(iota(), iota()))), NOR, 0, false), k());
+/// assert_eq!(beta(app(iota(), app(iota(), app(iota(), app(iota(), iota())))), NOR, 0, false), s());
 /// # }
 /// ```
 pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
@@ -91,8 +94,9 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 /// use lambda_calculus::combinators::b;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(b(), Var(1),      Var(2), Var(3) ), NOR, 0, false),
-///            beta(app!(     Var(1), app!(Var(2), Var(3))), NOR, 0, false)
+/// assert_eq!(
+///     beta(app!(b(), Var(1), Var(2), Var(3)), NOR, 0, false),
+///     app(Var(1), app(Var(2), Var(3)))
 /// );
 /// # }
 /// ```
@@ -111,8 +115,9 @@ pub fn b() -> Term {
 /// use lambda_calculus::combinators::c;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(c(), Var(1), Var(2), Var(3)), NOR, 0, false),
-///            beta(app!(     Var(1), Var(3), Var(2)), NOR, 0, false)
+/// assert_eq!(
+///     beta(app!(c(), Var(1), Var(2), Var(3)), NOR, 0, false),
+///     app!(Var(1), Var(3), Var(2))
 /// );
 /// # }
 /// ```
@@ -131,8 +136,9 @@ pub fn c() -> Term {
 /// use lambda_calculus::combinators::w;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(   w(), Var(1), Var(2)), NOR, 0, false),
-///            beta(app!(Var(1), Var(2), Var(2)), NOR, 0, false)
+/// assert_eq!(
+///     beta(app!(w(), Var(1), Var(2)), NOR, 0, false),
+///     app!(Var(1), Var(2), Var(2))
 /// );
 /// # }
 /// ```
@@ -154,8 +160,9 @@ pub fn u() -> Term { abs!(2, app(Var(1), app!(Var(2), Var(2), Var(1)))) }
 /// use lambda_calculus::combinators::om;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(  om().app(Var(1)), NOR, 0, false),
-///            beta(Var(1).app(Var(1)), NOR, 0, false)
+/// assert_eq!(
+///     beta(app(om(), Var(1)), NOR, 0, false),
+///     app(Var(1), Var(1))
 /// );
 /// ```
 pub fn om() -> Term { abs(Var(1).app(Var(1))) }
@@ -169,7 +176,7 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 /// use lambda_calculus::combinators::omm;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(omm(), NOR, 3, false), omm());
+/// assert_eq!(beta(omm(), NOR, 3, false), omm()); // 3 β-reductions do nothing
 /// ```
 pub fn omm() -> Term { om().app(om()) }
 
@@ -182,15 +189,16 @@ pub fn omm() -> Term { om().app(om()) }
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::y;
 /// use lambda_calculus::*;
 ///
 /// fn dummy() -> Term { abs(Var(2)) } // a dummy term that won't easily reduce
 ///
-/// assert_eq!(beta(              app!(y(), dummy() ), NOR, 0, false),
-///            beta(app!(dummy(), app!(y(), dummy())), NOR, 0, false)
+/// assert_eq!(
+///     beta(app(y(), dummy()), NOR, 0, false),
+///     beta(app(dummy(), app(y(), dummy())), NOR, 0, false)
 /// );
 /// # }
 /// ```
@@ -213,15 +221,16 @@ pub fn y() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::combinators::z;
 /// use lambda_calculus::*;
 ///
 /// fn dummy() -> Term { abs(Var(2)) } // a dummy term that won't easily reduce
 ///
-/// assert_eq!(beta(              app!(z(), dummy() ), CBV, 0, false),
-///            beta(app!(dummy(), app!(z(), dummy())), CBV, 0, false)
+/// assert_eq!(
+///     beta(app(z(), dummy()), CBV, 0, false),
+///     beta(app(dummy(), app(z(), dummy())), CBV, 0, false)
 /// );
 /// # }
 /// ```
@@ -243,8 +252,9 @@ pub fn z() -> Term {
 /// use lambda_calculus::combinators::t;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(t(), Var(1), Var(2)), NOR, 0, false),
-///                 app!(     Var(2), Var(1))
+/// assert_eq!(
+///     beta(app!(t(), Var(1), Var(2)), NOR, 0, false),
+///     app(Var(2), Var(1))
 /// );
 /// # }
 /// ```
