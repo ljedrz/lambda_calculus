@@ -22,8 +22,7 @@ pub fn fls() -> Term { abs!(2, Var(1)) }
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::booleans::{and, tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(and(), tru(), tru()), NOR, 0, false), tru());
 /// assert_eq!(beta(app!(and(), tru(), fls()), NOR, 0, false), fls());
@@ -44,8 +43,7 @@ pub fn and() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::booleans::{or, tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(or(), tru(), tru()), NOR, 0, false), tru());
 /// assert_eq!(beta(app!(or(), tru(), fls()), NOR, 0, false), tru());
@@ -66,8 +64,7 @@ pub fn or() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::booleans::{not, tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(not(), tru()), NOR, 0, false), fls());
 /// assert_eq!(beta(app!(not(), fls()), NOR, 0, false), tru());
@@ -86,8 +83,7 @@ pub fn not() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::booleans::{xor, tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(xor(), tru(), tru()), NOR, 0, false), fls());
 /// assert_eq!(beta(app!(xor(), tru(), fls()), NOR, 0, false), tru());
@@ -118,8 +114,7 @@ pub fn xor() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::booleans::{nor, tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(nor(), tru(), tru()), NOR, 0, false), fls());
 /// assert_eq!(beta(app!(nor(), tru(), fls()), NOR, 0, false), fls());
@@ -148,8 +143,7 @@ pub fn nor() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::booleans::{nand, tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(nand(), tru(), tru()), NOR, 0, false), fls());
 /// assert_eq!(beta(app!(nand(), tru(), fls()), NOR, 0, false), tru());
@@ -180,8 +174,7 @@ pub fn nand() -> Term {
 /// # fn main() {
 /// use lambda_calculus::church::booleans::{if_else, tru, fls};
 /// use lambda_calculus::church::numerals::{zero, one};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(if_else(), tru(), one(), zero()), NOR, 0, false),  one());
 /// assert_eq!(beta(app!(if_else(), fls(), one(), zero()), NOR, 0, false), zero());
