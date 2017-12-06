@@ -13,9 +13,9 @@ use combinators::z;
 /// # Example
 /// ```
 /// use lambda_calculus::church::numerals::zero;
-/// use lambda_calculus::term::Term;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(zero(), Term::from(0));
+/// assert_eq!(zero(), 0.into());
 /// ```
 pub fn zero() -> Term { abs!(2, Var(1)) }
 
@@ -26,15 +26,13 @@ pub fn zero() -> Term { abs!(2, Var(1)) }
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::is_zero;
-/// use lambda_calculus::church::booleans::{tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(is_zero(), 0.into()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(is_zero(), 1.into()), NOR, 0, false), fls());
+/// assert_eq!(beta(app(is_zero(), 0.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app(is_zero(), 1.into()), NOR, 0, false), false.into());
 /// # }
 /// ```
 pub fn is_zero() -> Term {
@@ -48,9 +46,9 @@ pub fn is_zero() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::church::numerals::one;
-/// use lambda_calculus::term::Term;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(one(), Term::from(1));
+/// assert_eq!(one(), 1.into());
 /// ```
 pub fn one() -> Term {
     abs!(2, app(Var(2), Var(1)))
@@ -63,12 +61,10 @@ pub fn one() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::church::numerals::succ;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = succ().app(0.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 1.into());
+/// assert_eq!(beta(app(succ(), 0.into()), NOR, 0, false), 1.into());
+/// assert_eq!(beta(app(succ(), 1.into()), NOR, 0, false), 2.into());
 /// ```
 pub fn succ() -> Term {
     abs!(3, app(Var(2), app!(Var(3), Var(2), Var(1))))
@@ -83,12 +79,10 @@ pub fn succ() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::plus;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(plus(), 3.into(), 2.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 5.into());
+/// assert_eq!(beta(app!(plus(), 1.into(), 2.into()), NOR, 0, false), 3.into());
+/// assert_eq!(beta(app!(plus(), 2.into(), 3.into()), NOR, 0, false), 5.into());
 /// # }
 /// ```
 pub fn plus() -> Term {
@@ -104,12 +98,10 @@ pub fn plus() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::mult;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(mult(), 2.into(), 3.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 6.into());
+/// assert_eq!(beta(app!(mult(), 1.into(), 2.into()), NOR, 0, false), 2.into());
+/// assert_eq!(beta(app!(mult(), 2.into(), 3.into()), NOR, 0, false), 6.into());
 /// # }
 /// ```
 pub fn mult() -> Term {
@@ -125,12 +117,11 @@ pub fn mult() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::pow;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(pow(), 2.into(), 3.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 8.into());
+/// assert_eq!(beta(app!(pow(), 3.into(), 0.into()), NOR, 0, false), 1.into());
+/// assert_eq!(beta(app!(pow(), 2.into(), 1.into()), NOR, 0, false), 2.into());
+/// assert_eq!(beta(app!(pow(), 2.into(), 3.into()), NOR, 0, false), 8.into());
 /// # }
 /// ```
 pub fn pow() -> Term {
@@ -150,12 +141,10 @@ pub fn pow() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::church::numerals::pred;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = pred().app(3.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 2.into());
+/// assert_eq!(beta(app(pred(), 1.into()), NOR, 0, false), 0.into());
+/// assert_eq!(beta(app(pred(), 3.into()), NOR, 0, false), 2.into());
 /// ```
 pub fn pred() -> Term {
     abs!(3, app!(
@@ -175,12 +164,11 @@ pub fn pred() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::sub;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(sub(), 5.into(), 3.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 2.into());
+/// assert_eq!(beta(app!(sub(), 1.into(), 0.into()), NOR, 0, false), 1.into());
+/// assert_eq!(beta(app!(sub(), 3.into(), 1.into()), NOR, 0, false), 2.into());
+/// assert_eq!(beta(app!(sub(), 5.into(), 2.into()), NOR, 0, false), 3.into());
 /// # }
 /// ```
 pub fn sub() -> Term {
@@ -197,14 +185,12 @@ pub fn sub() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::lt;
-/// use lambda_calculus::church::booleans::{tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(lt(), 0.into(), 0.into()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(lt(), 1.into(), 1.into()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(lt(), 0.into(), 1.into()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(lt(), 1.into(), 0.into()), NOR, 0, false), fls());
+/// assert_eq!(beta(app!(lt(), 0.into(), 0.into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app!(lt(), 1.into(), 1.into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app!(lt(), 0.into(), 1.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app!(lt(), 1.into(), 0.into()), NOR, 0, false), false.into());
 /// # }
 /// ```
 pub fn lt() -> Term {
@@ -229,14 +215,12 @@ pub fn lt() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::leq;
-/// use lambda_calculus::church::booleans::{tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(leq(), 0.into(), 0.into()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(leq(), 1.into(), 1.into()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(leq(), 0.into(), 1.into()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(leq(), 1.into(), 0.into()), NOR, 0, false), fls());
+/// assert_eq!(beta(app!(leq(), 0.into(), 0.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app!(leq(), 1.into(), 1.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app!(leq(), 0.into(), 1.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app!(leq(), 1.into(), 0.into()), NOR, 0, false), false.into());
 /// # }
 /// ```
 pub fn leq() -> Term {
@@ -259,15 +243,12 @@ pub fn leq() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::eq;
-/// use lambda_calculus::church::booleans::{tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(eq(), 0.into(), 0.into()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(eq(), 1.into(), 1.into()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(eq(), 0.into(), 1.into()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(eq(), 1.into(), 0.into()), NOR, 0, false), fls());
-/// assert_eq!(beta(eq(), NOR, 0, false), eq());
+/// assert_eq!(beta(app!(eq(), 0.into(), 0.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app!(eq(), 1.into(), 1.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app!(eq(), 0.into(), 1.into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app!(eq(), 1.into(), 0.into()), NOR, 0, false), false.into());
 /// # }
 /// ```
 pub fn eq() -> Term {
@@ -304,14 +285,12 @@ pub fn eq() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::neq;
-/// use lambda_calculus::church::booleans::{tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(neq(), 0.into(), 0.into()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(neq(), 1.into(), 1.into()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(neq(), 0.into(), 1.into()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(neq(), 1.into(), 0.into()), NOR, 0, false), tru());
+/// assert_eq!(beta(app!(neq(), 0.into(), 0.into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app!(neq(), 1.into(), 1.into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app!(neq(), 0.into(), 1.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app!(neq(), 1.into(), 0.into()), NOR, 0, false), true.into());
 /// # }
 /// ```
 pub fn neq() -> Term {
@@ -354,14 +333,12 @@ pub fn neq() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::geq;
-/// use lambda_calculus::church::booleans::{tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(geq(), 0.into(), 0.into()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(geq(), 1.into(), 1.into()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(geq(), 0.into(), 1.into()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(geq(), 1.into(), 0.into()), NOR, 0, false), tru());
+/// assert_eq!(beta(app!(geq(), 0.into(), 0.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app!(geq(), 1.into(), 1.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app!(geq(), 0.into(), 1.into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app!(geq(), 1.into(), 0.into()), NOR, 0, false), true.into());
 /// # }
 /// ```
 pub fn geq() -> Term {
@@ -384,14 +361,12 @@ pub fn geq() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::gt;
-/// use lambda_calculus::church::booleans::{tru, fls};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(gt(), 0.into(), 0.into()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(gt(), 1.into(), 1.into()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(gt(), 0.into(), 1.into()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(gt(), 1.into(), 0.into()), NOR, 0, false), tru());
+/// assert_eq!(beta(app!(gt(), 0.into(), 0.into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app!(gt(), 1.into(), 1.into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app!(gt(), 0.into(), 1.into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app!(gt(), 1.into(), 0.into()), NOR, 0, false), true.into());
 /// # }
 /// ```
 pub fn gt() -> Term {
@@ -417,13 +392,16 @@ pub fn gt() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::div;
-/// use lambda_calculus::term::Term;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(div(), 5.into(), 2.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, Term::from((2.into(), 1.into())));
+/// assert_eq!(
+///     beta(app!(div(), 4.into(), 2.into()), NOR, 0, false),
+///     (2.into(), 0.into()).into()
+/// );
+/// assert_eq!(
+///     beta(app!(div(), 5.into(), 3.into()), NOR, 0, false),
+///     (1.into(), 2.into()).into()
+/// );
 /// # }
 /// ```
 pub fn div() -> Term {
@@ -468,12 +446,10 @@ pub fn div() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::quot;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(quot(), 6.into(), 2.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 3.into());
+/// assert_eq!(beta(app!(quot(), 4.into(), 2.into()), NOR, 0, false), 2.into());
+/// assert_eq!(beta(app!(quot(), 5.into(), 3.into()), NOR, 0, false), 1.into());
 /// # }
 /// ```
 pub fn quot() -> Term {
@@ -517,12 +493,10 @@ pub fn quot() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::rem;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(rem(), 3.into(), 2.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 1.into());
+/// assert_eq!(beta(app!(rem(), 4.into(), 2.into()), NOR, 0, false), 0.into());
+/// assert_eq!(beta(app!(rem(), 5.into(), 3.into()), NOR, 0, false), 2.into());
 /// # }
 /// ```
 pub fn rem() -> Term {
@@ -559,13 +533,10 @@ pub fn rem() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::church::numerals::fac;
-/// use lambda_calculus::reduction::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = fac().app(3.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 6.into());
-/// assert_eq!(beta(fac(), NOR, 0, false), fac());
+/// assert_eq!(beta(app(fac(), 3.into()), NOR, 0, false), 6.into());
+/// assert_eq!(beta(app(fac(), 4.into()), NOR, 0, false), 24.into());
 /// ```
 pub fn fac() -> Term {
     abs(app!(
@@ -590,13 +561,9 @@ pub fn fac() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::min;
-/// use lambda_calculus::reduction::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(min(), 4.into(), 3.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 3.into());
-/// assert_eq!(beta(min(), NOR, 0, false), min());
+/// assert_eq!(beta(app!(min(), 4.into(), 3.into()), NOR, 0, false), 3.into());
 /// # }
 /// ```
 pub fn min() -> Term {
@@ -620,13 +587,9 @@ pub fn min() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::max;
-/// use lambda_calculus::reduction::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(max(), 4.into(), 3.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 4.into());
-/// assert_eq!(beta(max(), NOR, 0, false), max());
+/// assert_eq!(beta(app!(max(), 4.into(), 3.into()), NOR, 0, false), 4.into());
 /// # }
 /// ```
 pub fn max() -> Term {
@@ -651,13 +614,11 @@ pub fn max() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::lshift;
-/// use lambda_calculus::reduction::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(lshift(), 3.into(), 2.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 12.into());
-/// assert_eq!(beta(lshift(), NOR, 0, false), lshift());
+/// assert_eq!(beta(app!(lshift(), 0.into(), 2.into()), NOR, 0, false), 0.into());
+/// assert_eq!(beta(app!(lshift(), 1.into(), 0.into()), NOR, 0, false), 1.into());
+/// assert_eq!(beta(app!(lshift(), 2.into(), 0.into()), NOR, 0, false), 2.into());
 /// # }
 /// ```
 pub fn lshift() -> Term {
@@ -685,12 +646,11 @@ pub fn lshift() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::rshift;
-/// use lambda_calculus::reduction::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(rshift(), 6.into(), 1.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, 3.into());
+/// assert_eq!(beta(app!(rshift(), 0.into(), 2.into()), NOR, 0, false), 0.into());
+/// assert_eq!(beta(app!(rshift(), 2.into(), 1.into()), NOR, 0, false), 1.into());
+/// assert_eq!(beta(app!(rshift(), 2.into(), 0.into()), NOR, 0, false), 2.into());
 /// # }
 /// ```
 pub fn rshift() -> Term {
@@ -720,16 +680,13 @@ pub fn rshift() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::is_even;
-/// use lambda_calculus::reduction::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(is_even(), 4.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, true.into());
-/// assert_eq!(beta(is_even(), NOR, 0, false), is_even());
+/// assert_eq!(beta(app!(is_even(), 2.into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app!(is_even(), 3.into()), NOR, 0, false), false.into());
 /// # }
 /// ```
 pub fn is_even() -> Term {
@@ -746,13 +703,10 @@ pub fn is_even() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::numerals::is_odd;
-/// use lambda_calculus::reduction::*;
+/// use lambda_calculus::*;
 ///
-/// let mut expr = app!(is_odd(), 3.into());
-/// expr.beta(NOR, 0, false);
-///
-/// assert_eq!(expr, true.into());
-/// assert_eq!(beta(is_odd(), NOR, 0, false), is_odd());
+/// assert_eq!(beta(app!(is_odd(), 2.into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app!(is_odd(), 3.into()), NOR, 0, false), true.into());
 /// # }
 /// ```
 pub fn is_odd() -> Term {
@@ -764,9 +718,9 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::church::numerals::one;
+    /// use lambda_calculus::*;
     ///
-    /// assert_eq!(one().value(), Ok(1));
+    /// assert_eq!(Term::from(1).value(), Ok(1));
     /// ```
     /// # Errors
     ///
@@ -797,9 +751,11 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::church::numerals::one;
+    /// use lambda_calculus::*;
     ///
-    /// assert!(one().is_cnum());
+    /// assert!(Term::from(1).is_cnum());
+    /// assert!(!Var(1).is_cnum());
+    /// assert!(!Term::from(true).is_cnum(), false);
     /// ```
     pub fn is_cnum(&self) -> bool { self.value().is_ok() }
 }
@@ -821,13 +777,6 @@ impl From<usize> for Term {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn church_invalid_nums() {
-        assert_eq!(      tru().is_cnum(), false);
-        assert_eq!(     Var(1).is_cnum(), false);
-        assert_eq!(abs(Var(1)).is_cnum(), false);
-    }
 
     #[test]
     fn church_number_values() {
