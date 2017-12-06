@@ -134,7 +134,7 @@ impl Term {
         let candidate = if let Abs(abstracted) = self { *abstracted } else { self };
 
         if let Ok((wrapped_a, b)) = candidate.unapp() {
-            Ok((try!(wrapped_a.rhs()), b))
+            Ok((wrapped_a.rhs()?, b))
         } else {
             Err(NotAPair)
         }
@@ -161,7 +161,7 @@ impl Term {
         let candidate = if let Abs(ref abstracted) = *self { abstracted } else { self };
 
         if let Ok((wrapped_a, b)) = candidate.unapp_ref() {
-            Ok((try!(wrapped_a.rhs_ref()), b))
+            Ok((wrapped_a.rhs_ref()?, b))
         } else {
             Err(NotAPair)
         }
@@ -188,7 +188,7 @@ impl Term {
         let candidate = if let Abs(ref mut abstracted) = *self { abstracted } else { self };
 
         if let Ok((wrapped_a, b)) = candidate.unapp_mut() {
-            Ok((try!(wrapped_a.rhs_mut()), b))
+            Ok((wrapped_a.rhs_mut()?, b))
         } else {
             Err(NotAPair)
         }
@@ -212,7 +212,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church pair.
     pub fn fst(self) -> Result<Term, Error> {
-        Ok(try!(self.unpair()).0)
+        Ok(self.unpair()?.0)
     }
 
     /// Returns a reference to the first term of a Church-encoded pair.
@@ -233,7 +233,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church pair.
     pub fn fst_ref(&self) -> Result<&Term, Error> {
-        Ok(try!(self.unpair_ref()).0)
+        Ok(self.unpair_ref()?.0)
     }
 
     /// Returns a mutable reference to the first term of a Church-encoded pair.
@@ -255,7 +255,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church pair.
     pub fn fst_mut(&mut self) -> Result<&mut Term, Error> {
-        Ok(try!(self.unpair_mut()).0)
+        Ok(self.unpair_mut()?.0)
     }
 
     /// Returns the second term from a Church-encoded pair, consuming `self`.
@@ -276,7 +276,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church pair.
     pub fn snd(self) -> Result<Term, Error> {
-        Ok(try!(self.unpair()).1)
+        Ok(self.unpair()?.1)
     }
 
     /// Returns a reference to the second term of a Church-encoded pair.
@@ -297,7 +297,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church pair.
     pub fn snd_ref(&self) -> Result<&Term, Error> {
-        Ok(try!(self.unpair_ref()).1)
+        Ok(self.unpair_ref()?.1)
     }
 
     /// Returns a mutable reference to the second term of a Church-encoded pair.
@@ -318,7 +318,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church pair.
     pub fn snd_mut(&mut self) -> Result<&mut Term, Error> {
-        Ok(try!(self.unpair_mut()).1)
+        Ok(self.unpair_mut()?.1)
     }
 }
 

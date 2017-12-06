@@ -186,7 +186,7 @@ impl Term {
     /// The function will return an error if `self` is not an `App`lication or if its left hand
     /// side term is not an `Abs`traction.
     pub fn eval(self) -> Result<Term, Error> {
-        let (lhs, rhs) = try!(self.unapp());
+        let (lhs, rhs) = self.unapp()?;
 
         apply(lhs, &rhs)
     }

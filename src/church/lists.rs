@@ -508,7 +508,7 @@ impl Term {
     fn last_ref(&self) -> Result<&Term, Error> {
         if !self.is_pair() { return Err(NotAList) }
 
-        let mut last_candidate = try!(self.snd_ref());
+        let mut last_candidate = self.snd_ref()?;
 
         while let Ok(second) = last_candidate.snd_ref() {
             last_candidate = second;
@@ -617,7 +617,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church list.
     pub fn head(self) -> Result<Term, Error> {
-        Ok(try!(self.uncons()).0)
+        Ok(self.uncons()?.0)
     }
 
     /// Returns a reference to the first term of a Church list.
@@ -635,7 +635,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church list.
     pub fn head_ref(&self) -> Result<&Term, Error> {
-        Ok(try!(self.uncons_ref()).0)
+        Ok(self.uncons_ref()?.0)
     }
 
     /// Returns a mutable reference to the first term of a Church list.
@@ -653,7 +653,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church list.
     pub fn head_mut(&mut self) -> Result<&mut Term, Error> {
-        Ok(try!(self.uncons_mut()).0)
+        Ok(self.uncons_mut()?.0)
     }
 
     /// Returns a list of all the terms of a Church list but the first one, consuming `self`.
@@ -671,7 +671,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church list.
     pub fn tail(self) -> Result<Term, Error> {
-        Ok(try!(self.uncons()).1)
+        Ok(self.uncons()?.1)
     }
 
     /// Returns a reference to a list of all the terms of a Church list but the first one.
@@ -689,7 +689,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church list.
     pub fn tail_ref(&self) -> Result<&Term, Error> {
-        Ok(try!(self.uncons_ref()).1)
+        Ok(self.uncons_ref()?.1)
     }
 
     /// Returns a mutable reference to a list of all the terms of a Church list but the
@@ -708,7 +708,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church list.
     pub fn tail_mut(&mut self) -> Result<&mut Term, Error> {
-        Ok(try!(self.uncons_mut()).1)
+        Ok(self.uncons_mut()?.1)
     }
 
     /// Returns the length of a Church list
@@ -731,7 +731,7 @@ impl Term {
 
         while *inner != nil() {
             n += 1;
-            inner = try!(inner.tail_ref());
+            inner = inner.tail_ref()?;
         }
 
         Ok(n)
@@ -781,7 +781,7 @@ impl Term {
     /// The function will return an error if `self` is not a Church list.
     pub fn pop(&mut self) -> Result<Term, Error> {
         let to_uncons = mem::replace(self, Var(0)); // replace self with a dummy
-        let (head, tail) = try!(to_uncons.uncons());
+        let (head, tail) = to_uncons.uncons()?;
         let _ = mem::replace(self, tail); // replace self with tail
 
         Ok(head)

@@ -182,7 +182,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
             },
             Lparen => {
                 *pos += 1;
-                let subtree = try!(_get_ast(tokens, pos));
+                let subtree = _get_ast(tokens, pos)?;
                 expr.push(subtree);
             },
             Rparen => {
@@ -217,13 +217,13 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
 /// ```
 pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
     let tokens = if notation == DeBruijn {
-        try!(tokenize_dbr(input))
+        tokenize_dbr(input)?
     } else {
-        convert_classic_tokens(&try!(tokenize_cla(input)))
+        convert_classic_tokens(&tokenize_cla(input)?)
     };
-    let ast = try!(get_ast(&tokens));
+    let ast = get_ast(&tokens)?;
 
-    let exprs = try!(if let Sequence(exprs) = ast { Ok(exprs) } else { Err(InvalidExpression) });
+    let exprs = (if let Sequence(exprs) = ast { Ok(exprs) } else { Err(InvalidExpression) })?;
 
     fold_exprs(&exprs)
 }
@@ -237,13 +237,13 @@ fn fold_exprs(exprs: &[Expression]) -> Result<Term, Error> {
             Variable(i) => output.push(Var(i)),
             Abstraction => depth += 1,
             Sequence(ref exprs) => {
-                let subexpr = try!(fold_exprs(exprs));
+                let subexpr = fold_exprs(exprs)?;
                 output.push(subexpr)
             }
         }
     }
 
-    let mut ret = try!(fold_terms(output));
+    let mut ret = fold_terms(output)?;
 
     for _ in 0..depth {
         ret = abs(ret);

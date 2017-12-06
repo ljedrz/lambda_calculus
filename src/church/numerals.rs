@@ -773,7 +773,7 @@ impl Term {
     /// The function will return an error if `self` is not a Church number.
     pub fn value(&self) -> Result<usize, Error> {
         if let Ok(inner) = self.unabs_ref().and_then(|t| t.unabs_ref()) {
-            Ok(try!(inner._value()))
+            inner._value()
         } else {
             Err(NotANum)
         }
@@ -782,7 +782,7 @@ impl Term {
     fn _value(&self) -> Result<usize, Error> {
         if let Ok((lhs, rhs)) = self.unapp_ref() {
             if *lhs == Var(2) {
-                Ok(1 + try!(rhs._value()))
+                Ok(1 + rhs._value()?)
             } else {
                 Err(NotANum)
             }
