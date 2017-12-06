@@ -148,8 +148,3 @@ applicative:        65
 hybrid normal:      87
 hybrid applicative: 40
 ```
-
-## TODO
-
-- a few more tests
-- further optimizations
