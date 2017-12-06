@@ -92,7 +92,7 @@ pub fn not() -> Term {
 /// # }
 /// ```
 pub fn xor() -> Term {
-    abs!(2, 
+    abs!(2,
         app!(
             Var(2),
             app!(
@@ -123,7 +123,7 @@ pub fn xor() -> Term {
 /// # }
 /// ```
 pub fn nor() -> Term {
-    abs!(2, 
+    abs!(2,
         app!(
             Var(2),
             Var(2),
@@ -152,7 +152,7 @@ pub fn nor() -> Term {
 /// # }
 /// ```
 pub fn nand() -> Term {
-    abs!(2, 
+    abs!(2,
         app!(
             Var(2),
             Var(1),
@@ -173,11 +173,10 @@ pub fn nand() -> Term {
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::booleans::{if_else, tru, fls};
-/// use lambda_calculus::church::numerals::{zero, one};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(if_else(), tru(), one(), zero()), NOR, 0, false),  one());
-/// assert_eq!(beta(app!(if_else(), fls(), one(), zero()), NOR, 0, false), zero());
+/// assert_eq!(beta(app!(if_else(), tru(), 1.into(), 0.into()), NOR, 0, false), 1.into());
+/// assert_eq!(beta(app!(if_else(), fls(), 1.into(), 0.into()), NOR, 0, false), 0.into());
 /// # }
 /// ```
 pub fn if_else() -> Term {

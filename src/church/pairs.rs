@@ -85,8 +85,8 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 /// ```
 pub fn uncurry() -> Term {
     abs!(2, app!(
-        Var(2), 
-        app(Var(1), tru()), 
+        Var(2),
+        app(Var(1), tru()),
         app(Var(1), fls())
     ))
 }

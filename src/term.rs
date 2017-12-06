@@ -424,11 +424,11 @@ macro_rules! abs {
     ($n:expr, $term:expr) => {
         {
             let mut term = $term;
-            
+
             for _ in 0..$n {
                 term = abs(term);
             }
-            
+
             term
         }
     };
@@ -444,13 +444,13 @@ mod tests {
                    Var(4).app(Var(1).app(Var(2)).app(Var(3)))
         );
     }
-    
+
     #[test]
     fn abs_macro() {
         assert_eq!(abs!(4, Var(1)),
                    abs(abs(abs(abs(Var(1)))))
         );
-        
+
         assert_eq!(abs!(2, app(Var(1), Var(2))),
                    abs(abs(app(Var(1), Var(2))))
         );

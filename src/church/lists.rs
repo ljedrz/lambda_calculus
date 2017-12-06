@@ -109,7 +109,7 @@ pub fn head() -> Term { fst() }
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
 /// assert_eq!(
-///     beta(app(tail(), list), NOR, 0, false), 
+///     beta(app(tail(), list), NOR, 0, false),
 ///     vec![2.into(), 3.into()].into()
 /// );
 /// # }
@@ -520,7 +520,7 @@ impl Term {
     /// use lambda_calculus::*;
     ///
     /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).uncons(), 
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).uncons(),
     ///     Ok((1.into(), vec![2.into(), 3.into()].into()))
     /// );
     /// ```
@@ -543,7 +543,7 @@ impl Term {
     /// use lambda_calculus::*;
     ///
     /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).uncons_ref(), 
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).uncons_ref(),
     ///     Ok((&1.into(), &vec![2.into(), 3.into()].into()))
     /// );
     /// ```
@@ -566,7 +566,7 @@ impl Term {
     /// use lambda_calculus::*;
     ///
     /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).uncons_mut(), 
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).uncons_mut(),
     ///     Ok((&mut 1.into(), &mut vec![2.into(), 3.into()].into()))
     /// );
     /// ```
@@ -588,7 +588,7 @@ impl Term {
     /// use lambda_calculus::*;
     ///
     /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).head(), 
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).head(),
     ///     Ok(1.into())
     /// );
     /// ```
@@ -606,7 +606,7 @@ impl Term {
     /// use lambda_calculus::*;
     ///
     /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).head_ref(), 
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).head_ref(),
     ///     Ok(&1.into())
     /// );
     /// ```
@@ -624,7 +624,7 @@ impl Term {
     /// use lambda_calculus::*;
     ///
     /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).head_mut(), 
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).head_mut(),
     ///     Ok(&mut 1.into())
     /// );
     /// ```
@@ -642,7 +642,7 @@ impl Term {
     /// use lambda_calculus::*;
     ///
     /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).tail(), 
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).tail(),
     ///     Ok(vec![2.into(), 3.into()].into())
     /// );
     /// ```
@@ -660,7 +660,7 @@ impl Term {
     /// use lambda_calculus::*;
     ///
     /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).tail_ref(), 
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).tail_ref(),
     ///     Ok(&vec![2.into(), 3.into()].into())
     /// );
     /// ```
@@ -679,7 +679,7 @@ impl Term {
     /// use lambda_calculus::*;
     ///
     /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).tail_mut(), 
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).tail_mut(),
     ///     Ok(&mut vec![2.into(), 3.into()].into())
     /// );
     /// ```
@@ -721,7 +721,7 @@ impl Term {
     /// use lambda_calculus::*;
     ///
     /// assert_eq!(
-    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).push(0.into()), 
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).push(0.into()),
     ///     Ok(vec![0.into(), 1.into(), 2.into(), 3.into()].into())
     /// );
     /// ```

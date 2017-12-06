@@ -552,7 +552,7 @@ pub fn fac() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns their minimum.
+/// Applied to two Church-encoded numbers it returns the smaller one.
 ///
 /// MIN := λaλb.(LEQ a b) a b = λ λ (LEQ 2 1) 2 1
 ///
@@ -578,7 +578,7 @@ pub fn min() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns their maximum.
+/// Applied to two Church-encoded numbers it returns the greater one.
 ///
 /// MAX := λaλb.(LEQ a b) b a = λ λ (LEQ 2 1) 1 2
 ///
