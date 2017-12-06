@@ -4,6 +4,7 @@ use term::{Term, Error, show_precedence_cla};
 use term::Term::*;
 use std::fmt;
 use std::io::{Write, BufWriter, stdout};
+use std::mem;
 pub use self::Order::*;
 
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
@@ -193,8 +194,9 @@ impl Term {
     fn eval_with_info(&mut self, depth: u32, count: &mut usize, verbose: bool) {
         if verbose { println!("\n{}. {}", *count + 1, show_precedence_cla(self, 0, depth)) }
 
-        let copy = self.clone();
-        *self = copy.eval().unwrap(); // safe; only called in reduction sites
+        let mut to_eval = mem::replace(self, Var(0)); // replace self with a dummy
+        to_eval = to_eval.eval().unwrap(); // safe; only called in reduction sites
+        let _ = mem::replace(self, to_eval); // move self back to its place
         *count += 1;
 
         if verbose {
