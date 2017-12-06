@@ -14,12 +14,12 @@ use church::booleans::{tru, fls};
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::pairs::pair;
-/// use lambda_calculus::church::numerals::{zero, one};
+/// use lambda_calculus::*;
 ///
-/// let pair01 = app!(pair(), zero(), one());
-///
-/// assert_eq!(pair01.fst_ref(), Ok(&zero()));
-/// assert_eq!(pair01.snd_ref(), Ok(&one()));
+/// assert_eq!(
+///     beta(app!(pair(), 1.into(), 2.into()), NOR, 0, false),
+///     (1.into(), 2.into()).into()
+/// );
 /// # }
 /// ```
 pub fn pair() -> Term {
@@ -32,16 +32,15 @@ pub fn pair() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::church::pairs::{pair, fst};
-/// use lambda_calculus::church::numerals::{zero, one};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::church::pairs::fst;
+/// use lambda_calculus::*;
 ///
-/// let pair_0_1 = app!(pair(), zero(), one());
-///
-/// assert_eq!(beta(fst().app(pair_0_1), NOR, 0, false), zero());
+/// assert_eq!(
+///     beta(app(fst(), (1.into(), 2.into()).into()), NOR, 0, false),
+///     1.into()
+/// );
 /// # }
 /// ```
 pub fn fst() -> Term { abs(app(Var(1), tru())) }
@@ -52,22 +51,21 @@ pub fn fst() -> Term { abs(app(Var(1), tru())) }
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::church::pairs::{pair, snd};
-/// use lambda_calculus::church::numerals::{zero, one};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::church::pairs::snd;
+/// use lambda_calculus::*;
 ///
-/// let pair_0_1 = app!(pair(), zero(), one());
-///
-/// assert_eq!(beta(snd().app(pair_0_1), NOR, 0, false), one());
+/// assert_eq!(
+///     beta(app(snd(), (1.into(), 2.into()).into()), NOR, 0, false),
+///     2.into()
+/// );
 /// # }
 /// ```
 pub fn snd() -> Term { abs(app(Var(1), fls())) }
 
-/// Applied to a function and a Church-encoded pair `(a, b)` it uncurrys the pair and applies the
-/// function to `a` and then `b`.
+/// Applied to a function and a Church-encoded pair `(a, b)` it uncurries it
+/// and applies the function to `a` and then `b`.
 ///
 /// UNCURRY := λf.λp.f (FST p) (SND p) = λ λ 2 (FST 1) (SND 1)
 ///
@@ -75,15 +73,14 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::church::pairs::{pair, uncurry};
-/// use lambda_calculus::church::numerals::{succ, one, plus};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::church::pairs::uncurry;
+/// use lambda_calculus::church::numerals::plus;
+/// use lambda_calculus::*;
 ///
-/// let pair_3_5 = app!(pair(), 3.into(), 5.into());
-///
-/// assert_eq!(beta(app!(uncurry(), plus(), pair_3_5), NOR, 0, false), 8.into());
-/// assert_eq!(beta(uncurry(), NOR, 0, false), uncurry());
+/// assert_eq!(
+///     beta(app!(uncurry(), plus(), (1.into(), 2.into()).into()), NOR, 0, false),
+///     3.into()
+/// );
 /// # }
 /// ```
 pub fn uncurry() -> Term {
@@ -99,14 +96,11 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// # #[macro_use] extern crate lambda_calculus;
+    /// # extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::church::pairs::pair;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let pair01 = app!(pair(), zero(), one());
-    ///
-    /// assert!(pair01.is_pair());
+    /// assert!(Term::from((1.into(), 2.into())).is_pair());
     /// # }
     /// ```
     pub fn is_pair(&self) -> bool {
@@ -117,14 +111,14 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// # #[macro_use] extern crate lambda_calculus;
+    /// # extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::church::pairs::pair;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let pair01 = app!(pair(), zero(), one());
-    ///
-    /// assert_eq!(pair01.unpair(), Ok((zero(), one())));
+    /// assert_eq!(
+    ///     Term::from((1.into(), 2.into())).unpair(),
+    ///     Ok((1.into(), 2.into()))
+    /// );
     /// # }
     /// ```
     /// # Errors
@@ -144,14 +138,14 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// # #[macro_use] extern crate lambda_calculus;
+    /// # extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::church::pairs::pair;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let pair01 = app!(pair(), zero(), one());
-    ///
-    /// assert_eq!(pair01.unpair_ref(), Ok((&zero(), &one())));
+    /// assert_eq!(
+    ///     Term::from((1.into(), 2.into())).unpair_ref(),
+    ///     Ok((&1.into(), &2.into()))
+    /// );
     /// # }
     /// ```
     /// # Errors
@@ -171,14 +165,14 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// # #[macro_use] extern crate lambda_calculus;
+    /// # extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::church::pairs::pair;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let mut pair01 = app!(pair(), zero(), one());
-    ///
-    /// assert_eq!(pair01.unpair_mut(), Ok((&mut zero(), &mut one())));
+    /// assert_eq!(
+    ///     Term::from((1.into(), 2.into())).unpair_mut(),
+    ///     Ok((&mut 1.into(), &mut 2.into()))
+    /// );
     /// # }
     /// ```
     /// # Errors
@@ -198,14 +192,11 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// # #[macro_use] extern crate lambda_calculus;
+    /// # extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::church::pairs::pair;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let pair01 = app!(pair(), zero(), one());
-    ///
-    /// assert_eq!(pair01.fst(), Ok(zero()));
+    /// assert_eq!(Term::from((1.into(), 2.into())).fst(), Ok(1.into()));
     /// # }
     /// ```
     /// # Errors
@@ -219,14 +210,11 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// # #[macro_use] extern crate lambda_calculus;
+    /// # extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::church::pairs::pair;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let pair01 = app!(pair(), zero(), one());
-    ///
-    /// assert_eq!(pair01.fst_ref(), Ok(&zero()));
+    /// assert_eq!(Term::from((1.into(), 2.into())).fst_ref(), Ok(&1.into()));
     /// # }
     /// ```
     /// # Errors
@@ -241,14 +229,11 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// # #[macro_use] extern crate lambda_calculus;
+    /// # extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::church::pairs::pair;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let mut pair01 = app!(pair(), zero(), one());
-    ///
-    /// assert_eq!(pair01.fst_mut(), Ok(&mut zero()));
+    /// assert_eq!(Term::from((1.into(), 2.into())).fst_mut(), Ok(&mut 1.into()));
     /// # }
     /// ```
     /// # Errors
@@ -262,14 +247,11 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// # #[macro_use] extern crate lambda_calculus;
+    /// # extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::church::pairs::pair;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let pair01 = app!(pair(), zero(), one());
-    ///
-    /// assert_eq!(pair01.snd(), Ok(one()));
+    /// assert_eq!(Term::from((1.into(), 2.into())).snd(), Ok(2.into()));
     /// # }
     /// ```
     /// # Errors
@@ -283,14 +265,11 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// # #[macro_use] extern crate lambda_calculus;
+    /// # extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::church::pairs::pair;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let pair01 = app!(pair(), zero(), one());
-    ///
-    /// assert_eq!(pair01.snd_ref(), Ok(&one()));
+    /// assert_eq!(Term::from((1.into(), 2.into())).snd_ref(), Ok(&2.into()));
     /// # }
     /// ```
     /// # Errors
@@ -304,14 +283,11 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// # #[macro_use] extern crate lambda_calculus;
+    /// # extern crate lambda_calculus;
     /// # fn main() {
-    /// use lambda_calculus::church::pairs::pair;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let mut pair01 = app!(pair(), zero(), one());
-    ///
-    /// assert_eq!(pair01.snd_mut(), Ok(&mut one()));
+    /// assert_eq!(Term::from((1.into(), 2.into())).snd_mut(), Ok(&mut 2.into()));
     /// # }
     /// ```
     /// # Errors
