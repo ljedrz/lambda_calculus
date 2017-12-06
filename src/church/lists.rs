@@ -804,3 +804,69 @@ impl Index<usize> for Term {
         candidate.head_ref().unwrap() // safe - verified as valid by is_list()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn list_from_vector() {
+        let list_from_vec = Term::from(vec![1.into(), 2.into(), 3.into()]);
+        let list_pushed = nil()
+            .push(3.into())
+            .and_then(|t| t.push(2.into()))
+            .and_then(|t| t.push(1.into()))
+            .unwrap();
+
+        assert_eq!(list_from_vec, list_pushed);
+    }
+
+    #[test]
+    fn list_length() {
+        assert_eq!(nil().len(), Ok(0));
+        assert_eq!(Term::from(vec![]).len(), Ok(0));
+        assert_eq!(Term::from(vec![1.into()]).len(), Ok(1));
+        assert_eq!(Term::from(vec![1.into(), 2.into()]).len(), Ok(2));
+        assert_eq!(Term::from(vec![1.into(), 2.into(), 3.into()]).len(), Ok(3));
+    }
+
+    #[test]
+    fn list_head_tail() {
+        let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+
+        assert_eq!(list.head_ref(), Ok(&1.into()));
+        assert_eq!(list.tail_ref(), Ok(&vec![2.into(), 3.into()].into()));
+        assert_eq!(
+            list.tail_ref().and_then(|t| t.head_ref()),
+            Ok(&2.into())
+        );
+        assert_eq!(
+            list.tail_ref().and_then(|t| t.tail_ref()).and_then(|t| t.head_ref()),
+            Ok(&3.into())
+        );
+
+        assert_eq!(list.uncons(), Ok((1.into(), vec![2.into(), 3.into()].into())));
+    }
+
+    #[test]
+    fn iterating_list() {
+        let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+        let mut iter = list.into_iter();
+
+        assert_eq!(iter.next(), Some(1.into()));
+        assert_eq!(iter.next(), Some(2.into()));
+        assert_eq!(iter.next(), Some(3.into()));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn indexing_list() {
+        let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into(), 4.into()]);
+
+        assert_eq!(list[0], 0.into());
+        assert_eq!(list[1], 1.into());
+        assert_eq!(list[2], 2.into());
+        assert_eq!(list[3], 3.into());
+        assert_eq!(list[4], 4.into());
+    }
+}
