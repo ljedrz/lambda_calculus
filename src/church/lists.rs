@@ -10,17 +10,15 @@ use combinators::z;
 use std::ops::Index;
 use std::mem;
 
-/// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last link of a
-/// Church list.
+/// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last
+/// link of a Church list.
 ///
 /// NIL := FALSE
 ///
 /// # Example
 /// ```
 /// use lambda_calculus::church::lists::nil;
-/// use lambda_calculus::church::booleans::fls;
 ///
-/// assert_eq!(nil(), fls());
 /// assert!(!nil().is_list());
 /// assert!(nil().is_empty());
 /// ```
@@ -32,14 +30,12 @@ pub fn nil() -> Term { fls() }
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
 /// use lambda_calculus::church::lists::{nil, null};
-/// use lambda_calculus::church::booleans::tru;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(null(), nil()), NOR, 0, false), tru());
+/// assert_eq!(beta(app(null(), nil()), NOR, 0, false), true.into());
 /// # }
 /// ```
 pub fn null() -> Term {
@@ -54,30 +50,28 @@ pub fn null() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
-/// use lambda_calculus::church::numerals::{zero, one};
 /// use lambda_calculus::church::lists::{nil, cons};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let list_110_consed = beta(
+/// let list_consed = beta(
 ///     app!(
 ///         cons(),
-///         one(),
+///         1.into(),
 ///         app!(
 ///             cons(),
-///             one(),
+///             2.into(),
 ///             app!(
 ///                 cons(),
-///                 zero(),
+///                 3.into(),
 ///                 nil()
 ///             )
 ///         )
 ///     ), NOR, 0, false
 /// );
-/// let list_110_from_vec = Term::from(vec![one(), one(), zero()]);
 ///
-/// assert_eq!(list_110_consed, list_110_from_vec);
+/// let list_from_vec = Term::from(vec![1.into(), 2.into(), 3.into()]);
+///
+/// assert_eq!(list_consed, list_from_vec);
 /// # }
 /// ```
 pub fn cons() -> Term { pair() }
@@ -88,17 +82,14 @@ pub fn cons() -> Term { pair() }
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::head;
-/// use lambda_calculus::church::numerals::{zero, one};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let list_110 = Term::from(vec![one(), one(), zero()]);
+/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app!(head(), list_110), NOR, 0, false), one());
+/// assert_eq!(beta(app(head(), list), NOR, 0, false), 1.into());
 /// # }
 /// ```
 pub fn head() -> Term { fst() }
@@ -110,17 +101,17 @@ pub fn head() -> Term { fst() }
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::tail;
-/// use lambda_calculus::church::numerals::{zero, one};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let list_110 = Term::from(vec![one(), one(), zero()]);
+/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app!(tail(), list_110), NOR, 0, false), Term::from(vec![one(), zero()]));
+/// assert_eq!(
+///     beta(app(tail(), list), NOR, 0, false), 
+///     vec![2.into(), 3.into()].into()
+/// );
 /// # }
 /// ```
 pub fn tail() -> Term { snd() }
@@ -132,17 +123,15 @@ pub fn tail() -> Term { snd() }
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::{length, nil};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let list_4 = Term::from(vec![1.into(), 1.into(), 0.into(), 1.into()]);
+/// let list = Term::from(vec![1.into(), 2.into(), 3.into(), 4.into()]);
 ///
-/// assert_eq!(beta(app!(length(), nil() ), NOR, 0, false), 0.into());
-/// assert_eq!(beta(app!(length(), list_4), NOR, 0, false), 4.into());
+/// assert_eq!(beta(app(length(), nil()), NOR, 0, false), 0.into());
+/// assert_eq!(beta(app(length(), list ), NOR, 0, false), 4.into());
 /// # }
 /// ```
 pub fn length() -> Term {
@@ -171,18 +160,16 @@ pub fn length() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
+/// # extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::reverse;
-/// use lambda_calculus::church::numerals::{zero, one};
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![one(), one(), zero()]);
+/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app!(reverse(), list), NOR, 0, false),
-///            Term::from(vec![zero(), one(), one()])
+/// assert_eq!(
+///     beta(app(reverse(), list), NOR, 0, false),
+///     vec![3.into(), 2.into(), 1.into()].into()
 /// );
 /// # }
 /// ```
@@ -218,13 +205,13 @@ pub fn reverse() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::list;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(list(), 3.into(), 0.into(), 1.into(), 1.into()), NOR, 0, false),
-///            Term::from(vec![0.into(), 1.into(), 1.into()]));
+/// assert_eq!(
+///     beta(app!(list(), 3.into(), 1.into(), 2.into(), 3.into()), NOR, 0, false),
+///     vec![1.into(), 2.into(), 3.into()].into()
+/// );
 /// # }
 /// ```
 pub fn list() -> Term {
@@ -245,16 +232,16 @@ pub fn list() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::append;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let list1 = Term::from(vec![0.into(), 1.into()]);
-/// let list2 = Term::from(vec![2.into(), 3.into()]);
+/// let list1 = Term::from(vec![1.into(), 2.into()]);
+/// let list2 = Term::from(vec![3.into(), 4.into()]);
 ///
-/// assert_eq!(beta(app!(append(), list1, list2), NOR, 0, false),
-///            Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]));
+/// assert_eq!(
+///     beta(app!(append(), list1, list2), NOR, 0, false),
+///     vec![1.into(), 2.into(), 3.into(), 4.into()].into()
+/// );
 /// # }
 /// ```
 pub fn append() -> Term {
@@ -287,15 +274,13 @@ pub fn append() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::index;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![3.into(), 4.into(), 5.into()]);
+/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app!(index(), 0.into(), list.clone()), NOR, 0, false), 3.into());
-/// assert_eq!(beta(app!(index(), 2.into(), list        ), NOR, 0, false), 5.into());
+/// assert_eq!(beta(app!(index(), 0.into(), list.clone()), NOR, 0, false), 1.into());
+/// assert_eq!(beta(app!(index(), 2.into(), list        ), NOR, 0, false), 3.into());
 /// # }
 /// ```
 pub fn index() -> Term {
@@ -316,16 +301,16 @@ pub fn index() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::map;
 /// use lambda_calculus::church::numerals::succ;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app!(map(), succ(), list), NOR, 0, false),
-///            Term::from(vec![2.into(), 3.into(), 4.into()]));
+/// assert_eq!(
+///     beta(app!(map(), succ(), list), NOR, 0, false),
+///     vec![2.into(), 3.into(), 4.into()].into()
+/// );
 /// # }
 /// ```
 pub fn map() -> Term {
@@ -353,8 +338,8 @@ pub fn map() -> Term {
 }
 
 /// Applied to a function, a starting value and a Church list it performs a
-/// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
-/// list.
+/// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists)
+/// on the list.
 ///
 /// FOLDL := Z (λzfsl. NULL l (λx.s) (λx.z f (f s (FST l)) (SND l)) I) =
 /// Z (λ λ λ λ NULL 1 (λ 3) (λ 5 4 (4 3 (FST 2)) (SND 2)) I)
@@ -363,11 +348,9 @@ pub fn map() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::{foldl, nil};
 /// use lambda_calculus::church::numerals::plus;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
@@ -398,8 +381,8 @@ pub fn foldl() -> Term {
 }
 
 /// Applied to a function, a starting value and a Church list it performs a
-/// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists) on the
-/// list.
+/// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists)
+/// on the list.
 ///
 /// FOLDR := λfsl. Z (λzt. NULL t (λx.s) (λx.f (FST t) (z (SND t))) I) l =
 /// λ λ λ Z (λ λ NULL 1 (λ 5) (λ 6 (FST 2) (3 (SND 2))) I) 1
@@ -408,11 +391,9 @@ pub fn foldl() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::{foldr, nil};
 /// use lambda_calculus::church::numerals::plus;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
@@ -448,20 +429,22 @@ pub fn foldr() -> Term {
 /// ```
 /// # #[macro_use] extern crate lambda_calculus;
 /// # fn main() {
-/// use lambda_calculus::term::Term;
 /// use lambda_calculus::church::lists::{filter, nil};
 /// use lambda_calculus::church::numerals::{is_zero, gt};
 /// use lambda_calculus::combinators::c;
-/// use lambda_calculus::reduction::beta;
-/// use lambda_calculus::reduction::Order::*;
+/// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
-/// let gt1  = app!(c(), gt(), 1.into());
+/// let gt_1 = app!(c(), gt(), 1.into()); // greater than 1
 ///
-/// assert_eq!(beta(app!(filter(), is_zero(), list.clone()), NOR, 0, false),
-///            Term::from(vec![0.into()]));
-/// assert_eq!(beta(app!(filter(), gt1, list), NOR, 0, false),
-///            Term::from(vec![2.into(), 3.into()]));
+/// assert_eq!(
+///     beta(app!(filter(), is_zero(), list.clone()), NOR, 0, false),
+///     vec![0.into()].into()
+/// );
+/// assert_eq!(
+///     beta(app!(filter(), gt_1, list), NOR, 0, false),
+///     vec![2.into(), 3.into()].into()
+/// );
 /// # }
 /// ```
 pub fn filter() -> Term {
@@ -521,12 +504,9 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert!(list_110.is_list());
+    /// assert!(Term::from(vec![1.into(), 2.into(), 3.into()]).is_list());
     /// ```
     pub fn is_list(&self) -> bool {
         self.last_ref() == Ok(&nil())
@@ -537,12 +517,12 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.uncons(), Ok((one(), Term::from(vec![one(), zero()]))));
+    /// assert_eq!(
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).uncons(), 
+    ///     Ok((1.into(), vec![2.into(), 3.into()].into()))
+    /// );
     /// ```
     /// # Errors
     ///
@@ -560,12 +540,12 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.uncons_ref(), Ok((&one(), &Term::from(vec![one(), zero()]))));
+    /// assert_eq!(
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).uncons_ref(), 
+    ///     Ok((&1.into(), &vec![2.into(), 3.into()].into()))
+    /// );
     /// ```
     /// # Errors
     ///
@@ -583,13 +563,12 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.uncons_mut(),
-    ///            Ok((&mut one(), &mut Term::from(vec![one(), zero()]))));
+    /// assert_eq!(
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).uncons_mut(), 
+    ///     Ok((&mut 1.into(), &mut vec![2.into(), 3.into()].into()))
+    /// );
     /// ```
     /// # Errors
     ///
@@ -606,12 +585,12 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.head(), Ok(one()));
+    /// assert_eq!(
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).head(), 
+    ///     Ok(1.into())
+    /// );
     /// ```
     /// # Errors
     ///
@@ -624,12 +603,12 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.head_ref(), Ok(&one()));
+    /// assert_eq!(
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).head_ref(), 
+    ///     Ok(&1.into())
+    /// );
     /// ```
     /// # Errors
     ///
@@ -642,12 +621,12 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.head_mut(), Ok(&mut one()));
+    /// assert_eq!(
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).head_mut(), 
+    ///     Ok(&mut 1.into())
+    /// );
     /// ```
     /// # Errors
     ///
@@ -660,12 +639,12 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.tail(), Ok(Term::from(vec![one(), zero()])));
+    /// assert_eq!(
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).tail(), 
+    ///     Ok(vec![2.into(), 3.into()].into())
+    /// );
     /// ```
     /// # Errors
     ///
@@ -678,12 +657,12 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.tail_ref(), Ok(&Term::from(vec![one(), zero()])));
+    /// assert_eq!(
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).tail_ref(), 
+    ///     Ok(&vec![2.into(), 3.into()].into())
+    /// );
     /// ```
     /// # Errors
     ///
@@ -697,12 +676,12 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.tail_mut(), Ok(&mut Term::from(vec![one(), zero()])));
+    /// assert_eq!(
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).tail_mut(), 
+    ///     Ok(&mut vec![2.into(), 3.into()].into())
+    /// );
     /// ```
     /// # Errors
     ///
@@ -715,12 +694,9 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.len(), Ok(3));
+    /// assert_eq!(Term::from(vec![1.into(), 2.into(), 3.into()]).len(), Ok(3));
     /// ```
     /// # Errors
     ///
@@ -742,12 +718,12 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let list_110 = Term::from(vec![one(), one(), zero()]);
-    ///
-    /// assert_eq!(list_110.push(zero()), Ok(Term::from(vec![zero(), one(), one(), zero()])));
+    /// assert_eq!(
+    ///     Term::from(vec![1.into(), 2.into(), 3.into()]).push(0.into()), 
+    ///     Ok(vec![0.into(), 1.into(), 2.into(), 3.into()].into())
+    /// );
     /// ```
     /// # Errors
     ///
@@ -762,19 +738,18 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::Term;
-    /// use lambda_calculus::church::numerals::{zero, one};
+    /// use lambda_calculus::*;
     ///
-    /// let mut list_110 = Term::from(vec![one(), one(), zero()]);
+    /// let mut list = Term::from(vec![1.into(), 2.into(), 3.into()]);
     ///
-    /// assert_eq!(list_110.pop(), Ok(one()));
-    /// assert_eq!(list_110, Term::from(vec![one(), zero()]));
-    /// assert_eq!(list_110.pop(), Ok(one()));
-    /// assert_eq!(list_110, Term::from(vec![zero()]));
-    /// assert_eq!(list_110.pop(), Ok(zero()));
-    /// assert_eq!(list_110, Term::from(vec![]));
+    /// assert_eq!(list.pop(), Ok(1.into()));
+    /// assert_eq!(list, vec![2.into(), 3.into()].into());
+    /// assert_eq!(list.pop(), Ok(2.into()));
+    /// assert_eq!(list, vec![3.into()].into());
+    /// assert_eq!(list.pop(), Ok(3.into()));
+    /// assert_eq!(list, vec![].into());
     ///
-    /// assert!(list_110.is_empty())
+    /// assert!(list.is_empty())
     /// ```
     /// # Errors
     ///
