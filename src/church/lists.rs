@@ -8,6 +8,7 @@ use church::pairs::{pair, fst, snd};
 use church::numerals::zero;
 use combinators::z;
 use std::ops::Index;
+use std::mem;
 
 /// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last link of a
 /// Church list.
@@ -779,8 +780,9 @@ impl Term {
     ///
     /// The function will return an error if `self` is not a Church list.
     pub fn pop(&mut self) -> Result<Term, Error> {
-        let (head, tail) = try!(self.clone().uncons()); // TODO: drop clone()?
-        *self = tail;
+        let to_uncons = mem::replace(self, Var(0)); // replace self with a dummy
+        let (head, tail) = try!(to_uncons.uncons());
+        let _ = mem::replace(self, tail); // replace self with tail
 
         Ok(head)
     }
