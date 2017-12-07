@@ -20,7 +20,8 @@ pub enum Error {
 }
 
 #[derive(Debug, PartialEq)]
-enum Token {
+#[doc(hidden)]
+pub enum Token {
     /// λ or \
     Lambda,
     /// left parenthesis
@@ -32,7 +33,8 @@ enum Token {
 }
 
 #[derive(Debug, PartialEq)]
-enum CToken {
+#[doc(hidden)]
+pub enum CToken {
     /// an abstraction with a bound variable
     CLambda(String),
     /// left parenthesis
@@ -43,7 +45,8 @@ enum CToken {
     CName(String)
 }
 
-fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
+#[doc(hidden)]
+pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
     let chars = input.chars().enumerate();
     let mut tokens = Vec::new();
 
@@ -67,7 +70,8 @@ fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
     Ok(tokens)
 }
 
-fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
+#[doc(hidden)]
+pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
     let mut chars = input.chars().enumerate().peekable();
     let mut tokens = Vec::new();
     let valid_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -113,7 +117,8 @@ fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
     Ok(tokens)
 }
 
-fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
+#[doc(hidden)]
+pub fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
     _convert_classic_tokens(tokens, &mut Vec::new(), &mut 0)
 }
 
@@ -154,7 +159,8 @@ fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut
 }
 
 #[derive(Debug, PartialEq)]
-enum Expression {
+#[doc(hidden)]
+pub enum Expression {
     /// an abstraction
     Abstraction,
     /// a sequence of Expressions
@@ -163,7 +169,8 @@ enum Expression {
     Variable(usize)
 }
 
-fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
+#[doc(hidden)]
+pub fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
     _get_ast(tokens, &mut 0)
 }
 
@@ -232,7 +239,8 @@ pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
     fold_exprs(&exprs?)
 }
 
-fn fold_exprs(exprs: &[Expression]) -> Result<Term, Error> {
+#[doc(hidden)]
+pub fn fold_exprs(exprs: &[Expression]) -> Result<Term, Error> {
     let mut depth  = 0;
     let mut output = Vec::new();
 
