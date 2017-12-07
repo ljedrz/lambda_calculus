@@ -481,15 +481,12 @@ pub fn filter() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::{last};
 /// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app!(last(), list.clone()), NOR, 0, false), 3.into());
-/// # }
+/// assert_eq!(beta(app(last(), list), NOR, 0, false), 3.into());
 /// ```
 pub fn last() -> Term {
     app(
