@@ -476,8 +476,8 @@ pub fn filter() -> Term {
 
 /// Applied to a Church-encoded list it returns the last element.
 ///
-/// LAST := Z (λzl.NULL l (λx.NIL) (λx.NULL (tail l) (head l) (z (tail l))) I) =
-/// Z (λ 2 1. NULL 1 (λ NIL) (λ NULL (tail 2) (head 2) (3 (tail 2))) I)
+/// LAST := Z (λzl.NULL l (λx.NIL) (λx.NULL (TAIL l) (HEAD l) (z (TAIL l))) I) =
+/// Z (λ 2 1. NULL 1 (λ NIL) (λ NULL (TAIL 2) (HEAD 2) (3 (TAIL 2))) I)
 ///
 /// # Example
 /// ```
