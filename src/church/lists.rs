@@ -30,13 +30,10 @@ pub fn nil() -> Term { fls() }
 ///
 /// # Example
 /// ```
-/// # extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::{nil, null};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(null(), nil()), NOR, 0, false), true.into());
-/// # }
 /// ```
 pub fn null() -> Term {
     abs(app!(Var(1), abs!(3, fls()), tru()))
@@ -48,8 +45,6 @@ pub fn null() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::{nil, cons};
 /// use lambda_calculus::*;
 ///
@@ -72,7 +67,6 @@ pub fn null() -> Term {
 /// let list_from_vec = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
 /// assert_eq!(list_consed, list_from_vec);
-/// # }
 /// ```
 pub fn cons() -> Term { pair() }
 
@@ -82,15 +76,12 @@ pub fn cons() -> Term { pair() }
 ///
 /// # Example
 /// ```
-/// # extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::head;
 /// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
 /// assert_eq!(beta(app(head(), list), NOR, 0, false), 1.into());
-/// # }
 /// ```
 pub fn head() -> Term { fst() }
 
@@ -101,8 +92,6 @@ pub fn head() -> Term { fst() }
 ///
 /// # Example
 /// ```
-/// # extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::tail;
 /// use lambda_calculus::*;
 ///
@@ -112,7 +101,6 @@ pub fn head() -> Term { fst() }
 ///     beta(app(tail(), list), NOR, 0, false),
 ///     vec![2.into(), 3.into()].into()
 /// );
-/// # }
 /// ```
 pub fn tail() -> Term { snd() }
 
@@ -123,8 +111,6 @@ pub fn tail() -> Term { snd() }
 ///
 /// # Example
 /// ```
-/// # extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::{length, nil};
 /// use lambda_calculus::*;
 ///
@@ -132,7 +118,6 @@ pub fn tail() -> Term { snd() }
 ///
 /// assert_eq!(beta(app(length(), nil()), NOR, 0, false), 0.into());
 /// assert_eq!(beta(app(length(), list ), NOR, 0, false), 4.into());
-/// # }
 /// ```
 pub fn length() -> Term {
     app!(
@@ -160,8 +145,6 @@ pub fn length() -> Term {
 ///
 /// # Example
 /// ```
-/// # extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::reverse;
 /// use lambda_calculus::*;
 ///
@@ -171,7 +154,6 @@ pub fn length() -> Term {
 ///     beta(app(reverse(), list), NOR, 0, false),
 ///     vec![3.into(), 2.into(), 1.into()].into()
 /// );
-/// # }
 /// ```
 pub fn reverse() -> Term {
     app!(
@@ -203,8 +185,6 @@ pub fn reverse() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::list;
 /// use lambda_calculus::*;
 ///
@@ -212,7 +192,6 @@ pub fn reverse() -> Term {
 ///     beta(app!(list(), 3.into(), 1.into(), 2.into(), 3.into()), NOR, 0, false),
 ///     vec![1.into(), 2.into(), 3.into()].into()
 /// );
-/// # }
 /// ```
 pub fn list() -> Term {
     abs(app!(
@@ -230,8 +209,6 @@ pub fn list() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::append;
 /// use lambda_calculus::*;
 ///
@@ -242,7 +219,6 @@ pub fn list() -> Term {
 ///     beta(app!(append(), list1, list2), NOR, 0, false),
 ///     vec![1.into(), 2.into(), 3.into(), 4.into()].into()
 /// );
-/// # }
 /// ```
 pub fn append() -> Term {
     z().app(
@@ -272,8 +248,6 @@ pub fn append() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::index;
 /// use lambda_calculus::*;
 ///
@@ -281,7 +255,6 @@ pub fn append() -> Term {
 ///
 /// assert_eq!(beta(app!(index(), 0.into(), list.clone()), NOR, 0, false), 1.into());
 /// assert_eq!(beta(app!(index(), 2.into(), list        ), NOR, 0, false), 3.into());
-/// # }
 /// ```
 pub fn index() -> Term {
     abs!(2, app!(
@@ -299,8 +272,6 @@ pub fn index() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::map;
 /// use lambda_calculus::church::numerals::succ;
 /// use lambda_calculus::*;
@@ -311,7 +282,6 @@ pub fn index() -> Term {
 ///     beta(app!(map(), succ(), list), NOR, 0, false),
 ///     vec![2.into(), 3.into(), 4.into()].into()
 /// );
-/// # }
 /// ```
 pub fn map() -> Term {
     z().app(
@@ -346,8 +316,6 @@ pub fn map() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::{foldl, nil};
 /// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::*;
@@ -356,7 +324,6 @@ pub fn map() -> Term {
 ///
 /// assert_eq!(beta(app!(foldl(), plus(), 0.into(), list ), NOR, 0, false), 6.into());
 /// assert_eq!(beta(app!(foldl(), plus(), 0.into(), nil()), NOR, 0, false), 0.into());
-/// # }
 /// ```
 pub fn foldl() -> Term {
     z().app(
@@ -389,8 +356,6 @@ pub fn foldl() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::{foldr, nil};
 /// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::*;
@@ -399,7 +364,6 @@ pub fn foldl() -> Term {
 ///
 /// assert_eq!(beta(app!(foldr(), plus(), 0.into(), list ), NOR, 0, false), 6.into());
 /// assert_eq!(beta(app!(foldr(), plus(), 0.into(), nil()), NOR, 0, false), 0.into());
-/// # }
 /// ```
 pub fn foldr() -> Term {
     abs!(3, app!(
@@ -427,8 +391,6 @@ pub fn foldr() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::church::lists::{filter, nil};
 /// use lambda_calculus::church::numerals::{is_zero, gt};
 /// use lambda_calculus::combinators::c;
@@ -445,7 +407,6 @@ pub fn foldr() -> Term {
 ///     beta(app!(filter(), gt_1, list), NOR, 0, false),
 ///     vec![2.into(), 3.into()].into()
 /// );
-/// # }
 /// ```
 pub fn filter() -> Term {
     z().app(

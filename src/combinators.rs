@@ -33,14 +33,11 @@ pub fn i() -> Term { abs(Var(1)) }
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::combinators::k;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(k(), Var(1), Var(2)), NOR, 0, false), Var(1));
 /// assert_eq!(beta(app!(k(), Var(2), Var(1)), NOR, 0, false), Var(2));
-/// # }
 /// ```
 pub fn k() -> Term { abs!(2, Var(2)) }
 
@@ -50,8 +47,6 @@ pub fn k() -> Term { abs!(2, Var(2)) }
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::combinators::s;
 /// use lambda_calculus::*;
 ///
@@ -59,7 +54,6 @@ pub fn k() -> Term { abs!(2, Var(2)) }
 ///     beta(app!(s(), Var(1), Var(2), Var(3)), NOR, 0, false),
 ///     app!(Var(1), Var(3), app(Var(2), Var(3)))
 /// );
-/// # }
 /// ```
 pub fn s() -> Term {
     abs!(3, app!(Var(3), Var(1), app(Var(2), Var(1))))
@@ -71,15 +65,12 @@ pub fn s() -> Term {
 ///
 /// # Example
 /// ```
-/// # extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::combinators::{iota, i, k, s};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(iota(), iota()), NOR, 0, false), i());
 /// assert_eq!(beta(app(iota(), app(iota(), app(iota(), iota()))), NOR, 0, false), k());
 /// assert_eq!(beta(app(iota(), app(iota(), app(iota(), app(iota(), iota())))), NOR, 0, false), s());
-/// # }
 /// ```
 pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 
@@ -89,8 +80,6 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::combinators::b;
 /// use lambda_calculus::*;
 ///
@@ -98,7 +87,6 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 ///     beta(app!(b(), Var(1), Var(2), Var(3)), NOR, 0, false),
 ///     app(Var(1), app(Var(2), Var(3)))
 /// );
-/// # }
 /// ```
 pub fn b() -> Term {
     abs!(3, app(Var(3), app(Var(2), Var(1))))
@@ -110,8 +98,6 @@ pub fn b() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::combinators::c;
 /// use lambda_calculus::*;
 ///
@@ -119,7 +105,6 @@ pub fn b() -> Term {
 ///     beta(app!(c(), Var(1), Var(2), Var(3)), NOR, 0, false),
 ///     app!(Var(1), Var(3), Var(2))
 /// );
-/// # }
 /// ```
 pub fn c() -> Term {
     abs!(3, app!(Var(3), Var(1), Var(2)))
@@ -131,8 +116,6 @@ pub fn c() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::combinators::w;
 /// use lambda_calculus::*;
 ///
@@ -140,7 +123,6 @@ pub fn c() -> Term {
 ///     beta(app!(w(), Var(1), Var(2)), NOR, 0, false),
 ///     app!(Var(1), Var(2), Var(2))
 /// );
-/// # }
 /// ```
 pub fn w() -> Term {
     abs!(2, app!(Var(2), Var(1), Var(1)))
@@ -189,8 +171,6 @@ pub fn omm() -> Term { om().app(om()) }
 ///
 /// # Example
 /// ```
-/// # extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::combinators::y;
 /// use lambda_calculus::*;
 ///
@@ -200,7 +180,6 @@ pub fn omm() -> Term { om().app(om()) }
 ///     beta(app(y(), dummy()), NOR, 0, false),
 ///     beta(app(dummy(), app(y(), dummy())), NOR, 0, false)
 /// );
-/// # }
 /// ```
 pub fn y() -> Term {
     abs(app(
@@ -221,8 +200,6 @@ pub fn y() -> Term {
 ///
 /// # Example
 /// ```
-/// # extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::combinators::z;
 /// use lambda_calculus::*;
 ///
@@ -232,7 +209,6 @@ pub fn y() -> Term {
 ///     beta(app(z(), dummy()), CBV, 0, false),
 ///     beta(app(dummy(), app(z(), dummy())), CBV, 0, false)
 /// );
-/// # }
 /// ```
 pub fn z() -> Term {
     abs(app(
@@ -247,8 +223,6 @@ pub fn z() -> Term {
 ///
 /// # Example
 /// ```
-/// # #[macro_use] extern crate lambda_calculus;
-/// # fn main() {
 /// use lambda_calculus::combinators::t;
 /// use lambda_calculus::*;
 ///
@@ -256,7 +230,6 @@ pub fn z() -> Term {
 ///     beta(app!(t(), Var(1), Var(2)), NOR, 0, false),
 ///     app(Var(2), Var(1))
 /// );
-/// # }
 /// ```
 pub fn t() -> Term {
     abs!(2, app(Var(1), Var(2)))
