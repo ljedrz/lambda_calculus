@@ -435,6 +435,40 @@ pub fn filter() -> Term {
     )
 }
 
+/// Applied to a Church-encoded list it returns the last element.
+///
+/// LAST := Z (λzl.NULL l (λx.NIL) (λx.NULL (TAIL l) (HEAD l) (z (TAIL l))) I) =
+/// Z (λ 2 1. NULL 1 (λ NIL) (λ NULL (TAIL 2) (HEAD 2) (3 (TAIL 2))) I)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::church::lists::{last};
+/// use lambda_calculus::*;
+///
+/// let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
+///
+/// assert_eq!(beta(app(last(), list), NOR, 0, false), 3.into());
+/// ```
+pub fn last() -> Term {
+    app(
+        z(),
+        abs!(2, app!(
+            null(),
+            Var(1),
+            abs(fls()),
+            abs(app!(
+                Var(2),
+                abs!(2, Var(1)),
+                abs!(5, Var(1)),
+                abs!(2, Var(2)),
+                app(Var(2), abs!(2, Var(2))),
+                app(Var(3), app(Var(2), abs!(2, Var(1))))
+            )),
+            abs(Var(1))
+        ))
+    )
+}
+
 impl Term {
     /// Checks whether self is a empty Church list, i.e. `nil()`.
     ///
