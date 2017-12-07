@@ -1,13 +1,18 @@
-Version 1.2.1
+Version 1.3.0
 =============
 
 Changes
 -------
 
+- add `last()` for Church lists
 - change all instances of `try!()` to `?`
 - replace 2 `clone()`s with `replace()`s (**big** performance wins)
 - simplify doctest imports in booleans.rs
 - simplify and improve doctests in combinators.rs, lists.rs, pairs.rs and numerals.rs
+- reorganize unit tests in lists.rs
+- remove lots of doctest boilerplate
+- some code readability improvements
+- more benchmarks
 
 Version 1.2.0
 =============
