@@ -223,9 +223,13 @@ pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
     };
     let ast = get_ast(&tokens)?;
 
-    let exprs = (if let Sequence(exprs) = ast { Ok(exprs) } else { Err(InvalidExpression) })?;
+    let exprs = if let Sequence(exprs) = ast {
+        Ok(exprs)
+    } else {
+        Err(InvalidExpression)
+    };
 
-    fold_exprs(&exprs)
+    fold_exprs(&exprs?)
 }
 
 fn fold_exprs(exprs: &[Expression]) -> Result<Term, Error> {

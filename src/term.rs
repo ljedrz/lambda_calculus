@@ -169,7 +169,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).unapp(), Ok((Var(1), Var(2))));
+    /// assert_eq!(app(Var(1), Var(2)).unapp(), Ok((Var(1), Var(2))));
     /// ```
     /// # Errors
     ///
@@ -184,7 +184,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).unapp_ref(), Ok((&Var(1), &Var(2))));
+    /// assert_eq!(app(Var(1), Var(2)).unapp_ref(), Ok((&Var(1), &Var(2))));
     /// ```
     /// # Errors
     ///
@@ -199,7 +199,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).unapp_mut(), Ok((&mut Var(1), &mut Var(2))));
+    /// assert_eq!(app(Var(1), Var(2)).unapp_mut(), Ok((&mut Var(1), &mut Var(2))));
     /// ```
     /// # Errors
     ///
@@ -229,7 +229,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).lhs_ref(), Ok(&Var(1)));
+    /// assert_eq!(app(Var(1), Var(2)).lhs_ref(), Ok(&Var(1)));
     /// ```
     /// # Errors
     ///
@@ -244,7 +244,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).lhs_mut(), Ok(&mut Var(1)));
+    /// assert_eq!(app(Var(1), Var(2)).lhs_mut(), Ok(&mut Var(1)));
     /// ```
     pub fn lhs_mut(&mut self) -> Result<&mut Term, Error> {
         if let Ok((lhs, _)) = self.unapp_mut() { Ok(lhs) } else { Err(NotAnApp) }
@@ -256,7 +256,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).rhs(), Ok(Var(2)));
+    /// assert_eq!(app(Var(1), Var(2)).rhs(), Ok(Var(2)));
     /// ```
     /// # Errors
     ///
@@ -271,7 +271,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).rhs_ref(), Ok(&Var(2)));
+    /// assert_eq!(app(Var(1), Var(2)).rhs_ref(), Ok(&Var(2)));
     /// ```
     /// # Errors
     ///
@@ -286,7 +286,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).rhs_mut(), Ok(&mut Var(2)));
+    /// assert_eq!(app(Var(1), Var(2)).rhs_mut(), Ok(&mut Var(2)));
     /// ```
     /// # Errors
     ///
@@ -335,7 +335,8 @@ pub fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -
         },
         Abs(ref t) => {
             let ret = {
-                format!("{}{}.{}", LAMBDA,
+                format!("{}{}.{}",
+                    LAMBDA,
                     from_u32(depth + 97).expect("error while printing term"),
                     show_precedence_cla(t, 0, depth + 1)
                 )

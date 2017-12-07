@@ -722,7 +722,7 @@ impl Term {
     pub fn pop(&mut self) -> Result<Term, Error> {
         let to_uncons = mem::replace(self, Var(0)); // replace self with a dummy
         let (head, tail) = to_uncons.uncons()?;
-        let _ = mem::replace(self, tail); // replace self with tail
+        mem::replace(self, tail); // replace self with tail
 
         Ok(head)
     }

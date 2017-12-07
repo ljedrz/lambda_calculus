@@ -145,7 +145,8 @@ pub fn compare(term: &Term, orders: &[Order], verbose: bool) {
 
     writeln!(buf, "comparing β-reduction strategies for {}:\n", term).unwrap();
     for order in orders {
-        writeln!(buf, "{}:{}{}", order,
+        writeln!(buf, "{}:{}{}",
+            order,
             " ".repeat(19 - format!("{}", order).len()),
             term.to_owned().beta(*order, 0, verbose)
         ).unwrap();
@@ -196,7 +197,7 @@ impl Term {
 
         let mut to_eval = mem::replace(self, Var(0)); // replace self with a dummy
         to_eval = to_eval.eval().unwrap(); // safe; only called in reduction sites
-        let _ = mem::replace(self, to_eval); // move self back to its place
+        mem::replace(self, to_eval); // move self back to its place
         *count += 1;
 
         if verbose {
@@ -231,7 +232,9 @@ impl Term {
     /// ```
     pub fn beta(&mut self, order: Order, limit: usize, verbose: bool) -> usize {
         if verbose {
-            println!("β-reducing {} [{} order{}]:", self, order,
+            println!("β-reducing {} [{} order{}]:",
+                self,
+                order,
                 if limit != 0 {
                     format!(", limit of {} reduction{}", limit, if limit == 1 { "" } else { "s" })
                 } else {
@@ -253,8 +256,10 @@ impl Term {
         }
 
         if verbose {
-            println!("\nresult after {} reduction{}: {}\n", count,
-                if count == 1 { "" } else { "s" }, self);
+            println!("\nresult after {} reduction{}: {}\n",
+                count,
+                if count == 1 { "" } else { "s" }, self
+            );
         };
 
         count
