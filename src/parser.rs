@@ -201,8 +201,8 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
 /// less aesthetic, but only one byte in size)
 /// - the identifiers in `Classic` mode are `String`s of ASCII alphabetic characters
 /// - `Classic` mode ignores whitespaces where unambiguous
-/// - `DeBruijn` mode ignores all whitespaces (since indices > 15 are very unlikely)
 /// - the indices in the `DeBruijn` notation mode start with 1 and are hexadecimal digits
+/// - `DeBruijn` mode ignores all whitespaces (since indices > 15 are very unlikely)
 ///
 /// # Example
 /// ```
