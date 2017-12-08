@@ -22,3 +22,26 @@ fn test_last() {
     assert_eq!(beta(app(last(), list1()), HAP, 0, false), 1.into());
     assert_eq!(beta(app(last(), list2()), HAP, 0, false), 4.into());
 }
+
+#[test]
+fn test_init() {
+    let list1 = || { Term::from(vec![0.into(), 1.into(), 2.into(), 3.into(), 4.into()]) };
+    let list2 = || { Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]) };
+    let list3 = || { Term::from(vec![2.into(), 3.into()]) };
+    let list4 = || { Term::from(vec![2.into()]) };
+
+    assert_eq!(beta(app(init(), list1()), NOR, 0, false), list2());
+    assert_eq!(beta(app(init(), list3()), NOR, 0, false), list4());
+    assert_eq!(beta(app(init(), list4()), NOR, 0, false), nil());
+    assert_eq!(beta(app(init(), nil()), NOR, 0, false), nil());
+
+    assert_eq!(beta(app(init(), list1()), HNO, 0, false), list2());
+    assert_eq!(beta(app(init(), list3()), HNO, 0, false), list4());
+    assert_eq!(beta(app(init(), list4()), HNO, 0, false), nil());
+    assert_eq!(beta(app(init(), nil()), HNO, 0, false), nil());
+
+    assert_eq!(beta(app(init(), list1()), HAP, 0, false), list2());
+    assert_eq!(beta(app(init(), list3()), HAP, 0, false), list4());
+    assert_eq!(beta(app(init(), list4()), HAP, 0, false), nil());
+    assert_eq!(beta(app(init(), nil()), HAP, 0, false), nil());
+}

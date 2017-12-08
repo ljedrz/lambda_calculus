@@ -453,9 +453,10 @@ pub fn last() -> Term {
     app(
         z(),
         abs!(2, app!(
-            null(),
             Var(1),
-            abs(fls()),
+            abs!(5, Var(1)),
+            abs!(2, Var(2)),
+            abs!(3, Var(1)),
             abs(app!(
                 Var(2),
                 abs!(2, Var(1)),
@@ -463,6 +464,46 @@ pub fn last() -> Term {
                 abs!(2, Var(2)),
                 app(Var(2), abs!(2, Var(2))),
                 app(Var(3), app(Var(2), abs!(2, Var(1))))
+            )),
+            abs(Var(1))
+        ))
+    )
+}
+
+/// Applied to a Church-encoded list it returns the list without the last element.
+///
+/// INIT := Z (λzl.NULL l (λx.NIL) (λx.(NULL (FST l) NIL (PAIR (FST l) (z (SND l))))) I) =
+/// Z (λ λ NULL 1 (λ NIL) (λ (NULL (FST 2) NIL (PAIR (FST 2) (3 (SND 2))))) I)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::church::lists::init;
+/// use lambda_calculus::*;
+///
+/// let list1 = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
+/// let list2 = Term::from(vec![0.into(), 1.into(), 2.into()]);
+///
+/// assert_eq!(beta(app(init(), list1), NOR, 0, false), list2);
+/// ```
+pub fn init() -> Term {
+    app(
+        z(),
+        abs!(2, app!(
+            Var(1),
+            abs!(5, Var(1)),
+            abs!(2, Var(2)),
+            abs!(3, Var(1)),
+            abs(app!(
+                Var(2),
+                abs!(2, Var(1)),
+                abs!(5, Var(1)),
+                abs!(2, Var(2)),
+                abs!(2, Var(1)),
+                abs(app!(
+                    Var(1),
+                    app(Var(3), abs!(2, Var(2))),
+                    app(Var(4), app(Var(3), abs!(2, Var(1))))
+                ))
             )),
             abs(Var(1))
         ))
