@@ -1,3 +1,14 @@
+Version 1.4.0
+=============
+
+Changes
+-------
+
+- add `init()` for Church lists
+- simplify `last()`
+- more fine-grained parser benchmarks
+- add Church list benchmarks
+
 Version 1.3.0
 =============
 
