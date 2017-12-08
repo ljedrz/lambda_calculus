@@ -11,6 +11,8 @@ pub mod combinators;
 #[cfg(not(feature = "no_church"))]
 pub mod church;
 
+extern crate rayon;
+
 pub use self::term::{Term, abs, app};
 pub use self::term::Term::*;
 pub use self::term::Notation::*;
