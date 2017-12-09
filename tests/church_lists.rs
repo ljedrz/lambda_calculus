@@ -5,6 +5,7 @@ extern crate lambda_calculus as lambda;
 use lambda::*;
 use lambda::church::lists::*;
 use lambda::church::numerals::plus;
+use lambda::church::booleans::fls;
 
 #[test]
 fn test_last() {
@@ -108,8 +109,8 @@ fn test_zip_with() {
     assert_eq!(beta(app!(zip_with(), plus(), l3(), l3()), NOR, 0, false), l4());
     assert_eq!(beta(app!(zip_with(), plus(), l4(), l1()), NOR, 0, false), l5());
     assert_eq!(beta(app!(zip_with(), plus(), l1(), l4()), NOR, 0, false), l5());
-    assert_eq!(beta(app!(zip_with(), abs!(2, Var(1)), l1(), l4()), NOR, 0, false), l2());
-    assert_eq!(beta(app!(zip_with(), abs!(2, Var(1)), l4(), l1()), NOR, 0, false), l1());
+    assert_eq!(beta(app!(zip_with(), fls(), l1(), l4()), NOR, 0, false), l2());
+    assert_eq!(beta(app!(zip_with(), fls(), l4(), l1()), NOR, 0, false), l1());
 
     assert_eq!(beta(app!(zip_with(), plus(), nil(), nil()), HNO, 0, false), nil());
     assert_eq!(beta(app!(zip_with(), plus(), l1(), nil()), HNO, 0, false), nil());
@@ -119,8 +120,8 @@ fn test_zip_with() {
     assert_eq!(beta(app!(zip_with(), plus(), l3(), l3()), HNO, 0, false), l4());
     assert_eq!(beta(app!(zip_with(), plus(), l4(), l1()), HNO, 0, false), l5());
     assert_eq!(beta(app!(zip_with(), plus(), l1(), l4()), HNO, 0, false), l5());
-    assert_eq!(beta(app!(zip_with(), abs!(2, Var(1)), l1(), l4()), HNO, 0, false), l2());
-    assert_eq!(beta(app!(zip_with(), abs!(2, Var(1)), l4(), l1()), HNO, 0, false), l1());
+    assert_eq!(beta(app!(zip_with(), fls(), l1(), l4()), HNO, 0, false), l2());
+    assert_eq!(beta(app!(zip_with(), fls(), l4(), l1()), HNO, 0, false), l1());
 
     assert_eq!(beta(app!(zip_with(), plus(), nil(), nil()), HAP, 0, false), nil());
     assert_eq!(beta(app!(zip_with(), plus(), l1(), nil()), HAP, 0, false), nil());
@@ -130,6 +131,6 @@ fn test_zip_with() {
     assert_eq!(beta(app!(zip_with(), plus(), l3(), l3()), HAP, 0, false), l4());
     assert_eq!(beta(app!(zip_with(), plus(), l4(), l1()), HAP, 0, false), l5());
     assert_eq!(beta(app!(zip_with(), plus(), l1(), l4()), HAP, 0, false), l5());
-    assert_eq!(beta(app!(zip_with(), abs!(2, Var(1)), l1(), l4()), HAP, 0, false), l2());
-    assert_eq!(beta(app!(zip_with(), abs!(2, Var(1)), l4(), l1()), HAP, 0, false), l1());
+    assert_eq!(beta(app!(zip_with(), fls(), l1(), l4()), HAP, 0, false), l2());
+    assert_eq!(beta(app!(zip_with(), fls(), l4(), l1()), HAP, 0, false), l1());
 }

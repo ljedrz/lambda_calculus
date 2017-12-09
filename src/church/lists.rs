@@ -559,10 +559,10 @@ pub fn zip() -> Term {
 }
 
 /// Applied to a function and two Church-encoded lists it applies the function to the corresponding
-/// pairs and returns the resulting list. If one input list is shorter, excess elements of the
+/// elements and returns the resulting list. If one input list is shorter, excess elements of the
 /// longer list are discarded.
 ///
-/// ZIPWITH := Z (λ.fzab NULL b (λ.x NIL) (λ.x NULL a NIL (CONS (f (HEAD b) (HEAD a)) (z f (TAIL b) (TAIL a)))) I) =
+/// ZIP_WITH := Z (λ.fzab NULL b (λ.x NIL) (λ.x NULL a NIL (CONS (f (HEAD b) (HEAD a)) (z f (TAIL b) (TAIL a)))) I) =
 /// Z (λ λ λ λ NULL 2 (λ NIL) (λ NULL 2 NIL (CONS (4 (HEAD 3) (HEAD 2)) (5 4 (TAIL 3) (TAIL 2)))) I)
 ///
 /// # Example
@@ -574,7 +574,7 @@ pub fn zip() -> Term {
 /// let list1 = Term::from(vec![2.into(), 3.into()]);
 /// let list2 = Term::from(vec![4.into(), 6.into()]);
 ///
-/// assert_eq!(beta(app!(zip_with(), plus(), list1.clone(), list1.clone()), NOR, 0, false), list2);
+/// assert_eq!(beta(app!(zip_with(), plus(), list1.clone(), list1), NOR, 0, false), list2);
 /// ```
 pub fn zip_with() -> Term {
     app(

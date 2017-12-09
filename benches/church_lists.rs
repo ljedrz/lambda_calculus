@@ -9,6 +9,7 @@ extern crate lambda_calculus as lambda;
 use test::Bencher;
 use lambda::church::lists::*;
 use lambda::church::numerals::*;
+use lambda::church::booleans::fls;
 use lambda::combinators::c;
 use lambda::*;
 
@@ -94,5 +95,5 @@ fn list_zip(b: &mut Bencher) {
 
 #[bench]
 fn list_zip_with(b: &mut Bencher) {
-    b.iter(|| { beta(app!(zip_with(), abs!(2, Var(1)), list3(), list3()), HAP, 0, false) } );
+    b.iter(|| { beta(app!(zip_with(), fls(), list3(), list3()), HAP, 0, false) } );
 }
