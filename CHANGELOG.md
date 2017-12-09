@@ -5,6 +5,7 @@ Changes
 -------
 
 - add `init()` for Church lists
+- add `zip()` and `zip_with()` for Church lists
 - simplify `last()`
 - more fine-grained parser benchmarks
 - add Church list benchmarks
