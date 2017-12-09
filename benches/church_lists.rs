@@ -86,3 +86,13 @@ fn list_init(b: &mut Bencher) {
 fn list_last(b: &mut Bencher) {
     b.iter(|| { beta(app(last(), list3()), HAP, 0, false) } );
 }
+
+#[bench]
+fn list_zip(b: &mut Bencher) {
+    b.iter(|| { beta(app!(zip(), list3(), list3()), HAP, 0, false) } );
+}
+
+#[bench]
+fn list_zip_with(b: &mut Bencher) {
+    b.iter(|| { beta(app!(zip_with(), abs!(2, Var(1)), list3(), list3()), HAP, 0, false) } );
+}

@@ -510,6 +510,105 @@ pub fn init() -> Term {
     )
 }
 
+/// Applied to two Church-encoded lists it returns a list of corresponding pairs. If one input list
+/// is shorter, excess elements of the longer list are discarded.
+///
+/// ZIP := Z (λ.zab NULL b (λ.x NIL) (λ.x NULL a NIL (CONS (PAIR (HEAD b) (HEAD a)) (z (TAIL b) (TAIL a)))) I) =
+/// Z (λ λ λ NULL 2 (λ NIL) (λ NULL 2 NIL (CONS (PAIR (HEAD 3) (HEAD 2)) (4 (TAIL 3) (TAIL 2)))) I)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::church::lists::zip;
+/// use lambda_calculus::*;
+///
+/// let list1 = Term::from(vec![0.into(), 1.into()]);
+/// let pairs1 = Term::from(vec![(0.into(), 0.into()).into(), (1.into(), 1.into()).into()]);
+///
+/// assert_eq!(beta(app!(zip(), list1.clone(), list1.clone()), NOR, 0, false), pairs1);
+/// ```
+pub fn zip() -> Term {
+    app(
+        z(),
+        abs!(3, app!(
+            Var(2),
+            abs!(5, Var(1)),
+            abs!(2, Var(2)),
+            abs!(3, Var(1)),
+            abs(app!(
+                Var(2),
+                abs!(5, Var(1)),
+                abs!(2, Var(2)),
+                abs!(2, Var(1)),
+                abs(app!(
+                    Var(1),
+                    abs(app!(
+                        Var(1),
+                        app(Var(5), abs!(2, Var(2))),
+                        app(Var(4), abs!(2, Var(2)))
+                    )),
+                    app!(
+                        Var(5),
+                        app(Var(4), abs!(2, Var(1))),
+                        app(Var(3), abs!(2, Var(1)))
+                    )
+                ))
+            )),
+            abs(Var(1))
+        ))
+    )
+}
+
+/// Applied to a function and two Church-encoded lists it applies the function to the corresponding
+/// pairs and returns the resulting list. If one input list is shorter, excess elements of the
+/// longer list are discarded.
+///
+/// ZIPWITH := Z (λ.fzab NULL b (λ.x NIL) (λ.x NULL a NIL (CONS (f (HEAD b) (HEAD a)) (z f (TAIL b) (TAIL a)))) I) =
+/// Z (λ λ λ λ NULL 2 (λ NIL) (λ NULL 2 NIL (CONS (4 (HEAD 3) (HEAD 2)) (5 4 (TAIL 3) (TAIL 2)))) I)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::church::lists::zip_with;
+/// use lambda_calculus::church::numerals::plus;
+/// use lambda_calculus::*;
+///
+/// let list1 = Term::from(vec![2.into(), 3.into()]);
+/// let list2 = Term::from(vec![4.into(), 6.into()]);
+///
+/// assert_eq!(beta(app!(zip_with(), plus(), list1.clone(), list1.clone()), NOR, 0, false), list2);
+/// ```
+pub fn zip_with() -> Term {
+    app(
+        z(),
+        abs!(4, app!(
+            Var(2),
+            abs!(5, Var(1)),
+            abs!(2, Var(2)),
+            abs!(3, Var(1)),
+            abs(app!(
+                Var(2),
+                abs!(5, Var(1)),
+                abs!(2, Var(2)),
+                abs!(2, Var(1)),
+                abs(app!(
+                    Var(1),
+                    app!(
+                        Var(5),
+                        app(Var(4), abs!(2, Var(2))),
+                        app(Var(3), abs!(2, Var(2)))
+                    ),
+                    app!(
+                        Var(6),
+                        Var(5),
+                        app(Var(4), abs!(2, Var(1))),
+                        app(Var(3), abs!(2, Var(1)))
+                    )
+                ))
+            )),
+            abs(Var(1))
+        ))
+    )
+}
+
 impl Term {
     /// Checks whether self is a empty Church list, i.e. `nil()`.
     ///
