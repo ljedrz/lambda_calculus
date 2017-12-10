@@ -562,7 +562,7 @@ pub fn zip() -> Term {
 /// elements and returns the resulting list. If one input list is shorter, excess elements of the
 /// longer list are discarded.
 ///
-/// ZIP_WITH := Z (λ.fzab NULL b (λ.x NIL) (λ.x NULL a NIL (CONS (f (HEAD b) (HEAD a)) (z f (TAIL b) (TAIL a)))) I) =
+/// ZIP_WITH := Z (λ.zfab NULL b (λ.x NIL) (λ.x NULL a NIL (CONS (f (HEAD b) (HEAD a)) (z f (TAIL b) (TAIL a)))) I) =
 /// Z (λ λ λ λ NULL 2 (λ NIL) (λ NULL 2 NIL (CONS (4 (HEAD 3) (HEAD 2)) (5 4 (TAIL 3) (TAIL 2)))) I)
 ///
 /// # Example
