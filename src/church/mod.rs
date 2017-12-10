@@ -6,3 +6,4 @@ pub mod numerals;
 pub mod booleans;
 pub mod pairs;
 pub mod lists;
+pub mod option;
