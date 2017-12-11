@@ -3,7 +3,7 @@
 //! This module can optionally not be built using `default-features = false`.
 
 pub mod numerals;
-pub mod booleans;
-pub mod pairs;
-pub mod lists;
+pub mod boolean;
+pub mod pair;
+pub mod list;
 pub mod option;

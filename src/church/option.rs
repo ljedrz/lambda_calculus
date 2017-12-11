@@ -2,7 +2,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use church::booleans::{tru, fls};
+use church::boolean::{tru, fls};
 
 /// Produces a Church-encoded empty option.
 ///

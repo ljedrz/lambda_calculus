@@ -3,9 +3,9 @@
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
-use lambda::church::lists::*;
+use lambda::church::list::*;
 use lambda::church::numerals::plus;
-use lambda::church::booleans::fls;
+use lambda::church::boolean::fls;
 
 #[test]
 fn test_last() {

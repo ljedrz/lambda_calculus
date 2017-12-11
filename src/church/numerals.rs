@@ -2,7 +2,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use church::booleans::{tru, fls};
+use church::boolean::{tru, fls};
 use combinators::z;
 
 /// Produces a Church-encoded number zero.

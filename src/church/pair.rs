@@ -2,7 +2,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use church::booleans::{tru, fls};
+use church::boolean::{tru, fls};
 
 /// Produces a Church-encoded pair; applying it to two other terms puts them inside it.
 ///
@@ -10,7 +10,7 @@ use church::booleans::{tru, fls};
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pairs::pair;
+/// use lambda_calculus::church::pair::pair;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -28,7 +28,7 @@ pub fn pair() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pairs::fst;
+/// use lambda_calculus::church::pair::fst;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -44,7 +44,7 @@ pub fn fst() -> Term { abs(app(Var(1), tru())) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pairs::snd;
+/// use lambda_calculus::church::pair::snd;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -61,7 +61,7 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pairs::uncurry;
+/// use lambda_calculus::church::pair::uncurry;
 /// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::*;
 ///
@@ -84,7 +84,7 @@ pub fn uncurry() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pairs::swap;
+/// use lambda_calculus::church::pair::swap;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
