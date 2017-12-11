@@ -15,18 +15,9 @@ fn test_none() {
 
 #[test]
 fn test_some() {
-    assert_eq!(
-        beta(Some(3.into()).into(), NOR, 0, false),
-        beta(app(some(), 3.into()), NOR, 0, false)
-    );
-    assert_eq!(
-        beta(Some(3.into()).into(), HNO, 0, false),
-        beta(app(some(), 3.into()), HNO, 0, false)
-    );
-    assert_eq!(
-        beta(Some(3.into()).into(), HAP, 0, false),
-        beta(app(some(), 3.into()), HAP, 0, false)
-    );
+    assert_eq!(beta(app(some(), 3.into()), NOR, 0, false), Some(3.into()).into());
+    assert_eq!(beta(app(some(), 3.into()), HNO, 0, false), Some(3.into()).into());
+    assert_eq!(beta(app(some(), 3.into()), HAP, 0, false), Some(3.into()).into());
 }
 
 #[test]
