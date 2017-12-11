@@ -4,7 +4,6 @@
 //! * [SKI](https://en.wikipedia.org/wiki/SKI_combinator_calculus)
 //! * [Iota](https://en.wikipedia.org/wiki/Iota_and_Jot)
 //! * [BCKW](https://en.wikipedia.org/wiki/B,_C,_K,_W_system)
-// //! * the recursion combinator U - needs more research
 //! * the self-application combinator ω
 //! * the divergent combinator Ω
 //! * [the fixed-point combinators Y and Z](https://en.wikipedia.org/wiki/Fixed-point_combinator)
@@ -127,12 +126,7 @@ pub fn c() -> Term {
 pub fn w() -> Term {
     abs!(2, app!(Var(2), Var(1), Var(1)))
 }
-/*
-/// U - the recursion combinator.
-///
-/// U := λxy.y (x x y) = λ λ 1 (2 2 1)
-pub fn u() -> Term { abs!(2, app(Var(1), app!(Var(2), Var(2), Var(1)))) }
-*/
+
 /// ω - the self-application combinator.
 ///
 /// ω := λx.x x = λ 1 1
