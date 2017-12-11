@@ -5,7 +5,7 @@ use term::Term::*;
 use church::boolean::{tru, fls};
 use church::pair::{pair, fst, snd};
 use church::numerals::zero;
-use combinators::z;
+use combinators::Z;
 
 /// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last
 /// link of a Church list.
@@ -110,7 +110,7 @@ pub fn tail() -> Term { snd() }
 /// ```
 pub fn length() -> Term {
     app!(
-        z(),
+        Z(),
         abs!(3, app!(
             Var(1),
             abs!(5, Var(1)),
@@ -146,7 +146,7 @@ pub fn length() -> Term {
 /// ```
 pub fn reverse() -> Term {
     app!(
-        z(),
+        Z(),
         abs!(3, app!(
             Var(1),
             abs!(5, Var(1)),
@@ -210,7 +210,7 @@ pub fn list() -> Term {
 /// );
 /// ```
 pub fn append() -> Term {
-    z().app(
+    Z().app(
         abs!(3, app!(
             Var(2),
             abs!(5, Var(1)),
@@ -273,7 +273,7 @@ pub fn index() -> Term {
 /// );
 /// ```
 pub fn map() -> Term {
-    z().app(
+    Z().app(
         abs!(3, app!(
             Var(1),
             abs!(5, Var(1)),
@@ -315,7 +315,7 @@ pub fn map() -> Term {
 /// assert_eq!(beta(app!(foldl(), plus(), 0.into(), nil()), NOR, 0, false), 0.into());
 /// ```
 pub fn foldl() -> Term {
-    z().app(
+    Z().app(
         abs!(4, app!(
             Var(1),
             abs!(5, Var(1)),
@@ -356,7 +356,7 @@ pub fn foldl() -> Term {
 /// ```
 pub fn foldr() -> Term {
     abs!(3, app!(
-        z(),
+        Z(),
         abs!(2, app!(
             Var(1),
             abs!(5, Var(1)),
@@ -382,11 +382,11 @@ pub fn foldr() -> Term {
 /// ```
 /// use lambda_calculus::church::list::{filter, nil};
 /// use lambda_calculus::church::numerals::{is_zero, gt};
-/// use lambda_calculus::combinators::c;
+/// use lambda_calculus::combinators::C;
 /// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
-/// let gt_1 = app!(c(), gt(), 1.into()); // greater than 1
+/// let gt_1 = app!(C(), gt(), 1.into()); // greater than 1
 ///
 /// assert_eq!(
 ///     beta(app!(filter(), is_zero(), list.clone()), NOR, 0, false),
@@ -398,7 +398,7 @@ pub fn foldr() -> Term {
 /// );
 /// ```
 pub fn filter() -> Term {
-    z().app(
+    Z().app(
         abs!(3, app!(
             Var(1),
             abs!(5, Var(1)),
@@ -440,7 +440,7 @@ pub fn filter() -> Term {
 /// ```
 pub fn last() -> Term {
     app(
-        z(),
+        Z(),
         abs!(2, app!(
             Var(1),
             abs!(5, Var(1)),
@@ -476,7 +476,7 @@ pub fn last() -> Term {
 /// ```
 pub fn init() -> Term {
     app(
-        z(),
+        Z(),
         abs!(2, app!(
             Var(1),
             abs!(5, Var(1)),
@@ -517,7 +517,7 @@ pub fn init() -> Term {
 /// ```
 pub fn zip() -> Term {
     app(
-        z(),
+        Z(),
         abs!(3, app!(
             Var(2),
             abs!(5, Var(1)),
@@ -567,7 +567,7 @@ pub fn zip() -> Term {
 /// ```
 pub fn zip_with() -> Term {
     app(
-        z(),
+        Z(),
         abs!(4, app!(
             Var(2),
             abs!(5, Var(1)),

@@ -5,7 +5,7 @@ extern crate lambda_calculus as lambda;
 
 use lambda::*;
 use lambda::church::numerals::*;
-use lambda::combinators::c;
+use lambda::combinators::C;
 
 #[test]
 fn church_successor() {
@@ -49,16 +49,16 @@ fn church_predecessor() {
 fn church_plus_sub_equivalents() {
     /* PLUS 1 → SUCC & C SUB 1 → PRED */
     assert_eq!(beta(app!(    plus(), 1.into()), NOR, 0, false), succ());
-    assert_eq!(beta(app!(c(), sub(), 1.into()), NOR, 0, false), pred());
+    assert_eq!(beta(app!(C(), sub(), 1.into()), NOR, 0, false), pred());
 
     assert_eq!(beta(app!(    plus(), 1.into()), HNO, 0, false), succ());
-    assert_eq!(beta(app!(c(), sub(), 1.into()), HNO, 0, false), pred());
+    assert_eq!(beta(app!(C(), sub(), 1.into()), HNO, 0, false), pred());
 
     assert_eq!(beta(app!(    plus(), 1.into()), APP, 0, false), succ());
-    assert_eq!(beta(app!(c(), sub(), 1.into()), APP, 0, false), pred());
+    assert_eq!(beta(app!(C(), sub(), 1.into()), APP, 0, false), pred());
 
     assert_eq!(beta(app!(    plus(), 1.into()), HAP, 0, false), succ());
-    assert_eq!(beta(app!(c(), sub(), 1.into()), HAP, 0, false), pred());
+    assert_eq!(beta(app!(C(), sub(), 1.into()), HAP, 0, false), pred());
 }
 
 #[test]
