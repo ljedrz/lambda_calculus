@@ -8,7 +8,7 @@ pub mod term;
 pub mod parser;
 pub mod reduction;
 pub mod combinators;
-#[cfg(not(feature = "no_church"))]
+#[cfg(feature = "church")]
 pub mod church;
 
 pub use self::term::{Term, abs, app};

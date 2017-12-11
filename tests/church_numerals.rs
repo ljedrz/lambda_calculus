@@ -1,11 +1,11 @@
-#![cfg(not(feature = "no_church"))]
+#![cfg(feature = "church")]
 
 #[macro_use]
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
 use lambda::church::numerals::*;
-use lambda::combinators::c;
+use lambda::combinators::C;
 
 #[test]
 fn church_successor() {
@@ -24,7 +24,7 @@ fn church_predecessor() {
 #[test]
 fn church_plus_sub_equivalents() {
     assert_eq!(beta(app!(    plus(), 1.into()), HAP, 0, false), succ());
-    assert_eq!(beta(app!(c(), sub(), 1.into()), HAP, 0, false), pred());
+    assert_eq!(beta(app!(C(), sub(), 1.into()), HAP, 0, false), pred());
 }
 
 #[test]

@@ -1,10 +1,9 @@
 //! [Church numerals](https://en.wikipedia.org/wiki/Church_encoding#Church_numerals)
 
-use term::{Term, Error, abs, app};
+use term::{Term, abs, app};
 use term::Term::*;
-use term::Error::*;
-use church::booleans::{tru, fls};
-use combinators::z;
+use church::boolean::{tru, fls};
+use combinators::Z;
 
 /// Produces a Church-encoded number zero.
 ///
@@ -370,7 +369,7 @@ pub fn gt() -> Term {
 /// ```
 pub fn div() -> Term {
     app!(
-        z(),
+        Z(),
         abs!(4, app!(
             Var(2),
             pred(),
@@ -415,7 +414,7 @@ pub fn div() -> Term {
 /// ```
 pub fn quot() -> Term {
     app(
-        z(),
+        Z(),
         abs!(3, app!(
             Var(2),
             pred(),
@@ -459,7 +458,7 @@ pub fn quot() -> Term {
 /// ```
 pub fn rem() -> Term {
     app(
-        z(),
+        Z(),
         abs!(3, app!(
             Var(2),
             pred(),
@@ -653,73 +652,14 @@ pub fn is_odd() -> Term {
     abs(app!(Var(1), abs(app!(Var(1), fls(), tru())), fls()))
 }
 
-impl Term {
-    /// Returns the value of `self` if it's a Church-encoded number.
-    ///
-    /// # Example
-    /// ```
-    /// use lambda_calculus::*;
-    ///
-    /// assert_eq!(Term::from(1).value(), Ok(1));
-    /// ```
-    /// # Errors
-    ///
-    /// The function will return an error if `self` is not a Church number.
-    pub fn value(&self) -> Result<usize, Error> {
-        if let Ok(inner) = self.unabs_ref().and_then(|t| t.unabs_ref()) {
-            inner._value()
-        } else {
-            Err(NotANum)
-        }
-    }
-
-    fn _value(&self) -> Result<usize, Error> {
-        if let Ok((lhs, rhs)) = self.unapp_ref() {
-            if *lhs == Var(2) {
-                Ok(1 + rhs._value()?)
-            } else {
-                Err(NotANum)
-            }
-        } else if *self == Var(1) {
-            Ok(0)
-        } else {
-            Err(NotANum)
-        }
-    }
-
-    /// Checks whether `self` is a Church-encoded number.
-    ///
-    /// # Example
-    /// ```
-    /// use lambda_calculus::*;
-    ///
-    /// assert!(Term::from(1).is_cnum());
-    /// assert!(!Var(1).is_cnum());
-    /// assert!(!Term::from(true).is_cnum(), false);
-    /// ```
-    pub fn is_cnum(&self) -> bool { self.value().is_ok() }
-}
-
 impl From<usize> for Term {
     fn from(n: usize) -> Self {
-        let mut inner = Var(1);
-        let mut count = n;
+        let mut ret = Var(1);
 
-        while count > 0 {
-            inner = Var(2).app(inner);
-            count -= 1;
+        for _ in 0..n {
+            ret = app(Var(2), ret);
         }
 
-        abs!(2, inner)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn church_number_values() {
-        for n in 0..10 { assert_eq!(Term::from(n).value(), Ok(n)) }
+        abs!(2, ret)
     }
 }
