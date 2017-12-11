@@ -10,6 +10,8 @@ pub mod reduction;
 pub mod combinators;
 #[cfg(not(feature = "no_church"))]
 pub mod church;
+#[cfg(feature = "scott")]
+pub mod scott;
 
 pub use self::term::{Term, abs, app};
 pub use self::term::Term::*;
