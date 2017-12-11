@@ -79,6 +79,26 @@ pub fn uncurry() -> Term {
     ))
 }
 
+/// Applied to a Church-encoded pair `(a, b)` it swaps its elements so that it becomes `(b, a)`.
+///
+/// SWAP := λp.p PAIR (SND p) (FST p) = λ 1 PAIR (SND 1) (FST 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::church::pairs::swap;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(
+///     beta(app!(swap(), (1.into(), 2.into()).into()), NOR, 0, false), (2.into(), 1.into()).into());
+/// ```
+pub fn swap() -> Term {
+    abs!(2, app!(
+        Var(1),
+        app(Var(2), abs!(2, Var(1))),
+        app(Var(2), abs!(2, Var(2)))
+    ))
+}
+
 impl Term {
     /// Checks whether `self` is a Church-encoded pair.
     ///
