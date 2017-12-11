@@ -2,7 +2,7 @@
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
-use lambda::combinators::{I, O};
+use lambda::combinators::{i, omm};
 use std::thread;
 
 #[test]
@@ -15,37 +15,37 @@ fn normal_order() {
     let should_reduce = parse(&"(λ2)((λ111)(λ111))", DeBruijn).unwrap();
     assert_eq!(beta(should_reduce, NOR, 0, false), Var(1));
 
-    let does_reduce = app(abs(Var(2)), O());
+    let does_reduce = app(abs(Var(2)), omm());
     assert_eq!(beta(does_reduce, NOR, 0, false), Var(1));
 }
 
 #[test]
 fn call_by_name_order() {
-    let mut expr = app(abs(app(I(), Var(1))), app(I(), I()));
+    let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
     expr.beta(CBN, 1, false);
-    assert_eq!(expr, app(I(), app(I(), I())));
+    assert_eq!(expr, app(i(), app(i(), i())));
     expr.beta(CBN, 1, false);
-    assert_eq!(expr, app(I(), I()));
+    assert_eq!(expr, app(i(), i()));
     expr.beta(CBN, 1, false);
-    assert_eq!(expr, I());
+    assert_eq!(expr, i());
 }
 
 #[test]
 fn applicative_order() {
-    let mut wont_reduce = app(abs(Var(2)), O());
+    let mut wont_reduce = app(abs(Var(2)), omm());
     wont_reduce.beta(APP, 3, false);
-    assert_eq!(wont_reduce, app(abs(Var(2)), O()));
+    assert_eq!(wont_reduce, app(abs(Var(2)), omm()));
 }
 
 #[test]
 fn call_by_value_order() {
-    let mut expr = app(abs(app(I(), Var(1))), app(I(), I()));
+    let mut expr = app(abs(app(i(), Var(1))), app(i(), i()));
     expr.beta(CBV, 1, false);
-    assert_eq!(expr, app(abs(app(I(), Var(1))), I()));
+    assert_eq!(expr, app(abs(app(i(), Var(1))), i()));
     expr.beta(CBV, 1, false);
-    assert_eq!(expr, app(I(), I()));
+    assert_eq!(expr, app(i(), i()));
     expr.beta(CBV, 1, false);
-    assert_eq!(expr, I());
+    assert_eq!(expr, i());
 }
 
 #[test]
