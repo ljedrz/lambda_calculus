@@ -1,11 +1,11 @@
-#![cfg(feature = "church")]
+#![cfg(not(feature = "no_church"))]
 
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
-use lambda::church::list::*;
+use lambda::church::lists::*;
 use lambda::church::numerals::plus;
-use lambda::church::boolean::fls;
+use lambda::church::booleans::fls;
 
 #[test]
 fn test_last() {

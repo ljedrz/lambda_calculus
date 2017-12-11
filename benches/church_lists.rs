@@ -1,4 +1,4 @@
-#![cfg(feature = "church")]
+#![cfg(not(feature = "no_church"))]
 
 #![feature(test)]
 extern crate test;
@@ -7,9 +7,9 @@ extern crate test;
 extern crate lambda_calculus as lambda;
 
 use test::Bencher;
-use lambda::church::list::*;
+use lambda::church::lists::*;
 use lambda::church::numerals::*;
-use lambda::church::boolean::fls;
+use lambda::church::booleans::fls;
 use lambda::combinators::c;
 use lambda::*;
 

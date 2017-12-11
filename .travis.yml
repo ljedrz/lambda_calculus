@@ -11,8 +11,8 @@ rust:
 
 script:
   - cargo build --verbose
-  - cargo test --verbose --no-default-features
-  - cargo test --verbose
+  - cargo test --verbose --features "no_church"
+  - cargo test --verbose church
 
 matrix:
   allow_failures:
