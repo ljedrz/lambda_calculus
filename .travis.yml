@@ -21,5 +21,6 @@ matrix:
 
 after_success:
 - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then
-  cargo bench --benches;
+  cargo bench;
+  cargo bench --features no_church,scott;
   fi
