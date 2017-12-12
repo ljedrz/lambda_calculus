@@ -8,27 +8,27 @@ use lambda::church::numerals::*;
 use lambda::combinators::C;
 
 #[test]
-fn church_successor() {
+fn test_succ() {
     assert_eq!(beta(app!(succ(), 0.into()), HAP, 0, false), 1.into());
     assert_eq!(beta(app!(succ(), 1.into()), HAP, 0, false), 2.into());
     assert_eq!(beta(app!(succ(), 2.into()), HAP, 0, false), 3.into());
 }
 
 #[test]
-fn church_predecessor() {
+fn test_pred() {
     assert_eq!(beta(app!(pred(), 0.into()), HAP, 0, false), 0.into());
     assert_eq!(beta(app!(pred(), 1.into()), HAP, 0, false), 0.into());
     assert_eq!(beta(app!(pred(), 5.into()), HAP, 0, false), 4.into());
 }
 
 #[test]
-fn church_plus_sub_equivalents() {
+fn test_plus_sub() {
     assert_eq!(beta(app!(    plus(), 1.into()), HAP, 0, false), succ());
     assert_eq!(beta(app!(C(), sub(), 1.into()), HAP, 0, false), pred());
 }
 
 #[test]
-fn church_multiplication() {
+fn test_mult() {
     assert_eq!(beta(app!(mult(), 3.into(), 4.into()), HAP, 0, false), 12.into());
     assert_eq!(beta(app!(mult(), 1.into(), 3.into()), HAP, 0, false),  3.into());
     assert_eq!(beta(app!(mult(), 3.into(), 1.into()), HAP, 0, false),  3.into());
@@ -37,7 +37,7 @@ fn church_multiplication() {
 }
 
 #[test]
-fn church_exponentiation() {
+fn test_pow() {
     assert_eq!(beta(app!(pow(), 2.into(), 4.into()), HAP, 0, false), 16.into());
     assert_eq!(beta(app!(pow(), 1.into(), 3.into()), HAP, 0, false),  1.into());
     assert_eq!(beta(app!(pow(), 3.into(), 1.into()), HAP, 0, false),  3.into());
@@ -46,7 +46,7 @@ fn church_exponentiation() {
 }
 
 #[test]
-fn church_division() {
+fn test_div() {
     assert_eq!(beta(app!(div(), 2.into(), 2.into()), HAP, 0, false), (1.into(), 0.into()).into());
     assert_eq!(beta(app!(div(), 3.into(), 2.into()), HAP, 0, false), (1.into(), 1.into()).into());
     assert_eq!(beta(app!(div(), 5.into(), 2.into()), HAP, 0, false), (2.into(), 1.into()).into());
@@ -55,7 +55,7 @@ fn church_division() {
 }
 
 #[test]
-fn church_quotient() {
+fn test_quot() {
     assert_eq!(beta(app!(quot(), 2.into(), 2.into()), HAP, 0, false), 1.into());
     assert_eq!(beta(app!(quot(), 3.into(), 2.into()), HAP, 0, false), 1.into());
     assert_eq!(beta(app!(quot(), 5.into(), 2.into()), HAP, 0, false), 2.into());
@@ -64,7 +64,7 @@ fn church_quotient() {
 }
 
 #[test]
-fn church_remainder() {
+fn test_rem() {
     assert_eq!(beta(app!(rem(), 2.into(), 2.into()), HAP, 0, false), 0.into());
     assert_eq!(beta(app!(rem(), 3.into(), 2.into()), HAP, 0, false), 1.into());
     assert_eq!(beta(app!(rem(), 2.into(), 5.into()), HAP, 0, false), 2.into());
@@ -73,7 +73,7 @@ fn church_remainder() {
 }
 
 #[test]
-fn church_factorial() {
+fn test_fac() {
     assert_eq!(beta(app!(fac(), 0.into()), HAP, 0, false), 1.into());
     assert_eq!(beta(app!(fac(), 1.into()), HAP, 0, false), 1.into());
     assert_eq!(beta(app!(fac(), 2.into()), HAP, 0, false), 2.into());
@@ -81,7 +81,7 @@ fn church_factorial() {
 }
 
 #[test]
-fn church_min() {
+fn test_min() {
     assert_eq!(beta(app!(min(), 0.into(), 0.into()), HAP, 0, false), 0.into());
     assert_eq!(beta(app!(min(), 4.into(), 4.into()), HAP, 0, false), 4.into());
     assert_eq!(beta(app!(min(), 2.into(), 3.into()), HAP, 0, false), 2.into());
@@ -90,7 +90,7 @@ fn church_min() {
 }
 
 #[test]
-fn church_max() {
+fn test_max() {
     assert_eq!(beta(app!(max(), 0.into(), 0.into()), HAP, 0, false), 0.into());
     assert_eq!(beta(app!(max(), 4.into(), 4.into()), HAP, 0, false), 4.into());
     assert_eq!(beta(app!(max(), 2.into(), 3.into()), HAP, 0, false), 3.into());
@@ -99,7 +99,7 @@ fn church_max() {
 }
 
 #[test]
-fn church_lshift() {
+fn test_lshift() {
      assert_eq!(beta(app!(lshift(), 0.into(), 2.into()), HAP, 0, false), 0.into());
      assert_eq!(beta(app!(lshift(), 1.into(), 0.into()), HAP, 0, false), 1.into());
      assert_eq!(beta(app!(lshift(), 2.into(), 0.into()), HAP, 0, false), 2.into());
@@ -110,7 +110,7 @@ fn church_lshift() {
 }
 
 #[test]
-fn church_rshift() {
+fn test_rshift() {
      assert_eq!(beta(app!(rshift(), 1.into(), 0.into()), HAP, 0, false), 1.into());
      assert_eq!(beta(app!(rshift(), 2.into(), 0.into()), HAP, 0, false), 2.into());
      assert_eq!(beta(app!(rshift(), 0.into(), 2.into()), HAP, 0, false), 0.into());
@@ -123,7 +123,7 @@ fn church_rshift() {
 }
 
 #[test]
-fn church_is_even() {
+fn test_is_even() {
      assert_eq!(beta(app!(is_even(), 0.into()), HAP, 0, false), true.into());
      assert_eq!(beta(app!(is_even(), 1.into()), HAP, 0, false), false.into());
      assert_eq!(beta(app!(is_even(), 2.into()), HAP, 0, false), true.into());
@@ -132,7 +132,7 @@ fn church_is_even() {
 }
 
 #[test]
-fn church_is_odd() {
+fn test_is_odd() {
      assert_eq!(beta(app!(is_odd(), 0.into()), HAP, 0, false), false.into());
      assert_eq!(beta(app!(is_odd(), 1.into()), HAP, 0, false), true.into());
      assert_eq!(beta(app!(is_odd(), 2.into()), HAP, 0, false), false.into());
