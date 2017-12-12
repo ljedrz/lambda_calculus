@@ -5,38 +5,23 @@
 
 **lambda_calculus** is a simple implementation of the untyped lambda calculus in Rust.
 
-The library tries to find a compromise between the spirit of the lambda calculus and Rust's
-best practices; the lambda `Term`s implemented by the library are produced by functions (in order
-to allow arbitrary application), but they are not `Copy`able and the methods they provide allow
-memory-friendly disassembly and referencing their internals.
-
 ## [Documentation](https://docs.rs/lambda_calculus)
 
 ## Features
 
-- a parser for lambda expressions
+- a parser for lambda expressions, both in classic and De Bruijn index notation
 - 7 β-reduction strategies with optional display of reduction steps
-- standard terms (combinators)
-- Church numerals and arithmetic operations
-- Church booleans
-- Church pairs
-- Church lists
-- Scott numerals
-- Parigot numerals
-
-The terms are implemented using De Bruijn indices, but are displayed using the classic lambda
-notation and can be parsed both ways.
-
-Library functions utilizing the fixed-point combinator use its call-by-value variant and are built
-for compatibility with as many β-reduction strategies as possible. The bodies of functions are
-normalized for maximum performance.
+- a set of standard terms (combinators)
+- Church-encoded numerals, booleans, pair, list and option
+- Scott-encoded numerals
+- Parigot-encoded numerals
 
 ## Installation
 
 Include the library by adding the following to your Cargo.toml:
 ```
 [dependencies]
-lambda_calculus = "^1.0"
+lambda_calculus = "^2.0"
 ```
 
 And the following to your code:
@@ -47,16 +32,18 @@ extern crate lambda_calculus;
 
 Compilation features:
 - `backslash_lambda`: changes the display of lambdas from `λ` to `\`
-- `no_church`: doesn't build the `church` module; useful if you want to implement it on your own or
-introduce a different data encoding
-- `scott`: builds the `scott` module; needs to be used together with `no_church`
-- `parigot`: builds the `parigot` module; needs to be used together with `no_church`
+- `church`: builds the `church` module; default feature
+- `scott`: builds the `scott` module
+- `parigot`: builds the `parigot` module
+
+note: only one encoding module can be used at a time
 
 To apply a feature setup the dependency in your Cargo.toml like this:
 ```
 [dependencies.lambda_calculus]
-version = "^1.0"
-features = ["no_church"]
+version = "^2.0"
+default-features = false # do not build the church module
+features = ["backslash_lambda", "parigot"] # use a backslash lambda and the Parigot encoding
 ```
 
 ## Usage
