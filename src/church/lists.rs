@@ -609,6 +609,94 @@ pub fn zip_with() -> Term {
     )
 }
 
+/// Applied to a Church-encoded number `n` and a Church-encoded list it returns the first `n`
+/// elements of the list.
+///
+/// TAKE := Z (λznl. NULL l (λx.NIL) (λx.IS_ZERO n NIL (CONS (HEAD l) (z (pred n) (TAIL l)))) I) =
+/// Z (λ λ λ NULL l (λ NIL) (λ (IS_ZERO n NIL (CONS (HEAD l) (z (pred n) (TAIL l))))) I)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::church::lists::take;
+/// use lambda_calculus::*;
+///
+/// let list1 = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
+/// let list2 = Term::from(vec![0.into(), 1.into()]);
+///
+/// assert_eq!(beta(app!(take(), 2.into(), list1), NOR, 0, false), list2);
+pub fn take() -> Term {
+    app(
+        z(),
+        abs!(3, app!(
+            Var(1),
+            abs!(5, Var(1)),
+            abs!(2, Var(2)),
+            abs!(3, Var(1)),
+            abs(app!(
+                Var(3),
+                abs!(3, Var(1)),
+                abs!(2, Var(2)),
+                abs!(2, Var(1)),
+                abs(app!(
+                    Var(1),
+                    app(Var(3), abs!(2, Var(2))),
+                    app!(
+                        Var(5),
+                        abs!(2, app!(
+                            Var(6),
+                            abs!(2, app(Var(1), app(Var(2), Var(4)))),
+                            abs(Var(2)),
+                            abs(Var(1))
+                        )),
+                        app(Var(3), abs!(2, Var(1)))
+                    )
+                ))
+            )),
+            abs(Var(1))
+        ))
+    )
+}
+
+/// Applied to a predicate function and a Church-encoded list it returns the longest prefix of the
+/// list whose elements all satisfy the predicate function.
+///
+/// TAKE_WHILE := Z (λzfl. NULL l (λx.NIL) (λx.f (HEAD l) (CONS (HEAD l) (z f (TAIL l))) NIL) I) =
+/// Z (λ λ λ NULL 1 (λ NIL) (λ 3 (HEAD 2) (CONS (HEAD 2) (4 3 (TAIL 2))) NIL) I)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::church::lists::take_while;
+/// use lambda_calculus::church::numerals::is_zero;
+/// use lambda_calculus::*;
+///
+/// let list1 = Term::from(vec![0.into(), 0.into(), 1.into()]);
+/// let list2 = Term::from(vec![0.into(), 0.into()]);
+///
+/// assert_eq!(beta(app!(take_while(), is_zero(), list1), NOR, 0, false), list2);
+/// ```
+pub fn take_while() -> Term {
+    app(
+        z(),
+        abs!(3, app!(
+            Var(1),
+            abs!(5, Var(1)),
+            abs!(2, Var(1)),
+            abs!(3, Var(1)),
+            abs(app!(
+                Var(3),
+                app(Var(2), abs!(2, Var(2))),
+                abs(app!(
+                    Var(1),
+                    app(Var(3), abs!(2, Var(2))),
+                    app!(Var(5), Var(4), app(Var(3), abs!(2, Var(1))))
+                )),
+                abs!(2, Var(1))
+            )),
+            abs(Var(1))
+        ))
+    )
+}
+
 impl Term {
     /// Checks whether self is a empty Church list, i.e. `nil()`.
     ///

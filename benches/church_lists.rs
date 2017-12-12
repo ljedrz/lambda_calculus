@@ -97,3 +97,13 @@ fn list_zip(b: &mut Bencher) {
 fn list_zip_with(b: &mut Bencher) {
     b.iter(|| { beta(app!(zip_with(), fls(), list3(), list3()), HAP, 0, false) } );
 }
+
+#[bench]
+fn list_take(b: &mut Bencher) {
+    b.iter(|| { beta(app!(take(), 2.into(), list3()), HAP, 0, false) } );
+}
+
+#[bench]
+fn list_zip_with(b: &mut Bencher) {
+    b.iter(|| { beta(app!(zip_with(), fls(), list3(), list3()), HAP, 0, false) } );
+}
