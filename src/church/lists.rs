@@ -609,11 +609,11 @@ pub fn zip_with() -> Term {
     )
 }
 
-/// Applied to a Church-encoded number `n` and a Church-encoded list it returns the first `n`
-/// elements of the list.
+/// Applied to a Church-encoded number `n` and a Church-encoded list it returns a new list with the
+/// first `n` elements of the supplied list.
 ///
-/// TAKE := Z (λznl. NULL l (λx.NIL) (λx.IS_ZERO n NIL (CONS (HEAD l) (z (pred n) (TAIL l)))) I) =
-/// Z (λ λ λ NULL l (λ NIL) (λ (IS_ZERO n NIL (CONS (HEAD l) (z (pred n) (TAIL l))))) I)
+/// TAKE := Z (λznl. NULL l (λx.NIL) (λx.IS_ZERO n NIL (CONS (HEAD l) (z (PRED n) (TAIL l)))) I) =
+/// Z (λ λ λ NULL l (λ NIL) (λ (IS_ZERO n NIL (CONS (HEAD l) (z (PRED n) (TAIL l))))) I)
 ///
 /// # Example
 /// ```

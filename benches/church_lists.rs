@@ -104,6 +104,6 @@ fn list_take(b: &mut Bencher) {
 }
 
 #[bench]
-fn list_zip_with(b: &mut Bencher) {
-    b.iter(|| { beta(app!(zip_with(), fls(), list3(), list3()), HAP, 0, false) } );
+fn list_take_while(b: &mut Bencher) {
+    b.iter(|| { beta(app!(take_while(), is_zero(), list3()), HAP, 0, false) } );
 }
