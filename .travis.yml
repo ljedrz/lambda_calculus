@@ -11,7 +11,8 @@ rust:
 
 script:
   - cargo build --verbose
-  - cargo test --verbose --features "no_church"
+  - cargo test --verbose --features no_church
+  - cargo test --verbose --features no_church,scott
   - cargo test --verbose church
 
 matrix:
