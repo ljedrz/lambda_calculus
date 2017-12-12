@@ -13,6 +13,7 @@ exclude = [".cargo/*", "target/*"]
 [features]
 backslash_lambda = []
 no_church = []
+scott = []
 
 [badges]
 travis-ci = { repository = "ljedrz/lambda_calculus", branch = "master" }
