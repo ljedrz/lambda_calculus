@@ -2,8 +2,8 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use church::booleans::{tru, fls};
-use church::pairs::{pair, fst, snd};
+use church::boolean::{tru, fls};
+use church::pair::{pair, fst, snd};
 use church::numerals::zero;
 use combinators::z;
 
@@ -19,7 +19,7 @@ pub fn nil() -> Term { fls() }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::{nil, null};
+/// use lambda_calculus::church::list::{nil, null};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(null(), nil()), NOR, 0, false), true.into());
@@ -34,7 +34,7 @@ pub fn null() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::{nil, cons};
+/// use lambda_calculus::church::list::{nil, cons};
 /// use lambda_calculus::*;
 ///
 /// let list_consed = beta(
@@ -65,7 +65,7 @@ pub fn cons() -> Term { pair() }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::head;
+/// use lambda_calculus::church::list::head;
 /// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
@@ -81,7 +81,7 @@ pub fn head() -> Term { fst() }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::tail;
+/// use lambda_calculus::church::list::tail;
 /// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
@@ -100,7 +100,7 @@ pub fn tail() -> Term { snd() }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::{length, nil};
+/// use lambda_calculus::church::list::{length, nil};
 /// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into(), 4.into()]);
@@ -134,7 +134,7 @@ pub fn length() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::reverse;
+/// use lambda_calculus::church::list::reverse;
 /// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
@@ -174,7 +174,7 @@ pub fn reverse() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::list;
+/// use lambda_calculus::church::list::list;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -198,7 +198,7 @@ pub fn list() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::append;
+/// use lambda_calculus::church::list::append;
 /// use lambda_calculus::*;
 ///
 /// let list1 = Term::from(vec![1.into(), 2.into()]);
@@ -237,7 +237,7 @@ pub fn append() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::index;
+/// use lambda_calculus::church::list::index;
 /// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
@@ -261,7 +261,7 @@ pub fn index() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::map;
+/// use lambda_calculus::church::list::map;
 /// use lambda_calculus::church::numerals::succ;
 /// use lambda_calculus::*;
 ///
@@ -305,7 +305,7 @@ pub fn map() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::{foldl, nil};
+/// use lambda_calculus::church::list::{foldl, nil};
 /// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::*;
 ///
@@ -345,7 +345,7 @@ pub fn foldl() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::{foldr, nil};
+/// use lambda_calculus::church::list::{foldr, nil};
 /// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::*;
 ///
@@ -380,7 +380,7 @@ pub fn foldr() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::{filter, nil};
+/// use lambda_calculus::church::list::{filter, nil};
 /// use lambda_calculus::church::numerals::{is_zero, gt};
 /// use lambda_calculus::combinators::c;
 /// use lambda_calculus::*;
@@ -431,7 +431,7 @@ pub fn filter() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::{last};
+/// use lambda_calculus::church::list::{last};
 /// use lambda_calculus::*;
 ///
 /// let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
@@ -466,7 +466,7 @@ pub fn last() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::init;
+/// use lambda_calculus::church::list::init;
 /// use lambda_calculus::*;
 ///
 /// let list1 = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
@@ -507,7 +507,7 @@ pub fn init() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::zip;
+/// use lambda_calculus::church::list::zip;
 /// use lambda_calculus::*;
 ///
 /// let list1 = Term::from(vec![0.into(), 1.into()]);
@@ -556,7 +556,7 @@ pub fn zip() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::zip_with;
+/// use lambda_calculus::church::list::zip_with;
 /// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::*;
 ///
@@ -606,7 +606,7 @@ pub fn zip_with() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::take;
+/// use lambda_calculus::church::list::take;
 /// use lambda_calculus::*;
 ///
 /// let list1 = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
@@ -654,7 +654,7 @@ pub fn take() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::lists::take_while;
+/// use lambda_calculus::church::list::take_while;
 /// use lambda_calculus::church::numerals::is_zero;
 /// use lambda_calculus::*;
 ///
