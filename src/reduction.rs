@@ -178,9 +178,9 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::*;
-    /// use lambda_calculus::combinators::i;
+    /// use lambda_calculus::combinators::I;
     ///
-    /// assert_eq!(app(i(), Var(1)).eval(), Ok(Var(1)));
+    /// assert_eq!(app(I(), Var(1)).eval(), Ok(Var(1)));
     /// ```
     /// # Errors
     ///

@@ -20,10 +20,10 @@ pub const LAMBDA: char = 'λ';
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::s;
+/// use lambda_calculus::combinators::S;
 ///
-/// assert_eq!(&format!(  "{}", s()), "λa.λb.λc.a c (b c)"); // Classic notation
-/// assert_eq!(&format!("{:?}", s()), "λλλ31(21)");          // DeBruijn index notation
+/// assert_eq!(&format!(  "{}", S()), "λa.λb.λc.a c (b c)"); // Classic notation
+/// assert_eq!(&format!("{:?}", S()), "λλλ31(21)");          // DeBruijn index notation
 /// ```
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Notation {

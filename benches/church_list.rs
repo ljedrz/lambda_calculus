@@ -10,13 +10,13 @@ use test::Bencher;
 use lambda::church::list::*;
 use lambda::church::numerals::*;
 use lambda::church::boolean::fls;
-use lambda::combinators::c;
+use lambda::combinators::C;
 use lambda::*;
 
 fn list1() -> Term { Term::from(vec![1.into()]) }
 fn list2() -> Term { Term::from(vec![2.into(), 3.into()]) }
 fn list3() -> Term { Term::from(vec![1.into(), 2.into(), 3.into()]) }
-fn   gt1() -> Term { app!(c(), gt(), 1.into()) }
+fn   gt1() -> Term { app!(C(), gt(), 1.into()) }
 
 #[bench]
 fn list_null(b: &mut Bencher) {

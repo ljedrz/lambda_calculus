@@ -3,7 +3,7 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use church::boolean::{tru, fls};
-use combinators::z;
+use combinators::Z;
 
 /// Produces a Church-encoded number zero.
 ///
@@ -369,7 +369,7 @@ pub fn gt() -> Term {
 /// ```
 pub fn div() -> Term {
     app!(
-        z(),
+        Z(),
         abs!(4, app!(
             Var(2),
             pred(),
@@ -414,7 +414,7 @@ pub fn div() -> Term {
 /// ```
 pub fn quot() -> Term {
     app(
-        z(),
+        Z(),
         abs!(3, app!(
             Var(2),
             pred(),
@@ -458,7 +458,7 @@ pub fn quot() -> Term {
 /// ```
 pub fn rem() -> Term {
     app(
-        z(),
+        Z(),
         abs!(3, app!(
             Var(2),
             pred(),
