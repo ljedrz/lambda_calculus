@@ -1,4 +1,4 @@
-#![cfg(not(feature = "no_church"))]
+#![cfg(feature = "church")]
 
 #[macro_use]
 extern crate lambda_calculus as lambda;
