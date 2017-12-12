@@ -8,7 +8,7 @@ use lambda::church::numerals::{plus, is_zero};
 use lambda::church::boolean::fls;
 
 #[test]
-fn test_last() {
+fn church_last() {
     let list1 = || { Term::from(vec![1.into()]) };
     let list2 = || { Term::from(vec![0.into(), 1.into(), 2.into(), 3.into(), 4.into()]) };
 
@@ -18,7 +18,7 @@ fn test_last() {
 }
 
 #[test]
-fn test_init() {
+fn church_init() {
     let list1 = || { Term::from(vec![0.into(), 1.into(), 2.into(), 3.into(), 4.into()]) };
     let list2 = || { Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]) };
     let list3 = || { Term::from(vec![2.into(), 3.into()]) };
@@ -31,7 +31,7 @@ fn test_init() {
 }
 
 #[test]
-fn test_zip() {
+fn church_zip() {
     let l1 = || { Term::from(vec![0.into()]) };
     let l2 = || { Term::from(vec![0.into(), 1.into(), 2.into()]) };
     let l3 = || { Term::from(vec![2.into(), 1.into()]) };
@@ -58,7 +58,7 @@ fn test_zip() {
 }
 
 #[test]
-fn test_zip_with() {
+fn church_zip_with() {
     let l1 = || { Term::from(vec![1.into()]) };
     let l2 = || { Term::from(vec![2.into()]) };
     let l3 = || { Term::from(vec![1.into(), 2.into(), 3.into()]) };
@@ -78,7 +78,7 @@ fn test_zip_with() {
 }
 
 #[test]
-fn test_take() {
+fn church_take() {
     let l1 = || { Term::from(vec![0.into()]) };
     let l2 = || { Term::from(vec![0.into(), 1.into()]) };
     let l3 = || { Term::from(vec![0.into(), 1.into(), 2.into()]) };
@@ -96,7 +96,7 @@ fn test_take() {
 }
 
 #[test]
-fn test_take_while() {
+fn church_take_while() {
     let l1 = || { Term::from(vec![0.into(), 0.into(), 2.into(), 3.into()]) };
     let l2 = || { Term::from(vec![0.into(), 0.into()]) };
     let l3 = || { Term::from(vec![1.into(), 4.into(), 2.into(), 3.into()]) };
