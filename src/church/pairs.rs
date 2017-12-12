@@ -79,6 +79,28 @@ pub fn uncurry() -> Term {
     ))
 }
 
+/// Applied to a function and two arguments `a` and `b`, it applies the function to the
+/// Church-encoded pair `(a, b)`.
+///
+/// CURRY := λfab.f (PAIR a b) = λ λ λ 3 (PAIR 2 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::church::pairs::{fst, curry};
+/// use lambda_calculus::*;
+///
+/// assert_eq!(
+///     beta(app!(curry(), fst(), 1.into(), 2.into()), NOR, 0, false),
+///     1.into()
+/// );
+/// ```
+pub fn curry() -> Term {
+    abs!(3, app(
+        Var(3),
+        abs(app!(Var(1), Var(3), Var(2)))
+    ))
+}
+
 /// Applied to a Church-encoded pair `(a, b)` it swaps its elements so that it becomes `(b, a)`.
 ///
 /// SWAP := λp.p PAIR (SND p) (FST p) = λ 1 PAIR (SND 1) (FST 1)
