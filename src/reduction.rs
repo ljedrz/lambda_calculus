@@ -1,6 +1,6 @@
 //! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form) for lambda `Term`s
 
-use term::{Term, Error, show_precedence_cla};
+use term::{Term, TermError, show_precedence_cla};
 use term::Term::*;
 use std::fmt;
 use std::io::{Write, BufWriter, stdout};
@@ -55,8 +55,8 @@ pub enum Order {
 /// # Errors
 ///
 /// The function will return an error if the `lhs` term is not an `Abs`traction.
-pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, Error> {
-    if lhs.unabs_ref().is_err() { return Err(Error::NotAnAbs) }
+pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, TermError> {
+    if lhs.unabs_ref().is_err() { return Err(TermError::NotAnAbs) }
 
     _apply(&mut lhs, rhs, 0);
 
@@ -169,7 +169,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `Abs`traction.
-    pub fn apply(self, rhs: &Term) -> Result<Term, Error> {
+    pub fn apply(self, rhs: &Term) -> Result<Term, TermError> {
         apply(self, rhs)
     }
 
@@ -186,7 +186,7 @@ impl Term {
     ///
     /// The function will return an error if `self` is not an `App`lication or if its left hand
     /// side term is not an `Abs`traction.
-    pub fn eval(self) -> Result<Term, Error> {
+    pub fn eval(self) -> Result<Term, TermError> {
         let (lhs, rhs) = self.unapp()?;
 
         apply(lhs, &rhs)

@@ -2,7 +2,7 @@
 
 pub use self::Term::*;
 pub use self::Notation::*;
-use self::Error::*;
+use self::TermError::*;
 use std::fmt;
 use std::borrow::Cow;
 use std::char::from_u32;
@@ -47,19 +47,13 @@ pub enum Term {
 
 /// An error that can be returned when an inapplicable function is applied to a term.
 #[derive(Debug, PartialEq)]
-pub enum Error {
+pub enum TermError {
     /// the term is not a variable
     NotAVar,
     /// the term is not an abstraction
     NotAnAbs,
     /// the term is not an application
     NotAnApp,
-    /// the term is not a Church number
-    NotANum,
-    /// the term is not a Church pair
-    NotAPair,
-    /// the term is not a Church list
-    NotAList
 }
 
 impl Term {
@@ -84,7 +78,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not a `Var`iable.
-    pub fn unvar(self) -> Result<usize, Error> {
+    pub fn unvar(self) -> Result<usize, TermError> {
         if let Var(n) = self { Ok(n) } else { Err(NotAVar) }
     }
 
@@ -99,7 +93,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not a `Var`iable.
-    pub fn unvar_ref(&self) -> Result<&usize, Error> {
+    pub fn unvar_ref(&self) -> Result<&usize, TermError> {
         if let Var(ref n) = *self { Ok(n) } else { Err(NotAVar) }
     }
 
@@ -114,7 +108,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not a `Var`iable.
-    pub fn unvar_mut(&mut self) -> Result<&mut usize, Error> {
+    pub fn unvar_mut(&mut self) -> Result<&mut usize, TermError> {
         if let Var(ref mut n) = *self { Ok(n) } else { Err(NotAVar) }
     }
 
@@ -129,7 +123,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `Abs`traction.
-    pub fn unabs(self) -> Result<Term, Error> {
+    pub fn unabs(self) -> Result<Term, TermError> {
         if let Abs(x) = self { Ok(*x) } else { Err(NotAnAbs) }
     }
 
@@ -144,7 +138,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `Abs`traction.
-    pub fn unabs_ref(&self) -> Result<&Term, Error> {
+    pub fn unabs_ref(&self) -> Result<&Term, TermError> {
         if let Abs(ref x) = *self { Ok(x) } else { Err(NotAnAbs) }
     }
 
@@ -159,7 +153,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `Abs`traction.
-    pub fn unabs_mut(&mut self) -> Result<&mut Term, Error> {
+    pub fn unabs_mut(&mut self) -> Result<&mut Term, TermError> {
         if let Abs(ref mut x) = *self { Ok(x) } else { Err(NotAnAbs) }
     }
 
@@ -174,7 +168,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `App`lication.
-    pub fn unapp(self) -> Result<(Term, Term), Error> {
+    pub fn unapp(self) -> Result<(Term, Term), TermError> {
         if let App(lhs, rhs) = self { Ok((*lhs, *rhs)) } else { Err(NotAnApp) }
     }
 
@@ -189,7 +183,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `App`lication.
-    pub fn unapp_ref(&self) -> Result<(&Term, &Term), Error> {
+    pub fn unapp_ref(&self) -> Result<(&Term, &Term), TermError> {
         if let App(ref lhs, ref rhs) = *self { Ok((lhs, rhs)) } else { Err(NotAnApp) }
     }
 
@@ -204,7 +198,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `App`lication.
-    pub fn unapp_mut(&mut self) -> Result<(&mut Term, &mut Term), Error> {
+    pub fn unapp_mut(&mut self) -> Result<(&mut Term, &mut Term), TermError> {
         if let App(ref mut lhs, ref mut rhs) = *self { Ok((lhs, rhs)) } else { Err(NotAnApp) }
     }
 
@@ -219,7 +213,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `App`lication.
-    pub fn lhs(self) -> Result<Term, Error> {
+    pub fn lhs(self) -> Result<Term, TermError> {
         if let Ok((lhs, _)) = self.unapp() { Ok(lhs) } else { Err(NotAnApp) }
     }
 
@@ -234,7 +228,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `App`lication.
-    pub fn lhs_ref(&self) -> Result<&Term, Error> {
+    pub fn lhs_ref(&self) -> Result<&Term, TermError> {
         if let Ok((lhs, _)) = self.unapp_ref() { Ok(lhs) } else { Err(NotAnApp) }
     }
 
@@ -246,7 +240,7 @@ impl Term {
     ///
     /// assert_eq!(app(Var(1), Var(2)).lhs_mut(), Ok(&mut Var(1)));
     /// ```
-    pub fn lhs_mut(&mut self) -> Result<&mut Term, Error> {
+    pub fn lhs_mut(&mut self) -> Result<&mut Term, TermError> {
         if let Ok((lhs, _)) = self.unapp_mut() { Ok(lhs) } else { Err(NotAnApp) }
     }
 
@@ -261,7 +255,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `App`lication.
-    pub fn rhs(self) -> Result<Term, Error> {
+    pub fn rhs(self) -> Result<Term, TermError> {
         if let Ok((_, rhs)) = self.unapp() { Ok(rhs) } else { Err(NotAnApp) }
     }
 
@@ -276,7 +270,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `App`lication.
-    pub fn rhs_ref(&self) -> Result<&Term, Error> {
+    pub fn rhs_ref(&self) -> Result<&Term, TermError> {
         if let Ok((_, rhs)) = self.unapp_ref() { Ok(rhs) } else { Err(NotAnApp) }
     }
 
@@ -291,7 +285,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `App`lication.
-    pub fn rhs_mut(&mut self) -> Result<&mut Term, Error> {
+    pub fn rhs_mut(&mut self) -> Result<&mut Term, TermError> {
         if let Ok((_, rhs)) = self.unapp_mut() { Ok(rhs) } else { Err(NotAnApp) }
     }
 }
