@@ -12,6 +12,8 @@ pub mod combinators;
 pub mod church;
 #[cfg(feature = "scott")]
 pub mod scott;
+#[cfg(feature = "parigot")]
+pub mod parigot;
 
 pub use self::term::{Term, abs, app};
 pub use self::term::Term::*;
