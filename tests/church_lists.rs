@@ -4,7 +4,7 @@ extern crate lambda_calculus as lambda;
 
 use lambda::*;
 use lambda::church::lists::*;
-use lambda::church::numerals::plus;
+use lambda::church::numerals::{plus, is_zero};
 use lambda::church::booleans::fls;
 
 #[test]
@@ -75,4 +75,37 @@ fn test_zip_with() {
     assert_eq!(beta(app!(zip_with(), plus(), l1(), l4()), HAP, 0, false), l5());
     assert_eq!(beta(app!(zip_with(), fls(), l1(), l4()), HAP, 0, false), l2());
     assert_eq!(beta(app!(zip_with(), fls(), l4(), l1()), HAP, 0, false), l1());
+}
+
+#[test]
+fn test_take() {
+    let l1 = || { Term::from(vec![0.into()]) };
+    let l2 = || { Term::from(vec![0.into(), 1.into()]) };
+    let l3 = || { Term::from(vec![0.into(), 1.into(), 2.into()]) };
+    let l4 = || { Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]) };
+
+    assert_eq!(beta(app!(take(), 5.into(), l4()), HAP, 0, false), l4());
+    assert_eq!(beta(app!(take(), 4.into(), l4()), HAP, 0, false), l4());
+    assert_eq!(beta(app!(take(), 3.into(), l4()), HAP, 0, false), l3());
+    assert_eq!(beta(app!(take(), 2.into(), l4()), HAP, 0, false), l2());
+    assert_eq!(beta(app!(take(), 1.into(), l4()), HAP, 0, false), l1());
+    assert_eq!(beta(app!(take(), 0.into(), l4()), HAP, 0, false), nil());
+    assert_eq!(beta(app!(take(), 1.into(), l1()), HAP, 0, false), l1());
+    assert_eq!(beta(app!(take(), 0.into(), l1()), HAP, 0, false), nil());
+    assert_eq!(beta(app!(take(), 1.into(), nil()), HAP, 0, false), nil());
+}
+
+#[test]
+fn test_take_while() {
+    let l1 = || { Term::from(vec![0.into(), 0.into(), 2.into(), 3.into()]) };
+    let l2 = || { Term::from(vec![0.into(), 0.into()]) };
+    let l3 = || { Term::from(vec![1.into(), 4.into(), 2.into(), 3.into()]) };
+    let l4 = || { Term::from(vec![0.into(), 4.into(), 0.into(), 0.into()]) };
+    let l5 = || { Term::from(vec![0.into()]) };
+
+    assert_eq!(beta(app!(take_while(), is_zero(), nil()), HAP, 0, false), nil());
+    assert_eq!(beta(app!(take_while(), is_zero(), l1()), HAP, 0, false), l2());
+    assert_eq!(beta(app!(take_while(), is_zero(), l2()), HAP, 0, false), l2());
+    assert_eq!(beta(app!(take_while(), is_zero(), l3()), HAP, 0, false), nil());
+    assert_eq!(beta(app!(take_while(), is_zero(), l4()), HAP, 0, false), l5());
 }
