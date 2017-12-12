@@ -13,6 +13,7 @@ script:
   - cargo build --verbose
   - cargo test --verbose --features no_church
   - cargo test --verbose --features no_church,scott
+  - cargo test --verbose --features no_church,parigot
   - cargo test --verbose church
 
 matrix:
@@ -23,4 +24,5 @@ after_success:
 - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then
   cargo bench;
   cargo bench --features no_church,scott scott;
+  cargo bench --features no_church,parigot parigot;
   fi
