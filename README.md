@@ -49,6 +49,8 @@ Compilation features:
 - `backslash_lambda`: changes the display of lambdas from `λ` to `\`
 - `no_church`: doesn't build the `church` module; useful if you want to implement it on your own or
 introduce a different data encoding
+- `scott`: builds the `scott` module; needs to be used together with `no_church`
+- `parigot`: builds the `parigot` module; needs to be used together with `no_church`
 
 To apply a feature setup the dependency in your Cargo.toml like this:
 ```
