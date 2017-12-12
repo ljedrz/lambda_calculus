@@ -8,7 +8,7 @@ pub mod term;
 pub mod parser;
 pub mod reduction;
 pub mod combinators;
-#[cfg(not(feature = "no_church"))]
+#[cfg(feature = "church")]
 pub mod church;
 #[cfg(feature = "scott")]
 pub mod scott;

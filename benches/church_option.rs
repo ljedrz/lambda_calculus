@@ -1,4 +1,4 @@
-#![cfg(not(feature = "no_church"))]
+#![cfg(feature = "church")]
 
 #![feature(test)]
 extern crate test;
