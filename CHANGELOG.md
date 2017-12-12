@@ -7,6 +7,9 @@ Changes
 - add Scott encoding as a compilation feature
 - add a Scott numerals module
 - add `zero()`, `succ()` and `pred()` for Scott numerals
+- add Parigot encoding as a compilation feature
+- add a Parigot numerals module
+- add `zero()`, `succ()`, `pred()` and `plus()` for Parigot numerals
 - add a Church option module
 - add `is_none()`, `is_some()` and `map_or()` for Church option
 - add `swap()` for Church pairs

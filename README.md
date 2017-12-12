@@ -21,13 +21,15 @@ memory-friendly disassembly and referencing their internals.
 - Church booleans
 - Church pairs
 - Church lists
+- Scott numerals
+- Parigot numerals
 
 The terms are implemented using De Bruijn indices, but are displayed using the classic lambda
 notation and can be parsed both ways.
 
-The data and operators follow the Church encoding. Library functions utilizing the fixed-point
-combinator use its call-by-value variant and are built for compatibility with as many β-reduction
-strategies as possible. The bodies of functions are normalized for maximum performance.
+Library functions utilizing the fixed-point combinator use its call-by-value variant and are built
+for compatibility with as many β-reduction strategies as possible. The bodies of functions are
+normalized for maximum performance.
 
 ## Installation
 
