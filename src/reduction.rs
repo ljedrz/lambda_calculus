@@ -56,7 +56,7 @@ pub enum Order {
 ///
 /// The function will return an error if the `lhs` term is not an `Abs`traction.
 pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, TermError> {
-    if lhs.unabs_ref().is_err() { return Err(TermError::NotAnAbs) }
+    if lhs.unabs_ref().is_err() { return Err(TermError::NotAbs) }
 
     _apply(&mut lhs, rhs, 0);
 
