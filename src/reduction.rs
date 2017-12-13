@@ -3,7 +3,6 @@
 use term::{Term, TermError, show_precedence_cla};
 use term::Term::*;
 use std::fmt;
-use std::io::{Write, BufWriter, stdout};
 use std::mem;
 pub use self::Order::*;
 
@@ -117,40 +116,32 @@ pub fn beta(mut term: Term, order: Order, limit: usize, verbose: bool) -> Term {
     term
 }
 
-/// Prints the number of reductions required for a `Term` to reach the final form with the given
-/// reduction strategies and optionally displaying the applicable reduction steps.
+/// For a given `Term` and a set of β-reduction `Order`s it returns a vector of pairs containing
+/// the `Order`s and their corresponding numbers of reductions required for the `Term` to reach its
+/// fully reduced form (which, depending on the reduction strategy, might not be the normal form).
 ///
 /// # Example
 ///
 /// ```
 /// use lambda_calculus::reduction::compare;
+/// use lambda_calculus::church::numerals::fac;
 /// use lambda_calculus::*;
 ///
-/// let expression = parse(&"(λa.a (λb.λc.λd.b (λe.c (d e)) (λe.λf.e (d e f))) (λb.λc.b)\
-///     (λb.λc.b c) (λb.λc.b c)) (λa.λb.a (a (a b)))", Classic); // Church-encoded factorial of 3
+/// let expr = app(fac(), 3.into()); // a Church-encoded factorial of 3
 ///
-/// assert!(expression.is_ok());
-/// compare(&expression.unwrap(), &[NOR, APP, HNO, HAP], false); // compare normalizing strategies
-///
-/// // stdout:
-///
-/// // normal:             35
-/// // applicative:        36
-/// // hybrid normal:      35
-/// // hybrid applicative: 30
+/// assert_eq!(
+///     compare(&expr, &[NOR, APP, HNO, HAP]),
+///     vec![(NOR, 35), (APP, 36), (HNO, 35), (HAP, 30)]
+/// );
 /// ```
-pub fn compare(term: &Term, orders: &[Order], verbose: bool) {
-    let stdout = stdout();
-    let mut buf = BufWriter::new(stdout.lock());
+pub fn compare(term: &Term, orders: &[Order]) -> Vec<(Order, usize)> {
+    let mut ret = Vec::with_capacity(orders.len());
 
-    writeln!(buf, "comparing β-reduction strategies for {}:\n", term).unwrap();
     for order in orders {
-        writeln!(buf, "{}:{}{}",
-            order,
-            " ".repeat(19 - format!("{}", order).len()),
-            term.to_owned().beta(*order, 0, verbose)
-        ).unwrap();
+        ret.push((order.to_owned(), term.to_owned().beta(*order, 0, false)));
     }
+
+    ret
 }
 
 impl Term {
