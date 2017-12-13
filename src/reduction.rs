@@ -123,13 +123,13 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
 ///
 /// ```
 /// use lambda_calculus::reduction::compare;
-/// use lambda_calculus::church::numerals::fac;
 /// use lambda_calculus::*;
 ///
-/// let expr = app(fac(), 3.into()); // a Church-encoded factorial of 3
+/// let factorial_3 = parse(&"(λa.a (λb.λc.λd.b (λe.c (d e)) (λe.λf.e (d e f))) (λb.λc.b)\
+///     (λb.λc.b c) (λb.λc.b c)) (λa.λb.a (a (a b)))", Classic).unwrap();
 ///
 /// assert_eq!(
-///     compare(&expr, &[NOR, APP, HNO, HAP]),
+///     compare(&factorial_3, &[NOR, APP, HNO, HAP]),
 ///     vec![(NOR, 35), (APP, 36), (HNO, 35), (HAP, 30)]
 /// );
 /// ```
