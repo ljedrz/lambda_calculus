@@ -14,7 +14,7 @@ use church::boolean::{tru, fls};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(pair(), 1.into(), 2.into()), NOR, 0, false),
+///     beta(app!(pair(), 1.into(), 2.into()), NOR, 0),
 ///     (1.into(), 2.into()).into()
 /// );
 /// ```
@@ -32,7 +32,7 @@ pub fn pair() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app(fst(), (1.into(), 2.into()).into()), NOR, 0, false),
+///     beta(app(fst(), (1.into(), 2.into()).into()), NOR, 0),
 ///     1.into()
 /// );
 /// ```
@@ -48,7 +48,7 @@ pub fn fst() -> Term { abs(app(Var(1), tru())) }
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app(snd(), (1.into(), 2.into()).into()), NOR, 0, false),
+///     beta(app(snd(), (1.into(), 2.into()).into()), NOR, 0),
 ///     2.into()
 /// );
 /// ```
@@ -66,7 +66,7 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(uncurry(), plus(), (1.into(), 2.into()).into()), NOR, 0, false),
+///     beta(app!(uncurry(), plus(), (1.into(), 2.into()).into()), NOR, 0),
 ///     3.into()
 /// );
 /// ```
@@ -89,7 +89,7 @@ pub fn uncurry() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(curry(), fst(), 1.into(), 2.into()), NOR, 0, false),
+///     beta(app!(curry(), fst(), 1.into(), 2.into()), NOR, 0),
 ///     1.into()
 /// );
 /// ```
@@ -110,7 +110,7 @@ pub fn curry() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(swap(), (1.into(), 2.into()).into()), NOR, 0, false), (2.into(), 1.into()).into());
+///     beta(app!(swap(), (1.into(), 2.into()).into()), NOR, 0), (2.into(), 1.into()).into());
 /// ```
 pub fn swap() -> Term {
     abs!(2, app!(

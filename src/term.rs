@@ -317,7 +317,7 @@ impl fmt::Display for Term {
     }
 }
 
-pub(crate) fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> String {
+fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
         Var(i) => {
             if depth >= i as u32 {
@@ -352,7 +352,7 @@ impl fmt::Debug for Term {
     }
 }
 
-pub(crate) fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -> String {
+fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
         Var(i) => {
             format!("{:X}", i)

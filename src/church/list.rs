@@ -22,7 +22,7 @@ pub fn nil() -> Term { fls() }
 /// use lambda_calculus::church::list::{nil, null};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(null(), nil()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app(null(), nil()), NOR, 0), true.into());
 /// ```
 pub fn null() -> Term {
     abs(app!(Var(1), abs!(3, fls()), tru()))
@@ -50,7 +50,7 @@ pub fn null() -> Term {
 ///                 nil()
 ///             )
 ///         )
-///     ), NOR, 0, false
+///     ), NOR, 0
 /// );
 ///
 /// let list_from_vec = Term::from(vec![1.into(), 2.into(), 3.into()]);
@@ -70,7 +70,7 @@ pub fn cons() -> Term { pair() }
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app(head(), list), NOR, 0, false), 1.into());
+/// assert_eq!(beta(app(head(), list), NOR, 0), 1.into());
 /// ```
 pub fn head() -> Term { fst() }
 
@@ -87,7 +87,7 @@ pub fn head() -> Term { fst() }
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
 /// assert_eq!(
-///     beta(app(tail(), list), NOR, 0, false),
+///     beta(app(tail(), list), NOR, 0),
 ///     vec![2.into(), 3.into()].into()
 /// );
 /// ```
@@ -105,8 +105,8 @@ pub fn tail() -> Term { snd() }
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into(), 4.into()]);
 ///
-/// assert_eq!(beta(app(length(), nil()), NOR, 0, false), 0.into());
-/// assert_eq!(beta(app(length(), list ), NOR, 0, false), 4.into());
+/// assert_eq!(beta(app(length(), nil()), NOR, 0), 0.into());
+/// assert_eq!(beta(app(length(), list ), NOR, 0), 4.into());
 /// ```
 pub fn length() -> Term {
     app!(
@@ -140,7 +140,7 @@ pub fn length() -> Term {
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
 /// assert_eq!(
-///     beta(app(reverse(), list), NOR, 0, false),
+///     beta(app(reverse(), list), NOR, 0),
 ///     vec![3.into(), 2.into(), 1.into()].into()
 /// );
 /// ```
@@ -178,7 +178,7 @@ pub fn reverse() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(list(), 3.into(), 1.into(), 2.into(), 3.into()), NOR, 0, false),
+///     beta(app!(list(), 3.into(), 1.into(), 2.into(), 3.into()), NOR, 0),
 ///     vec![1.into(), 2.into(), 3.into()].into()
 /// );
 /// ```
@@ -205,7 +205,7 @@ pub fn list() -> Term {
 /// let list2 = Term::from(vec![3.into(), 4.into()]);
 ///
 /// assert_eq!(
-///     beta(app!(append(), list1, list2), NOR, 0, false),
+///     beta(app!(append(), list1, list2), NOR, 0),
 ///     vec![1.into(), 2.into(), 3.into(), 4.into()].into()
 /// );
 /// ```
@@ -242,8 +242,8 @@ pub fn append() -> Term {
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app!(index(), 0.into(), list.clone()), NOR, 0, false), 1.into());
-/// assert_eq!(beta(app!(index(), 2.into(), list        ), NOR, 0, false), 3.into());
+/// assert_eq!(beta(app!(index(), 0.into(), list.clone()), NOR, 0), 1.into());
+/// assert_eq!(beta(app!(index(), 2.into(), list        ), NOR, 0), 3.into());
 /// ```
 pub fn index() -> Term {
     abs!(2, app!(
@@ -268,7 +268,7 @@ pub fn index() -> Term {
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
 /// assert_eq!(
-///     beta(app!(map(), succ(), list), NOR, 0, false),
+///     beta(app!(map(), succ(), list), NOR, 0),
 ///     vec![2.into(), 3.into(), 4.into()].into()
 /// );
 /// ```
@@ -311,8 +311,8 @@ pub fn map() -> Term {
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app!(foldl(), plus(), 0.into(), list ), NOR, 0, false), 6.into());
-/// assert_eq!(beta(app!(foldl(), plus(), 0.into(), nil()), NOR, 0, false), 0.into());
+/// assert_eq!(beta(app!(foldl(), plus(), 0.into(), list ), NOR, 0), 6.into());
+/// assert_eq!(beta(app!(foldl(), plus(), 0.into(), nil()), NOR, 0), 0.into());
 /// ```
 pub fn foldl() -> Term {
     Z().app(
@@ -351,8 +351,8 @@ pub fn foldl() -> Term {
 ///
 /// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app!(foldr(), plus(), 0.into(), list ), NOR, 0, false), 6.into());
-/// assert_eq!(beta(app!(foldr(), plus(), 0.into(), nil()), NOR, 0, false), 0.into());
+/// assert_eq!(beta(app!(foldr(), plus(), 0.into(), list ), NOR, 0), 6.into());
+/// assert_eq!(beta(app!(foldr(), plus(), 0.into(), nil()), NOR, 0), 0.into());
 /// ```
 pub fn foldr() -> Term {
     abs!(3, app!(
@@ -389,11 +389,11 @@ pub fn foldr() -> Term {
 /// let gt_1 = app!(C(), gt(), 1.into()); // greater than 1
 ///
 /// assert_eq!(
-///     beta(app!(filter(), is_zero(), list.clone()), NOR, 0, false),
+///     beta(app!(filter(), is_zero(), list.clone()), NOR, 0),
 ///     vec![0.into()].into()
 /// );
 /// assert_eq!(
-///     beta(app!(filter(), gt_1, list), NOR, 0, false),
+///     beta(app!(filter(), gt_1, list), NOR, 0),
 ///     vec![2.into(), 3.into()].into()
 /// );
 /// ```
@@ -436,7 +436,7 @@ pub fn filter() -> Term {
 ///
 /// let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
 ///
-/// assert_eq!(beta(app(last(), list), NOR, 0, false), 3.into());
+/// assert_eq!(beta(app(last(), list), NOR, 0), 3.into());
 /// ```
 pub fn last() -> Term {
     app(
@@ -472,7 +472,7 @@ pub fn last() -> Term {
 /// let list1 = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
 /// let list2 = Term::from(vec![0.into(), 1.into(), 2.into()]);
 ///
-/// assert_eq!(beta(app(init(), list1), NOR, 0, false), list2);
+/// assert_eq!(beta(app(init(), list1), NOR, 0), list2);
 /// ```
 pub fn init() -> Term {
     app(
@@ -513,7 +513,7 @@ pub fn init() -> Term {
 /// let list1 = Term::from(vec![0.into(), 1.into()]);
 /// let pairs1 = Term::from(vec![(0.into(), 0.into()).into(), (1.into(), 1.into()).into()]);
 ///
-/// assert_eq!(beta(app!(zip(), list1.clone(), list1.clone()), NOR, 0, false), pairs1);
+/// assert_eq!(beta(app!(zip(), list1.clone(), list1.clone()), NOR, 0), pairs1);
 /// ```
 pub fn zip() -> Term {
     app(
@@ -563,7 +563,7 @@ pub fn zip() -> Term {
 /// let list1 = Term::from(vec![2.into(), 3.into()]);
 /// let list2 = Term::from(vec![4.into(), 6.into()]);
 ///
-/// assert_eq!(beta(app!(zip_with(), plus(), list1.clone(), list1), NOR, 0, false), list2);
+/// assert_eq!(beta(app!(zip_with(), plus(), list1.clone(), list1), NOR, 0), list2);
 /// ```
 pub fn zip_with() -> Term {
     app(
@@ -612,7 +612,7 @@ pub fn zip_with() -> Term {
 /// let list1 = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
 /// let list2 = Term::from(vec![0.into(), 1.into()]);
 ///
-/// assert_eq!(beta(app!(take(), 2.into(), list1), NOR, 0, false), list2);
+/// assert_eq!(beta(app!(take(), 2.into(), list1), NOR, 0), list2);
 pub fn take() -> Term {
     app(
         Z(),
@@ -661,7 +661,7 @@ pub fn take() -> Term {
 /// let list1 = Term::from(vec![0.into(), 0.into(), 1.into()]);
 /// let list2 = Term::from(vec![0.into(), 0.into()]);
 ///
-/// assert_eq!(beta(app!(take_while(), is_zero(), list1), NOR, 0, false), list2);
+/// assert_eq!(beta(app!(take_while(), is_zero(), list1), NOR, 0), list2);
 /// ```
 pub fn take_while() -> Term {
     app(

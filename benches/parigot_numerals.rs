@@ -12,15 +12,15 @@ use lambda::parigot::numerals::*;
 
 #[bench]
 fn parigot_succ(b: &mut Bencher) {
-    b.iter(|| { beta(app!(succ(), 1.into()), HAP, 0, false) } );
+    b.iter(|| { beta(app!(succ(), 1.into()), HAP, 0) } );
 }
 
 #[bench]
 fn parigot_pred(b: &mut Bencher) {
-    b.iter(|| { beta(app!(pred(), 1.into()), HAP, 0, false) } );
+    b.iter(|| { beta(app!(pred(), 1.into()), HAP, 0) } );
 }
 
 #[bench]
 fn parigot_plus(b: &mut Bencher) {
-    b.iter(|| { beta(app!(plus(), 1.into(), 2.into()), HAP, 0, false) } );
+    b.iter(|| { beta(app!(plus(), 1.into(), 2.into()), HAP, 0) } );
 }

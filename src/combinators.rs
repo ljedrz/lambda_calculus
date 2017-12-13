@@ -23,8 +23,8 @@ use term::Term::*;
 /// use lambda_calculus::combinators::I;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(I(), Var(1)), NOR, 0, false), Var(1));
-/// assert_eq!(beta(app(I(), abs(Var(1))), NOR, 0, false), abs(Var(1)));
+/// assert_eq!(beta(app(I(), Var(1)), NOR, 0), Var(1));
+/// assert_eq!(beta(app(I(), abs(Var(1))), NOR, 0), abs(Var(1)));
 /// ```
 pub fn I() -> Term { abs(Var(1)) }
 
@@ -37,8 +37,8 @@ pub fn I() -> Term { abs(Var(1)) }
 /// use lambda_calculus::combinators::K;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(K(), Var(1), Var(2)), NOR, 0, false), Var(1));
-/// assert_eq!(beta(app!(K(), Var(2), Var(1)), NOR, 0, false), Var(2));
+/// assert_eq!(beta(app!(K(), Var(1), Var(2)), NOR, 0), Var(1));
+/// assert_eq!(beta(app!(K(), Var(2), Var(1)), NOR, 0), Var(2));
 /// ```
 pub fn K() -> Term { abs!(2, Var(2)) }
 
@@ -52,7 +52,7 @@ pub fn K() -> Term { abs!(2, Var(2)) }
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(S(), Var(1), Var(2), Var(3)), NOR, 0, false),
+///     beta(app!(S(), Var(1), Var(2), Var(3)), NOR, 0),
 ///     app!(Var(1), Var(3), app(Var(2), Var(3)))
 /// );
 /// ```
@@ -69,9 +69,9 @@ pub fn S() -> Term {
 /// use lambda_calculus::combinators::{i, I, K, S};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(i(), i()), NOR, 0, false), I());
-/// assert_eq!(beta(app(i(), app(i(), app(i(), i()))), NOR, 0, false), K());
-/// assert_eq!(beta(app(i(), app(i(), app(i(), app(i(), i())))), NOR, 0, false), S());
+/// assert_eq!(beta(app(i(), i()), NOR, 0), I());
+/// assert_eq!(beta(app(i(), app(i(), app(i(), i()))), NOR, 0), K());
+/// assert_eq!(beta(app(i(), app(i(), app(i(), app(i(), i())))), NOR, 0), S());
 /// ```
 pub fn i() -> Term { abs(app!(Var(1), S(), K())) }
 
@@ -85,7 +85,7 @@ pub fn i() -> Term { abs(app!(Var(1), S(), K())) }
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(B(), Var(1), Var(2), Var(3)), NOR, 0, false),
+///     beta(app!(B(), Var(1), Var(2), Var(3)), NOR, 0),
 ///     app(Var(1), app(Var(2), Var(3)))
 /// );
 /// ```
@@ -103,7 +103,7 @@ pub fn B() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(C(), Var(1), Var(2), Var(3)), NOR, 0, false),
+///     beta(app!(C(), Var(1), Var(2), Var(3)), NOR, 0),
 ///     app!(Var(1), Var(3), Var(2))
 /// );
 /// ```
@@ -121,7 +121,7 @@ pub fn C() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(W(), Var(1), Var(2)), NOR, 0, false),
+///     beta(app!(W(), Var(1), Var(2)), NOR, 0),
 ///     app!(Var(1), Var(2), Var(2))
 /// );
 /// ```
@@ -139,7 +139,7 @@ pub fn W() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app(o(), Var(1)), NOR, 0, false),
+///     beta(app(o(), Var(1)), NOR, 0),
 ///     app(Var(1), Var(1))
 /// );
 /// ```
@@ -154,7 +154,7 @@ pub fn o() -> Term { abs(Var(1).app(Var(1))) }
 /// use lambda_calculus::combinators::O;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(O(), NOR, 3, false), O()); // 3 β-reductions do nothing
+/// assert_eq!(beta(O(), NOR, 3), O()); // 3 β-reductions do nothing
 /// ```
 pub fn O() -> Term { o().app(o()) }
 
@@ -173,8 +173,8 @@ pub fn O() -> Term { o().app(o()) }
 /// fn dummy() -> Term { abs(Var(2)) } // a dummy term that won't easily reduce
 ///
 /// assert_eq!(
-///     beta(app(Y(), dummy()), NOR, 0, false),
-///     beta(app(dummy(), app(Y(), dummy())), NOR, 0, false)
+///     beta(app(Y(), dummy()), NOR, 0),
+///     beta(app(dummy(), app(Y(), dummy())), NOR, 0)
 /// );
 /// ```
 pub fn Y() -> Term {
@@ -202,8 +202,8 @@ pub fn Y() -> Term {
 /// fn dummy() -> Term { abs(Var(2)) } // a dummy term that won't easily reduce
 ///
 /// assert_eq!(
-///     beta(app(Z(), dummy()), CBV, 0, false),
-///     beta(app(dummy(), app(Z(), dummy())), CBV, 0, false)
+///     beta(app(Z(), dummy()), CBV, 0),
+///     beta(app(dummy(), app(Z(), dummy())), CBV, 0)
 /// );
 /// ```
 pub fn Z() -> Term {
@@ -223,7 +223,7 @@ pub fn Z() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(T(), Var(1), Var(2)), NOR, 0, false),
+///     beta(app!(T(), Var(1), Var(2)), NOR, 0),
 ///     app(Var(2), Var(1))
 /// );
 /// ```

@@ -25,8 +25,8 @@ pub fn zero() -> Term { abs!(2, Var(2)) }
 /// use lambda_calculus::scott::numerals::succ;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(succ(), 0.into()), NOR, 0, false), 1.into());
-/// assert_eq!(beta(app(succ(), 1.into()), NOR, 0, false), 2.into());
+/// assert_eq!(beta(app(succ(), 0.into()), NOR, 0), 1.into());
+/// assert_eq!(beta(app(succ(), 1.into()), NOR, 0), 2.into());
 /// ```
 pub fn succ() -> Term {
     abs!(3, app(Var(1), Var(3)))
@@ -41,8 +41,8 @@ pub fn succ() -> Term {
 /// use lambda_calculus::scott::numerals::pred;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(pred(), 1.into()), NOR, 0, false), 0.into());
-/// assert_eq!(beta(app(pred(), 3.into()), NOR, 0, false), 2.into());
+/// assert_eq!(beta(app(pred(), 1.into()), NOR, 0), 0.into());
+/// assert_eq!(beta(app(pred(), 3.into()), NOR, 0), 2.into());
 /// ```
 pub fn pred() -> Term {
     abs(app!(Var(1), zero(), abs(Var(1))))
