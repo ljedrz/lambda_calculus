@@ -115,6 +115,13 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
     term
 }
 
+/// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
+/// on the number of reductions (`0` means no limit) and returns a vector with all the states
+/// of the `Term` during the reduction process.
+pub fn beta_verbose(mut term: Term, order: Order, limit: usize) -> Vec<Term> {
+    term.beta_verbose(order, limit)
+}
+
 /// For a given `Term` and a set of β-reduction `Order`s it returns a vector of pairs containing
 /// the `Order`s and their corresponding numbers of reductions required for the `Term` to reach its
 /// fully reduced form (which, depending on the reduction strategy, might not be the normal form).
@@ -218,134 +225,169 @@ impl Term {
         let mut count = 0;
 
         match order {
-            CBN => self.beta_cbn(0, limit, &mut count),
-            NOR => self.beta_nor(0, limit, &mut count),
-            CBV => self.beta_cbv(0, limit, &mut count),
-            APP => self.beta_app(0, limit, &mut count),
-            HSP => self.beta_hsp(0, limit, &mut count),
-            HNO => self.beta_hno(0, limit, &mut count),
-            HAP => self.beta_hap(0, limit, &mut count)
+            CBN => self.beta_cbn(limit, &mut count),
+            NOR => self.beta_nor(limit, &mut count),
+            CBV => self.beta_cbv(limit, &mut count),
+            APP => self.beta_app(limit, &mut count),
+            HSP => self.beta_hsp(limit, &mut count),
+            HNO => self.beta_hno(limit, &mut count),
+            HAP => self.beta_hap(limit, &mut count)
         }
 
         count
     }
 
-    fn beta_cbn(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
+    /// on the number of reductions (`0` means no limit) and returns a vector with all the states
+    /// of the `Term` during the reduction process.
+    pub fn beta_verbose(&mut self, order: Order, limit: usize) -> Vec<Term> {
+        let mut count = 0;
+        let mut ret = Vec::new();
+        let limit = if limit == 0 {
+            usize::max_value() // this should always suffice
+        } else {
+            limit + 1 // +1 for the range to be inclusive
+        };
+
+        ret.push(self.clone());
+
+        for l in 1..limit {
+            match order {
+                CBN => self.beta_cbn(l, &mut count),
+                NOR => self.beta_nor(l, &mut count),
+                CBV => self.beta_cbv(l, &mut count),
+                APP => self.beta_app(l, &mut count),
+                HSP => self.beta_hsp(l, &mut count),
+                HNO => self.beta_hno(l, &mut count),
+                HAP => self.beta_hap(l, &mut count)
+            }
+
+            if self != ret.last().unwrap() { // safe, always non-empty
+                ret.push(self.clone());
+            } else {
+                break
+            }
+        }
+
+        ret
+    }
+
+    fn beta_cbn(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         if let App(_, _) = *self {
-            self.lhs_mut().unwrap().beta_cbn(depth, limit, count);
+            self.lhs_mut().unwrap().beta_cbn(limit, count);
 
             if self.is_reducible(limit, count) {
                 self._eval(count);
-                self.beta_cbn(depth, limit, count);
+                self.beta_cbn(limit, count);
             }
         }
     }
 
-    fn beta_nor(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_nor(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_nor(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_nor(limit, count),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_cbn(depth, limit, count);
+                self.lhs_mut().unwrap().beta_cbn(limit, count);
 
                 if self.is_reducible(limit, count) {
                     self._eval(count);
-                    self.beta_nor(depth, limit, count);
+                    self.beta_nor(limit, count);
                 } else {
-                    self.lhs_mut().unwrap().beta_nor(depth, limit, count);
-                    self.rhs_mut().unwrap().beta_nor(depth, limit, count);
+                    self.lhs_mut().unwrap().beta_nor(limit, count);
+                    self.rhs_mut().unwrap().beta_nor(limit, count);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_cbv(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_cbv(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         if let App(_, _) = *self {
-            self.lhs_mut().unwrap().beta_cbv(depth, limit, count);
-            self.rhs_mut().unwrap().beta_cbv(depth, limit, count);
+            self.lhs_mut().unwrap().beta_cbv(limit, count);
+            self.rhs_mut().unwrap().beta_cbv(limit, count);
 
             if self.is_reducible(limit, count) {
                 self._eval(count);
-                self.beta_cbv(depth, limit, count);
+                self.beta_cbv(limit, count);
             }
         }
     }
 
-    fn beta_app(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_app(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_app(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_app(limit, count),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_app(depth, limit, count);
-                self.rhs_mut().unwrap().beta_app(depth, limit, count);
+                self.lhs_mut().unwrap().beta_app(limit, count);
+                self.rhs_mut().unwrap().beta_app(limit, count);
 
                 if self.is_reducible(limit, count) {
                     self._eval(count);
-                    self.beta_app(depth, limit, count);
+                    self.beta_app(limit, count);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hap(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_hap(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_hap(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_hap(limit, count),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_cbv(depth, limit, count);
-                self.rhs_mut().unwrap().beta_hap(depth, limit, count);
+                self.lhs_mut().unwrap().beta_cbv(limit, count);
+                self.rhs_mut().unwrap().beta_hap(limit, count);
 
                 if self.is_reducible(limit, count) {
                     self._eval(count);
-                    self.beta_hap(depth, limit, count);
+                    self.beta_hap(limit, count);
                 } else {
-                    self.lhs_mut().unwrap().beta_hap(depth, limit, count);
+                    self.lhs_mut().unwrap().beta_hap(limit, count);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hsp(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_hsp(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_hsp(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_hsp(limit, count),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_hsp(depth, limit, count);
+                self.lhs_mut().unwrap().beta_hsp(limit, count);
 
                 if self.is_reducible(limit, count) {
                     self._eval(count);
-                    self.beta_hsp(depth, limit, count)
+                    self.beta_hsp(limit, count)
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hno(&mut self, depth: u32, limit: usize, count: &mut usize) {
+    fn beta_hno(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_hno(depth + 1, limit, count),
+            Abs(ref mut abstracted) => abstracted.beta_hno(limit, count),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_hsp(depth, limit, count);
+                self.lhs_mut().unwrap().beta_hsp(limit, count);
 
                 if self.is_reducible(limit, count) {
                     self._eval(count);
-                    self.beta_hno(depth, limit, count)
+                    self.beta_hno(limit, count)
                 } else {
-                    self.lhs_mut().unwrap().beta_hno(depth, limit, count);
-                    self.rhs_mut().unwrap().beta_hno(depth, limit, count);
+                    self.lhs_mut().unwrap().beta_hno(limit, count);
+                    self.rhs_mut().unwrap().beta_hno(limit, count);
                 }
             },
             _ => ()
