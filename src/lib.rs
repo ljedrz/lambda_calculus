@@ -8,7 +8,7 @@ pub mod term;
 pub mod parser;
 pub mod reduction;
 pub mod combinators;
-#[cfg(not(feature = "no_church"))]
+#[cfg(feature = "church")]
 pub mod church;
 #[cfg(feature = "scott")]
 pub mod scott;
@@ -18,6 +18,6 @@ pub mod parigot;
 pub use self::term::{Term, abs, app};
 pub use self::term::Term::*;
 pub use self::term::Notation::*;
-pub use self::reduction::beta;
+pub use self::reduction::{beta, beta_verbose};
 pub use self::reduction::Order::*;
 pub use self::parser::parse;

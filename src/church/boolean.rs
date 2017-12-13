@@ -19,13 +19,13 @@ pub fn fls() -> Term { abs!(2, Var(1)) }
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::booleans::{and, tru, fls};
+/// use lambda_calculus::church::boolean::{and, tru, fls};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(and(), tru(), tru()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(and(), tru(), fls()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(and(), fls(), tru()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(and(), fls(), fls()), NOR, 0, false), fls());
+/// assert_eq!(beta(app!(and(), tru(), tru()), NOR, 0), tru());
+/// assert_eq!(beta(app!(and(), tru(), fls()), NOR, 0), fls());
+/// assert_eq!(beta(app!(and(), fls(), tru()), NOR, 0), fls());
+/// assert_eq!(beta(app!(and(), fls(), fls()), NOR, 0), fls());
 /// ```
 pub fn and() -> Term {
     abs!(2, app!(Var(2), Var(1), Var(2)))
@@ -37,13 +37,13 @@ pub fn and() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::booleans::{or, tru, fls};
+/// use lambda_calculus::church::boolean::{or, tru, fls};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(or(), tru(), tru()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(or(), tru(), fls()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(or(), fls(), tru()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(or(), fls(), fls()), NOR, 0, false), fls());
+/// assert_eq!(beta(app!(or(), tru(), tru()), NOR, 0), tru());
+/// assert_eq!(beta(app!(or(), tru(), fls()), NOR, 0), tru());
+/// assert_eq!(beta(app!(or(), fls(), tru()), NOR, 0), tru());
+/// assert_eq!(beta(app!(or(), fls(), fls()), NOR, 0), fls());
 /// ```
 pub fn or() -> Term {
     abs!(2, app!(Var(2), Var(2), Var(1)))
@@ -55,11 +55,11 @@ pub fn or() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::booleans::{not, tru, fls};
+/// use lambda_calculus::church::boolean::{not, tru, fls};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(not(), tru()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(not(), fls()), NOR, 0, false), tru());
+/// assert_eq!(beta(app!(not(), tru()), NOR, 0), fls());
+/// assert_eq!(beta(app!(not(), fls()), NOR, 0), tru());
 /// ```
 pub fn not() -> Term {
     abs(app!(Var(1), fls(), tru()))
@@ -71,13 +71,13 @@ pub fn not() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::booleans::{xor, tru, fls};
+/// use lambda_calculus::church::boolean::{xor, tru, fls};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(xor(), tru(), tru()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(xor(), tru(), fls()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(xor(), fls(), tru()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(xor(), fls(), fls()), NOR, 0, false), fls());
+/// assert_eq!(beta(app!(xor(), tru(), tru()), NOR, 0), fls());
+/// assert_eq!(beta(app!(xor(), tru(), fls()), NOR, 0), tru());
+/// assert_eq!(beta(app!(xor(), fls(), tru()), NOR, 0), tru());
+/// assert_eq!(beta(app!(xor(), fls(), fls()), NOR, 0), fls());
 /// ```
 pub fn xor() -> Term {
     abs!(2,
@@ -99,13 +99,13 @@ pub fn xor() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::booleans::{nor, tru, fls};
+/// use lambda_calculus::church::boolean::{nor, tru, fls};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(nor(), tru(), tru()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(nor(), tru(), fls()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(nor(), fls(), tru()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(nor(), fls(), fls()), NOR, 0, false), tru());
+/// assert_eq!(beta(app!(nor(), tru(), tru()), NOR, 0), fls());
+/// assert_eq!(beta(app!(nor(), tru(), fls()), NOR, 0), fls());
+/// assert_eq!(beta(app!(nor(), fls(), tru()), NOR, 0), fls());
+/// assert_eq!(beta(app!(nor(), fls(), fls()), NOR, 0), tru());
 /// ```
 pub fn nor() -> Term {
     abs!(2,
@@ -125,13 +125,13 @@ pub fn nor() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::booleans::{nand, tru, fls};
+/// use lambda_calculus::church::boolean::{nand, tru, fls};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(nand(), tru(), tru()), NOR, 0, false), fls());
-/// assert_eq!(beta(app!(nand(), tru(), fls()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(nand(), fls(), tru()), NOR, 0, false), tru());
-/// assert_eq!(beta(app!(nand(), fls(), fls()), NOR, 0, false), tru());
+/// assert_eq!(beta(app!(nand(), tru(), tru()), NOR, 0), fls());
+/// assert_eq!(beta(app!(nand(), tru(), fls()), NOR, 0), tru());
+/// assert_eq!(beta(app!(nand(), fls(), tru()), NOR, 0), tru());
+/// assert_eq!(beta(app!(nand(), fls(), fls()), NOR, 0), tru());
 /// ```
 pub fn nand() -> Term {
     abs!(2,
@@ -152,11 +152,11 @@ pub fn nand() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::booleans::{if_else, tru, fls};
+/// use lambda_calculus::church::boolean::{if_else, tru, fls};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(if_else(), tru(), 1.into(), 0.into()), NOR, 0, false), 1.into());
-/// assert_eq!(beta(app!(if_else(), fls(), 1.into(), 0.into()), NOR, 0, false), 0.into());
+/// assert_eq!(beta(app!(if_else(), tru(), 1.into(), 0.into()), NOR, 0), 1.into());
+/// assert_eq!(beta(app!(if_else(), fls(), 1.into(), 0.into()), NOR, 0), 0.into());
 /// ```
 pub fn if_else() -> Term {
     abs!(3, app!(Var(3), Var(2), Var(1)))

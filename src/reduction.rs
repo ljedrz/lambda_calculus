@@ -1,9 +1,8 @@
 //! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form) for lambda `Term`s
 
-use term::{Term, Error, show_precedence_cla};
+use term::{Term, TermError};
 use term::Term::*;
 use std::fmt;
-use std::io::{Write, BufWriter, stdout};
 use std::mem;
 pub use self::Order::*;
 
@@ -55,8 +54,8 @@ pub enum Order {
 /// # Errors
 ///
 /// The function will return an error if the `lhs` term is not an `Abs`traction.
-pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, Error> {
-    if lhs.unabs_ref().is_err() { return Err(Error::NotAnAbs) }
+pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, TermError> {
+    if lhs.unabs_ref().is_err() { return Err(TermError::NotAbs) }
 
     _apply(&mut lhs, rhs, 0);
 
@@ -96,9 +95,8 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
     }
 }
 
-/// Performs β-reduction on a `Term` with the specified evaluation `Order`, an optional limit on
-/// number of reductions (`0` means no limit) and optional display of reduction steps; it returns
-/// the `Term` after reductions.
+/// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit on
+/// the number of reductions (`0` means no limit) and returns the number of performed reductions.
 ///
 /// # Example
 ///
@@ -110,15 +108,42 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
 ///
 /// assert!(expression.is_ok());
 /// assert!(reduced.is_ok());
-/// assert_eq!(beta(expression.unwrap(), NOR, 0, false), reduced.unwrap());
+/// assert_eq!(beta(expression.unwrap(), NOR, 0), reduced.unwrap());
 /// ```
-pub fn beta(mut term: Term, order: Order, limit: usize, verbose: bool) -> Term {
-    term.beta(order, limit, verbose);
+pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
+    term.beta(order, limit);
     term
 }
 
-/// Prints the number of reductions required for a `Term` to reach the final form with the given
-/// reduction strategies and optionally displaying the applicable reduction steps.
+/// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
+/// on the number of reductions (`0` means no limit) and returns a vector with all the states
+/// of the `Term` during the reduction process.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::*;
+///
+/// let mut expr = parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap();
+/// let reduction_stages = beta_verbose(expr, NOR, 0);
+///
+/// assert_eq!(
+///     reduction_stages,
+///     vec![
+///         parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap(),
+///         parse(&"λa.λb.a ((λc.λd.d) a b)",        Classic).unwrap(),
+///         parse(&"λa.λb.a ((λc.c) b)",             Classic).unwrap(),
+///         parse(&"λa.λb.a b",                      Classic).unwrap()
+///     ]
+/// );
+/// ```
+pub fn beta_verbose(mut term: Term, order: Order, limit: usize) -> Vec<Term> {
+    term.beta_verbose(order, limit)
+}
+
+/// For a given `Term` and a set of β-reduction `Order`s it returns a vector of pairs containing
+/// the `Order`s and their corresponding numbers of reductions required for the `Term` to reach its
+/// fully reduced form (which, depending on the reduction strategy, might not be the normal form).
 ///
 /// # Example
 ///
@@ -126,31 +151,22 @@ pub fn beta(mut term: Term, order: Order, limit: usize, verbose: bool) -> Term {
 /// use lambda_calculus::reduction::compare;
 /// use lambda_calculus::*;
 ///
-/// let expression = parse(&"(λa.a (λb.λc.λd.b (λe.c (d e)) (λe.λf.e (d e f))) (λb.λc.b)\
-///     (λb.λc.b c) (λb.λc.b c)) (λa.λb.a (a (a b)))", Classic); // Church-encoded factorial of 3
+/// let factorial_3 = parse(&"(λa.a (λb.λc.λd.b (λe.c (d e)) (λe.λf.e (d e f))) (λb.λc.b)\
+///     (λb.λc.b c) (λb.λc.b c)) (λa.λb.a (a (a b)))", Classic).unwrap();
 ///
-/// assert!(expression.is_ok());
-/// compare(&expression.unwrap(), &[NOR, APP, HNO, HAP], false); // compare normalizing strategies
-///
-/// // stdout:
-///
-/// // normal:             35
-/// // applicative:        36
-/// // hybrid normal:      35
-/// // hybrid applicative: 30
+/// assert_eq!(
+///     compare(&factorial_3, &[NOR, APP, HNO, HAP]),
+///     vec![(NOR, 35), (APP, 36), (HNO, 35), (HAP, 30)]
+/// );
 /// ```
-pub fn compare(term: &Term, orders: &[Order], verbose: bool) {
-    let stdout = stdout();
-    let mut buf = BufWriter::new(stdout.lock());
+pub fn compare(term: &Term, orders: &[Order]) -> Vec<(Order, usize)> {
+    let mut ret = Vec::with_capacity(orders.len());
 
-    writeln!(buf, "comparing β-reduction strategies for {}:\n", term).unwrap();
     for order in orders {
-        writeln!(buf, "{}:{}{}",
-            order,
-            " ".repeat(19 - format!("{}", order).len()),
-            term.to_owned().beta(*order, 0, verbose)
-        ).unwrap();
+        ret.push((order.to_owned(), term.to_owned().beta(*order, 0)));
     }
+
+    ret
 }
 
 impl Term {
@@ -169,7 +185,7 @@ impl Term {
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `Abs`traction.
-    pub fn apply(self, rhs: &Term) -> Result<Term, Error> {
+    pub fn apply(self, rhs: &Term) -> Result<Term, TermError> {
         apply(self, rhs)
     }
 
@@ -178,41 +194,35 @@ impl Term {
     /// # Example
     /// ```
     /// use lambda_calculus::*;
-    /// use lambda_calculus::combinators::i;
+    /// use lambda_calculus::combinators::I;
     ///
-    /// assert_eq!(app(i(), Var(1)).eval(), Ok(Var(1)));
+    /// assert_eq!(app(I(), Var(1)).eval(), Ok(Var(1)));
     /// ```
     /// # Errors
     ///
     /// The function will return an error if `self` is not an `App`lication or if its left hand
     /// side term is not an `Abs`traction.
-    pub fn eval(self) -> Result<Term, Error> {
+    pub fn eval(self) -> Result<Term, TermError> {
         let (lhs, rhs) = self.unapp()?;
 
         apply(lhs, &rhs)
     }
 
-    fn eval_with_info(&mut self, depth: u32, count: &mut usize, verbose: bool) {
-        if verbose { println!("\n{}. {}", *count + 1, show_precedence_cla(self, 0, depth)) }
-
+    fn _eval(&mut self, count: &mut usize) {
         let mut to_eval = mem::replace(self, Var(0)); // replace self with a dummy
         to_eval = to_eval.eval().unwrap(); // safe; only called in reduction sites
         mem::replace(self, to_eval); // move self back to its place
-        *count += 1;
 
-        if verbose {
-            let indent_len = ((*count + 1) as f32).log10().trunc() as usize + 5;
-            println!("=>{}{}", " ".repeat(indent_len), show_precedence_cla(self, 0, depth))
-        }
+        *count += 1;
     }
 
     fn is_reducible(&self, limit: usize, count: &usize) -> bool {
         self.lhs_ref().and_then(|t| t.unabs_ref()).is_ok() && (limit == 0 || *count < limit )
     }
 
-    /// Performs β-reduction on a `Term` with the specified evaluation `Order`, an optional limit
-    /// on number of reductions (`0` means no limit) and optional display of reduction steps; it
-    /// returns the number of performed reductions.
+    /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
+    /// on the number of reductions (`0` means no limit) and returns the number of performed
+    /// reductions.
     ///
     /// # Example
     ///
@@ -226,161 +236,196 @@ impl Term {
     /// assert!(reduced.is_ok());
     ///
     /// let mut expression = expression.unwrap();
-    /// expression.beta(NOR, 0, false);
+    /// expression.beta(NOR, 0);
     ///
     /// assert_eq!(expression, reduced.unwrap());
     /// ```
-    pub fn beta(&mut self, order: Order, limit: usize, verbose: bool) -> usize {
-        if verbose {
-            println!("β-reducing {} [{} order{}]:",
-                self,
-                order,
-                if limit != 0 {
-                    format!(", limit of {} reduction{}", limit, if limit == 1 { "" } else { "s" })
-                } else {
-                    "".into()
-                }
-            );
-        };
-
+    pub fn beta(&mut self, order: Order, limit: usize) -> usize {
         let mut count = 0;
 
         match order {
-            CBN => self.beta_cbn(0, limit, &mut count, verbose),
-            NOR => self.beta_nor(0, limit, &mut count, verbose),
-            CBV => self.beta_cbv(0, limit, &mut count, verbose),
-            APP => self.beta_app(0, limit, &mut count, verbose),
-            HSP => self.beta_hsp(0, limit, &mut count, verbose),
-            HNO => self.beta_hno(0, limit, &mut count, verbose),
-            HAP => self.beta_hap(0, limit, &mut count, verbose)
+            CBN => self.beta_cbn(limit, &mut count),
+            NOR => self.beta_nor(limit, &mut count),
+            CBV => self.beta_cbv(limit, &mut count),
+            APP => self.beta_app(limit, &mut count),
+            HSP => self.beta_hsp(limit, &mut count),
+            HNO => self.beta_hno(limit, &mut count),
+            HAP => self.beta_hap(limit, &mut count)
         }
-
-        if verbose {
-            println!("\nresult after {} reduction{}: {}\n",
-                count,
-                if count == 1 { "" } else { "s" }, self
-            );
-        };
 
         count
     }
 
-    fn beta_cbn(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
+    /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
+    /// on the number of reductions (`0` means no limit) and returns a vector with all the states
+    /// of the `Term` during the reduction process.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lambda_calculus::*;
+    ///
+    /// let mut expr = parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap();
+    /// let reduction_stages = expr.beta_verbose(NOR, 0);
+    ///
+    /// assert_eq!(
+    ///     reduction_stages,
+    ///     vec![
+    ///         parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap(),
+    ///         parse(&"λa.λb.a ((λc.λd.d) a b)",        Classic).unwrap(),
+    ///         parse(&"λa.λb.a ((λc.c) b)",             Classic).unwrap(),
+    ///         parse(&"λa.λb.a b",                      Classic).unwrap()
+    ///     ]
+    /// );
+    /// ```
+    pub fn beta_verbose(&mut self, order: Order, limit: usize) -> Vec<Term> {
+        let mut count = 0;
+        let mut ret = Vec::new();
+        let limit = if limit == 0 {
+            usize::max_value() // this should always suffice
+        } else {
+            limit + 1 // +1 for the range to be inclusive
+        };
+
+        ret.push(self.clone());
+
+        for l in 1..limit {
+            match order {
+                CBN => self.beta_cbn(l, &mut count),
+                NOR => self.beta_nor(l, &mut count),
+                CBV => self.beta_cbv(l, &mut count),
+                APP => self.beta_app(l, &mut count),
+                HSP => self.beta_hsp(l, &mut count),
+                HNO => self.beta_hno(l, &mut count),
+                HAP => self.beta_hap(l, &mut count)
+            }
+
+            if self != ret.last().unwrap() { // safe, always non-empty
+                ret.push(self.clone());
+            } else {
+                break
+            }
+        }
+
+        ret
+    }
+
+    fn beta_cbn(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         if let App(_, _) = *self {
-            self.lhs_mut().unwrap().beta_cbn(depth, limit, count, verbose);
+            self.lhs_mut().unwrap().beta_cbn(limit, count);
 
             if self.is_reducible(limit, count) {
-                self.eval_with_info(depth, count, verbose);
-                self.beta_cbn(depth, limit, count, verbose);
+                self._eval(count);
+                self.beta_cbn(limit, count);
             }
         }
     }
 
-    fn beta_nor(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
+    fn beta_nor(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_nor(depth + 1, limit, count, verbose),
+            Abs(ref mut abstracted) => abstracted.beta_nor(limit, count),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_cbn(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_cbn(limit, count);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
-                    self.beta_nor(depth, limit, count, verbose);
+                    self._eval(count);
+                    self.beta_nor(limit, count);
                 } else {
-                    self.lhs_mut().unwrap().beta_nor(depth, limit, count, verbose);
-                    self.rhs_mut().unwrap().beta_nor(depth, limit, count, verbose);
+                    self.lhs_mut().unwrap().beta_nor(limit, count);
+                    self.rhs_mut().unwrap().beta_nor(limit, count);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_cbv(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
+    fn beta_cbv(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         if let App(_, _) = *self {
-            self.lhs_mut().unwrap().beta_cbv(depth, limit, count, verbose);
-            self.rhs_mut().unwrap().beta_cbv(depth, limit, count, verbose);
+            self.lhs_mut().unwrap().beta_cbv(limit, count);
+            self.rhs_mut().unwrap().beta_cbv(limit, count);
 
             if self.is_reducible(limit, count) {
-                self.eval_with_info(depth, count, verbose);
-                self.beta_cbv(depth, limit, count, verbose);
+                self._eval(count);
+                self.beta_cbv(limit, count);
             }
         }
     }
 
-    fn beta_app(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
+    fn beta_app(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_app(depth + 1, limit, count, verbose),
+            Abs(ref mut abstracted) => abstracted.beta_app(limit, count),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_app(depth, limit, count, verbose);
-                self.rhs_mut().unwrap().beta_app(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_app(limit, count);
+                self.rhs_mut().unwrap().beta_app(limit, count);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
-                    self.beta_app(depth, limit, count, verbose);
+                    self._eval(count);
+                    self.beta_app(limit, count);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hap(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
+    fn beta_hap(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_hap(depth + 1, limit, count, verbose),
+            Abs(ref mut abstracted) => abstracted.beta_hap(limit, count),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_cbv(depth, limit, count, verbose);
-                self.rhs_mut().unwrap().beta_hap(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_cbv(limit, count);
+                self.rhs_mut().unwrap().beta_hap(limit, count);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
-                    self.beta_hap(depth, limit, count, verbose);
+                    self._eval(count);
+                    self.beta_hap(limit, count);
                 } else {
-                    self.lhs_mut().unwrap().beta_hap(depth, limit, count, verbose);
+                    self.lhs_mut().unwrap().beta_hap(limit, count);
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hsp(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
+    fn beta_hsp(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_hsp(depth + 1, limit, count, verbose),
+            Abs(ref mut abstracted) => abstracted.beta_hsp(limit, count),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_hsp(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_hsp(limit, count);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
-                    self.beta_hsp(depth, limit, count, verbose)
+                    self._eval(count);
+                    self.beta_hsp(limit, count)
                 }
             },
             _ => ()
         }
     }
 
-    fn beta_hno(&mut self, depth: u32, limit: usize, count: &mut usize, verbose: bool) {
+    fn beta_hno(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
         match *self {
-            Abs(ref mut abstracted) => abstracted.beta_hno(depth + 1, limit, count, verbose),
+            Abs(ref mut abstracted) => abstracted.beta_hno(limit, count),
             App(_, _) => {
-                self.lhs_mut().unwrap().beta_hsp(depth, limit, count, verbose);
+                self.lhs_mut().unwrap().beta_hsp(limit, count);
 
                 if self.is_reducible(limit, count) {
-                    self.eval_with_info(depth, count, verbose);
-                    self.beta_hno(depth, limit, count, verbose)
+                    self._eval(count);
+                    self.beta_hno(limit, count)
                 } else {
-                    self.lhs_mut().unwrap().beta_hno(depth, limit, count, verbose);
-                    self.rhs_mut().unwrap().beta_hno(depth, limit, count, verbose);
+                    self.lhs_mut().unwrap().beta_hno(limit, count);
+                    self.rhs_mut().unwrap().beta_hno(limit, count);
                 }
             },
             _ => ()

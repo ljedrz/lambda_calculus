@@ -11,8 +11,9 @@ authors = ["ljedrz <ljedrz@gmail.com>"]
 exclude = [".cargo/*", "target/*"]
 
 [features]
+default = ["church"]
 backslash_lambda = []
-no_church = []
+church = []
 scott = []
 parigot = []
 

@@ -2,7 +2,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use church::booleans::{tru, fls};
+use church::boolean::{tru, fls};
 
 /// Produces a Church-encoded empty option.
 ///
@@ -18,7 +18,7 @@ pub fn none() -> Term { tru() }
 /// use lambda_calculus::church::option::some;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(some(), 1.into()), NOR, 0, false), Term::from(Some(1.into())));
+/// assert_eq!(beta(app(some(), 1.into()), NOR, 0), Term::from(Some(1.into())));
 /// ```
 pub fn some() -> Term {
     abs!(3, app(Var(1), Var(3)))
@@ -34,8 +34,8 @@ pub fn some() -> Term {
 /// use lambda_calculus::church::option::is_none;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(is_none(), None.into()), NOR, 0, false), true.into());
-/// assert_eq!(beta(app(is_none(), Some(1.into()).into()), NOR, 0, false), false.into());
+/// assert_eq!(beta(app(is_none(), None.into()), NOR, 0), true.into());
+/// assert_eq!(beta(app(is_none(), Some(1.into()).into()), NOR, 0), false.into());
 /// ```
 pub fn is_none() -> Term {
     abs(app!(Var(1), tru(), abs(fls())))
@@ -51,8 +51,8 @@ pub fn is_none() -> Term {
 /// use lambda_calculus::church::option::is_some;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(is_some(), None.into()), NOR, 0, false), false.into());
-/// assert_eq!(beta(app(is_some(), Some(2.into()).into()), NOR, 0, false), true.into());
+/// assert_eq!(beta(app(is_some(), None.into()), NOR, 0), false.into());
+/// assert_eq!(beta(app(is_some(), Some(2.into()).into()), NOR, 0), true.into());
 /// ```
 pub fn is_some() -> Term {
     abs(app!(Var(1), fls(), abs(tru())))
@@ -71,7 +71,7 @@ pub fn is_some() -> Term {
 ///
 /// let some_one: Term = Some(1.into()).into();
 ///
-/// assert_eq!(beta(app!(map_or(), 0.into(), succ(), some_one), NOR, 0, false), 2.into());
+/// assert_eq!(beta(app!(map_or(), 0.into(), succ(), some_one), NOR, 0), 2.into());
 /// ```
 pub fn map_or() -> Term {
     abs!(3, app!(Var(1), Var(3), Var(2)))

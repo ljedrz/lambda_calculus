@@ -25,8 +25,8 @@ pub fn zero() -> Term { abs!(2, Var(1)) }
 /// use lambda_calculus::parigot::numerals::succ;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(succ(), 0.into()), NOR, 0, false), 1.into());
-/// assert_eq!(beta(app(succ(), 1.into()), NOR, 0, false), 2.into());
+/// assert_eq!(beta(app(succ(), 0.into()), NOR, 0), 1.into());
+/// assert_eq!(beta(app(succ(), 1.into()), NOR, 0), 2.into());
 /// ```
 pub fn succ() -> Term {
     abs!(3, app!(Var(2), Var(3), app!(Var(3), Var(2), Var(1))))
@@ -41,8 +41,8 @@ pub fn succ() -> Term {
 /// use lambda_calculus::parigot::numerals::pred;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(pred(), 1.into()), NOR, 0, false), 0.into());
-/// assert_eq!(beta(app(pred(), 3.into()), NOR, 0, false), 2.into());
+/// assert_eq!(beta(app(pred(), 1.into()), NOR, 0), 0.into());
+/// assert_eq!(beta(app(pred(), 3.into()), NOR, 0), 2.into());
 /// ```
 pub fn pred() -> Term {
     abs(app!(Var(1), abs!(2, Var(2)), zero()))
@@ -57,8 +57,8 @@ pub fn pred() -> Term {
 /// use lambda_calculus::parigot::numerals::plus;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(plus(), 1.into(), 2.into()), NOR, 0, false), 3.into());
-/// assert_eq!(beta(app!(plus(), 2.into(), 3.into()), NOR, 0, false), 5.into());
+/// assert_eq!(beta(app!(plus(), 1.into(), 2.into()), NOR, 0), 3.into());
+/// assert_eq!(beta(app!(plus(), 2.into(), 3.into()), NOR, 0), 5.into());
 /// ```
 pub fn plus() -> Term {
     abs!(2, app!(Var(2), abs(succ()), Var(1)))

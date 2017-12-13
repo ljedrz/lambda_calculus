@@ -1,5 +1,31 @@
+Version 2.0.0
+=============
+
+Thanks
+-------
+@billpmurphy for the idea to make `reduction::{beta, compare}` IO-free
+
+Breaking changes
+-------
+
+- adjust compilation features
+- remove `impl Term` from Church data types
+- simplify and rename `term::Error` to `term::TermError`
+- shorten `TermError` variant names
+- rename `church` modules
+- rename combinators
+- unify test and bench names
+- make `reduction::compare` and `reduction::beta` IO-free
+- add `reduction::beta-verbose`
+
 Version 1.4.0
 =============
+
+Thanks
+-------
+@billpmurphy for creating `church::option`, adding `option::{none, some, is_none, is_some,
+map_or}`, adding `church::lists::{init, zip, zip_with, take, take_while}` and simplifying
+`church::lists::last`
 
 Changes
 -------
@@ -22,6 +48,10 @@ Changes
 Version 1.3.0
 =============
 
+Thanks
+-------
+@billpmurphy for adding `church::lists::last()`
+
 Changes
 -------
 
@@ -37,6 +67,11 @@ Changes
 
 Version 1.2.0
 =============
+
+Thanks
+-------
+@billpmurphy for adding `church::numerals::{min, max, lshift, rshift, is_even, is_odd}` and
+`church::pairs::uncurry`
 
 Changes
 -------

@@ -4,11 +4,12 @@
 //! * [SKI](https://en.wikipedia.org/wiki/SKI_combinator_calculus)
 //! * [Iota](https://en.wikipedia.org/wiki/Iota_and_Jot)
 //! * [BCKW](https://en.wikipedia.org/wiki/B,_C,_K,_W_system)
-// //! * the recursion combinator U - needs more research
 //! * the self-application combinator ω
 //! * the divergent combinator Ω
 //! * [the fixed-point combinators Y and Z](https://en.wikipedia.org/wiki/Fixed-point_combinator)
 //! * the reverse application combinator T
+
+#![allow(non_snake_case)]
 
 use term::{Term, abs, app};
 use term::Term::*;
@@ -19,13 +20,13 @@ use term::Term::*;
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::i;
+/// use lambda_calculus::combinators::I;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(i(), Var(1)), NOR, 0, false), Var(1));
-/// assert_eq!(beta(app(i(), abs(Var(1))), NOR, 0, false), abs(Var(1)));
+/// assert_eq!(beta(app(I(), Var(1)), NOR, 0), Var(1));
+/// assert_eq!(beta(app(I(), abs(Var(1))), NOR, 0), abs(Var(1)));
 /// ```
-pub fn i() -> Term { abs(Var(1)) }
+pub fn I() -> Term { abs(Var(1)) }
 
 /// K - the constant / discarding combinator.
 ///
@@ -33,13 +34,13 @@ pub fn i() -> Term { abs(Var(1)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::k;
+/// use lambda_calculus::combinators::K;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(k(), Var(1), Var(2)), NOR, 0, false), Var(1));
-/// assert_eq!(beta(app!(k(), Var(2), Var(1)), NOR, 0, false), Var(2));
+/// assert_eq!(beta(app!(K(), Var(1), Var(2)), NOR, 0), Var(1));
+/// assert_eq!(beta(app!(K(), Var(2), Var(1)), NOR, 0), Var(2));
 /// ```
-pub fn k() -> Term { abs!(2, Var(2)) }
+pub fn K() -> Term { abs!(2, Var(2)) }
 
 /// S - the substitution combinator.
 ///
@@ -47,32 +48,32 @@ pub fn k() -> Term { abs!(2, Var(2)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::s;
+/// use lambda_calculus::combinators::S;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(s(), Var(1), Var(2), Var(3)), NOR, 0, false),
+///     beta(app!(S(), Var(1), Var(2), Var(3)), NOR, 0),
 ///     app!(Var(1), Var(3), app(Var(2), Var(3)))
 /// );
 /// ```
-pub fn s() -> Term {
+pub fn S() -> Term {
     abs!(3, app!(Var(3), Var(1), app(Var(2), Var(1))))
 }
 
 /// Iota - the universal combinator.
 ///
-/// ι := λx.x S K = λ 1 S K
+/// i := λx.x S K = λ 1 S K
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::{iota, i, k, s};
+/// use lambda_calculus::combinators::{i, I, K, S};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(iota(), iota()), NOR, 0, false), i());
-/// assert_eq!(beta(app(iota(), app(iota(), app(iota(), iota()))), NOR, 0, false), k());
-/// assert_eq!(beta(app(iota(), app(iota(), app(iota(), app(iota(), iota())))), NOR, 0, false), s());
+/// assert_eq!(beta(app(i(), i()), NOR, 0), I());
+/// assert_eq!(beta(app(i(), app(i(), app(i(), i()))), NOR, 0), K());
+/// assert_eq!(beta(app(i(), app(i(), app(i(), app(i(), i())))), NOR, 0), S());
 /// ```
-pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
+pub fn i() -> Term { abs(app!(Var(1), S(), K())) }
 
 /// B - the composition combinator.
 ///
@@ -80,15 +81,15 @@ pub fn iota() -> Term { abs(app!(Var(1), s(), k())) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::b;
+/// use lambda_calculus::combinators::B;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(b(), Var(1), Var(2), Var(3)), NOR, 0, false),
+///     beta(app!(B(), Var(1), Var(2), Var(3)), NOR, 0),
 ///     app(Var(1), app(Var(2), Var(3)))
 /// );
 /// ```
-pub fn b() -> Term {
+pub fn B() -> Term {
     abs!(3, app(Var(3), app(Var(2), Var(1))))
 }
 
@@ -98,15 +99,15 @@ pub fn b() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::c;
+/// use lambda_calculus::combinators::C;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(c(), Var(1), Var(2), Var(3)), NOR, 0, false),
+///     beta(app!(C(), Var(1), Var(2), Var(3)), NOR, 0),
 ///     app!(Var(1), Var(3), Var(2))
 /// );
 /// ```
-pub fn c() -> Term {
+pub fn C() -> Term {
     abs!(3, app!(Var(3), Var(1), Var(2)))
 }
 
@@ -116,38 +117,33 @@ pub fn c() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::w;
+/// use lambda_calculus::combinators::W;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(w(), Var(1), Var(2)), NOR, 0, false),
+///     beta(app!(W(), Var(1), Var(2)), NOR, 0),
 ///     app!(Var(1), Var(2), Var(2))
 /// );
 /// ```
-pub fn w() -> Term {
+pub fn W() -> Term {
     abs!(2, app!(Var(2), Var(1), Var(1)))
 }
-/*
-/// U - the recursion combinator.
-///
-/// U := λxy.y (x x y) = λ λ 1 (2 2 1)
-pub fn u() -> Term { abs!(2, app(Var(1), app!(Var(2), Var(2), Var(1)))) }
-*/
+
 /// ω - the self-application combinator.
 ///
 /// ω := λx.x x = λ 1 1
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::om;
+/// use lambda_calculus::combinators::o;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app(om(), Var(1)), NOR, 0, false),
+///     beta(app(o(), Var(1)), NOR, 0),
 ///     app(Var(1), Var(1))
 /// );
 /// ```
-pub fn om() -> Term { abs(Var(1).app(Var(1))) }
+pub fn o() -> Term { abs(Var(1).app(Var(1))) }
 
 /// Ω - the divergent combinator.
 ///
@@ -155,12 +151,12 @@ pub fn om() -> Term { abs(Var(1).app(Var(1))) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::omm;
+/// use lambda_calculus::combinators::O;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(omm(), NOR, 3, false), omm()); // 3 β-reductions do nothing
+/// assert_eq!(beta(O(), NOR, 3), O()); // 3 β-reductions do nothing
 /// ```
-pub fn omm() -> Term { om().app(om()) }
+pub fn O() -> Term { o().app(o()) }
 
 /// Y - the lazy fixed-point combinator.
 ///
@@ -171,17 +167,17 @@ pub fn omm() -> Term { om().app(om()) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::y;
+/// use lambda_calculus::combinators::Y;
 /// use lambda_calculus::*;
 ///
 /// fn dummy() -> Term { abs(Var(2)) } // a dummy term that won't easily reduce
 ///
 /// assert_eq!(
-///     beta(app(y(), dummy()), NOR, 0, false),
-///     beta(app(dummy(), app(y(), dummy())), NOR, 0, false)
+///     beta(app(Y(), dummy()), NOR, 0),
+///     beta(app(dummy(), app(Y(), dummy())), NOR, 0)
 /// );
 /// ```
-pub fn y() -> Term {
+pub fn Y() -> Term {
     abs(app(
         abs(app(Var(2), app(Var(1), Var(1)))),
         abs(app(Var(2), app(Var(1), Var(1))))
@@ -200,17 +196,17 @@ pub fn y() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::z;
+/// use lambda_calculus::combinators::Z;
 /// use lambda_calculus::*;
 ///
 /// fn dummy() -> Term { abs(Var(2)) } // a dummy term that won't easily reduce
 ///
 /// assert_eq!(
-///     beta(app(z(), dummy()), CBV, 0, false),
-///     beta(app(dummy(), app(z(), dummy())), CBV, 0, false)
+///     beta(app(Z(), dummy()), CBV, 0),
+///     beta(app(dummy(), app(Z(), dummy())), CBV, 0)
 /// );
 /// ```
-pub fn z() -> Term {
+pub fn Z() -> Term {
     abs(app(
         abs(app(Var(2), abs(app!(Var(2), Var(2), Var(1))))),
         abs(app(Var(2), abs(app!(Var(2), Var(2), Var(1)))))
@@ -223,14 +219,14 @@ pub fn z() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::t;
+/// use lambda_calculus::combinators::T;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(t(), Var(1), Var(2)), NOR, 0, false),
+///     beta(app!(T(), Var(1), Var(2)), NOR, 0),
 ///     app(Var(2), Var(1))
 /// );
 /// ```
-pub fn t() -> Term {
+pub fn T() -> Term {
     abs!(2, app(Var(1), Var(2)))
 }

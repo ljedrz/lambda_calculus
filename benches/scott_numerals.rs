@@ -12,10 +12,10 @@ use lambda::scott::numerals::*;
 
 #[bench]
 fn scott_succ(b: &mut Bencher) {
-    b.iter(|| { beta(app!(succ(), 1.into()), HAP, 0, false) } );
+    b.iter(|| { beta(app!(succ(), 1.into()), HAP, 0) } );
 }
 
 #[bench]
 fn scott_pred(b: &mut Bencher) {
-    b.iter(|| { beta(app!(pred(), 1.into()), HAP, 0, false) } );
+    b.iter(|| { beta(app!(pred(), 1.into()), HAP, 0) } );
 }
