@@ -72,9 +72,29 @@ pub fn is_some() -> Term {
 /// let some_one: Term = Some(1.into()).into();
 ///
 /// assert_eq!(beta(app!(map_or(), 0.into(), succ(), some_one), NOR, 0), 2.into());
+/// assert_eq!(beta(app!(map_or(), 0.into(), succ(), None.into()), NOR, 0), 0.into());
 /// ```
 pub fn map_or() -> Term {
     abs!(3, app!(Var(1), Var(3), Var(2)))
+}
+
+/// Applied to one argument and a Church-encoded option it returns the value inside the option or
+/// the first argument if the option doesn't contain a value.
+///
+/// UNWRAP_OR := λdm.m d I = λ λ 1 2 I
+///
+/// # Example
+/// ```
+/// use lambda_calculus::church::option::unwrap_or;
+/// use lambda_calculus::*;
+///
+/// let some_one: Term = Some(1.into()).into();
+///
+/// assert_eq!(beta(app!(unwrap_or(), 2.into(), some_one), NOR, 0, false), 1.into());
+/// assert_eq!(beta(app!(unwrap_or(), 2.into(), None.into()), NOR, 0, false), 2.into());
+/// ```
+pub fn unwrap_or() -> Term {
+    abs!(2, app!(Var(1), Var(2), abs(Var(1))))
 }
 
 impl From<Option<Term>> for Term {
