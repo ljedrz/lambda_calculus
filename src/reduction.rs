@@ -118,6 +118,25 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
 /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
 /// on the number of reductions (`0` means no limit) and returns a vector with all the states
 /// of the `Term` during the reduction process.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::*;
+///
+/// let mut expr = parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap();
+/// let reduction_stages = beta_verbose(expr, NOR, 0);
+///
+/// assert_eq!(
+///     reduction_stages,
+///     vec![
+///         parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap(),
+///         parse(&"λa.λb.a ((λc.λd.d) a b)",        Classic).unwrap(),
+///         parse(&"λa.λb.a ((λc.c) b)",             Classic).unwrap(),
+///         parse(&"λa.λb.a b",                      Classic).unwrap()
+///     ]
+/// );
+/// ```
 pub fn beta_verbose(mut term: Term, order: Order, limit: usize) -> Vec<Term> {
     term.beta_verbose(order, limit)
 }
@@ -240,6 +259,25 @@ impl Term {
     /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
     /// on the number of reductions (`0` means no limit) and returns a vector with all the states
     /// of the `Term` during the reduction process.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lambda_calculus::*;
+    ///
+    /// let mut expr = parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap();
+    /// let reduction_stages = expr.beta_verbose(NOR, 0);
+    ///
+    /// assert_eq!(
+    ///     reduction_stages,
+    ///     vec![
+    ///         parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap(),
+    ///         parse(&"λa.λb.a ((λc.λd.d) a b)",        Classic).unwrap(),
+    ///         parse(&"λa.λb.a ((λc.c) b)",             Classic).unwrap(),
+    ///         parse(&"λa.λb.a b",                      Classic).unwrap()
+    ///     ]
+    /// );
+    /// ```
     pub fn beta_verbose(&mut self, order: Order, limit: usize) -> Vec<Term> {
         let mut count = 0;
         let mut ret = Vec::new();
