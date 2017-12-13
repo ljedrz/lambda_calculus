@@ -72,7 +72,10 @@ code:
 use lambda_calculus::parser::*;
 
 fn main() {
-    assert_eq!(parse(&"λa.λb.λc.b (a b c)", Classic), parse(&"λλλ2(321)", DeBruijn));
+    assert_eq!(
+        parse(&"λa.λb.λc.b (a b c)", Classic),
+        parse(&"λλλ2(321)", DeBruijn)
+    );
 }
 ```
 
@@ -80,62 +83,58 @@ fn main() {
 
 code:
 ```
-use lambda_calculus::reduction::*;
+use lambda_calculus::*;
 use lambda_calculus::church::numerals::pred;
 
 fn main() {
-    let mut expr = app!(pred(), 1.into());
+    let expr = app!(pred(), 1.into());
+    let steps = beta_verbose(expr, NOR, 0);
 
-    expr.beta(NOR, 0, true);
+    println!("the {} β-reduction steps for PRED 1 are:", NOR);
+
+    for (step, ref term) in steps.iter().enumerate() {
+        println!("{}: {}", step, term);
+    }
 }
 ```
 stdout:
 ```
-β-reducing (λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)) (λa.λb.a b) [normal order]:
-
-1. (λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)) (λa.λb.a b)
-=>     λa.λb.(λc.λd.c d) (λc.λd.d (c a)) (λc.b) (λc.c)
-
-2. (λc.λd.c d) (λc.λd.d (c a))
-=>     λc.(λd.λe.e (d a)) c
-
-3. (λc.(λd.λe.e (d a)) c) (λc.b)
-=>     (λc.λd.d (c a)) (λc.b)
-
-4. (λc.λd.d (c a)) (λc.b)
-=>     λc.c ((λd.b) a)
-
-5. (λc.c ((λd.b) a)) (λc.c)
-=>     (λc.c) ((λc.b) a)
-
-6. (λc.c) ((λc.b) a)
-=>     (λc.b) a
-
-7. (λc.b) a
-=>     b
-
-result after 7 reductions: λa.λb.b
+the normal β-reduction steps for PRED 1 are:
+0: (λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)) (λa.λb.a b)
+1: λa.λb.(λc.λd.c d) (λc.λd.d (c a)) (λc.b) (λc.c)
+2: λa.λb.(λc.(λd.λe.e (d a)) c) (λc.b) (λc.c)
+3: λa.λb.(λc.λd.d (c a)) (λc.b) (λc.c)
+4: λa.λb.(λc.c ((λd.b) a)) (λc.c)
+5: λa.λb.(λc.c) ((λc.b) a)
+6: λa.λb.(λc.b) a
+7: λa.λb.b
 ```
 
-### Comparing the number of steps of different reduction strategies
+### Comparing the number of steps for different reduction strategies
 
 code:
 ```
-use lambda_calculus::reduction::*;
+use lambda_calculus::*;
+use lambda_calculus::reduction::compare;
 use lambda_calculus::church::numerals::fac;
 
 fn main() {
     let expr = app!(fac(), 4.into());
+    let mut comparison = compare(&expr, &[NOR, APP, HNO, HAP]); // these are normalizing strategies
+    comparison.sort_by_key(|p| p.1); // sort by the reduction count
 
-    compare(&expr, &[NOR, APP, HNO, HAP], false); // compare normalizing strategies
+    println!("comparing normalizing reduction step count for FAC 4:");
+
+    for (order, count) in comparison {
+        println!("{}: {}", order, count);
+    }
 }
 ```
 stdout:
 ```
-comparing β-reduction strategies for (λa.a (λb.λc.λd.b (λe.c (d e)) (λe.λf.e (d e f))) (λb.λc.b) (λb.λc.b c) (λb.λc.b c)) (λa.λb.a (a (a (a b)))):
-
-normal:             87
-applicative:        65
-hybrid normal:      87
+comparing normalizing reduction step count for FAC 4:
 hybrid applicative: 40
+applicative: 65
+normal: 87
+hybrid normal: 87
 ```
