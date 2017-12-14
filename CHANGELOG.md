@@ -22,6 +22,7 @@ Breaking changes
 - split `Into<Term>` conversion into `IntoChurch`, `IntoScott` and `IntoParigot`
 - rename `*::numerals::plus` to `add`
 - remove `Term::{app, apply}`
+- rename `church::list::null` to `is_nil`
 
 Changes
 -------
@@ -31,8 +32,9 @@ Changes
 - add Stump-Fu encoding
 - add `stumpfu::numerals::{zero, one, succ, add}`
 - add an `encoding` feature and make it default
-- add `parigot::numerals::{one, mult}`
+- add `parigot::numerals::{one, mult, sub}`
 - add `impl<T> IntoChurch for Option<T> where T: IntoChurch`
+- improve `church::{pair, list}` documentation
 
 Version 1.4.0
 =============
