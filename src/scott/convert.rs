@@ -1,17 +1,9 @@
-//! Conversion to a Scott-encoded `Term`
+//! Conversion to Scott-encoded `Term`s
 
 use term::Term;
 
-/// Conversion to a Scott-encoded lambda term
+/// Conversion to Scott encoding
 pub trait IntoScott {
-    /// Consume an object and return a Scott-encoded `Term`
+    /// Convert an object into a Church-encoded `Term`
     fn into_scott(self) -> Term;
-}
-
-/// This impl can optionally be built using `features = scott`.
-#[cfg(feature = "scott")]
-impl<T> From<T> for Term where T:IntoScott {
-    fn from(t: T) -> Self {
-        t.into_scott()
-    }
 }

@@ -11,11 +11,7 @@ authors = ["ljedrz <ljedrz@gmail.com>"]
 exclude = [".cargo/*", "target/*"]
 
 [features]
-default = ["church"]
 backslash_lambda = []
-church = []
-scott = []
-parigot = []
 
 [badges]
 travis-ci = { repository = "ljedrz/lambda_calculus", branch = "master" }
