@@ -703,7 +703,7 @@ impl IntoChurch for Vec<Term> {
     }
 }
 
-impl<T> IntoChurch for Vec<T> where T:IntoChurch {
+impl<T> IntoChurch for Vec<T> where T: IntoChurch {
     fn into_church(self) -> Term {
         let mut ret = nil();
 

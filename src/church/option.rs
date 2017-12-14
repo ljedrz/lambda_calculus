@@ -107,7 +107,7 @@ impl IntoChurch for Option<Term> {
     }
 }
 
-impl<T> IntoChurch for Option<T> where T:IntoChurch {
+impl<T> IntoChurch for Option<T> where T: IntoChurch {
     fn into_church(self) -> Term {
         match self {
             None => none(),
