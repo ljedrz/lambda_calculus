@@ -32,18 +32,12 @@ extern crate lambda_calculus;
 
 Compilation features:
 - `backslash_lambda`: changes the display of lambdas from `λ` to `\`
-- `church`: builds the `church` module; default feature
-- `scott`: builds the `scott` module
-- `parigot`: builds the `parigot` module
-
-note: only one encoding module can be used at a time
 
 To apply a feature setup the dependency in your Cargo.toml like this:
 ```
 [dependencies.lambda_calculus]
 version = "^2.0"
-default-features = false # do not build the church module
-features = ["backslash_lambda", "parigot"] # use a backslash lambda and the Parigot encoding
+features = ["backslash_lambda"]
 ```
 
 ## Usage
@@ -87,7 +81,7 @@ use lambda_calculus::*;
 use lambda_calculus::church::numerals::pred;
 
 fn main() {
-    let expr = app!(pred(), 1.into());
+    let expr = app!(pred(), 1.into_church());
     let steps = beta_verbose(expr, NOR, 0);
 
     println!("the {} β-reduction steps for PRED 1 are:", NOR);
@@ -119,7 +113,7 @@ use lambda_calculus::reduction::compare;
 use lambda_calculus::church::numerals::fac;
 
 fn main() {
-    let expr = app!(fac(), 4.into());
+    let expr = app!(fac(), 4.into_church());
     let mut comparison = compare(&expr, &[NOR, APP, HNO, HAP]); // these are normalizing strategies
     comparison.sort_by_key(|p| p.1); // sort by the reduction count
 
