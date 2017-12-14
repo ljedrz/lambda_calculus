@@ -288,6 +288,36 @@ impl Term {
     pub fn rhs_mut(&mut self) -> Result<&mut Term, TermError> {
         if let Ok((_, rhs)) = self.unapp_mut() { Ok(rhs) } else { Err(NotApp) }
     }
+
+    /// Returns `true` if and only if the lambda term is a
+    /// [supercombinator](https://en.wikipedia.org/wiki/Supercombinator).
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::term::*;
+    ///
+    /// let term1 = abs(app(Var(1), abs(Var(1)))); // λ 1 (λ 2)
+    /// let term2 = app(abs(Var(2)), abs(Var(1))); // (λ 2) (λ 1)
+    ///
+    /// assert_eq!(term1.is_supercombinator(), true);
+    /// assert_eq!(term2.is_supercombinator(), false);
+    /// ```
+    pub fn is_supercombinator(&self) -> bool {
+        let mut stack = Vec::new();
+        stack.push((0, self));
+        while let Some((depth, term)) = stack.pop() {
+            match term {
+                &Term::Var(i) => if i > depth { return false },
+                &Term::Abs(ref t) => stack.push((depth + 1, t)),
+                &Term::App(ref f, ref a) => {
+                    stack.push((depth, f));
+                    stack.push((depth, a))
+                }
+            }
+        }
+        true
+    }
+
 }
 
 /// Wraps a `Term` in an `Abs`traction. Consumes its argument.
@@ -475,5 +505,19 @@ mod tests {
         assert_eq!(&format!("{:?}", zero), "λλ1");
         assert_eq!(&format!("{:?}", succ), "λλλ2(321)");
         assert_eq!(&format!("{:?}", pred), "λλλ3(λλ1(24))(λ2)(λ1)");
+    }
+
+    #[test]
+    fn is_supercombinator() {
+        assert_eq!(abs(Var(1)).is_supercombinator(), true);
+        assert_eq!(app(abs(Var(1)), abs(Var(1))).is_supercombinator(), true);
+        assert_eq!(abs!(10, Var(10)).is_supercombinator(), true);
+        assert_eq!(abs!(10, app(Var(10), Var(10))).is_supercombinator(), true);
+
+        assert_eq!(Var(1).is_supercombinator(), false);
+        assert_eq!(abs(Var(2)).is_supercombinator(), false);
+        assert_eq!(app(abs(Var(1)), Var(1)).is_supercombinator(), false);
+        assert_eq!(abs!(10, Var(11)).is_supercombinator(), false);
+        assert_eq!(abs!(10, app(Var(10), Var(11))).is_supercombinator(), false);
     }
 }
