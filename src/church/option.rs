@@ -32,11 +32,11 @@ pub fn some() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::option::is_none;
+/// use lambda_calculus::church::option::{is_none, none};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(is_none(), None.into_church()), NOR, 0), true.into_church());
-/// assert_eq!(beta(app(is_none(), Some(1.into_church()).into_church()), NOR, 0), false.into_church());
+/// assert_eq!(beta(app(is_none(), none()), NOR, 0), true.into_church());
+/// assert_eq!(beta(app(is_none(), Some(1).into_church()), NOR, 0), false.into_church());
 /// ```
 pub fn is_none() -> Term {
     abs(app!(Var(1), tru(), abs(fls())))
@@ -49,11 +49,11 @@ pub fn is_none() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::option::is_some;
+/// use lambda_calculus::church::option::{is_some, none};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(is_some(), None.into_church()), NOR, 0), false.into_church());
-/// assert_eq!(beta(app(is_some(), Some(2.into_church()).into_church()), NOR, 0), true.into_church());
+/// assert_eq!(beta(app(is_some(), none()), NOR, 0), false.into_church());
+/// assert_eq!(beta(app(is_some(), Some(2).into_church()), NOR, 0), true.into_church());
 /// ```
 pub fn is_some() -> Term {
     abs(app!(Var(1), fls(), abs(tru())))
@@ -66,14 +66,14 @@ pub fn is_some() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::option::map_or;
+/// use lambda_calculus::church::option::{map_or, none};
 /// use lambda_calculus::church::numerals::succ;
 /// use lambda_calculus::*;
 ///
-/// let some_one: Term = Some(1.into_church()).into_church();
+/// let some_one: Term = Some(1).into_church();
 ///
 /// assert_eq!(beta(app!(map_or(), 0.into_church(), succ(), some_one), NOR, 0), 2.into_church());
-/// assert_eq!(beta(app!(map_or(), 0.into_church(), succ(), None.into_church()), NOR, 0), 0.into_church());
+/// assert_eq!(beta(app!(map_or(), 0.into_church(), succ(), none()), NOR, 0), 0.into_church());
 /// ```
 pub fn map_or() -> Term {
     abs!(3, app!(Var(1), Var(3), Var(2)))
@@ -86,13 +86,13 @@ pub fn map_or() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::option::unwrap_or;
+/// use lambda_calculus::church::option::{unwrap_or, none};
 /// use lambda_calculus::*;
 ///
-/// let some_one: Term = Some(1.into_church()).into_church();
+/// let some_one: Term = Some(1).into_church();
 ///
 /// assert_eq!(beta(app!(unwrap_or(), 2.into_church(), some_one), NOR, 0), 1.into_church());
-/// assert_eq!(beta(app!(unwrap_or(), 2.into_church(), None.into_church()), NOR, 0), 2.into_church());
+/// assert_eq!(beta(app!(unwrap_or(), 2.into_church(), none()), NOR, 0), 2.into_church());
 /// ```
 pub fn unwrap_or() -> Term {
     abs!(2, app!(Var(1), Var(2), abs(Var(1))))
@@ -103,6 +103,15 @@ impl IntoChurch for Option<Term> {
         match self {
             None => none(),
             Some(value) => abs!(2, app(Var(1), value))
+        }
+    }
+}
+
+impl<T> IntoChurch for Option<T> where T:IntoChurch {
+    fn into_church(self) -> Term {
+        match self {
+            None => none(),
+            Some(value) => abs!(2, app(Var(1), value.into_church()))
         }
     }
 }
