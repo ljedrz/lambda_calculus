@@ -289,14 +289,14 @@ impl Term {
         if let Ok((_, rhs)) = self.unapp_mut() { Ok(rhs) } else { Err(NotApp) }
     }
 
-    /// Returns `true` if and only if the lambda term is a
+    /// Returns `true` if the lambda term is a
     /// [supercombinator](https://en.wikipedia.org/wiki/Supercombinator).
     ///
     /// # Example
     /// ```
     /// use lambda_calculus::term::*;
     ///
-    /// let term1 = abs(app(Var(1), abs(Var(1)))); // λ 1 (λ 2)
+    /// let term1 = abs(app(Var(1), abs(Var(1)))); // λ 1 (λ 1)
     /// let term2 = app(abs(Var(2)), abs(Var(1))); // (λ 2) (λ 1)
     ///
     /// assert_eq!(term1.is_supercombinator(), true);
@@ -304,12 +304,12 @@ impl Term {
     /// ```
     pub fn is_supercombinator(&self) -> bool {
         let mut stack = Vec::new();
-        stack.push((0, self));
+        stack.push((0usize, self));
         while let Some((depth, term)) = stack.pop() {
-            match term {
-                &Term::Var(i) => if i > depth { return false },
-                &Term::Abs(ref t) => stack.push((depth + 1, t)),
-                &Term::App(ref f, ref a) => {
+            match *term {
+                Term::Var(i) => if i > depth { return false },
+                Term::Abs(ref t) => stack.push((depth + 1, t)),
+                Term::App(ref f, ref a) => {
                     stack.push((depth, f));
                     stack.push((depth, a))
                 }
