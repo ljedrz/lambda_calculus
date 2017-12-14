@@ -3,20 +3,28 @@ Version 2.0.0
 
 Thanks
 -------
-@billpmurphy for the idea to make `reduction::{beta, compare}` IO-free
+@billpmurphy for the idea to make `reduction::{beta, compare}` IO-free, splitting conversions and
+thus allowing all encodings to be compiled together, adding `term::is_supercombinator` and
+`church::option::unwrap_or` and improving conversions into terms
 
 Breaking changes
 -------
 
-- adjust compilation features
+- remove encoding-related compilation features
 - remove `impl Term` from Church data types
 - simplify and rename `term::Error` to `term::TermError`
 - shorten `TermError` variant names
 - rename `church` modules
 - rename combinators
 - unify test and bench names
-- make `reduction::compare` and `reduction::beta` IO-free
-- add `reduction::beta-verbose`
+- make `reduction::{beta, compare}` IO-free
+- split `Into<Term>` conversion into `IntoChurch`, `IntoScott` and `IntoParigot`
+
+Changes
+-------
+- add `reduction::beta_verbose`
+- add `church::option::unwrap_or`
+- add `term::is_supercombinator`
 
 Version 1.4.0
 =============
@@ -32,16 +40,15 @@ Changes
 
 - add Scott encoding as a compilation feature
 - add a Scott numerals module
-- add `zero()`, `succ()` and `pred()` for Scott numerals
+- add `scott::{zero, succ, pred}`
 - add Parigot encoding as a compilation feature
 - add a Parigot numerals module
-- add `zero()`, `succ()`, `pred()` and `plus()` for Parigot numerals
+- add `parigot::{zero, succ, pred, plus}`
 - add a Church option module
-- add `is_none()`, `is_some()` and `map_or()` for Church option
-- add `swap()` for Church pairs
-- add `init()` for Church lists
-- add `zip()` and `zip_with()`, `take()` and `take_while()` for Church lists
-- simplify `last()`
+- add `church::option::{is_none, is_some, map_or}`
+- add `church::pairs::swap`
+- add `church::lists::{init, zip, zip_with, take_while}`
+- simplify `church::lists::last`
 - more fine-grained parser benchmarks
 - add Church list benchmarks
 
@@ -50,12 +57,12 @@ Version 1.3.0
 
 Thanks
 -------
-@billpmurphy for adding `church::lists::last()`
+@billpmurphy for adding `church::lists::last`
 
 Changes
 -------
 
-- add `last()` for Church lists
+- add `church::lists::last`
 - change all instances of `try!()` to `?`
 - replace 2 `clone()`s with `replace()`s (**big** performance wins)
 - simplify doctest imports in booleans.rs
@@ -76,12 +83,10 @@ Thanks
 Changes
 -------
 
-- add `min()` and `max()` for Church numerals
-- add `lshift()` and `rshift()` for Church numerals
-- add `uncurry()` for Church pairs
-- add `is_even()` and `is_odd()` for Church numerals
+- add `church::numerals::{min, max, lshift, rshift, is_even, is_odd}` for Church numerals
+- add `church::pairs::uncurry`
 - add `abs!()` macro for multiple abstraction and use it internally
-- simplify many functions in numerals.rs with `pred()` and `one()`
+- simplify many `church::numerals` functions using `church::numerals::{one, pred}`
 - move integration tests to a [tests](https://github.com/ljedrz/lambda_calculus/tree/master/tests) folder
 
 Version 1.1.1
