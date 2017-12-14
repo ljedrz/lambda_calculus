@@ -5,7 +5,7 @@ use term::Term::*;
 use church::boolean::{tru, fls};
 use church::pair::{pair, fst, snd};
 use church::numerals::zero;
-use church::conversions::IntoChurch;
+use church::convert::IntoChurch;
 use combinators::Z;
 
 /// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last

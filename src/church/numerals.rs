@@ -3,7 +3,7 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use church::boolean::{tru, fls};
-use church::conversions::IntoChurch;
+use church::convert::IntoChurch;
 use combinators::Z;
 
 /// Produces a Church-encoded number zero.

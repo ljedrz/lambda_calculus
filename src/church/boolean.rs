@@ -2,7 +2,7 @@
 
 use term::{Term, abs};
 use term::Term::*;
-use church::conversions::IntoChurch;
+use church::convert::IntoChurch;
 
 /// A Church-encoded boolean `true`.
 ///

@@ -2,7 +2,7 @@
 
 use term::{Term, abs};
 use term::Term::*;
-use parigot::conversions::IntoParigot;
+use parigot::convert::IntoParigot;
 
 /// Produces a Parigot-encoded number zero.
 ///

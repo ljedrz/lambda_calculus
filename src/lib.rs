@@ -19,6 +19,6 @@ pub use self::reduction::{beta, beta_verbose};
 pub use self::reduction::Order::*;
 pub use self::parser::parse;
 
-pub use self::church::conversions::IntoChurch;
-pub use self::scott::conversions::IntoScott;
-pub use self::parigot::conversions::IntoParigot;
+pub use self::church::convert::IntoChurch;
+pub use self::scott::convert::IntoScott;
+pub use self::parigot::convert::IntoParigot;

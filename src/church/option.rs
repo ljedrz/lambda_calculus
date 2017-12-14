@@ -3,7 +3,7 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use church::boolean::{tru, fls};
-use church::conversions::IntoChurch;
+use church::convert::IntoChurch;
 
 /// Produces a Church-encoded empty option.
 ///
