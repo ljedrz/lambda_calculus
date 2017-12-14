@@ -59,8 +59,32 @@ pub fn is_some() -> Term {
     abs(app!(Var(1), fls(), abs(tru())))
 }
 
+/// Applied to a function and a Church-encoded option it applies the function to the contents of
+/// the option, returning the empty option if the option does not contain a value.
+///
+/// MAP := λfm.m NONE (λx.SOME (f x)) =  λ λ 1 NONE (λ SOME (3 1))
+///
+/// # Example
+/// ```
+/// use lambda_calculus::church::option::{map, none};
+/// use lambda_calculus::church::numerals::succ;
+/// use lambda_calculus::*;
+///
+/// let some_one: Term = Some(1).into_church();
+///
+/// assert_eq!(beta(app!(map(), succ(), some_one), NOR, 0), Some(2).into_church());
+/// assert_eq!(beta(app!(map(), succ(), none()), NOR, 0), none());
+/// ```
+pub fn map() -> Term {
+    abs!(2, app!(
+        Var(1),
+        none(),
+        abs!(3, app(Var(1), app(Var(5), Var(3))))
+    ))
+}
+
 /// Applied to two arguments and a Church-encoded option it returns the second argument applied to
-/// the option if it contains a value or the first argument if it doesn't.
+/// the contents of the option if it contains a value or the first argument if it doesn't.
 ///
 /// MAP_OR := λdfm.m d f = λ λ λ 3 1 2
 ///

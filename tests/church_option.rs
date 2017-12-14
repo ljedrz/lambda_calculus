@@ -29,6 +29,12 @@ fn church_is_none() {
 }
 
 #[test]
+fn church_map() {
+    assert_eq!(beta(app!(map(), succ(), none()), HAP, 0), none());
+    assert_eq!(beta(app!(map(), succ(), Some(1).into_church()), HAP, 0), Some(2).into_church());
+}
+
+#[test]
 fn church_map_or() {
     assert_eq!(beta(app!(map_or(), 5.into_church(), succ(), none()), HAP, 0), 5.into_church());
     assert_eq!(beta(app!(map_or(), 5.into_church(), succ(), Some(1).into_church()), HAP, 0), 2.into_church());
