@@ -22,6 +22,7 @@ Breaking changes
 - split `Into<Term>` conversion into `IntoChurch`, `IntoScott` and `IntoParigot`
 - rename `*::numerals::plus` to `add`
 - remove `Term::{app, apply}`
+- rename `Term::beta` to `Term::reduce`
 - rename `church::list::null` to `is_nil`
 
 Changes
