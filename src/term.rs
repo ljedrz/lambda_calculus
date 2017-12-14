@@ -57,16 +57,6 @@ pub enum TermError {
 }
 
 impl Term {
-    /// Applies `self` to another term without substitution or reduction.
-    ///
-    /// # Example
-    /// ```
-    /// use lambda_calculus::term::*;
-    ///
-    /// assert_eq!(Var(1).app(Var(2)), App(Box::new(Var(1)), Box::new(Var(2))));
-    /// ```
-    pub fn app(self, argument: Term) -> Term { App(Box::new(self), Box::new(argument)) }
-
     /// Consumes a lambda variable and returns its De Bruijn index.
     ///
     /// # Example
@@ -208,7 +198,7 @@ impl Term {
     /// ```
     /// use lambda_calculus::term::*;
     ///
-    /// assert_eq!(Var(1).app(Var(2)).lhs(), Ok(Var(1)));
+    /// assert_eq!(app(Var(1), Var(2)).lhs(), Ok(Var(1)));
     /// ```
     /// # Errors
     ///
@@ -417,7 +407,7 @@ fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
 /// # fn main() {
 /// use lambda_calculus::term::*;
 ///
-/// assert_eq!(app!(Var(1), Var(2), Var(3)), Var(1).app(Var(2)).app(Var(3)));
+/// assert_eq!(app!(Var(1), Var(2), Var(3)), app(app(Var(1), Var(2)), Var(3)));
 /// # }
 /// ```
 #[macro_export]
@@ -425,7 +415,8 @@ macro_rules! app {
     ($term1:expr, $($term2:expr),+) => {
         {
             let mut term = $term1;
-            $(term = term.app($term2);)*
+            //$(term = App(Box::new(term), Box::new($term2));)*
+            $(term = app(term, $term2);)*
             term
         }
     };
@@ -464,7 +455,7 @@ mod tests {
     #[test]
     fn app_macro() {
         assert_eq!(app!(Var(4), app!(Var(1), Var(2), Var(3))),
-                   Var(4).app(Var(1).app(Var(2)).app(Var(3)))
+                   app(Var(4), app(app(Var(1), Var(2)), Var(3)))
         );
     }
 

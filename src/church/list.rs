@@ -211,7 +211,8 @@ pub fn list() -> Term {
 /// );
 /// ```
 pub fn append() -> Term {
-    Z().app(
+    app(
+        Z(),
         abs!(3, app!(
             Var(2),
             abs!(5, Var(1)),
@@ -274,7 +275,8 @@ pub fn index() -> Term {
 /// );
 /// ```
 pub fn map() -> Term {
-    Z().app(
+    app(
+        Z(),
         abs!(3, app!(
             Var(1),
             abs!(5, Var(1)),
@@ -316,7 +318,8 @@ pub fn map() -> Term {
 /// assert_eq!(beta(app!(foldl(), add(), 0.into_church(), nil()), NOR, 0), 0.into_church());
 /// ```
 pub fn foldl() -> Term {
-    Z().app(
+    app(
+        Z(),
         abs!(4, app!(
             Var(1),
             abs!(5, Var(1)),
@@ -399,7 +402,8 @@ pub fn foldr() -> Term {
 /// );
 /// ```
 pub fn filter() -> Term {
-    Z().app(
+    app(
+        Z(),
         abs!(3, app!(
             Var(1),
             abs!(5, Var(1)),

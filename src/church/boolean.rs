@@ -1,6 +1,6 @@
 //! [Church booleans](https://en.wikipedia.org/wiki/Church_encoding#Church_Booleans)
 
-use term::{Term, abs};
+use term::{Term, abs, app};
 use term::Term::*;
 use church::convert::IntoChurch;
 

@@ -143,7 +143,7 @@ pub fn W() -> Term {
 ///     app(Var(1), Var(1))
 /// );
 /// ```
-pub fn o() -> Term { abs(Var(1).app(Var(1))) }
+pub fn o() -> Term { abs(app(Var(1), Var(1))) }
 
 /// Ω - the divergent combinator.
 ///
@@ -156,7 +156,7 @@ pub fn o() -> Term { abs(Var(1).app(Var(1))) }
 ///
 /// assert_eq!(beta(O(), NOR, 3), O()); // 3 β-reductions do nothing
 /// ```
-pub fn O() -> Term { o().app(o()) }
+pub fn O() -> Term { app(o(), o()) }
 
 /// Y - the lazy fixed-point combinator.
 ///
