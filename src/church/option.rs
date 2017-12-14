@@ -90,8 +90,8 @@ pub fn map_or() -> Term {
 ///
 /// let some_one: Term = Some(1.into()).into();
 ///
-/// assert_eq!(beta(app!(unwrap_or(), 2.into(), some_one), NOR, 0, false), 1.into());
-/// assert_eq!(beta(app!(unwrap_or(), 2.into(), None.into()), NOR, 0, false), 2.into());
+/// assert_eq!(beta(app!(unwrap_or(), 2.into(), some_one), NOR, 0), 1.into());
+/// assert_eq!(beta(app!(unwrap_or(), 2.into(), None.into()), NOR, 0), 2.into());
 /// ```
 pub fn unwrap_or() -> Term {
     abs!(2, app!(Var(1), Var(2), abs(Var(1))))
