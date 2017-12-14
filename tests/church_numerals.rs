@@ -5,7 +5,6 @@ extern crate lambda_calculus as lambda;
 
 use lambda::*;
 use lambda::church::numerals::*;
-use lambda::combinators::C;
 
 #[test]
 fn church_succ() {
@@ -22,9 +21,19 @@ fn church_pred() {
 }
 
 #[test]
-fn church_add_sub() {
-    assert_eq!(beta(app!(     add(), 1.into_church()), HAP, 0), succ());
-    assert_eq!(beta(app!(C(), sub(), 1.into_church()), HAP, 0), pred());
+fn church_add() {
+    assert_eq!(beta(app!(add(), 0.into_church(), 0.into_church()), HAP, 0), 0.into_church());
+    assert_eq!(beta(app!(add(), 0.into_church(), 1.into_church()), HAP, 0), 1.into_church());
+    assert_eq!(beta(app!(add(), 1.into_church(), 0.into_church()), HAP, 0), 1.into_church());
+    assert_eq!(beta(app!(add(), 2.into_church(), 3.into_church()), HAP, 0), 5.into_church());
+}
+
+#[test]
+fn church_sub() {
+    assert_eq!(beta(app!(sub(), 0.into_church(), 0.into_church()), HAP, 0), 0.into_church());
+    assert_eq!(beta(app!(sub(), 0.into_church(), 1.into_church()), HAP, 0), 0.into_church());
+    assert_eq!(beta(app!(sub(), 1.into_church(), 0.into_church()), HAP, 0), 1.into_church());
+    assert_eq!(beta(app!(sub(), 3.into_church(), 2.into_church()), HAP, 0), 1.into_church());
 }
 
 #[test]
