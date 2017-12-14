@@ -5,6 +5,7 @@ use term::Term::*;
 use church::boolean::{tru, fls};
 use church::pair::{pair, fst, snd};
 use church::numerals::zero;
+use church::conversions::IntoChurch;
 use combinators::Z;
 
 /// Equivalent to `booleans::fls()`; produces a Church-encoded `nil`, the last
@@ -22,7 +23,7 @@ pub fn nil() -> Term { fls() }
 /// use lambda_calculus::church::list::{nil, null};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(null(), nil()), NOR, 0), true.into());
+/// assert_eq!(beta(app(null(), nil()), NOR, 0), true.into_church());
 /// ```
 pub fn null() -> Term {
     abs(app!(Var(1), abs!(3, fls()), tru()))
@@ -40,20 +41,20 @@ pub fn null() -> Term {
 /// let list_consed = beta(
 ///     app!(
 ///         cons(),
-///         1.into(),
+///         1.into_church(),
 ///         app!(
 ///             cons(),
-///             2.into(),
+///             2.into_church(),
 ///             app!(
 ///                 cons(),
-///                 3.into(),
+///                 3.into_church(),
 ///                 nil()
 ///             )
 ///         )
 ///     ), NOR, 0
 /// );
 ///
-/// let list_from_vec = Term::from(vec![1.into(), 2.into(), 3.into()]);
+/// let list_from_vec = vec![1, 2, 3].into_church();
 ///
 /// assert_eq!(list_consed, list_from_vec);
 /// ```
@@ -68,9 +69,9 @@ pub fn cons() -> Term { pair() }
 /// use lambda_calculus::church::list::head;
 /// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+/// let list = vec![1, 2, 3].into_church();
 ///
-/// assert_eq!(beta(app(head(), list), NOR, 0), 1.into());
+/// assert_eq!(beta(app(head(), list), NOR, 0), 1.into_church());
 /// ```
 pub fn head() -> Term { fst() }
 
@@ -84,11 +85,11 @@ pub fn head() -> Term { fst() }
 /// use lambda_calculus::church::list::tail;
 /// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+/// let list = vec![1, 2, 3].into_church();
 ///
 /// assert_eq!(
 ///     beta(app(tail(), list), NOR, 0),
-///     vec![2.into(), 3.into()].into()
+///     vec![2, 3].into_church()
 /// );
 /// ```
 pub fn tail() -> Term { snd() }
@@ -103,10 +104,10 @@ pub fn tail() -> Term { snd() }
 /// use lambda_calculus::church::list::{length, nil};
 /// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![1.into(), 2.into(), 3.into(), 4.into()]);
+/// let list = vec![1, 2, 3, 4].into_church();
 ///
-/// assert_eq!(beta(app(length(), nil()), NOR, 0), 0.into());
-/// assert_eq!(beta(app(length(), list ), NOR, 0), 4.into());
+/// assert_eq!(beta(app(length(), nil()), NOR, 0), 0.into_church());
+/// assert_eq!(beta(app(length(), list ), NOR, 0), 4.into_church());
 /// ```
 pub fn length() -> Term {
     app!(
@@ -137,11 +138,11 @@ pub fn length() -> Term {
 /// use lambda_calculus::church::list::reverse;
 /// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+/// let list = vec![1, 2, 3].into_church();
 ///
 /// assert_eq!(
 ///     beta(app(reverse(), list), NOR, 0),
-///     vec![3.into(), 2.into(), 1.into()].into()
+///     vec![3, 2, 1].into_church()
 /// );
 /// ```
 pub fn reverse() -> Term {
@@ -178,8 +179,8 @@ pub fn reverse() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(list(), 3.into(), 1.into(), 2.into(), 3.into()), NOR, 0),
-///     vec![1.into(), 2.into(), 3.into()].into()
+///     beta(app!(list(), 3.into_church(), 1.into_church(), 2.into_church(), 3.into_church()), NOR, 0),
+///     vec![1, 2, 3].into_church()
 /// );
 /// ```
 pub fn list() -> Term {
@@ -201,12 +202,12 @@ pub fn list() -> Term {
 /// use lambda_calculus::church::list::append;
 /// use lambda_calculus::*;
 ///
-/// let list1 = Term::from(vec![1.into(), 2.into()]);
-/// let list2 = Term::from(vec![3.into(), 4.into()]);
+/// let list1 = vec![1, 2].into_church();
+/// let list2 = vec![3, 4].into_church();
 ///
 /// assert_eq!(
 ///     beta(app!(append(), list1, list2), NOR, 0),
-///     vec![1.into(), 2.into(), 3.into(), 4.into()].into()
+///     vec![1, 2, 3, 4].into_church()
 /// );
 /// ```
 pub fn append() -> Term {
@@ -240,10 +241,10 @@ pub fn append() -> Term {
 /// use lambda_calculus::church::list::index;
 /// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+/// let list = vec![1, 2, 3].into_church();
 ///
-/// assert_eq!(beta(app!(index(), 0.into(), list.clone()), NOR, 0), 1.into());
-/// assert_eq!(beta(app!(index(), 2.into(), list        ), NOR, 0), 3.into());
+/// assert_eq!(beta(app!(index(), 0.into_church(), list.clone()), NOR, 0), 1.into_church());
+/// assert_eq!(beta(app!(index(), 2.into_church(), list        ), NOR, 0), 3.into_church());
 /// ```
 pub fn index() -> Term {
     abs!(2, app!(
@@ -265,11 +266,11 @@ pub fn index() -> Term {
 /// use lambda_calculus::church::numerals::succ;
 /// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+/// let list = vec![1, 2, 3].into_church();
 ///
 /// assert_eq!(
 ///     beta(app!(map(), succ(), list), NOR, 0),
-///     vec![2.into(), 3.into(), 4.into()].into()
+///     vec![2, 3, 4].into_church()
 /// );
 /// ```
 pub fn map() -> Term {
@@ -309,10 +310,10 @@ pub fn map() -> Term {
 /// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+/// let list = vec![1, 2, 3].into_church();
 ///
-/// assert_eq!(beta(app!(foldl(), plus(), 0.into(), list ), NOR, 0), 6.into());
-/// assert_eq!(beta(app!(foldl(), plus(), 0.into(), nil()), NOR, 0), 0.into());
+/// assert_eq!(beta(app!(foldl(), plus(), 0.into_church(), list ), NOR, 0), 6.into_church());
+/// assert_eq!(beta(app!(foldl(), plus(), 0.into_church(), nil()), NOR, 0), 0.into_church());
 /// ```
 pub fn foldl() -> Term {
     Z().app(
@@ -349,10 +350,10 @@ pub fn foldl() -> Term {
 /// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![1.into(), 2.into(), 3.into()]);
+/// let list = vec![1, 2, 3].into_church();
 ///
-/// assert_eq!(beta(app!(foldr(), plus(), 0.into(), list ), NOR, 0), 6.into());
-/// assert_eq!(beta(app!(foldr(), plus(), 0.into(), nil()), NOR, 0), 0.into());
+/// assert_eq!(beta(app!(foldr(), plus(), 0.into_church(), list ), NOR, 0), 6.into_church());
+/// assert_eq!(beta(app!(foldr(), plus(), 0.into_church(), nil()), NOR, 0), 0.into_church());
 /// ```
 pub fn foldr() -> Term {
     abs!(3, app!(
@@ -385,16 +386,16 @@ pub fn foldr() -> Term {
 /// use lambda_calculus::combinators::C;
 /// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
-/// let gt_1 = app!(C(), gt(), 1.into()); // greater than 1
+/// let list = vec![0, 1, 2, 3].into_church();
+/// let gt_1 = app!(C(), gt(), 1.into_church()); // greater than 1
 ///
 /// assert_eq!(
 ///     beta(app!(filter(), is_zero(), list.clone()), NOR, 0),
-///     vec![0.into()].into()
+///     vec![0].into_church()
 /// );
 /// assert_eq!(
 ///     beta(app!(filter(), gt_1, list), NOR, 0),
-///     vec![2.into(), 3.into()].into()
+///     vec![2, 3].into_church()
 /// );
 /// ```
 pub fn filter() -> Term {
@@ -434,9 +435,9 @@ pub fn filter() -> Term {
 /// use lambda_calculus::church::list::{last};
 /// use lambda_calculus::*;
 ///
-/// let list = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
+/// let list = vec![0, 1, 2, 3].into_church();
 ///
-/// assert_eq!(beta(app(last(), list), NOR, 0), 3.into());
+/// assert_eq!(beta(app(last(), list), NOR, 0), 3.into_church());
 /// ```
 pub fn last() -> Term {
     app(
@@ -469,8 +470,8 @@ pub fn last() -> Term {
 /// use lambda_calculus::church::list::init;
 /// use lambda_calculus::*;
 ///
-/// let list1 = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
-/// let list2 = Term::from(vec![0.into(), 1.into(), 2.into()]);
+/// let list1 = vec![0, 1, 2, 3].into_church();
+/// let list2 = vec![0, 1, 2].into_church();
 ///
 /// assert_eq!(beta(app(init(), list1), NOR, 0), list2);
 /// ```
@@ -510,8 +511,8 @@ pub fn init() -> Term {
 /// use lambda_calculus::church::list::zip;
 /// use lambda_calculus::*;
 ///
-/// let list1 = Term::from(vec![0.into(), 1.into()]);
-/// let pairs1 = Term::from(vec![(0.into(), 0.into()).into(), (1.into(), 1.into()).into()]);
+/// let list1 = vec![0, 1].into_church();
+/// let pairs1 = vec![(0, 0), (1, 1)].into_church();
 ///
 /// assert_eq!(beta(app!(zip(), list1.clone(), list1.clone()), NOR, 0), pairs1);
 /// ```
@@ -560,8 +561,8 @@ pub fn zip() -> Term {
 /// use lambda_calculus::church::numerals::plus;
 /// use lambda_calculus::*;
 ///
-/// let list1 = Term::from(vec![2.into(), 3.into()]);
-/// let list2 = Term::from(vec![4.into(), 6.into()]);
+/// let list1 = vec![2, 3].into_church();
+/// let list2 = vec![4, 6].into_church();
 ///
 /// assert_eq!(beta(app!(zip_with(), plus(), list1.clone(), list1), NOR, 0), list2);
 /// ```
@@ -609,10 +610,10 @@ pub fn zip_with() -> Term {
 /// use lambda_calculus::church::list::take;
 /// use lambda_calculus::*;
 ///
-/// let list1 = Term::from(vec![0.into(), 1.into(), 2.into(), 3.into()]);
-/// let list2 = Term::from(vec![0.into(), 1.into()]);
+/// let list1 = vec![0, 1, 2, 3].into_church();
+/// let list2 = vec![0, 1].into_church();
 ///
-/// assert_eq!(beta(app!(take(), 2.into(), list1), NOR, 0), list2);
+/// assert_eq!(beta(app!(take(), 2.into_church(), list1), NOR, 0), list2);
 pub fn take() -> Term {
     app(
         Z(),
@@ -658,8 +659,8 @@ pub fn take() -> Term {
 /// use lambda_calculus::church::numerals::is_zero;
 /// use lambda_calculus::*;
 ///
-/// let list1 = Term::from(vec![0.into(), 0.into(), 1.into()]);
-/// let list2 = Term::from(vec![0.into(), 0.into()]);
+/// let list1 = vec![0, 0, 1].into_church();
+/// let list2 = vec![0, 0].into_church();
 ///
 /// assert_eq!(beta(app!(take_while(), is_zero(), list1), NOR, 0), list2);
 /// ```
@@ -686,12 +687,24 @@ pub fn take_while() -> Term {
     )
 }
 
-impl From<Vec<Term>> for Term {
-    fn from(terms: Vec<Term>) -> Self {
+impl IntoChurch for Vec<Term> {
+    fn into_church(self) -> Term {
         let mut ret = nil();
 
-        for term in terms.into_iter().rev() {
+        for term in self.into_iter().rev() {
             ret = abs(app!(Var(1), term, ret))
+        }
+
+        ret
+    }
+}
+
+impl<T> IntoChurch for Vec<T> where T:IntoChurch {
+    fn into_church(self) -> Term {
+        let mut ret = nil();
+
+        for term in self.into_iter().rev() {
+            ret = abs(app!(Var(1), term.into_church(), ret))
         }
 
         ret

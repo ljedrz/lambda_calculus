@@ -3,6 +3,7 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use church::boolean::{tru, fls};
+use church::conversions::IntoChurch;
 
 /// Produces a Church-encoded pair; applying it to two other terms puts them inside it.
 ///
@@ -14,8 +15,8 @@ use church::boolean::{tru, fls};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(pair(), 1.into(), 2.into()), NOR, 0),
-///     (1.into(), 2.into()).into()
+///     beta(app!(pair(), 1.into_church(), 2.into_church()), NOR, 0),
+///     (1, 2).into_church()
 /// );
 /// ```
 pub fn pair() -> Term {
@@ -32,8 +33,8 @@ pub fn pair() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app(fst(), (1.into(), 2.into()).into()), NOR, 0),
-///     1.into()
+///     beta(app(fst(), (1, 2).into_church()), NOR, 0),
+///     1.into_church()
 /// );
 /// ```
 pub fn fst() -> Term { abs(app(Var(1), tru())) }
@@ -48,8 +49,8 @@ pub fn fst() -> Term { abs(app(Var(1), tru())) }
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app(snd(), (1.into(), 2.into()).into()), NOR, 0),
-///     2.into()
+///     beta(app(snd(), (1, 2).into_church()), NOR, 0),
+///     2.into_church()
 /// );
 /// ```
 pub fn snd() -> Term { abs(app(Var(1), fls())) }
@@ -66,8 +67,8 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(uncurry(), plus(), (1.into(), 2.into()).into()), NOR, 0),
-///     3.into()
+///     beta(app!(uncurry(), plus(), (1, 2).into_church()), NOR, 0),
+///     3.into_church()
 /// );
 /// ```
 pub fn uncurry() -> Term {
@@ -89,8 +90,8 @@ pub fn uncurry() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(curry(), fst(), 1.into(), 2.into()), NOR, 0),
-///     1.into()
+///     beta(app!(curry(), fst(), 1.into_church(), 2.into_church()), NOR, 0),
+///     1.into_church()
 /// );
 /// ```
 pub fn curry() -> Term {
@@ -110,7 +111,7 @@ pub fn curry() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(swap(), (1.into(), 2.into()).into()), NOR, 0), (2.into(), 1.into()).into());
+///     beta(app!(swap(), (1, 2).into_church()), NOR, 0), (2, 1).into_church());
 /// ```
 pub fn swap() -> Term {
     abs!(2, app!(
@@ -120,8 +121,14 @@ pub fn swap() -> Term {
     ))
 }
 
-impl From<(Term, Term)> for Term {
-    fn from((t1, t2): (Term, Term)) -> Self {
-        abs(app!(Var(1), t1, t2))
+impl IntoChurch for (Term, Term) {
+    fn into_church(self) -> Term {
+        abs(app!(Var(1), self.0, self.1))
+    }
+}
+
+impl<T,U> IntoChurch for (T, U) where T:IntoChurch, U:IntoChurch {
+    fn into_church(self) -> Term {
+        abs(app!(Var(1), self.0.into_church(), self.1.into_church()))
     }
 }
