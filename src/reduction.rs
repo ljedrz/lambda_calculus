@@ -170,25 +170,6 @@ pub fn compare(term: &Term, orders: &[Order]) -> Vec<(Order, usize)> {
 }
 
 impl Term {
-    /// Applies `self` to another `Term` and performs substitution, consuming `self` in the process.
-    ///
-    /// # Example
-    /// ```
-    /// use lambda_calculus::parser::*;
-    ///
-    /// let lhs    = parse(&"λλ42(λ13)", DeBruijn).unwrap();
-    /// let rhs    = parse(&"λ51", DeBruijn).unwrap();
-    /// let result = parse(&"λ3(λ61)(λ1(λ71))", DeBruijn).unwrap();
-    ///
-    /// assert_eq!(lhs.apply(&rhs), Ok(result));
-    /// ```
-    /// # Errors
-    ///
-    /// The function will return an error if `self` is not an `Abs`traction.
-    pub fn apply(self, rhs: &Term) -> Result<Term, TermError> {
-        apply(self, rhs)
-    }
-
     /// Reduces an `App`lication by substitution and variable update.
     ///
     /// # Example
