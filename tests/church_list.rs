@@ -1,4 +1,4 @@
-#![cfg(feature = "church")]
+#![cfg(feature = "encoding")]
 
 extern crate lambda_calculus as lambda;
 

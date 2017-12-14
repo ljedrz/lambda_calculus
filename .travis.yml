@@ -11,7 +11,8 @@ rust:
 
 script:
   - cargo build --verbose
-  - cargo test --verbose
+  - cargo test --verbose --no-default-features
+  - cargo test --verbose church,scott,parigot
 
 matrix:
   allow_failures:
@@ -19,5 +20,6 @@ matrix:
 
 after_success:
 - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then
-  cargo bench;
+  cargo bench --no-default-features;
+  cargo bench church,scott,parigot;
   fi

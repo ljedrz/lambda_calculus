@@ -32,12 +32,14 @@ extern crate lambda_calculus;
 
 Compilation features:
 - `backslash_lambda`: changes the display of lambdas from `λ` to `\`
+- `encoding`: builds the encoding modules; default feature
 
-To apply a feature setup the dependency in your Cargo.toml like this:
+Example feature setup in Cargo.toml:
 ```
 [dependencies.lambda_calculus]
 version = "^2.0"
-features = ["backslash_lambda"]
+default-features = false # do not build the encoding modules
+features = ["backslash_lambda"] # use a backslash lambda
 ```
 
 ## Usage

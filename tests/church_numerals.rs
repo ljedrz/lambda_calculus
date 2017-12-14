@@ -1,3 +1,5 @@
+#![cfg(feature = "encoding")]
+
 #[macro_use]
 extern crate lambda_calculus as lambda;
 

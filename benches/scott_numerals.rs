@@ -1,3 +1,5 @@
+#![cfg(feature = "encoding")]
+
 #![feature(test)]
 extern crate test;
 
