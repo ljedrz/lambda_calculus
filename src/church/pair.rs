@@ -5,7 +5,7 @@ use term::Term::*;
 use church::boolean::{tru, fls};
 use church::convert::IntoChurch;
 
-/// Produces a Church-encoded pair; applying it to two other terms puts them inside it.
+/// Applied to two `Term`s it contains them in a Church-encoded pair.
 ///
 /// PAIR := λxyz.z x y = λ λ λ 1 3 2
 ///
