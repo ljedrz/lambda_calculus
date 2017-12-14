@@ -26,8 +26,8 @@ fn church_sub(b: &mut Bencher) {
 }
 
 #[bench]
-fn church_plus(b: &mut Bencher) {
-    b.iter(|| { beta(app!(plus(), 2.into_church(), 2.into_church()), HAP, 0) } );
+fn church_add(b: &mut Bencher) {
+    b.iter(|| { beta(app!(add(), 2.into_church(), 2.into_church()), HAP, 0) } );
 }
 
 #[bench]

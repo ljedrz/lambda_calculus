@@ -65,12 +65,12 @@ fn church_map(b: &mut Bencher) {
 
 #[bench]
 fn church_foldl(b: &mut Bencher) {
-    b.iter(|| { beta(app!(foldl(), plus(), 0.into_church(), list3()), HAP, 0) } );
+    b.iter(|| { beta(app!(foldl(), add(), 0.into_church(), list3()), HAP, 0) } );
 }
 
 #[bench]
 fn church_foldr(b: &mut Bencher) {
-    b.iter(|| { beta(app!(foldr(), plus(), 0.into_church(), list3()), HAP, 0) } );
+    b.iter(|| { beta(app!(foldr(), add(), 0.into_church(), list3()), HAP, 0) } );
 }
 
 #[bench]

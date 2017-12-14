@@ -63,11 +63,11 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 /// # Example
 /// ```
 /// use lambda_calculus::church::pair::uncurry;
-/// use lambda_calculus::church::numerals::plus;
+/// use lambda_calculus::church::numerals::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(uncurry(), plus(), (1, 2).into_church()), NOR, 0),
+///     beta(app!(uncurry(), add(), (1, 2).into_church()), NOR, 0),
 ///     3.into_church()
 /// );
 /// ```

@@ -22,8 +22,8 @@ fn church_pred() {
 }
 
 #[test]
-fn church_plus_sub() {
-    assert_eq!(beta(app!(    plus(), 1.into_church()), HAP, 0), succ());
+fn church_add_sub() {
+    assert_eq!(beta(app!(     add(), 1.into_church()), HAP, 0), succ());
     assert_eq!(beta(app!(C(), sub(), 1.into_church()), HAP, 0), pred());
 }
 

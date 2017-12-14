@@ -69,17 +69,17 @@ pub fn succ() -> Term {
 
 /// Applied to two Church-encoded numbers it produces their sum.
 ///
-/// PLUS := λmnfx.m f (n f x) = λ λ λ λ 4 2 (3 2 1)
+/// ADD := λmnfx.m f (n f x) = λ λ λ λ 4 2 (3 2 1)
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::numerals::plus;
+/// use lambda_calculus::church::numerals::add;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(plus(), 1.into_church(), 2.into_church()), NOR, 0), 3.into_church());
-/// assert_eq!(beta(app!(plus(), 2.into_church(), 3.into_church()), NOR, 0), 5.into_church());
+/// assert_eq!(beta(app!(add(), 1.into_church(), 2.into_church()), NOR, 0), 3.into_church());
+/// assert_eq!(beta(app!(add(), 2.into_church(), 3.into_church()), NOR, 0), 5.into_church());
 /// ```
-pub fn plus() -> Term {
+pub fn add() -> Term {
     abs!(4, app!(Var(4), Var(2), app!(Var(3), Var(2), Var(1))))
 }
 

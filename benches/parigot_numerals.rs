@@ -21,6 +21,6 @@ fn parigot_pred(b: &mut Bencher) {
 }
 
 #[bench]
-fn parigot_plus(b: &mut Bencher) {
-    b.iter(|| { beta(app!(plus(), 1.into_parigot(), 2.into_parigot()), HAP, 0) } );
+fn parigot_add(b: &mut Bencher) {
+    b.iter(|| { beta(app!(add(), 1.into_parigot(), 2.into_parigot()), HAP, 0) } );
 }

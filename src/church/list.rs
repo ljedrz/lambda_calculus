@@ -307,13 +307,13 @@ pub fn map() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::church::list::{foldl, nil};
-/// use lambda_calculus::church::numerals::plus;
+/// use lambda_calculus::church::numerals::add;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1, 2, 3].into_church();
 ///
-/// assert_eq!(beta(app!(foldl(), plus(), 0.into_church(), list ), NOR, 0), 6.into_church());
-/// assert_eq!(beta(app!(foldl(), plus(), 0.into_church(), nil()), NOR, 0), 0.into_church());
+/// assert_eq!(beta(app!(foldl(), add(), 0.into_church(), list ), NOR, 0), 6.into_church());
+/// assert_eq!(beta(app!(foldl(), add(), 0.into_church(), nil()), NOR, 0), 0.into_church());
 /// ```
 pub fn foldl() -> Term {
     Z().app(
@@ -347,13 +347,13 @@ pub fn foldl() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::church::list::{foldr, nil};
-/// use lambda_calculus::church::numerals::plus;
+/// use lambda_calculus::church::numerals::add;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1, 2, 3].into_church();
 ///
-/// assert_eq!(beta(app!(foldr(), plus(), 0.into_church(), list ), NOR, 0), 6.into_church());
-/// assert_eq!(beta(app!(foldr(), plus(), 0.into_church(), nil()), NOR, 0), 0.into_church());
+/// assert_eq!(beta(app!(foldr(), add(), 0.into_church(), list ), NOR, 0), 6.into_church());
+/// assert_eq!(beta(app!(foldr(), add(), 0.into_church(), nil()), NOR, 0), 0.into_church());
 /// ```
 pub fn foldr() -> Term {
     abs!(3, app!(
@@ -558,13 +558,13 @@ pub fn zip() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::church::list::zip_with;
-/// use lambda_calculus::church::numerals::plus;
+/// use lambda_calculus::church::numerals::add;
 /// use lambda_calculus::*;
 ///
 /// let list1 = vec![2, 3].into_church();
 /// let list2 = vec![4, 6].into_church();
 ///
-/// assert_eq!(beta(app!(zip_with(), plus(), list1.clone(), list1), NOR, 0), list2);
+/// assert_eq!(beta(app!(zip_with(), add(), list1.clone(), list1), NOR, 0), list2);
 /// ```
 pub fn zip_with() -> Term {
     app(

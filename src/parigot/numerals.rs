@@ -64,23 +64,23 @@ pub fn pred() -> Term {
 
 /// Applied to two Parigot-encoded numbers it produces their sum.
 ///
-/// PLUS := λnm.n (λp.SUCC) m = λ λ 2 (λ SUCC) 1
+/// ADD := λnm.n (λp.SUCC) m = λ λ 2 (λ SUCC) 1
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::parigot::numerals::plus;
+/// use lambda_calculus::parigot::numerals::add;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(plus(), 1.into_parigot(), 2.into_parigot()), NOR, 0), 3.into_parigot());
-/// assert_eq!(beta(app!(plus(), 2.into_parigot(), 3.into_parigot()), NOR, 0), 5.into_parigot());
+/// assert_eq!(beta(app!(add(), 1.into_parigot(), 2.into_parigot()), NOR, 0), 3.into_parigot());
+/// assert_eq!(beta(app!(add(), 2.into_parigot(), 3.into_parigot()), NOR, 0), 5.into_parigot());
 /// ```
-pub fn plus() -> Term {
+pub fn add() -> Term {
     abs!(2, app!(Var(2), abs(succ()), Var(1)))
 }
 
 /// Applied to two Parigot-encoded numbers it yields their product.
 ///
-/// MULT := λnm.n (λp.PLUS m) ZERO = λ λ 2 (λ PLUS 2) ZERO
+/// MULT := λnm.n (λp.ADD m) ZERO = λ λ 2 (λ ADD 2) ZERO
 ///
 /// # Example
 /// ```
@@ -91,7 +91,7 @@ pub fn plus() -> Term {
 /// assert_eq!(beta(app!(mult(), 2.into_parigot(), 3.into_parigot()), NOR, 0), 6.into_parigot());
 /// ```
 pub fn mult() -> Term {
-    abs!(2, app!(Var(2), abs(app(plus(), Var(2))), zero()))
+    abs!(2, app!(Var(2), abs(app(add(), Var(2))), zero()))
 }
 
 impl IntoParigot for usize {
