@@ -3,9 +3,10 @@ Version 2.0.0
 
 Thanks
 -------
-@billpmurphy for the idea to make `reduction::{beta, compare}` IO-free, splitting conversions and
-thus allowing all encodings to be compiled together, adding `term::is_supercombinator` and
-`church::option::unwrap_or` and improving conversions into terms
+@billpmurphy for the idea to make `reduction::{beta, compare}` IO-free, splitting conversions (and
+thus allowing all encodings to be compiled together), adding `term::is_supercombinator` and
+`church::option::unwrap_or`, improving conversions into terms and adding `impl<T> IntoChurch for
+Option<T> where T: IntoChurch`
 
 Breaking changes
 -------
@@ -31,6 +32,7 @@ Changes
 - add `stumpfu::numerals::{zero, one, succ, add}`
 - add an `encoding` feature and make it default
 - add `parigot::numerals::{one, mult}`
+- add `impl<T> IntoChurch for Option<T> where T: IntoChurch`
 
 Version 1.4.0
 =============
