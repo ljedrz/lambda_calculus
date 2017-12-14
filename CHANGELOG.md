@@ -10,7 +10,7 @@ thus allowing all encodings to be compiled together, adding `term::is_supercombi
 Breaking changes
 -------
 
-- remove encoding-related compilation features
+- rework compilation features
 - remove `impl Term` from Church data types
 - simplify and rename `term::Error` to `term::TermError`
 - shorten `TermError` variant names
@@ -19,12 +19,18 @@ Breaking changes
 - unify test and bench names
 - make `reduction::{beta, compare}` IO-free
 - split `Into<Term>` conversion into `IntoChurch`, `IntoScott` and `IntoParigot`
+- rename `*::numerals::plus` to `add`
+- remove `Term::{app, apply}`
 
 Changes
 -------
 - add `reduction::beta_verbose`
 - add `church::option::unwrap_or`
 - add `term::is_supercombinator`
+- add Stump-Fu encoding
+- add `stumpfu::numerals::{zero, one, succ, add}`
+- add an `encoding` feature and make it default
+- add `parigot::numerals::{one, mult}`
 
 Version 1.4.0
 =============
