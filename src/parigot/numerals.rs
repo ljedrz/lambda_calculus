@@ -1,6 +1,6 @@
 //! [Parigot numerals](https://ir.uiowa.edu/cgi/viewcontent.cgi?article=5357&context=etd)
 
-use term::{Term, abs};
+use term::{Term, abs, app};
 use term::Term::*;
 use parigot::convert::IntoParigot;
 
@@ -16,6 +16,19 @@ use parigot::convert::IntoParigot;
 /// assert_eq!(zero(), 0.into_parigot());
 /// ```
 pub fn zero() -> Term { abs!(2, Var(1)) }
+
+/// Produces a Parigot-encoded number one.
+///
+/// ONE := λsz.s ZERO z = λ λ 2 ZERO 1
+///
+/// # Example
+/// ```
+/// use lambda_calculus::parigot::numerals::one;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(one(), 1.into_parigot());
+/// ```
+pub fn one() -> Term { abs!(2, app!(Var(2), zero(), Var(1))) }
 
 /// Applied to a Parigot-encoded number it produces its successor.
 ///
@@ -51,7 +64,7 @@ pub fn pred() -> Term {
 
 /// Applied to two Parigot-encoded numbers it produces their sum.
 ///
-/// PLUS := λnm.n (λx.SUCC) m = λ λ 2 (λ SUCC) 1
+/// PLUS := λnm.n (λp.SUCC) m = λ λ 2 (λ SUCC) 1
 ///
 /// # Example
 /// ```
@@ -63,6 +76,22 @@ pub fn pred() -> Term {
 /// ```
 pub fn plus() -> Term {
     abs!(2, app!(Var(2), abs(succ()), Var(1)))
+}
+
+/// Applied to two Parigot-encoded numbers it yields their product.
+///
+/// MULT := λnm.n (λp.PLUS m) ZERO = λ λ 2 (λ PLUS 2) ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::parigot::numerals::mult;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app!(mult(), 1.into_parigot(), 2.into_parigot()), NOR, 0), 2.into_parigot());
+/// assert_eq!(beta(app!(mult(), 2.into_parigot(), 3.into_parigot()), NOR, 0), 6.into_parigot());
+/// ```
+pub fn mult() -> Term {
+    abs!(2, app!(Var(2), abs(app(plus(), Var(2))), zero()))
 }
 
 impl IntoParigot for usize {
