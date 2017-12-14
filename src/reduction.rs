@@ -55,7 +55,7 @@ pub enum Order {
 ///
 /// The function will return an error if the `lhs` term is not an `Abs`traction.
 pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, TermError> {
-    if lhs.unabs_ref().is_err() { return Err(TermError::NotAbs) }
+    lhs.unabs_ref()?;
 
     _apply(&mut lhs, rhs, 0);
 
@@ -236,16 +236,12 @@ impl Term {
     /// ```
     /// use lambda_calculus::*;
     ///
-    /// let expression = parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic);
-    /// let reduced    = parse(&"λa.λb.a b", Classic);
+    /// let mut expression = parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap();
+    /// let reduced        = parse(&"λa.λb.a b", Classic).unwrap();
     ///
-    /// assert!(expression.is_ok());
-    /// assert!(reduced.is_ok());
-    ///
-    /// let mut expression = expression.unwrap();
     /// expression.reduce(NOR, 0);
     ///
-    /// assert_eq!(expression, reduced.unwrap());
+    /// assert_eq!(expression, reduced);
     /// ```
     pub fn reduce(&mut self, order: Order, limit: usize) -> usize {
         let mut count = 0;
