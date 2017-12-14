@@ -14,6 +14,8 @@ pub mod church;
 pub mod scott;
 #[cfg(feature = "encoding")]
 pub mod parigot;
+#[cfg(feature = "encoding")]
+pub mod stumpfu;
 
 pub use self::term::{Term, abs, app};
 pub use self::term::Term::*;
@@ -28,3 +30,5 @@ pub use self::church::convert::IntoChurch;
 pub use self::scott::convert::IntoScott;
 #[cfg(feature = "encoding")]
 pub use self::parigot::convert::IntoParigot;
+#[cfg(feature = "encoding")]
+pub use self::stumpfu::convert::IntoStumpFu;
