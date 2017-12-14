@@ -307,9 +307,9 @@ impl Term {
         stack.push((0usize, self));
         while let Some((depth, term)) = stack.pop() {
             match *term {
-                Term::Var(i) => if i > depth { return false },
-                Term::Abs(ref t) => stack.push((depth + 1, t)),
-                Term::App(ref f, ref a) => {
+                Var(i) => if i > depth { return false },
+                Abs(ref t) => stack.push((depth + 1, t)),
+                App(ref f, ref a) => {
                     stack.push((depth, f));
                     stack.push((depth, a))
                 }
