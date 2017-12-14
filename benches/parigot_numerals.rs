@@ -1,5 +1,3 @@
-#![cfg(feature = "parigot")]
-
 #![feature(test)]
 extern crate test;
 
@@ -7,20 +5,20 @@ extern crate test;
 extern crate lambda_calculus as lambda;
 
 use test::Bencher;
-use lambda::reduction::*;
 use lambda::parigot::numerals::*;
+use lambda::*;
 
 #[bench]
 fn parigot_succ(b: &mut Bencher) {
-    b.iter(|| { beta(app!(succ(), 1.into()), HAP, 0) } );
+    b.iter(|| { beta(app!(succ(), 1.into_parigot()), HAP, 0) } );
 }
 
 #[bench]
 fn parigot_pred(b: &mut Bencher) {
-    b.iter(|| { beta(app!(pred(), 1.into()), HAP, 0) } );
+    b.iter(|| { beta(app!(pred(), 1.into_parigot()), HAP, 0) } );
 }
 
 #[bench]
 fn parigot_plus(b: &mut Bencher) {
-    b.iter(|| { beta(app!(plus(), 1.into(), 2.into()), HAP, 0) } );
+    b.iter(|| { beta(app!(plus(), 1.into_parigot(), 2.into_parigot()), HAP, 0) } );
 }

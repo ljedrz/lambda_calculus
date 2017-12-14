@@ -7,9 +7,9 @@ extern crate test;
 extern crate lambda_calculus as lambda;
 
 use test::Bencher;
-use lambda::reduction::*;
 use lambda::church::option::*;
 use lambda::church::numerals::succ;
+use lambda::*;
 
 #[bench]
 fn church_is_none(b: &mut Bencher) {

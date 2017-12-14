@@ -1,5 +1,3 @@
-#![cfg(feature = "church")]
-
 #![feature(test)]
 extern crate test;
 
@@ -13,10 +11,10 @@ use lambda::church::boolean::fls;
 use lambda::combinators::C;
 use lambda::*;
 
-fn list1() -> Term { Term::from(vec![1.into()]) }
-fn list2() -> Term { Term::from(vec![2.into(), 3.into()]) }
-fn list3() -> Term { Term::from(vec![1.into(), 2.into(), 3.into()]) }
-fn   gt1() -> Term { app!(C(), gt(), 1.into()) }
+fn list1() -> Term { vec![1].into_church() }
+fn list2() -> Term { vec![2, 3].into_church() }
+fn list3() -> Term { vec![1, 2, 3].into_church() }
+fn   gt1() -> Term { app!(C(), gt(), 1.into_church()) }
 
 #[bench]
 fn church_null(b: &mut Bencher) {
@@ -40,7 +38,7 @@ fn church_length(b: &mut Bencher) {
 
 #[bench]
 fn church_list(b: &mut Bencher) {
-    b.iter(|| { beta(app!(list(), 3.into(), 1.into(), 2.into(), 3.into()), HAP, 0) } );
+    b.iter(|| { beta(app!(list(), 3.into_church(), 1.into_church(), 2.into_church(), 3.into_church()), HAP, 0) } );
 }
 
 #[bench]
@@ -55,7 +53,7 @@ fn church_append(b: &mut Bencher) {
 
 #[bench]
 fn church_index(b: &mut Bencher) {
-    b.iter(|| { beta(app!(index(), 1.into(), list3()), HAP, 0) } );
+    b.iter(|| { beta(app!(index(), 1.into_church(), list3()), HAP, 0) } );
 }
 
 #[bench]
@@ -65,12 +63,12 @@ fn church_map(b: &mut Bencher) {
 
 #[bench]
 fn church_foldl(b: &mut Bencher) {
-    b.iter(|| { beta(app!(foldl(), plus(), 0.into(), list3()), HAP, 0) } );
+    b.iter(|| { beta(app!(foldl(), plus(), 0.into_church(), list3()), HAP, 0) } );
 }
 
 #[bench]
 fn church_foldr(b: &mut Bencher) {
-    b.iter(|| { beta(app!(foldr(), plus(), 0.into(), list3()), HAP, 0) } );
+    b.iter(|| { beta(app!(foldr(), plus(), 0.into_church(), list3()), HAP, 0) } );
 }
 
 #[bench]
@@ -100,7 +98,7 @@ fn church_zip_with(b: &mut Bencher) {
 
 #[bench]
 fn church_take(b: &mut Bencher) {
-    b.iter(|| { beta(app!(take(), 2.into(), list3()), HAP, 0) } );
+    b.iter(|| { beta(app!(take(), 2.into_church(), list3()), HAP, 0) } );
 }
 
 #[bench]
