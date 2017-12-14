@@ -15,6 +15,7 @@ script:
   - cargo test --verbose church
   - cargo test --verbose scott
   - cargo test --verbose parigot
+  - cargo test --verbose stumpfu
 
 matrix:
   allow_failures:
@@ -26,4 +27,5 @@ after_success:
   cargo bench church;
   cargo bench scott;
   cargo bench parigot;
+  cargo bench stumpfu;
   fi

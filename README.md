@@ -15,6 +15,7 @@
 - Church-encoded numerals, booleans, pair, list and option
 - Scott-encoded numerals
 - Parigot-encoded numerals
+- Stump-Fu-encoded numerals
 
 ## Installation
 
