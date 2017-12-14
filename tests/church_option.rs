@@ -33,3 +33,9 @@ fn church_map_or() {
     assert_eq!(beta(app!(map_or(), 5.into(), succ(), None.into()), HAP, 0), 5.into());
     assert_eq!(beta(app!(map_or(), 5.into(), succ(), Some(1.into()).into()), HAP, 0), 2.into());
 }
+
+#[test]
+fn church_unwrap_or() {
+    assert_eq!(beta(app!(unwrap_or(), 5.into(), None.into()), HAP, 0), 5.into());
+    assert_eq!(beta(app!(unwrap_or(), 5.into(), Some(1.into()).into()), HAP, 0), 1.into());
+}
