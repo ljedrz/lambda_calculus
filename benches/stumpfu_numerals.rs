@@ -16,6 +16,11 @@ fn stumpfu_succ(b: &mut Bencher) {
 }
 
 #[bench]
+fn stumpfu_pred(b: &mut Bencher) {
+    b.iter(|| { beta(app!(pred(), 1.into_stumpfu()), HAP, 0) } );
+}
+
+#[bench]
 fn stumpfu_add(b: &mut Bencher) {
     b.iter(|| { beta(app!(add(), 2.into_stumpfu(), 2.into_stumpfu()), HAP, 0) } );
 }

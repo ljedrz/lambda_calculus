@@ -52,6 +52,22 @@ pub fn succ() -> Term {
     ))
 }
 
+/// Applied to a Stump-Fu-encoded number it produces its predecessor.
+///
+/// PRED := λn.n (λcs.s) ZERO = λ 1 (λ λ 1) ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::stumpfu::numerals::pred;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(pred(), 1.into_stumpfu()), NOR, 0), 0.into_stumpfu());
+/// assert_eq!(beta(app(pred(), 3.into_stumpfu()), NOR, 0), 2.into_stumpfu());
+/// ```
+pub fn pred() -> Term {
+    abs(app!(Var(1), abs!(2, Var(1)), zero()))
+}
+
 /// Applied to two Stump-Fu-encoded numbers it produces their sum.
 ///
 /// ADD := λnm.n (λcp.c SUCC m) m = λ λ 2 (λ λ 2 SUCC 3) 1
