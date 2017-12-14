@@ -19,8 +19,8 @@ fn list3() -> Term { vec![1, 2, 3].into_church() }
 fn   gt1() -> Term { app!(C(), gt(), 1.into_church()) }
 
 #[bench]
-fn church_null(b: &mut Bencher) {
-    b.iter(|| { beta(app(null(), list3()), HAP, 0) } );
+fn church_is_nil(b: &mut Bencher) {
+    b.iter(|| { beta(app(is_nil(), list3()), HAP, 0) } );
 }
 
 #[bench]
