@@ -94,6 +94,23 @@ pub fn mult() -> Term {
     abs!(2, app!(Var(2), abs(app(add(), Var(2))), zero()))
 }
 
+/// Applied to two Church-encoded numbers it subtracts the second one from the first one.
+///
+/// SUB := λnm.m (λp. PRED) n = λ λ 1 (λ PRED) 2
+///
+/// # Example
+/// ```
+/// use lambda_calculus::parigot::numerals::sub;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app!(sub(), 1.into_parigot(), 0.into_parigot()), NOR, 0), 1.into_parigot());
+/// assert_eq!(beta(app!(sub(), 3.into_parigot(), 1.into_parigot()), NOR, 0), 2.into_parigot());
+/// assert_eq!(beta(app!(sub(), 5.into_parigot(), 2.into_parigot()), NOR, 0), 3.into_parigot());
+/// ```
+pub fn sub() -> Term {
+    abs!(2, app!(Var(1), abs(pred()), Var(2)))
+}
+
 impl IntoParigot for usize {
     fn into_parigot(self) -> Term {
         let mut ret = zero();
