@@ -2,6 +2,7 @@
 
 use term::{Term, abs};
 use term::Term::*;
+use church::conversions::IntoChurch;
 
 /// A Church-encoded boolean `true`.
 ///
@@ -155,15 +156,15 @@ pub fn nand() -> Term {
 /// use lambda_calculus::church::boolean::{if_else, tru, fls};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(if_else(), tru(), 1.into(), 0.into()), NOR, 0), 1.into());
-/// assert_eq!(beta(app!(if_else(), fls(), 1.into(), 0.into()), NOR, 0), 0.into());
+/// assert_eq!(beta(app!(if_else(), tru(), tru(), fls()), NOR, 0), tru());
+/// assert_eq!(beta(app!(if_else(), fls(), tru(), fls()), NOR, 0), fls());
 /// ```
 pub fn if_else() -> Term {
     abs!(3, app!(Var(3), Var(2), Var(1)))
 }
 
-impl From<bool> for Term {
-    fn from(b: bool) -> Self {
-        if b { tru() } else { fls() }
+impl IntoChurch for bool {
+    fn into_church(self) -> Term {
+        if self { tru() } else { fls() }
     }
 }
