@@ -96,22 +96,20 @@ fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) 
 }
 
 /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit on
-/// the number of reductions (`0` means no limit) and returns the number of performed reductions.
+/// the number of reductions (`0` means no limit) and returns the reduced `Term`.
 ///
 /// # Example
 ///
 /// ```
 /// use lambda_calculus::*;
 ///
-/// let expression = parse(&"(λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)) (λa.λb.a b)", Classic);
-/// let reduced    = parse(&"λa.λb.b", Classic);
+/// let expr    = parse(&"(λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)) (λa.λb.a b)", Classic).unwrap();
+/// let reduced = parse(&"λa.λb.b", Classic).unwrap();
 ///
-/// assert!(expression.is_ok());
-/// assert!(reduced.is_ok());
-/// assert_eq!(beta(expression.unwrap(), NOR, 0), reduced.unwrap());
+/// assert_eq!(beta(expr, NOR, 0), reduced);
 /// ```
 pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
-    term.beta(order, limit);
+    term.reduce(order, limit);
     term
 }
 
@@ -138,7 +136,35 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
 /// );
 /// ```
 pub fn beta_verbose(mut term: Term, order: Order, limit: usize) -> Vec<Term> {
-    term.beta_verbose(order, limit)
+    let mut count = 0;
+    let mut ret = Vec::new();
+    let limit = if limit == 0 {
+        usize::max_value() // this should always suffice
+    } else {
+        limit + 1 // +1 for the range to be inclusive
+    };
+
+    ret.push(term.clone());
+
+    for l in 1..limit {
+        match order {
+            CBN => term.beta_cbn(l, &mut count),
+            NOR => term.beta_nor(l, &mut count),
+            CBV => term.beta_cbv(l, &mut count),
+            APP => term.beta_app(l, &mut count),
+            HSP => term.beta_hsp(l, &mut count),
+            HNO => term.beta_hno(l, &mut count),
+            HAP => term.beta_hap(l, &mut count)
+        }
+
+        if term != *ret.last().unwrap() { // safe, always non-empty
+            ret.push(term.clone());
+        } else {
+            break
+        }
+    }
+
+    ret
 }
 
 /// For a given `Term` and a set of β-reduction `Order`s it returns a vector of pairs containing
@@ -163,7 +189,7 @@ pub fn compare(term: &Term, orders: &[Order]) -> Vec<(Order, usize)> {
     let mut ret = Vec::with_capacity(orders.len());
 
     for order in orders {
-        ret.push((order.to_owned(), term.to_owned().beta(*order, 0)));
+        ret.push((order.to_owned(), term.to_owned().reduce(*order, 0)));
     }
 
     ret
@@ -217,11 +243,11 @@ impl Term {
     /// assert!(reduced.is_ok());
     ///
     /// let mut expression = expression.unwrap();
-    /// expression.beta(NOR, 0);
+    /// expression.reduce(NOR, 0);
     ///
     /// assert_eq!(expression, reduced.unwrap());
     /// ```
-    pub fn beta(&mut self, order: Order, limit: usize) -> usize {
+    pub fn reduce(&mut self, order: Order, limit: usize) -> usize {
         let mut count = 0;
 
         match order {
@@ -235,60 +261,6 @@ impl Term {
         }
 
         count
-    }
-
-    /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
-    /// on the number of reductions (`0` means no limit) and returns a vector with all the states
-    /// of the `Term` during the reduction process.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use lambda_calculus::*;
-    ///
-    /// let mut expr = parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap();
-    /// let reduction_stages = expr.beta_verbose(NOR, 0);
-    ///
-    /// assert_eq!(
-    ///     reduction_stages,
-    ///     vec![
-    ///         parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap(),
-    ///         parse(&"λa.λb.a ((λc.λd.d) a b)",        Classic).unwrap(),
-    ///         parse(&"λa.λb.a ((λc.c) b)",             Classic).unwrap(),
-    ///         parse(&"λa.λb.a b",                      Classic).unwrap()
-    ///     ]
-    /// );
-    /// ```
-    pub fn beta_verbose(&mut self, order: Order, limit: usize) -> Vec<Term> {
-        let mut count = 0;
-        let mut ret = Vec::new();
-        let limit = if limit == 0 {
-            usize::max_value() // this should always suffice
-        } else {
-            limit + 1 // +1 for the range to be inclusive
-        };
-
-        ret.push(self.clone());
-
-        for l in 1..limit {
-            match order {
-                CBN => self.beta_cbn(l, &mut count),
-                NOR => self.beta_nor(l, &mut count),
-                CBV => self.beta_cbv(l, &mut count),
-                APP => self.beta_app(l, &mut count),
-                HSP => self.beta_hsp(l, &mut count),
-                HNO => self.beta_hno(l, &mut count),
-                HAP => self.beta_hap(l, &mut count)
-            }
-
-            if self != ret.last().unwrap() { // safe, always non-empty
-                ret.push(self.clone());
-            } else {
-                break
-            }
-        }
-
-        ret
     }
 
     fn beta_cbn(&mut self, limit: usize, count: &mut usize) {

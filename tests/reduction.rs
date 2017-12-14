@@ -22,29 +22,29 @@ fn reduction_nor() {
 #[test]
 fn reduction_cbn() {
     let mut expr = app(abs(app(I(), Var(1))), app(I(), I()));
-    expr.beta(CBN, 1);
+    expr.reduce(CBN, 1);
     assert_eq!(expr, app(I(), app(I(), I())));
-    expr.beta(CBN, 1);
+    expr.reduce(CBN, 1);
     assert_eq!(expr, app(I(), I()));
-    expr.beta(CBN, 1);
+    expr.reduce(CBN, 1);
     assert_eq!(expr, I());
 }
 
 #[test]
 fn reduction_app() {
     let mut wont_reduce = app(abs(Var(2)), O());
-    wont_reduce.beta(APP, 3);
+    wont_reduce.reduce(APP, 3);
     assert_eq!(wont_reduce, app(abs(Var(2)), O()));
 }
 
 #[test]
 fn reduction_cbv() {
     let mut expr = app(abs(app(I(), Var(1))), app(I(), I()));
-    expr.beta(CBV, 1);
+    expr.reduce(CBV, 1);
     assert_eq!(expr, app(abs(app(I(), Var(1))), I()));
-    expr.beta(CBV, 1);
+    expr.reduce(CBV, 1);
     assert_eq!(expr, app(I(), I()));
-    expr.beta(CBV, 1);
+    expr.reduce(CBV, 1);
     assert_eq!(expr, I());
 }
 
