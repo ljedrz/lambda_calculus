@@ -7,7 +7,7 @@ extern crate test;
 extern crate lambda_calculus as lambda;
 
 use test::Bencher;
-use lambda::stumpfu::numerals::*;
+use lambda::data::numerals::stumpfu::*;
 use lambda::*;
 
 #[bench]
