@@ -10,102 +10,32 @@ use test::Bencher;
 use lambda::data::numerals::church::*;
 use lambda::*;
 
-#[bench]
-fn church_succ(b: &mut Bencher) {
-    b.iter(|| { beta(app!(succ(), 1.into_church()), HAP, 0) } );
+macro_rules! bench_num {
+    ($name:ident, $conversion:ident, $function:ident, $order:expr, $($n:expr),+) => (
+        #[bench]
+        fn $name(b: &mut Bencher) {
+            b.iter(|| { beta(app!($function(), $($n.$conversion()),*), $order, 0) } );
+        }
+    );
 }
 
-#[bench]
-fn church_pred(b: &mut Bencher) {
-    b.iter(|| { beta(app!(pred(), 1.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_sub(b: &mut Bencher) {
-    b.iter(|| { beta(app!(sub(), 2.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_add(b: &mut Bencher) {
-    b.iter(|| { beta(app!(add(), 2.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_mult(b: &mut Bencher) {
-    b.iter(|| { beta(app!(mult(), 2.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_pow(b: &mut Bencher) {
-    b.iter(|| { beta(app!(pow(), 2.into_church(), 2.into_church()), NOR, 0) } );
-}
-
-#[bench]
-fn church_div(b: &mut Bencher) {
-    b.iter(|| { beta(app!(div(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_quot(b: &mut Bencher) {
-    b.iter(|| { beta(app!(quot(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_rem(b: &mut Bencher) {
-    b.iter(|| { beta(app!(rem(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_eq(b: &mut Bencher) {
-    b.iter(|| { beta(app!(eq(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_neq(b: &mut Bencher) {
-    b.iter(|| { beta(app!(neq(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_gt(b: &mut Bencher) {
-    b.iter(|| { beta(app!(gt(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_lt(b: &mut Bencher) {
-    b.iter(|| { beta(app!(lt(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_geq(b: &mut Bencher) {
-    b.iter(|| { beta(app!(geq(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_leq(b: &mut Bencher) {
-    b.iter(|| { beta(app!(leq(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_min(b: &mut Bencher) {
-    b.iter(|| { beta(app!(min(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_max(b: &mut Bencher) {
-    b.iter(|| { beta(app!(max(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_lshift(b: &mut Bencher) {
-    b.iter(|| { beta(app!(lshift(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_rshift(b: &mut Bencher) {
-    b.iter(|| { beta(app!(rshift(), 3.into_church(), 2.into_church()), HAP, 0) } );
-}
-
-#[bench]
-fn church_fac(b: &mut Bencher) {
-    b.iter(|| { beta(app!(fac(), 3.into_church()), HAP, 0) } );
-}
+bench_num!(church_succ, into_church, succ, HAP, 1);
+bench_num!(church_pred, into_church, pred, HAP, 1);
+bench_num!(church_add,  into_church, add,  HAP, 2, 2);
+bench_num!(church_sub,  into_church, sub,  HAP, 2, 2);
+bench_num!(church_mult, into_church, mult, HAP, 2, 2);
+bench_num!(church_pow,  into_church, pow,  HAP, 2, 2);
+bench_num!(church_div,  into_church, div,  HAP, 2, 2);
+bench_num!(church_quot, into_church, quot, HAP, 2, 2);
+bench_num!(church_rem,  into_church, rem,  HAP, 2, 2);
+bench_num!(church_eq,   into_church, eq,   HAP, 2, 2);
+bench_num!(church_neq,  into_church, neq,  HAP, 2, 2);
+bench_num!(church_gt,   into_church, gt,   HAP, 2, 2);
+bench_num!(church_lt,   into_church, lt,   HAP, 2, 2);
+bench_num!(church_geq,  into_church, geq,  HAP, 2, 2);
+bench_num!(church_leq,  into_church, leq,  HAP, 2, 2);
+bench_num!(church_min,  into_church, min,  HAP, 2, 2);
+bench_num!(church_max,  into_church, max,  HAP, 2, 2);
+bench_num!(church_lshift, into_church, lshift,  HAP, 2, 2);
+bench_num!(church_rshift, into_church, rshift,  HAP, 2, 2);
+bench_num!(church_fac,   into_church, fac, HAP, 3);
