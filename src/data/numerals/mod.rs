@@ -1,4 +1,4 @@
-//! Different lambda encodings of numerals
+//! Different lambda encodings of Peano numerals
 
 pub mod church;
 pub mod scott;

@@ -415,7 +415,6 @@ macro_rules! app {
     ($term1:expr, $($term2:expr),+) => {
         {
             let mut term = $term1;
-            //$(term = App(Box::new(term), Box::new($term2));)*
             $(term = app(term, $term2);)*
             term
         }
