@@ -45,7 +45,7 @@ pub enum Term {
     App(Box<Term>, Box<Term>)
 }
 
-/// An error that can be returned when an inapplicable function is applied to a term.
+/// An error that can be returned when an inapplicable function is applied to a `Term`.
 #[derive(Debug, PartialEq)]
 pub enum TermError {
     /// the term is not a variable

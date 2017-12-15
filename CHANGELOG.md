@@ -36,7 +36,7 @@ Changes
 - add an `encoding` feature and make it default
 - add `parigot::{one, mult, sub}`
 - add `impl<T> IntoChurch for Option<T> where T: IntoChurch`
-- improve `pair` and `list` documentation
+- improve `pair`, `list`, `parser`, `reduction` documentation
 
 Version 1.4.0
 =============

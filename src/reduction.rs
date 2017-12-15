@@ -21,15 +21,15 @@ pub use self::Order::*;
 pub enum Order {
     /// Normal - leftmost outermost; the most popular lambda calculus reduction strategy
     NOR,
-    /// Call-by-name - leftmost outermost, but no reductions inside abstractions
+    /// Call-by-name - leftmost outermost; no reductions inside abstractions
     CBN,
-    /// Head spine - leftmost outermost, but abstractions reduced only in head position
+    /// Head spine - leftmost outermost; abstractions reduced only in head position
     HSP,
     /// Hybrid normal - a hybrid between `HSP` (head spine) and `NOR` (normal) strategies
     HNO,
     /// Applicative - leftmost innermost; the most eager strategy; unfit for recursion combinators
     APP,
-    /// Call-by-value - leftmost innermost, but no reductions inside abstractions
+    /// Call-by-value - leftmost innermost, no reductions inside abstractions
     CBV,
     /// Hybrid applicative - a hybrid between `CBV` (call-by-value) and `APP` (applicative)
     /// strategies; usually the fastest-reducing normalizing strategy

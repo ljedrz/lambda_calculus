@@ -8,7 +8,7 @@ use self::ParseError::*;
 use self::Expression::*;
 pub use term::Notation::*;
 
-/// A type to represent a parsing error.
+/// An error returned when a parsing issue is encountered.
 #[derive(Debug, PartialEq)]
 pub enum ParseError {
     /// an invalid character was encountered
@@ -22,13 +22,13 @@ pub enum ParseError {
 #[derive(Debug, PartialEq)]
 #[doc(hidden)]
 pub enum Token {
-    /// λ or \
+    /// the lambda symbol ('λ' or '\')
     Lambda,
     /// left parenthesis
     Lparen,
     /// right parenthesis
     Rparen,
-    /// a number
+    /// a hex-encoded digit
     Number(usize)
 }
 
@@ -163,7 +163,7 @@ fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut
 pub enum Expression {
     /// an abstraction
     Abstraction,
-    /// a sequence of Expressions
+    /// a sequence of `Expression`s
     Sequence(Vec<Expression>),
     /// a variable with a De Bruijn index
     Variable(usize)
