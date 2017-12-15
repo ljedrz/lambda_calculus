@@ -4,13 +4,13 @@ use term::{Term, Notation, abs, app};
 use term::Term::*;
 use self::Token::*;
 use self::CToken::*;
-use self::Error::*;
+use self::ParseError::*;
 use self::Expression::*;
 pub use term::Notation::*;
 
 /// A type to represent a parsing error.
 #[derive(Debug, PartialEq)]
-pub enum Error {
+pub enum ParseError {
     /// an invalid character was encountered
     InvalidCharacter((usize, char)),
     /// the expression is invalid
@@ -46,7 +46,7 @@ pub enum CToken {
 }
 
 #[doc(hidden)]
-pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
+pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, ParseError> {
     let chars = input.chars().enumerate();
     let mut tokens = Vec::new();
 
@@ -71,7 +71,7 @@ pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, Error> {
 }
 
 #[doc(hidden)]
-pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, Error> {
+pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
     let mut chars = input.chars().enumerate().peekable();
     let mut tokens = Vec::new();
     let valid_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -170,11 +170,11 @@ pub enum Expression {
 }
 
 #[doc(hidden)]
-pub fn get_ast(tokens: &[Token]) -> Result<Expression, Error> {
+pub fn get_ast(tokens: &[Token]) -> Result<Expression, ParseError> {
     _get_ast(tokens, &mut 0)
 }
 
-fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
+fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError> {
     if tokens.is_empty() { return Err(EmptyExpression) }
 
     let mut expr = Vec::new();
@@ -222,7 +222,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, Error> {
 /// assert_eq!(parse(  &"λλλ31(21)",     DeBruijn), Ok(S()));
 /// assert_eq!(parse(&r#"\\\3 1 (2 1)"#, DeBruijn), Ok(S()));
 /// ```
-pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
+pub fn parse(input: &str, notation: Notation) -> Result<Term, ParseError> {
     let tokens = if notation == DeBruijn {
         tokenize_dbr(input)?
     } else {
@@ -240,7 +240,7 @@ pub fn parse(input: &str, notation: Notation) -> Result<Term, Error> {
 }
 
 #[doc(hidden)]
-pub fn fold_exprs(exprs: &[Expression]) -> Result<Term, Error> {
+pub fn fold_exprs(exprs: &[Expression]) -> Result<Term, ParseError> {
     let mut depth  = 0;
     let mut output = Vec::new();
 
@@ -264,7 +264,7 @@ pub fn fold_exprs(exprs: &[Expression]) -> Result<Term, Error> {
     Ok(ret)
 }
 
-fn fold_terms(mut terms: Vec<Term>) -> Result<Term, Error> {
+fn fold_terms(mut terms: Vec<Term>) -> Result<Term, ParseError> {
     if terms.len() > 1 {
         let fst = terms.remove(0);
         Ok( terms.into_iter().fold(fst, app) )
