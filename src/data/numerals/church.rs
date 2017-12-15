@@ -628,8 +628,8 @@ pub fn rshift() -> Term {
 /// use lambda_calculus::data::numerals::church::is_even;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(is_even(), 2.into_church()), NOR, 0), true.into());
-/// assert_eq!(beta(app(is_even(), 3.into_church()), NOR, 0), false.into());
+/// assert_eq!(beta(app(is_even(), 0.into_church()), NOR, 0), true.into());
+/// assert_eq!(beta(app(is_even(), 1.into_church()), NOR, 0), false.into());
 /// ```
 pub fn is_even() -> Term {
     abs(app!(Var(1), abs(app!(Var(1), fls(), tru())), tru()))
@@ -645,8 +645,8 @@ pub fn is_even() -> Term {
 /// use lambda_calculus::data::numerals::church::is_odd;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(is_odd(), 2.into_church()), NOR, 0), false.into());
-/// assert_eq!(beta(app(is_odd(), 3.into_church()), NOR, 0), true.into());
+/// assert_eq!(beta(app(is_odd(), 0.into_church()), NOR, 0), false.into());
+/// assert_eq!(beta(app(is_odd(), 1.into_church()), NOR, 0), true.into());
 /// ```
 pub fn is_odd() -> Term {
     abs(app!(Var(1), abs(app!(Var(1), fls(), tru())), fls()))
