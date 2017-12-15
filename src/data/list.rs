@@ -699,16 +699,3 @@ impl Into<Term> for Vec<Term> {
         ret
     }
 }
-/*
-impl<T> IntoChurch for Vec<T> where T: IntoChurch {
-    fn into_church(self) -> Term {
-        let mut ret = nil();
-
-        for term in self.into_iter().rev() {
-            ret = abs(app!(Var(1), term.into_church(), ret))
-        }
-
-        ret
-    }
-}
-*/

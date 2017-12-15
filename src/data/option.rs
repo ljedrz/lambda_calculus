@@ -129,13 +129,3 @@ impl Into<Term> for Option<Term> {
         }
     }
 }
-/*
-impl<T> IntoChurch for Option<T> where T: IntoChurch {
-    fn into_church(self) -> Term {
-        match self {
-            None => none(),
-            Some(value) => abs!(2, app(Var(1), value.into_church()))
-        }
-    }
-}
-*/

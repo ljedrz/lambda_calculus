@@ -664,3 +664,30 @@ impl IntoChurch for usize {
         abs!(2, ret)
     }
 }
+
+impl<T, U> IntoChurch for (T, U) where T: IntoChurch, U: IntoChurch {
+    fn into_church(self) -> Term {
+        abs(app!(Var(1), self.0.into_church(), self.1.into_church()))
+    }
+}
+
+impl<T> IntoChurch for Vec<T> where T: IntoChurch {
+    fn into_church(self) -> Term {
+        let mut ret = fls();
+
+        for term in self.into_iter().rev() {
+            ret = abs(app!(Var(1), term.into_church(), ret))
+        }
+
+        ret
+    }
+}
+
+impl<T> IntoChurch for Option<T> where T: IntoChurch {
+    fn into_church(self) -> Term {
+        match self {
+            None => tru(),
+            Some(value) => abs!(2, app(Var(1), value.into_church()))
+        }
+    }
+}

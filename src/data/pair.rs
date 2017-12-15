@@ -125,10 +125,3 @@ impl Into<Term> for (Term, Term) {
         abs(app!(Var(1), self.0, self.1))
     }
 }
-/*
-impl<T, U> IntoChurch for (T, U) where T: IntoChurch, U: IntoChurch {
-    fn into_church(self) -> Term {
-        abs(app!(Var(1), self.0.into_church(), self.1.into_church()))
-    }
-}
-*/
