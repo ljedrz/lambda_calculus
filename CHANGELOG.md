@@ -5,12 +5,13 @@ Thanks
 -------
 @billpmurphy for the idea to make `reduction::{beta, compare}` IO-free, splitting conversions (and
 thus allowing all encodings to be compiled together), adding `term::is_supercombinator` and
-`church::option::unwrap_or`, improving conversions into terms and adding `impl<T> IntoChurch for
+`option::{map, unwrap_or}`, improving conversions into terms and adding `impl<T> IntoChurch for
 Option<T> where T: IntoChurch`
 
 Breaking changes
 -------
 
+- restructure the modules
 - rework compilation features
 - remove `impl Term` from Church data types
 - simplify and rename `term::Error` to `term::TermError`
@@ -28,14 +29,14 @@ Breaking changes
 Changes
 -------
 - add `reduction::beta_verbose`
-- add `church::option::unwrap_or`
+- add `option::unwrap_or`
 - add `term::is_supercombinator`
 - add Stump-Fu encoding
-- add `stumpfu::numerals::{zero, one, succ, add}`
+- add `stumpfu::{zero, one, succ, add}`
 - add an `encoding` feature and make it default
-- add `parigot::numerals::{one, mult, sub}`
+- add `parigot::{one, mult, sub}`
 - add `impl<T> IntoChurch for Option<T> where T: IntoChurch`
-- improve `church::{pair, list}` documentation
+- improve `pair` and `list` documentation
 
 Version 1.4.0
 =============
