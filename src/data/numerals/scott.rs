@@ -2,7 +2,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use scott::convert::IntoScott;
+use data::numerals::convert::IntoScott;
 
 /// Produces a Scott-encoded number zero.
 ///

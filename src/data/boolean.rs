@@ -2,7 +2,6 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use church::convert::IntoChurch;
 
 /// A Church-encoded boolean `true`.
 ///
@@ -163,8 +162,8 @@ pub fn if_else() -> Term {
     abs!(3, app!(Var(3), Var(2), Var(1)))
 }
 
-impl IntoChurch for bool {
-    fn into_church(self) -> Term {
+impl Into<Term> for bool {
+    fn into(self) -> Term {
         if self { tru() } else { fls() }
     }
 }

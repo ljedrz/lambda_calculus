@@ -2,9 +2,8 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use stumpfu::convert::IntoStumpFu;
-use church::convert::IntoChurch;
-use church::numerals as church;
+use data::numerals::convert::{IntoChurch, IntoStumpFu};
+use data::numerals::church as church;
 
 /// Produces a Stump-Fu-encoded number zero.
 ///

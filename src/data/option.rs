@@ -2,8 +2,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use church::boolean::{tru, fls};
-use church::convert::IntoChurch;
+use data::boolean::{tru, fls};
 
 /// Produces a Church-encoded empty option.
 ///
@@ -122,15 +121,15 @@ pub fn unwrap_or() -> Term {
     abs!(2, app!(Var(1), Var(2), abs(Var(1))))
 }
 
-impl IntoChurch for Option<Term> {
-    fn into_church(self) -> Term {
+impl Into<Term> for Option<Term> {
+    fn into(self) -> Term {
         match self {
             None => none(),
             Some(value) => abs!(2, app(Var(1), value))
         }
     }
 }
-
+/*
 impl<T> IntoChurch for Option<T> where T: IntoChurch {
     fn into_church(self) -> Term {
         match self {
@@ -139,3 +138,4 @@ impl<T> IntoChurch for Option<T> where T: IntoChurch {
         }
     }
 }
+*/

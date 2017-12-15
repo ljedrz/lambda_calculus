@@ -2,10 +2,8 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use church::boolean::{tru, fls};
-use church::pair::{pair, fst, snd};
-use church::numerals::zero;
-use church::convert::IntoChurch;
+use data::boolean::{tru, fls};
+use data::pair::{pair, fst, snd};
 use combinators::Z;
 
 /// Produces a `nil`, the last link of a Church-encoded list; equivalent to `boolean::fls()`.
@@ -123,7 +121,7 @@ pub fn length() -> Term {
             )),
             abs(Var(1))
         )),
-        zero()
+        fls()
     )
 }
 
@@ -690,8 +688,8 @@ pub fn take_while() -> Term {
     )
 }
 
-impl IntoChurch for Vec<Term> {
-    fn into_church(self) -> Term {
+impl Into<Term> for Vec<Term> {
+    fn into(self) -> Term {
         let mut ret = nil();
 
         for term in self.into_iter().rev() {
@@ -701,7 +699,7 @@ impl IntoChurch for Vec<Term> {
         ret
     }
 }
-
+/*
 impl<T> IntoChurch for Vec<T> where T: IntoChurch {
     fn into_church(self) -> Term {
         let mut ret = nil();
@@ -713,3 +711,4 @@ impl<T> IntoChurch for Vec<T> where T: IntoChurch {
         ret
     }
 }
+*/

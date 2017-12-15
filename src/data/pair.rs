@@ -2,8 +2,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use church::boolean::{tru, fls};
-use church::convert::IntoChurch;
+use data::boolean::{tru, fls};
 
 /// Applied to two `Term`s it contains them in a Church-encoded pair.
 ///
@@ -121,14 +120,15 @@ pub fn swap() -> Term {
     ))
 }
 
-impl IntoChurch for (Term, Term) {
-    fn into_church(self) -> Term {
+impl Into<Term> for (Term, Term) {
+    fn into(self) -> Term {
         abs(app!(Var(1), self.0, self.1))
     }
 }
-
+/*
 impl<T, U> IntoChurch for (T, U) where T: IntoChurch, U: IntoChurch {
     fn into_church(self) -> Term {
         abs(app!(Var(1), self.0.into_church(), self.1.into_church()))
     }
 }
+*/
