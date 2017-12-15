@@ -19,7 +19,7 @@ pub fn fls() -> Term { abs!(2, Var(1)) }
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::boolean::{and, tru, fls};
+/// use lambda_calculus::data::boolean::{and, tru, fls};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(and(), tru(), tru()), NOR, 0), tru());
@@ -37,7 +37,7 @@ pub fn and() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::boolean::{or, tru, fls};
+/// use lambda_calculus::data::boolean::{or, tru, fls};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(or(), tru(), tru()), NOR, 0), tru());
@@ -55,7 +55,7 @@ pub fn or() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::boolean::{not, tru, fls};
+/// use lambda_calculus::data::boolean::{not, tru, fls};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(not(), tru()), NOR, 0), fls());
@@ -71,7 +71,7 @@ pub fn not() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::boolean::{xor, tru, fls};
+/// use lambda_calculus::data::boolean::{xor, tru, fls};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(xor(), tru(), tru()), NOR, 0), fls());
@@ -99,7 +99,7 @@ pub fn xor() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::boolean::{nor, tru, fls};
+/// use lambda_calculus::data::boolean::{nor, tru, fls};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(nor(), tru(), tru()), NOR, 0), fls());
@@ -125,7 +125,7 @@ pub fn nor() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::boolean::{nand, tru, fls};
+/// use lambda_calculus::data::boolean::{nand, tru, fls};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(nand(), tru(), tru()), NOR, 0), fls());
@@ -152,7 +152,7 @@ pub fn nand() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::church::boolean::{if_else, tru, fls};
+/// use lambda_calculus::data::boolean::{if_else, tru, fls};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(if_else(), tru(), tru(), fls()), NOR, 0), tru());

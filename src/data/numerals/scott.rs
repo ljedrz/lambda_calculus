@@ -10,7 +10,7 @@ use data::numerals::convert::IntoScott;
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::scott::numerals::zero;
+/// use lambda_calculus::data::numerals::scott::zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(zero(), 0.into_scott());
@@ -23,7 +23,7 @@ pub fn zero() -> Term { abs!(2, Var(2)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::scott::numerals::succ;
+/// use lambda_calculus::data::numerals::scott::succ;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(succ(), 0.into_scott()), NOR, 0), 1.into_scott());
@@ -39,7 +39,7 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::scott::numerals::pred;
+/// use lambda_calculus::data::numerals::scott::pred;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(pred(), 1.into_scott()), NOR, 0), 0.into_scott());

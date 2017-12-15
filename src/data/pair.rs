@@ -10,7 +10,7 @@ use data::boolean::{tru, fls};
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::pair;
+/// use lambda_calculus::data::pair::pair;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -28,7 +28,7 @@ pub fn pair() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::fst;
+/// use lambda_calculus::data::pair::fst;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -44,7 +44,7 @@ pub fn fst() -> Term { abs(app(Var(1), tru())) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::snd;
+/// use lambda_calculus::data::pair::snd;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -61,8 +61,8 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::uncurry;
-/// use lambda_calculus::church::numerals::add;
+/// use lambda_calculus::data::pair::uncurry;
+/// use lambda_calculus::data::numerals::church::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -85,7 +85,7 @@ pub fn uncurry() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::{fst, curry};
+/// use lambda_calculus::data::pair::{fst, curry};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -106,7 +106,7 @@ pub fn curry() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::swap;
+/// use lambda_calculus::data::pair::swap;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(

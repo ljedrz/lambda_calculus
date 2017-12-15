@@ -15,10 +15,10 @@ pub fn none() -> Term { tru() }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::option::some;
+/// use lambda_calculus::data::option::some;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(some(), 1.into_church()), NOR, 0), Some(1.into_church()).into_church());
+/// assert_eq!(beta(app(some(), 1.into_church()), NOR, 0), Some(1).into_church());
 /// ```
 pub fn some() -> Term {
     abs!(3, app(Var(1), Var(3)))
@@ -31,11 +31,11 @@ pub fn some() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::option::{is_none, none};
+/// use lambda_calculus::data::option::{is_none, none};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(is_none(), none()), NOR, 0), true.into_church());
-/// assert_eq!(beta(app(is_none(), Some(1).into_church()), NOR, 0), false.into_church());
+/// assert_eq!(beta(app(is_none(), none()), NOR, 0), true.into());
+/// assert_eq!(beta(app(is_none(), Some(1).into_church()), NOR, 0), false.into());
 /// ```
 pub fn is_none() -> Term {
     abs(app!(Var(1), tru(), abs(fls())))
@@ -48,11 +48,11 @@ pub fn is_none() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::option::{is_some, none};
+/// use lambda_calculus::data::option::{is_some, none};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(is_some(), none()), NOR, 0), false.into_church());
-/// assert_eq!(beta(app(is_some(), Some(2).into_church()), NOR, 0), true.into_church());
+/// assert_eq!(beta(app(is_some(), none()), NOR, 0), false.into());
+/// assert_eq!(beta(app(is_some(), Some(2).into_church()), NOR, 0), true.into());
 /// ```
 pub fn is_some() -> Term {
     abs(app!(Var(1), fls(), abs(tru())))
@@ -65,8 +65,8 @@ pub fn is_some() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::option::{map, none};
-/// use lambda_calculus::church::numerals::succ;
+/// use lambda_calculus::data::option::{map, none};
+/// use lambda_calculus::data::numerals::church::succ;
 /// use lambda_calculus::*;
 ///
 /// let some_one: Term = Some(1).into_church();
@@ -89,8 +89,8 @@ pub fn map() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::option::{map_or, none};
-/// use lambda_calculus::church::numerals::succ;
+/// use lambda_calculus::data::option::{map_or, none};
+/// use lambda_calculus::data::numerals::church::succ;
 /// use lambda_calculus::*;
 ///
 /// let some_one: Term = Some(1).into_church();
@@ -109,7 +109,7 @@ pub fn map_or() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::option::{unwrap_or, none};
+/// use lambda_calculus::data::option::{unwrap_or, none};
 /// use lambda_calculus::*;
 ///
 /// let some_one: Term = Some(1).into_church();

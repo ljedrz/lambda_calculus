@@ -10,7 +10,7 @@ use data::numerals::convert::IntoParigot;
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::parigot::numerals::zero;
+/// use lambda_calculus::data::numerals::parigot::zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(zero(), 0.into_parigot());
@@ -23,7 +23,7 @@ pub fn zero() -> Term { abs!(2, Var(1)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::parigot::numerals::one;
+/// use lambda_calculus::data::numerals::parigot::one;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(one(), 1.into_parigot());
@@ -36,7 +36,7 @@ pub fn one() -> Term { abs!(2, app!(Var(2), zero(), Var(1))) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::parigot::numerals::succ;
+/// use lambda_calculus::data::numerals::parigot::succ;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(succ(), 0.into_parigot()), NOR, 0), 1.into_parigot());
@@ -52,7 +52,7 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::parigot::numerals::pred;
+/// use lambda_calculus::data::numerals::parigot::pred;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(pred(), 1.into_parigot()), NOR, 0), 0.into_parigot());
@@ -68,7 +68,7 @@ pub fn pred() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::parigot::numerals::add;
+/// use lambda_calculus::data::numerals::parigot::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(add(), 1.into_parigot(), 2.into_parigot()), NOR, 0), 3.into_parigot());
@@ -84,7 +84,7 @@ pub fn add() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::parigot::numerals::mult;
+/// use lambda_calculus::data::numerals::parigot::mult;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(mult(), 1.into_parigot(), 2.into_parigot()), NOR, 0), 2.into_parigot());
@@ -100,7 +100,7 @@ pub fn mult() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::parigot::numerals::sub;
+/// use lambda_calculus::data::numerals::parigot::sub;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(sub(), 1.into_parigot(), 0.into_parigot()), NOR, 0), 1.into_parigot());
