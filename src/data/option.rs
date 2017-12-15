@@ -1,15 +1,15 @@
-//! Church-encoded option type
+//! [Lambda-encoded option](https://en.wikipedia.org/wiki/Option_type)
 
 use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
 
-/// Produces a Church-encoded empty option.
+/// Produces a lambda-encoded empty option.
 ///
 /// NONE := λns.n = λ λ 2
 pub fn none() -> Term { tru() }
 
-/// Applied to an argument it consumes it and produces a Church-encoded option that contains it.
+/// Applied to an argument it consumes it and produces a lambda-encoded option that contains it.
 ///
 /// SOME := λans.s a = λ λ λ 1 3
 ///
@@ -24,7 +24,7 @@ pub fn some() -> Term {
     abs!(3, app(Var(1), Var(3)))
 }
 
-/// Applied to a Church-encoded option it produces a Church-encoded boolean indicating whether it
+/// Applied to a lambda-encoded option it produces a lambda-encoded boolean indicating whether it
 /// is empty.
 ///
 /// IS_NONE := λa.a TRUE (λx.FALSE) = λ 1 TRUE (λ FALSE)
@@ -41,7 +41,7 @@ pub fn is_none() -> Term {
     abs(app!(Var(1), tru(), abs(fls())))
 }
 
-/// Applied to a Church-encoded option it produces a Church-encoded boolean indicating whether it
+/// Applied to a lambda-encoded option it produces a lambda-encoded boolean indicating whether it
 /// is not empty.
 ///
 /// IS_SOME := λa.a FALSE (λx.TRUE) = λ 1 FALSE (λ TRUE)
@@ -58,7 +58,7 @@ pub fn is_some() -> Term {
     abs(app!(Var(1), fls(), abs(tru())))
 }
 
-/// Applied to a function and a Church-encoded option it applies the function to the contents of
+/// Applied to a function and a lambda-encoded option it applies the function to the contents of
 /// the option, returning the empty option if the option does not contain a value.
 ///
 /// MAP := λfm.m NONE (λx.SOME (f x)) =  λ λ 1 NONE (λ SOME (3 1))
@@ -82,7 +82,7 @@ pub fn map() -> Term {
     ))
 }
 
-/// Applied to two arguments and a Church-encoded option it returns the second argument applied to
+/// Applied to two arguments and a lambda-encoded option it returns the second argument applied to
 /// the contents of the option if it contains a value or the first argument if it doesn't.
 ///
 /// MAP_OR := λdfm.m d f = λ λ λ 3 1 2
@@ -102,7 +102,7 @@ pub fn map_or() -> Term {
     abs!(3, app!(Var(1), Var(3), Var(2)))
 }
 
-/// Applied to one argument and a Church-encoded option it returns the value inside the option or
+/// Applied to one argument and a lambda-encoded option it returns the value inside the option or
 /// the first argument if the option doesn't contain a value.
 ///
 /// UNWRAP_OR := λdm.m d I = λ λ 1 2 I

@@ -1,4 +1,4 @@
-//! [Church single-pair lists](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
+//! [Lambda-encoded single-pair list](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
 
 use term::{Term, abs, app};
 use term::Term::*;
@@ -6,12 +6,12 @@ use data::boolean::{tru, fls};
 use data::pair::{pair, fst, snd};
 use combinators::Z;
 
-/// Produces a `nil`, the last link of a Church-encoded list; equivalent to `boolean::fls()`.
+/// Produces a `nil`, the last link of a lambda-encoded list; equivalent to `boolean::fls()`.
 ///
 /// NIL := FALSE
 pub fn nil() -> Term { fls() }
 
-/// Applied to a Church list it determines if it is empty.
+/// Applied to a lambda-encoded list it determines if it is empty.
 ///
 /// IS_NIL := λl.l (λhtd.FALSE) TRUE = λ 1 (λ λ λ FALSE) TRUE
 ///
@@ -26,7 +26,7 @@ pub fn is_nil() -> Term {
     abs(app!(Var(1), abs!(3, fls()), tru()))
 }
 
-/// Applied to two terms it returns them contained in a Church-encoded list; equivalent to `pair::pair()`.
+/// Applied to two terms it returns them contained in a lambda-encoded list; equivalent to `pair::pair()`.
 ///
 /// CONS := PAIR
 ///
@@ -57,7 +57,7 @@ pub fn is_nil() -> Term {
 /// ```
 pub fn cons() -> Term { pair() }
 
-/// Applied to a Church-encoded list it returns its first element; equivalent to `pair::fst()`.
+/// Applied to a lambda-encoded list it returns its first element; equivalent to `pair::fst()`.
 ///
 /// HEAD := FST
 ///
@@ -72,7 +72,7 @@ pub fn cons() -> Term { pair() }
 /// ```
 pub fn head() -> Term { fst() }
 
-/// Applied to a Church-encoded list it returns a new list with all its elements but the first one;
+/// Applied to a lambda-encoded list it returns a new list with all its elements but the first one;
 /// equivalent to `pair::snd()`.
 ///
 /// TAIL := SND
@@ -91,7 +91,7 @@ pub fn head() -> Term { fst() }
 /// ```
 pub fn tail() -> Term { snd() }
 
-/// Applied to a Church-encoded list it returns its Church-encoded length.
+/// Applied to a lambda-encoded list it returns its lambda-encoded length.
 ///
 /// LENGTH := Z (λzal.IS_NIL l (λx.a) (λx.z (SUCC a) (SND l)) I) ZERO
 /// = Z (λλλ IS_NIL 1 (λ 3) (λ 4 (SUCC 3) (SND 2)) I) ZERO
@@ -125,7 +125,7 @@ pub fn length() -> Term {
     )
 }
 
-/// Reverses a Church-encoded list.
+/// Reverses a lambda-encoded list.
 ///
 /// REVERSE := Z (λzal.IS_NIL l (λx.a) (λx.z (PAIR (FST l) a) (SND l) I)) NIL =
 /// Z (λ λ λ IS_NIL 1 (λ 3) (λ 4 (PAIR (FST 2) 3) (SND 2)) I) NIL
@@ -165,7 +165,7 @@ pub fn reverse() -> Term {
     )
 }
 
-/// Applied to a Church-encoded number `n` and `n` `Term`s it creates a Church-encoded list of
+/// Applied to a lambda-encoded number `n` and `n` `Term`s it creates a lambda-encoded list of
 /// those terms.
 ///
 /// LIST := λn.n (λfax.f (PAIR x a)) REVERSE NIL = λ 1 (λ λ λ 3 (PAIR 1 2)) REVERSE NIL
@@ -189,7 +189,7 @@ pub fn list() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded lists it concatenates them.
+/// Applied to two lambda-encoded lists it concatenates them.
 ///
 /// APPEND := Z (λzab. IS_NIL a (λx.b) (λx.PAIR (FST a) (z (SND a) b)) I) =
 /// Z (λ λ λ IS_NIL 2 (λ 2) (λ PAIR (FST 3) (4 (SND 3) 2)) I)
@@ -229,7 +229,7 @@ pub fn append() -> Term {
     )
 }
 
-/// Applied to a Church-encoded number `i` and a Church-encoded list it returns the `i`-th
+/// Applied to a lambda-encoded number `i` and a lambda-encoded list it returns the `i`-th
 /// (zero-indexed) element of the list.
 ///
 /// INDEX := λil. FST (l SND i) = λ λ FST (2 SND 1)
@@ -253,7 +253,7 @@ pub fn index() -> Term {
     ))
 }
 
-/// Applied to a function and a Church-encoded list it maps the function over it.
+/// Applied to a function and a lambda-encoded list it maps the function over it.
 ///
 /// MAP := Z (λzfl. IS_NIL l (λx.NIL) (λx.PAIR (f (FST l)) (z f (SND l))) I) =
 /// Z (λ λ λ IS_NIL 1 (λ NIL) (λ PAIR (3 (FST 2)) (4 3 (SND 2))) I)
@@ -296,7 +296,7 @@ pub fn map() -> Term {
     )
 }
 
-/// Applied to a function, a starting value and a Church-encoded list it performs a
+/// Applied to a function, a starting value and a lambda-encoded list it performs a
 /// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists)
 /// on the list.
 ///
@@ -337,7 +337,7 @@ pub fn foldl() -> Term {
     )
 }
 
-/// Applied to a function, a starting value and a Church-encoded list it performs a
+/// Applied to a function, a starting value and a lambda-encoded list it performs a
 /// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists)
 /// on the list.
 ///
@@ -374,7 +374,7 @@ pub fn foldr() -> Term {
     ))
 }
 
-/// Applied to a predicate and a Church-encoded list it filters the list based on the predicate.
+/// Applied to a predicate and a lambda-encoded list it filters the list based on the predicate.
 ///
 /// FILTER := Z (λzpl. IS_NIL l (λx.NIL) (λx.p (FST l) (PAIR (FST l)) I (z p (SND l))) I) =
 /// Z (λ λ λ IS_NIL 1 (λ NIL) (λ 3 (FST 2) (PAIR (FST 2)) I (4 3 (SND 2))) I)
@@ -426,7 +426,7 @@ pub fn filter() -> Term {
     )
 }
 
-/// Applied to a Church-encoded list it returns the last element.
+/// Applied to a lambda-encoded list it returns the last element.
 ///
 /// LAST := Z (λzl.IS_NIL l (λx.NIL) (λx.IS_NIL (TAIL l) (HEAD l) (z (TAIL l))) I) =
 /// Z (λ 2 1. IS_NIL 1 (λ NIL) (λ IS_NIL (TAIL 2) (HEAD 2) (3 (TAIL 2))) I)
@@ -461,7 +461,7 @@ pub fn last() -> Term {
     )
 }
 
-/// Applied to a Church-encoded list it returns the list without the last element.
+/// Applied to a lambda-encoded list it returns the list without the last element.
 ///
 /// INIT := Z (λzl.IS_NIL l (λx.NIL) (λx.(IS_NIL (FST l) NIL (PAIR (FST l) (z (SND l))))) I) =
 /// Z (λ λ IS_NIL 1 (λ NIL) (λ (IS_NIL (FST 2) NIL (PAIR (FST 2) (3 (SND 2))))) I)
@@ -501,7 +501,7 @@ pub fn init() -> Term {
     )
 }
 
-/// Applied to two Church-encoded lists it returns a list of corresponding pairs. If one input list
+/// Applied to two lambda-encoded lists it returns a list of corresponding pairs. If one input list
 /// is shorter, excess elements of the longer list are discarded.
 ///
 /// ZIP := Z (λ.zab IS_NIL b (λ.x NIL) (λ.x IS_NIL a NIL (CONS (PAIR (HEAD b) (HEAD a)) (z (TAIL b) (TAIL a)))) I) =
@@ -549,7 +549,7 @@ pub fn zip() -> Term {
     )
 }
 
-/// Applied to a function and two Church-encoded lists it applies the function to the corresponding
+/// Applied to a function and two lambda-encoded lists it applies the function to the corresponding
 /// elements and returns the resulting list. If one input list is shorter, excess elements of the
 /// longer list are discarded.
 ///
@@ -600,7 +600,7 @@ pub fn zip_with() -> Term {
     )
 }
 
-/// Applied to a Church-encoded number `n` and a Church-encoded list it returns a new list with the
+/// Applied to a lambda-encoded number `n` and a lambda-encoded list it returns a new list with the
 /// first `n` elements of the supplied list.
 ///
 /// TAKE := Z (λznl. IS_NIL l (λx.NIL) (λx.IS_ZERO n NIL (CONS (HEAD l) (z (PRED n) (TAIL l)))) I) =
@@ -648,7 +648,7 @@ pub fn take() -> Term {
     )
 }
 
-/// Applied to a predicate function and a Church-encoded list it returns the longest prefix of the
+/// Applied to a predicate function and a lambda-encoded list it returns the longest prefix of the
 /// list whose elements all satisfy the predicate function.
 ///
 /// TAKE_WHILE := Z (λzfl. IS_NIL l (λx.NIL) (λx.f (HEAD l) (CONS (HEAD l) (z f (TAIL l))) NIL) I) =

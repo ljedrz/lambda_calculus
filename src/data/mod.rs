@@ -1,4 +1,4 @@
-//! Lambda-encoded data types and functions
+//! Lambda-encoded data types
 
 pub mod boolean;
 pub mod pair;

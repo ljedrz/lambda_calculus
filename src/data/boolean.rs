@@ -1,19 +1,19 @@
-//! [Church booleans](https://en.wikipedia.org/wiki/Church_encoding#Church_Booleans)
+//! [Lambda-encoded boolean](https://en.wikipedia.org/wiki/Church_encoding#Church_Booleans)
 
 use term::{Term, abs, app};
 use term::Term::*;
 
-/// A Church-encoded boolean `true`.
+/// A lambda-encoded boolean `true`.
 ///
 /// TRUE := λab.a = λ λ 2
 pub fn tru() -> Term { abs!(2, Var(2)) }
 
-/// A Church-encoded boolean `false`.
+/// A lambda-encoded boolean `false`.
 ///
 /// FALSE := λab.b = λ λ 1
 pub fn fls() -> Term { abs!(2, Var(1)) }
 
-/// Applied to two Church booleans it returns their Church-encoded conjunction.
+/// Applied to two lambda-encoded booleans it returns their lambda-encoded conjunction.
 ///
 /// AND := λpq.p q p = λ λ 2 1 2
 ///
@@ -31,7 +31,7 @@ pub fn and() -> Term {
     abs!(2, app!(Var(2), Var(1), Var(2)))
 }
 
-/// Applied to two Church booleans it returns their Church-encoded disjunction.
+/// Applied to two lambda-encoded booleans it returns their lambda-encoded disjunction.
 ///
 /// OR := λpq.p p q = λ λ 2 2 1
 ///
@@ -49,7 +49,7 @@ pub fn or() -> Term {
     abs!(2, app!(Var(2), Var(2), Var(1)))
 }
 
-/// Applied to a Church boolean it returns its Church-encoded negation.
+/// Applied to a lambda-encoded boolean it returns its lambda-encoded negation.
 ///
 /// NOT := λp.p FALSE TRUE = λ 1 FALSE TRUE
 ///
@@ -65,7 +65,7 @@ pub fn not() -> Term {
     abs(app!(Var(1), fls(), tru()))
 }
 
-/// Applied to two Church booleans it returns their Church-encoded exclusive disjunction.
+/// Applied to two lambda-encoded booleans it returns their lambda-encoded exclusive disjunction.
 ///
 /// XOR := λpq.p (NOT q) q = λ λ 2 (NOT 1) 1
 ///
@@ -93,7 +93,7 @@ pub fn xor() -> Term {
     )
 }
 
-/// Applied to two Church booleans it returns their Church-encoded joint denial.
+/// Applied to two lambda-encoded booleans it returns their lambda-encoded joint denial.
 ///
 /// NOR := λpq.NOT (OR p q) = λ λ NOT (OR 2 1)
 ///
@@ -119,7 +119,7 @@ pub fn nor() -> Term {
     )
 }
 
-/// Applied to two Church booleans it returns their Church-encoded alternative denial.
+/// Applied to two lambda-encoded booleans it returns their lambda-encoded alternative denial.
 ///
 /// NAND := λpq.NOT (AND p q) = λ λ NOT (AND 2 1)
 ///
@@ -145,7 +145,7 @@ pub fn nand() -> Term {
     )
 }
 
-/// Applied to a Church-encoded predicate and two terms it returns the first one if the predicate
+/// Applied to a lambda-encoded predicate and two terms it returns the first one if the predicate
 /// is true or the second one if the predicate is false.
 ///
 /// IF_ELSE := λpab.p a b = λ λ λ 3 2 1

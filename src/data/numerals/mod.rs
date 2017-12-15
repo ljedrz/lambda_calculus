@@ -1,4 +1,4 @@
-//! Different lambda encodings of numerals.
+//! Different lambda encodings of numerals
 
 pub mod church;
 pub mod scott;

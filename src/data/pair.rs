@@ -1,10 +1,10 @@
-//! [Church pairs](https://en.wikipedia.org/wiki/Church_encoding#Church_pairs)
+//! [Lambda-encoded pair](https://en.wikipedia.org/wiki/Church_encoding#Church_pairs)
 
 use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
 
-/// Applied to two `Term`s it contains them in a Church-encoded pair.
+/// Applied to two `Term`s it contains them in a lambda-encoded pair.
 ///
 /// PAIR := λxyz.z x y = λ λ λ 1 3 2
 ///
@@ -22,7 +22,7 @@ pub fn pair() -> Term {
     abs!(3, app!(Var(1), Var(3), Var(2)))
 }
 
-/// Applied to a Church-encoded pair `(a, b)` it yields `a`.
+/// Applied to a lambda-encoded pair `(a, b)` it yields `a`.
 ///
 /// FST := λp.p TRUE = λ 1 TRUE
 ///
@@ -38,7 +38,7 @@ pub fn pair() -> Term {
 /// ```
 pub fn fst() -> Term { abs(app(Var(1), tru())) }
 
-/// Applied to a Church-encoded pair `(a, b)` it yields `b`.
+/// Applied to a lambda-encoded pair `(a, b)` it yields `b`.
 ///
 /// SND := λp.p FALSE = λ 1 FALSE
 ///
@@ -54,7 +54,7 @@ pub fn fst() -> Term { abs(app(Var(1), tru())) }
 /// ```
 pub fn snd() -> Term { abs(app(Var(1), fls())) }
 
-/// Applied to a function and a Church-encoded pair `(a, b)` it uncurries it
+/// Applied to a function and a lambda-encoded pair `(a, b)` it uncurries it
 /// and applies the function to `a` and then `b`.
 ///
 /// UNCURRY := λf.λp.f (FST p) (SND p) = λ λ 2 (FST 1) (SND 1)
@@ -79,7 +79,7 @@ pub fn uncurry() -> Term {
 }
 
 /// Applied to a function and two arguments `a` and `b`, it applies the function to the
-/// Church-encoded pair `(a, b)`.
+/// lambda-encoded pair `(a, b)`.
 ///
 /// CURRY := λfab.f (PAIR a b) = λ λ λ 3 (PAIR 2 1)
 ///
@@ -100,7 +100,7 @@ pub fn curry() -> Term {
     ))
 }
 
-/// Applied to a Church-encoded pair `(a, b)` it swaps its elements so that it becomes `(b, a)`.
+/// Applied to a lambda-encoded pair `(a, b)` it swaps its elements so that it becomes `(b, a)`.
 ///
 /// SWAP := λp.p PAIR (SND p) (FST p) = λ 1 PAIR (SND 1) (FST 1)
 ///
