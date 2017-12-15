@@ -4,7 +4,7 @@
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
-use lambda::church::numerals::*;
+use lambda::data::numerals::church::*;
 
 #[test]
 fn church_succ() {
@@ -56,11 +56,11 @@ fn church_pow() {
 
 #[test]
 fn church_div() {
-    assert_eq!(beta(app!(div(), 2.into_church(), 2.into_church()), HAP, 0), (1.into_church(), 0.into_church()).into_church());
-    assert_eq!(beta(app!(div(), 3.into_church(), 2.into_church()), HAP, 0), (1.into_church(), 1.into_church()).into_church());
-    assert_eq!(beta(app!(div(), 5.into_church(), 2.into_church()), HAP, 0), (2.into_church(), 1.into_church()).into_church());
-    assert_eq!(beta(app!(div(), 2.into_church(), 1.into_church()), HAP, 0), (2.into_church(), 0.into_church()).into_church());
-    assert_eq!(beta(app!(div(), 0.into_church(), 3.into_church()), HAP, 0), (0.into_church(), 0.into_church()).into_church());
+    assert_eq!(beta(app!(div(), 2.into_church(), 2.into_church()), HAP, 0), (1, 0).into_church());
+    assert_eq!(beta(app!(div(), 3.into_church(), 2.into_church()), HAP, 0), (1, 1).into_church());
+    assert_eq!(beta(app!(div(), 5.into_church(), 2.into_church()), HAP, 0), (2, 1).into_church());
+    assert_eq!(beta(app!(div(), 2.into_church(), 1.into_church()), HAP, 0), (2, 0).into_church());
+    assert_eq!(beta(app!(div(), 0.into_church(), 3.into_church()), HAP, 0), (0, 0).into_church());
 }
 
 #[test]
@@ -133,18 +133,18 @@ fn church_rshift() {
 
 #[test]
 fn church_is_even() {
-     assert_eq!(beta(app!(is_even(), 0.into_church()), HAP, 0), true.into_church());
-     assert_eq!(beta(app!(is_even(), 1.into_church()), HAP, 0), false.into_church());
-     assert_eq!(beta(app!(is_even(), 2.into_church()), HAP, 0), true.into_church());
-     assert_eq!(beta(app!(is_even(), 8.into_church()), HAP, 0), true.into_church());
-     assert_eq!(beta(app!(is_even(), 9.into_church()), HAP, 0), false.into_church());
+     assert_eq!(beta(app!(is_even(), 0.into_church()), HAP, 0), true.into());
+     assert_eq!(beta(app!(is_even(), 1.into_church()), HAP, 0), false.into());
+     assert_eq!(beta(app!(is_even(), 2.into_church()), HAP, 0), true.into());
+     assert_eq!(beta(app!(is_even(), 8.into_church()), HAP, 0), true.into());
+     assert_eq!(beta(app!(is_even(), 9.into_church()), HAP, 0), false.into());
 }
 
 #[test]
 fn church_is_odd() {
-     assert_eq!(beta(app!(is_odd(), 0.into_church()), HAP, 0), false.into_church());
-     assert_eq!(beta(app!(is_odd(), 1.into_church()), HAP, 0), true.into_church());
-     assert_eq!(beta(app!(is_odd(), 2.into_church()), HAP, 0), false.into_church());
-     assert_eq!(beta(app!(is_odd(), 8.into_church()), HAP, 0), false.into_church());
-     assert_eq!(beta(app!(is_odd(), 9.into_church()), HAP, 0), true.into_church());
+     assert_eq!(beta(app!(is_odd(), 0.into_church()), HAP, 0), false.into());
+     assert_eq!(beta(app!(is_odd(), 1.into_church()), HAP, 0), true.into());
+     assert_eq!(beta(app!(is_odd(), 2.into_church()), HAP, 0), false.into());
+     assert_eq!(beta(app!(is_odd(), 8.into_church()), HAP, 0), false.into());
+     assert_eq!(beta(app!(is_odd(), 9.into_church()), HAP, 0), true.into());
 }

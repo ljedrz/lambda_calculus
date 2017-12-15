@@ -4,7 +4,7 @@
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
-use lambda::scott::numerals::*;
+use lambda::data::numerals::scott::*;
 
 #[test]
 fn scott_succ() {
