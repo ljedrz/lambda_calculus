@@ -2,8 +2,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use church::boolean::{tru, fls};
-use church::convert::IntoChurch;
+use data::boolean::{tru, fls};
 
 /// Applied to two `Term`s it contains them in a Church-encoded pair.
 ///
@@ -11,7 +10,7 @@ use church::convert::IntoChurch;
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::pair;
+/// use lambda_calculus::data::pair::pair;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -29,7 +28,7 @@ pub fn pair() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::fst;
+/// use lambda_calculus::data::pair::fst;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -45,7 +44,7 @@ pub fn fst() -> Term { abs(app(Var(1), tru())) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::snd;
+/// use lambda_calculus::data::pair::snd;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -62,8 +61,8 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::uncurry;
-/// use lambda_calculus::church::numerals::add;
+/// use lambda_calculus::data::pair::uncurry;
+/// use lambda_calculus::data::numerals::church::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -86,7 +85,7 @@ pub fn uncurry() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::{fst, curry};
+/// use lambda_calculus::data::pair::{fst, curry};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -107,7 +106,7 @@ pub fn curry() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::church::pair::swap;
+/// use lambda_calculus::data::pair::swap;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -121,14 +120,8 @@ pub fn swap() -> Term {
     ))
 }
 
-impl IntoChurch for (Term, Term) {
-    fn into_church(self) -> Term {
+impl Into<Term> for (Term, Term) {
+    fn into(self) -> Term {
         abs(app!(Var(1), self.0, self.1))
-    }
-}
-
-impl<T, U> IntoChurch for (T, U) where T: IntoChurch, U: IntoChurch {
-    fn into_church(self) -> Term {
-        abs(app!(Var(1), self.0.into_church(), self.1.into_church()))
     }
 }

@@ -4,7 +4,7 @@
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
-use lambda::stumpfu::numerals::*;
+use lambda::data::numerals::stumpfu::*;
 
 #[test]
 fn stumpfu_succ() {

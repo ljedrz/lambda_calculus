@@ -3,12 +3,12 @@
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
-use lambda::church::list::*;
-use lambda::church::numerals::{add, is_zero};
-use lambda::church::boolean::fls;
+use lambda::data::list::*;
+use lambda::data::boolean::fls;
+use lambda::data::numerals::church::{add, is_zero};
 
 #[test]
-fn church_last() {
+fn list_last() {
     let list1 = || { vec![1].into_church() };
     let list2 = || { vec![0, 1, 2, 3, 4].into_church() };
 
@@ -18,7 +18,7 @@ fn church_last() {
 }
 
 #[test]
-fn church_init() {
+fn list_init() {
     let list1 = || { vec![0, 1, 2, 3, 4].into_church() };
     let list2 = || { vec![0, 1, 2, 3].into_church() };
     let list3 = || { vec![2, 3].into_church() };
@@ -31,7 +31,7 @@ fn church_init() {
 }
 
 #[test]
-fn church_zip() {
+fn list_zip() {
     let l1 = || { vec![0].into_church() };
     let l2 = || { vec![0, 1, 2].into_church() };
     let l3 = || { vec![2, 1].into_church() };
@@ -50,7 +50,7 @@ fn church_zip() {
 }
 
 #[test]
-fn church_zip_with() {
+fn list_zip_with() {
     let l1 = || { vec![1].into_church() };
     let l2 = || { vec![2].into_church() };
     let l3 = || { vec![1, 2, 3].into_church() };
@@ -70,7 +70,7 @@ fn church_zip_with() {
 }
 
 #[test]
-fn church_take() {
+fn list_take() {
     let l1 = || { vec![0].into_church() };
     let l2 = || { vec![0, 1].into_church() };
     let l3 = || { vec![0, 1, 2].into_church() };
@@ -88,7 +88,7 @@ fn church_take() {
 }
 
 #[test]
-fn church_take_while() {
+fn list_take_while() {
     let l1 = || { vec![0, 0, 2, 3].into_church() };
     let l2 = || { vec![0, 0].into_church() };
     let l3 = || { vec![1, 4, 2, 3].into_church() };

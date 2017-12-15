@@ -2,9 +2,8 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use stumpfu::convert::IntoStumpFu;
-use church::convert::IntoChurch;
-use church::numerals as church;
+use data::numerals::convert::{IntoChurch, IntoStumpFu};
+use data::numerals::church as church;
 
 /// Produces a Stump-Fu-encoded number zero.
 ///
@@ -12,7 +11,7 @@ use church::numerals as church;
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::stumpfu::numerals::zero;
+/// use lambda_calculus::data::numerals::stumpfu::zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(zero(), 0.into_stumpfu());
@@ -25,7 +24,7 @@ pub fn zero() -> Term { abs!(2, Var(1)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::stumpfu::numerals::one;
+/// use lambda_calculus::data::numerals::stumpfu::one;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(one(), 1.into_stumpfu());
@@ -38,7 +37,7 @@ pub fn one() -> Term { abs!(2, app!(Var(2), 1.into_church(), zero())) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::stumpfu::numerals::succ;
+/// use lambda_calculus::data::numerals::stumpfu::succ;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(succ(), 0.into_stumpfu()), NOR, 0), 1.into_stumpfu());
@@ -58,7 +57,7 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::stumpfu::numerals::pred;
+/// use lambda_calculus::data::numerals::stumpfu::pred;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(pred(), 1.into_stumpfu()), NOR, 0), 0.into_stumpfu());
@@ -74,7 +73,7 @@ pub fn pred() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::stumpfu::numerals::add;
+/// use lambda_calculus::data::numerals::stumpfu::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(add(), 1.into_stumpfu(), 2.into_stumpfu()), NOR, 0), 3.into_stumpfu());

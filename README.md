@@ -12,10 +12,8 @@
 - a parser for lambda expressions, both in classic and De Bruijn index notation
 - 7 β-reduction strategies with optional display of reduction steps
 - a set of standard terms (combinators)
-- Church-encoded numerals, booleans, pair, list and option
-- Scott-encoded numerals
-- Parigot-encoded numerals
-- Stump-Fu-encoded numerals
+- lambda-encoded boolean, pair, list and option
+- Church-, Scott-, Parigot-, and Stump-Fu-encoded numerals
 
 ## Installation
 
@@ -49,7 +47,7 @@ features = ["backslash_lambda"] # use a backslash lambda
 
 code:
 ```
-use lambda_calculus::church::numerals::{succ, pred};
+use lambda_calculus::data::numerals::church::{succ, pred};
 
 fn main() {
     println!("SUCC := {0} = {0:?}", succ());
@@ -81,7 +79,7 @@ fn main() {
 code:
 ```
 use lambda_calculus::*;
-use lambda_calculus::church::numerals::pred;
+use lambda_calculus::data::numerals::church::pred;
 
 fn main() {
     let expr = app!(pred(), 1.into_church());
@@ -113,7 +111,7 @@ code:
 ```
 use lambda_calculus::*;
 use lambda_calculus::reduction::compare;
-use lambda_calculus::church::numerals::fac;
+use lambda_calculus::data::numerals::church::fac;
 
 fn main() {
     let expr = app!(fac(), 4.into_church());

@@ -7,7 +7,7 @@ extern crate test;
 extern crate lambda_calculus as lambda;
 
 use test::Bencher;
-use lambda::parigot::numerals::*;
+use lambda::data::numerals::parigot::*;
 use lambda::*;
 
 #[bench]

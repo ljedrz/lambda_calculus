@@ -4,7 +4,7 @@
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
-use lambda::parigot::numerals::*;
+use lambda::data::numerals::parigot::*;
 
 #[test]
 fn parigot_succ() {
