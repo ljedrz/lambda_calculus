@@ -25,6 +25,7 @@ Breaking changes
 - remove `Term::{app, apply}`
 - rename `Term::beta` to `Term::reduce`
 - rename `church::list::null` to `is_nil`
+- rename `parser::Error` to `ParseError`
 
 Changes
 -------
@@ -32,11 +33,15 @@ Changes
 - add `option::unwrap_or`
 - add `term::is_supercombinator`
 - add Stump-Fu encoding
-- add `stumpfu::{zero, one, succ, add}`
+- add `stumpfu::{zero, one, succ, pred, add}`
 - add an `encoding` feature and make it default
 - add `parigot::{one, mult, sub}`
 - add `impl<T> IntoChurch for Option<T> where T: IntoChurch`
 - improve `pair`, `list`, `parser`, `reduction` documentation
+- add macros for automated creation of conversion traits and implementations
+- implement conversions to pair, list and option for all numeral types
+- refactor numeral benchmarks using a macro
+- refactor numeral integration tests using a macro
 
 Version 1.4.0
 =============
