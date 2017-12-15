@@ -3,7 +3,6 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
-use data::numerals::convert::IntoChurch;
 use combinators::Z;
 
 /// Produces a Church-encoded number zero.
@@ -651,43 +650,4 @@ pub fn is_even() -> Term {
 /// ```
 pub fn is_odd() -> Term {
     abs(app!(Var(1), abs(app!(Var(1), fls(), tru())), fls()))
-}
-
-impl IntoChurch for usize {
-    fn into_church(self) -> Term {
-        let mut ret = Var(1);
-
-        for _ in 0..self {
-            ret = app(Var(2), ret);
-        }
-
-        abs!(2, ret)
-    }
-}
-
-impl<T, U> IntoChurch for (T, U) where T: IntoChurch, U: IntoChurch {
-    fn into_church(self) -> Term {
-        abs(app!(Var(1), self.0.into_church(), self.1.into_church()))
-    }
-}
-
-impl<T> IntoChurch for Vec<T> where T: IntoChurch {
-    fn into_church(self) -> Term {
-        let mut ret = fls();
-
-        for term in self.into_iter().rev() {
-            ret = abs(app!(Var(1), term.into_church(), ret))
-        }
-
-        ret
-    }
-}
-
-impl<T> IntoChurch for Option<T> where T: IntoChurch {
-    fn into_church(self) -> Term {
-        match self {
-            None => tru(),
-            Some(value) => abs!(2, app(Var(1), value.into_church()))
-        }
-    }
 }

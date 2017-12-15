@@ -2,7 +2,6 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use data::numerals::convert::IntoScott;
 
 /// Produces a Scott-encoded number zero.
 ///
@@ -47,16 +46,4 @@ pub fn succ() -> Term {
 /// ```
 pub fn pred() -> Term {
     abs(app!(Var(1), zero(), abs(Var(1))))
-}
-
-impl IntoScott for usize {
-    fn into_scott(self) -> Term {
-        let mut ret = abs!(2, Var(2));
-
-        for _ in 0..self {
-            ret = abs!(2, app(Var(1), ret));
-        }
-
-        ret
-    }
 }

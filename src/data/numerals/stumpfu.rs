@@ -2,8 +2,8 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use data::numerals::convert::{IntoChurch, IntoStumpFu};
 use data::numerals::church as church;
+use data::numerals::convert::IntoChurch;
 
 /// Produces a Stump-Fu-encoded number zero.
 ///
@@ -85,16 +85,4 @@ pub fn add() -> Term {
         abs!(2, app!(Var(2), succ(), Var(3))),
         Var(1)
     ))
-}
-
-impl IntoStumpFu for usize {
-    fn into_stumpfu(self) -> Term {
-        let mut ret = zero();
-
-        for n in 1..self+1 {
-            ret = abs!(2, app!(Var(2), n.into_church(), ret));
-        }
-
-        ret
-    }
 }

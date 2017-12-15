@@ -2,7 +2,6 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use data::numerals::convert::IntoParigot;
 
 /// Produces a Parigot-encoded number zero.
 ///
@@ -109,16 +108,4 @@ pub fn mult() -> Term {
 /// ```
 pub fn sub() -> Term {
     abs!(2, app!(Var(1), abs(pred()), Var(2)))
-}
-
-impl IntoParigot for usize {
-    fn into_parigot(self) -> Term {
-        let mut ret = zero();
-
-        for _ in 0..self {
-            ret = abs!(2, app!(Var(2), ret.clone(), ret.unabs().and_then(|r| r.unabs()).unwrap()));
-        }
-
-        ret
-    }
 }
