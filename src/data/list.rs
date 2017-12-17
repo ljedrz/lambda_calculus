@@ -90,40 +90,6 @@ pub fn head() -> Term { fst() }
 /// ```
 pub fn tail() -> Term { snd() }
 
-/// Applied to a lambda-encoded list it returns its lambda-encoded length.
-///
-/// LENGTH := Z (λzal.IS_NIL l (λx.a) (λx.z (SUCC a) (SND l)) I) ZERO
-/// = Z (λλλ IS_NIL 1 (λ 3) (λ 4 (SUCC 3) (SND 2)) I) ZERO
-///
-/// # Example
-/// ```
-/// use lambda_calculus::data::list::{length, nil};
-/// use lambda_calculus::*;
-///
-/// let list = vec![1, 2, 3, 4].into_church();
-///
-/// assert_eq!(beta(app(length(), nil()), NOR, 0), 0.into_church());
-/// assert_eq!(beta(app(length(), list ), NOR, 0), 4.into_church());
-/// ```
-pub fn length() -> Term {
-    app!(
-        Z(),
-        abs!(3, app!(
-            Var(1),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
-            abs(Var(3)),
-            abs(app!(
-                Var(4),
-                abs!(2, app(Var(2), app!(Var(5), Var(2), Var(1)))),
-                app(Var(2), abs!(2, Var(1)))
-            )),
-            abs(Var(1))
-        )),
-        fls()
-    )
-}
-
 /// Reverses a lambda-encoded list.
 ///
 /// REVERSE := Z (λzal.IS_NIL l (λx.a) (λx.z (PAIR (FST l) a) (SND l) I)) NIL =
@@ -226,30 +192,6 @@ pub fn append() -> Term {
             Var(1)
         ))
     )
-}
-
-/// Applied to a lambda-encoded number `i` and a lambda-encoded list it returns the `i`-th
-/// (zero-indexed) element of the list.
-///
-/// INDEX := λil. FST (l SND i) = λ λ FST (2 SND 1)
-///
-/// # Example
-/// ```
-/// use lambda_calculus::data::list::index;
-/// use lambda_calculus::*;
-///
-/// let list = || vec![1, 2, 3].into_church();
-///
-/// assert_eq!(beta(app!(index(), 0.into_church(), list()), NOR, 0), 1.into_church());
-/// assert_eq!(beta(app!(index(), 2.into_church(), list()), NOR, 0), 3.into_church());
-/// ```
-pub fn index() -> Term {
-    abs!(2, app!(
-        Var(2),
-        abs(app(Var(1), abs!(2, Var(1)))),
-        Var(1),
-        abs!(2, Var(2))
-    ))
 }
 
 /// Applied to a function and a lambda-encoded list it maps the function over it.
@@ -590,54 +532,6 @@ pub fn zip_with() -> Term {
                         Var(6),
                         Var(5),
                         app(Var(4), abs!(2, Var(1))),
-                        app(Var(3), abs!(2, Var(1)))
-                    )
-                ))
-            )),
-            abs(Var(1))
-        ))
-    )
-}
-
-/// Applied to a lambda-encoded number `n` and a lambda-encoded list it returns a new list with the
-/// first `n` elements of the supplied list.
-///
-/// TAKE := Z (λznl. IS_NIL l (λx.NIL) (λx.IS_ZERO n NIL (CONS (HEAD l) (z (PRED n) (TAIL l)))) I) =
-/// Z (λ λ λ IS_NIL l (λ NIL) (λ (IS_ZERO n NIL (CONS (HEAD l) (z (PRED n) (TAIL l))))) I)
-///
-/// # Example
-/// ```
-/// use lambda_calculus::data::list::take;
-/// use lambda_calculus::*;
-///
-/// let list1 = vec![0, 1, 2, 3].into_church();
-/// let list2 = vec![0, 1].into_church();
-///
-/// assert_eq!(beta(app!(take(), 2.into_church(), list1), NOR, 0), list2);
-pub fn take() -> Term {
-    app(
-        Z(),
-        abs!(3, app!(
-            Var(1),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
-            abs!(3, Var(1)),
-            abs(app!(
-                Var(3),
-                abs!(3, Var(1)),
-                abs!(2, Var(2)),
-                abs!(2, Var(1)),
-                abs(app!(
-                    Var(1),
-                    app(Var(3), abs!(2, Var(2))),
-                    app!(
-                        Var(5),
-                        abs!(2, app!(
-                            Var(6),
-                            abs!(2, app(Var(1), app(Var(2), Var(4)))),
-                            abs(Var(2)),
-                            abs(Var(1))
-                        )),
                         app(Var(3), abs!(2, Var(1)))
                     )
                 ))
