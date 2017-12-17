@@ -121,6 +121,30 @@ pub fn unwrap_or() -> Term {
     abs!(2, app!(Var(1), Var(2), abs(Var(1))))
 }
 
+/// Applied to a lambda-encoded option and a function that returns a lambda-encoded option, it
+/// applies the function to the contents of the option.
+///
+/// AND_THEN := λmf.m NONE f = λ λ 2 NONE 1
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::option::{and_then, some, none};
+/// use lambda_calculus::data::numerals::church::succ;
+/// use lambda_calculus::*;
+///
+/// // Equivalent to the closure `|x| { Some(x+1) }` in Rust
+/// let some_succ: Term = abs(app(some(), app(succ(), Var(1))));
+///
+/// assert_eq!(beta(app!(and_then(), none(), some_succ.clone()), NOR, 0), none());
+/// assert_eq!(beta(
+///     app!(and_then(), Some(1).into_church(), some_succ.clone()), NOR, 0),
+///     Some(2).into_church()
+/// );
+/// ```
+pub fn and_then() -> Term {
+    abs!(2, app!(Var(2), none(), Var(1)))
+}
+
 impl Into<Term> for Option<Term> {
     fn into(self) -> Term {
         match self {
