@@ -18,7 +18,7 @@ use combinators::Z;
 /// ```
 pub fn zero() -> Term { abs!(2, Var(1)) }
 
-/// Applied to a Church-encoded number it produces a Church-encoded boolean, indicating whether its
+/// Applied to a Church-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
 ///
 /// IS_ZERO := λn.n (λx.FALSE) TRUE =  λ 1 (λ FALSE) TRUE
@@ -159,7 +159,7 @@ pub fn sub() -> Term {
     abs!(2, app!(Var(1), pred(), Var(2)))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is less than the second one.
 ///
 /// LT := λab.NOT (LEQ b a) = λ λ NOT (LEQ 1 2)
@@ -186,7 +186,7 @@ pub fn lt() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is less than or egual to the second one.
 ///
 /// LEQ := λmn.IS_ZERO (SUB m n) = λ λ IS_ZERO (SUB 2 1)
@@ -211,7 +211,7 @@ pub fn leq() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is egual to the second one.
 ///
 /// EQ := λmn.AND (LEQ m n) (LEQ n m) = λ λ AND (LEQ 2 1) (LEQ 1 2)
@@ -250,7 +250,7 @@ pub fn eq() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is not egual to the second one.
 ///
 /// NEQ := λab.OR (NOT (LEQ a b)) (NOT (LEQ b a)) = λ λ OR (NOT (LEQ 2 1)) (NOT (LEQ 1 2))
@@ -295,7 +295,7 @@ pub fn neq() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is greater than or egual to the second one.
 ///
 /// GEQ := λab.LEQ b a = λ λ LEQ 1 2
@@ -320,7 +320,7 @@ pub fn geq() -> Term {
     ))
 }
 
-/// Applied to two Church-encoded numbers it returns a Church-encoded boolean indicating whether
+/// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is greater than the second one.
 ///
 /// GT := λab.NOT (LEQ a b) = λ λ NOT (LEQ 2 1)
@@ -618,7 +618,7 @@ pub fn rshift() -> Term {
     ))
 }
 
-/// Applied to a Church-encoded number it produces a Church-encoded boolean, indicating whether its
+/// Applied to a Church-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is even.
 ///
 /// IS_EVEN := NOT TRUE
@@ -635,7 +635,7 @@ pub fn is_even() -> Term {
     abs(app!(Var(1), abs(app!(Var(1), fls(), tru())), tru()))
 }
 
-/// Applied to a Church-encoded number it produces a Church-encoded boolean, indicating whether its
+/// Applied to a Church-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is odd.
 ///
 /// IS_ODD := NOT FALSE
