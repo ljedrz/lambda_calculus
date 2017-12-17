@@ -24,8 +24,9 @@ Breaking changes
 - rename `*::numerals::plus` to `add`
 - remove `Term::{app, apply}`
 - rename `Term::beta` to `Term::reduce`
-- rename `church::list::null` to `is_nil`
+- rename `church::lists::null` to `is_nil`
 - rename `parser::Error` to `ParseError`
+- make `lists::{length, index, take, list}` dependent on given numeral encoding
 
 Changes
 -------
