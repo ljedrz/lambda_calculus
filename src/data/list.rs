@@ -4,7 +4,10 @@ use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
 use data::pair::{pair, fst, snd};
-use combinators::Z;
+use combinators::{I, Z};
+use data::numerals::convert::Encoding;
+use data::numerals::convert::Encoding::*;
+use data::numerals::{church, scott, parigot, stumpfu};
 
 /// Produces a `nil`, the last link of a lambda-encoded list; equivalent to `boolean::fls()`.
 ///
@@ -89,6 +92,83 @@ pub fn head() -> Term { fst() }
 /// );
 /// ```
 pub fn tail() -> Term { snd() }
+
+/// Applied to a lambda-encoded list and a specific `Encoding` it returns its length in the given
+/// encoding.
+///
+/// LENGTH := Z (λzal.IS_NIL l (λx.a) (λx.z (SUCC a) (SND l)) I) ZERO
+/// = Z (λλλ IS_NIL 1 (λ 3) (λ 4 (SUCC 3) (SND 2)) I) ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::list::{length, nil};
+/// use lambda_calculus::*;
+///
+/// assert_eq!(
+///     beta(app(length(Church), nil()), NOR, 0),
+///     0.into_church()
+/// );
+///
+/// assert_eq!(
+///     beta(app(length(Parigot), vec![1, 2, 3, 4].into_parigot()), NOR, 0),
+///     4.into_parigot()
+/// );
+/// ```
+pub fn length(encoding: Encoding) -> Term {
+    let (succ, zero) = match encoding {
+        Church =>  (church::succ(),  church::zero()),
+        Scott =>   (scott::succ(),   scott::zero()),
+        Parigot => (parigot::succ(), parigot::zero()),
+        StumpFu => (stumpfu::succ(), stumpfu::zero())
+    };
+
+    app!(
+        Z(),
+        abs!(3, app!(
+            is_nil(),
+            Var(1),
+            abs(Var(3)),
+            abs(app!(
+                Var(4),
+                app(succ, Var(3)),
+                app(snd(), Var(2))
+            )),
+            I()
+        )),
+        zero
+    )
+}
+
+/// Applied to a number `i` with the given `Encoding` and a lambda-encoded list it returns the `i`-th
+/// (zero-indexed) element of the list.
+///
+/// INDEX := λil. FST (l SND i) = λ λ FST (2 SND 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::list::index;
+/// use lambda_calculus::*;
+///
+/// let list = || vec![1, 2, 3];
+///
+/// assert_eq!(
+///     beta(app!(index(Church), 0.into_church(), list().into_church()), NOR, 0),
+///     1.into_church()
+/// );
+/// ```
+pub fn index(encoding: Encoding) -> Term {
+    match encoding {
+        Church => {
+            abs!(2, app!(
+                Var(2),
+                abs(app(Var(1), abs!(2, Var(1)))),
+                Var(1),
+                abs!(2, Var(2))
+            ))
+        },
+        _ => unimplemented!()
+    }
+}
 
 /// Reverses a lambda-encoded list.
 ///
@@ -537,6 +617,61 @@ pub fn zip_with() -> Term {
                 ))
             )),
             abs(Var(1))
+        ))
+    )
+}
+
+/// Applied to a number `n` with the specified `Encoding` and a lambda-encoded list it returns a new
+/// list with the first `n` elements of the supplied list.
+///
+/// TAKE := Z (λznl.IS_NIL l (λx.NIL) (λx.IS_ZERO n NIL (CONS (HEAD l) (z (PRED n) (TAIL l)))) I) =
+/// Z (λ λ λ IS_NIL 1 (λ NIL) (λ IS_ZERO 3 NIL (CONS (HEAD 2) (4 (PRED 3) (TAIL 2)))) I)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::list::take;
+/// use lambda_calculus::*;
+///
+/// let list = || vec![1, 2, 3];
+///
+/// assert_eq!(
+///     beta(app!(take(Church), 2.into_church(), list().into_church()), NOR, 0),
+///     vec![1, 2].into_church()
+/// );
+/// ```
+pub fn take(encoding: Encoding) -> Term {
+    let (is_zero, pred) = match encoding {
+        Church =>  (church::is_zero(),  church::pred()),
+        _ => unimplemented!()
+        // Scott =>   (scott::is_zero(),   scott::pred()),
+        // Parigot => (parigot::is_zero(), parigot::pred()),
+        // StumpFu => (stumpfu::is_zero(), stumpfu::pred())
+    };
+    // Z (λ λ λ IS_NIL 1 (λ NIL) (λ IS_ZERO 3 NIL (CONS (HEAD 2) (4 (PRED 3) (TAIL 2)))) I)
+
+    app!(
+        Z(),
+        abs!(3, app!(
+            is_nil(),
+            Var(1),
+            abs(nil()),
+            abs(
+                app!(
+                    is_zero,
+                    Var(3),
+                    nil(),
+                    app!(
+                        cons(),
+                        app(head(), Var(2)),
+                        app!(
+                            Var(4),
+                            app(pred, Var(3)),
+                            app(tail(), Var(2))
+                        )
+                    )
+                )
+            ),
+            I()
         ))
     )
 }

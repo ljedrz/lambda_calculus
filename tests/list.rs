@@ -4,7 +4,6 @@ extern crate lambda_calculus as lambda;
 
 use lambda::*;
 use lambda::data::list::*;
-//use lambda::data::numerals::church::{add, is_zero};
 
 macro_rules! test_list {
     ($name:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
@@ -18,9 +17,28 @@ macro_rules! test_list {
     );
 }
 
+macro_rules! test_list_enc {
+    ($name:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
+        #[test]
+        fn $name() {
+            $(assert_eq!(beta(app!($function(Church),  $($n.into_church()),*), HAP, 0),  $result.into_church());)*
+            $(assert_eq!(beta(app!($function(Scott),   $($n.into_scott()),*), HAP, 0),   $result.into_scott());)*
+            $(assert_eq!(beta(app!($function(Parigot), $($n.into_parigot()),*), HAP, 0), $result.into_parigot());)*
+            $(assert_eq!(beta(app!($function(StumpFu), $($n.into_stumpfu()),*), HAP, 0), $result.into_stumpfu());)*
+        }
+    );
+}
+
 test_list!(list_last, last,
     // TODO: test empty list?
     vec![1] => 1,
+    vec![1, 2, 3] => 3
+);
+
+test_list_enc!(list_length, length,
+    // TODO: test empty list
+    vec![1] => 1,
+    vec![1, 2] => 2,
     vec![1, 2, 3] => 3
 );
 
@@ -37,6 +55,7 @@ test_list!(list_zip, zip,
     vec![1], vec![1, 2] => vec![(1, 1)],
     vec![1, 2], vec![3, 4] => vec![(1, 3), (2, 4)]
 );
+
 /* TODO: figure out passing multiple functions (inconsistent lockstep iteration)
 test_list!(list_zip, zip_with, add,
     // TODO: test empty list

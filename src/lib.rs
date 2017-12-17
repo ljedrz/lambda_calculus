@@ -20,3 +20,5 @@ pub use self::parser::parse;
 pub mod data;
 #[cfg(feature = "encoding")]
 pub use data::numerals::convert::*;
+#[cfg(feature = "encoding")]
+pub use data::numerals::convert::Encoding::*;
