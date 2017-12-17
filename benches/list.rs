@@ -34,11 +34,6 @@ fn list_tail(b: &mut Bencher) {
 }
 
 #[bench]
-fn list_length(b: &mut Bencher) {
-    b.iter(|| { beta(app(length(), list3()), HAP, 0) } );
-}
-
-#[bench]
 fn list_list(b: &mut Bencher) {
     b.iter(|| { beta(app!(list(), 3.into_church(), 1.into_church(), 2.into_church(), 3.into_church()), HAP, 0) } );
 }
@@ -51,11 +46,6 @@ fn list_reverse(b: &mut Bencher) {
 #[bench]
 fn list_append(b: &mut Bencher) {
     b.iter(|| { beta(app!(append(), list1(), list2()), HAP, 0) } );
-}
-
-#[bench]
-fn list_index(b: &mut Bencher) {
-    b.iter(|| { beta(app!(index(), 1.into_church(), list3()), HAP, 0) } );
 }
 
 #[bench]
@@ -96,11 +86,6 @@ fn list_zip(b: &mut Bencher) {
 #[bench]
 fn list_zip_with(b: &mut Bencher) {
     b.iter(|| { beta(app!(zip_with(), fls(), list3(), list3()), HAP, 0) } );
-}
-
-#[bench]
-fn list_take(b: &mut Bencher) {
-    b.iter(|| { beta(app!(take(), 2.into_church(), list3()), HAP, 0) } );
 }
 
 #[bench]
