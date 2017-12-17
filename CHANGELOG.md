@@ -5,8 +5,8 @@ Thanks
 -------
 @billpmurphy for the idea to make `reduction::{beta, compare}` IO-free, splitting conversions (and
 thus allowing all encodings to be compiled together), adding `term::is_supercombinator` and
-`option::{map, unwrap_or}`, improving conversions into terms and adding `impl<T> IntoChurch for
-Option<T> where T: IntoChurch`
+`option::{map, unwrap_or, and_then}`, improving conversions into terms and adding `impl<T> IntoChurch
+for Option<T> where T: IntoChurch`
 
 Breaking changes
 -------
@@ -30,7 +30,7 @@ Breaking changes
 Changes
 -------
 - add `reduction::beta_verbose`
-- add `option::unwrap_or`
+- add `option::{map, unwrap_or, and_then}`
 - add `term::is_supercombinator`
 - add Stump-Fu encoding
 - add `stumpfu::{zero, one, succ, pred, add}`
