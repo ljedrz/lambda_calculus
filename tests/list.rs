@@ -29,31 +29,43 @@ macro_rules! test_list_enc {
     );
 }
 
+fn empty() -> Vec<usize> { vec![] } // a workaround to pass vec![] to the testing macro
+
 test_list!(list_last, last,
-    // TODO: test empty list?
     vec![1] => 1,
     vec![1, 2, 3] => 3
 );
 
 test_list_enc!(list_length, length,
-    // TODO: test empty list
+    empty() => 0,
     vec![1] => 1,
     vec![1, 2] => 2,
     vec![1, 2, 3] => 3
 );
 
 test_list!(list_init, init,
-    // TODO: test singleton list?
+    vec![1] => empty(),
     vec![1, 2] => vec![1],
     vec![1, 2, 3] => vec![1, 2]
 );
 
 test_list!(list_zip, zip,
-    // TODO: test empty list
+    empty(),
     vec![1], vec![1] => vec![(1, 1)],
     vec![1, 2], vec![1] => vec![(1, 1)],
     vec![1], vec![1, 2] => vec![(1, 1)],
     vec![1, 2], vec![3, 4] => vec![(1, 3), (2, 4)]
+);
+
+test_list_enc!(list_take, take,
+    0, empty() => empty(),
+    1, empty() => empty(),
+    0, vec![1] => empty(),
+    1, vec![1] => vec![1],
+    2, vec![1] => vec![1],
+    1, vec![1, 2] => vec![1],
+    2, vec![1, 2] => vec![1, 2],
+    3, vec![1, 2] => vec![1, 2]
 );
 
 /* TODO: figure out passing multiple functions (inconsistent lockstep iteration)
