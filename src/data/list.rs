@@ -24,6 +24,8 @@ pub fn nil() -> Term { fls() }
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(is_nil(), vec![].into()), NOR, 0), true.into());
+/// assert_eq!(beta(app(is_nil(), vec![1].into_church()), NOR, 0), false.into());
+/// assert_eq!(beta(app(is_nil(), vec![2].into_scott()),  NOR, 0), false.into());
 /// ```
 pub fn is_nil() -> Term {
     abs(app!(Var(1), abs!(3, fls()), tru()))
