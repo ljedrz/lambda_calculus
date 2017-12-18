@@ -1,5 +1,6 @@
 //! [Scott numerals](http://lucacardelli.name/Papers/Notes/scott2.pdf)
 
+use data::boolean::{tru, fls};
 use term::{Term, abs, app};
 use term::Term::*;
 
@@ -46,4 +47,22 @@ pub fn succ() -> Term {
 /// ```
 pub fn pred() -> Term {
     abs(app!(Var(1), zero(), abs(Var(1))))
+}
+
+/// Applied to a Scott-encoded number it produces a lambda-encoded boolean, indicating whether its
+/// argument is equal to zero.
+///
+/// IS_ZERO := λn.n TRUE (λx.FALSE) =  λ 1 TRUE (λ FALSE)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::scott::is_zero;
+/// use lambda_calculus::data::boolean::{tru, fls};
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(is_zero(), 0.into_scott()), NOR, 0), tru());
+/// assert_eq!(beta(app(is_zero(), 1.into_scott()), NOR, 0), fls());
+/// ```
+pub fn is_zero() -> Term {
+    abs(app!(Var(1), tru(), abs(fls())))
 }
