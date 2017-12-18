@@ -32,12 +32,12 @@ fn list_head(b: &mut Bencher) {
 fn list_tail(b: &mut Bencher) {
     b.iter(|| { beta(app(tail(), list3()), HAP, 0) } );
 }
-
+/*
 #[bench]
 fn list_list(b: &mut Bencher) {
     b.iter(|| { beta(app!(list(), 3.into_church(), 1.into_church(), 2.into_church(), 3.into_church()), HAP, 0) } );
 }
-
+*/
 #[bench]
 fn list_reverse(b: &mut Bencher) {
     b.iter(|| { beta(app(reverse(), list3()), HAP, 0) } );
