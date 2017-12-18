@@ -31,6 +31,12 @@ macro_rules! test_list_enc {
 
 fn empty() -> Vec<usize> { vec![] } // a workaround to pass vec![] to the testing macro
 
+test_list!(list_head, head,
+    vec![1] => 1,
+    vec![1, 2] => 1,
+    vec![1, 2, 3] => 1
+);
+
 test_list!(list_last, last,
     vec![1] => 1,
     vec![1, 2, 3] => 3
@@ -50,7 +56,8 @@ test_list!(list_init, init,
 );
 
 test_list!(list_zip, zip,
-    empty(),
+    empty(), vec![1] => empty(),
+    vec![1], empty() => empty(),
     vec![1], vec![1] => vec![(1, 1)],
     vec![1, 2], vec![1] => vec![(1, 1)],
     vec![1], vec![1, 2] => vec![(1, 1)],
