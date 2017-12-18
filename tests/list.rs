@@ -4,6 +4,7 @@ extern crate lambda_calculus as lambda;
 
 use lambda::*;
 use lambda::data::list::*;
+use lambda::data::numerals::{church, scott, parigot, stumpfu};
 
 macro_rules! test_list {
     ($name:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
@@ -13,6 +14,19 @@ macro_rules! test_list {
             $(assert_eq!(beta(app!($function(), $($n.into_scott()),*), HAP, 0),   $result.into_scott());)*
             $(assert_eq!(beta(app!($function(), $($n.into_parigot()),*), HAP, 0), $result.into_parigot());)*
             $(assert_eq!(beta(app!($function(), $($n.into_stumpfu()),*), HAP, 0), $result.into_stumpfu());)*
+        }
+    );
+}
+
+// hof as in higher-order function; a temporary workaround until I think of a more generic test_list
+macro_rules! test_list_hof {
+    ($name:ident, $hof:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
+        #[test]
+        fn $name() {
+            $(assert_eq!(beta(app!($hof(), church::$function(), $($n.into_church()),*), HAP, 0),  $result.into_church());)*
+            $(assert_eq!(beta(app!($hof(), scott::$function(), $($n.into_scott()),*), HAP, 0),   $result.into_scott());)*
+            $(assert_eq!(beta(app!($hof(), parigot::$function(), $($n.into_parigot()),*), HAP, 0), $result.into_parigot());)*
+            $(assert_eq!(beta(app!($hof(), stumpfu::$function(), $($n.into_stumpfu()),*), HAP, 0), $result.into_stumpfu());)*
         }
     );
 }
@@ -71,9 +85,12 @@ test_list!(list_append, append,
     vec![1, 2], vec![3, 4] => vec![1, 2, 3, 4]
 );
 
-/* TODO: figure out passing multiple functions (inconsistent lockstep iteration) */
-
-// test_list!(list_map, map, add,
+test_list_hof!(list_map, map, succ,
+    empty() => empty(),
+    vec![1] => vec![2],
+    vec![1, 2] => vec![2, 3],
+    vec![1, 2, 3] => vec![2, 3, 4]
+);
 
 // test_list!(list_foldl, foldl, add,
 

@@ -5,8 +5,8 @@ Thanks
 -------
 @billpmurphy for the idea to make `reduction::{beta, compare}` IO-free, splitting conversions (and
 thus allowing all encodings to be compiled together), adding `term::is_supercombinator` and
-`option::{map, unwrap_or, and_then}`, improving conversions into terms and adding `impl<T> IntoChurch
-for Option<T> where T: IntoChurch`
+`option::{map, unwrap_or, and_then}` and `scott::is_zero`, improving conversions into terms and
+adding `impl<T> IntoChurch for Option<T> where T: IntoChurch`
 
 Breaking changes
 -------
@@ -34,15 +34,17 @@ Changes
 - add `option::{map, unwrap_or, and_then}`
 - add `term::is_supercombinator`
 - add Stump-Fu encoding
-- add `stumpfu::{zero, one, succ, pred, add}`
+- add `stumpfu::{zero, is_zero, one, succ, pred, add}`
 - add an `encoding` feature and make it default
-- add `parigot::{one, mult, sub}`
+- add `parigot::{is_zero, one, mult, sub}`
 - add `impl<T> IntoChurch for Option<T> where T: IntoChurch`
 - improve `pair`, `list`, `parser`, `reduction` documentation
 - add macros for automated creation of conversion traits and implementations
 - implement conversions to pair, list and option for all numeral types
 - refactor numeral benchmarks using a macro
 - refactor numeral integration tests using a macro
+- refactor list integration tests using macros
+- add `scott::is_zero`
 
 Version 1.4.0
 =============
