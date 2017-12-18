@@ -638,12 +638,16 @@ pub fn zip_with() -> Term {
 ///     beta(app!(take(Church), 2.into_church(), list().into_church()), NOR, 0),
 ///     vec![1, 2].into_church()
 /// );
+/// assert_eq!(
+///     beta(app!(take(Scott), 1.into_scott(), list().into_scott()), NOR, 0),
+///     vec![1].into_scott()
+/// );
 /// ```
 pub fn take(encoding: Encoding) -> Term {
     let (is_zero, pred) = match encoding {
         Church =>  (church::is_zero(),  church::pred()),
+         Scott =>   (scott::is_zero(),   scott::pred()),
         _ => unimplemented!()
-        // Scott =>   (scott::is_zero(),   scott::pred()),
         // Parigot => (parigot::is_zero(), parigot::pred()),
         // StumpFu => (stumpfu::is_zero(), stumpfu::pred())
     };
