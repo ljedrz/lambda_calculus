@@ -35,6 +35,19 @@ pub fn is_zero() -> Term {
     abs(app!(Var(1), tru(), abs(fls())))
 }
 
+/// Produces a Scott-encoded number one.
+///
+/// ONE := λab.b ZERO = λ λ 1 ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::scott::one;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(one(), 1.into_scott());
+/// ```
+pub fn one() -> Term { abs!(2, app(Var(1), abs!(2, Var(2)))) }
+
 /// Applied to a Scott-encoded number it produces its successor.
 ///
 /// SUCC := λnxy.y n = λ λ λ 1 3
