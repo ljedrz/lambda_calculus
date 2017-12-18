@@ -4,6 +4,7 @@ use term::{Term, abs, app};
 use term::Term::*;
 use data::numerals::church as church;
 use data::numerals::convert::IntoChurch;
+use data::boolean::{tru, fls};
 
 /// Produces a Stump-Fu-encoded number zero.
 ///
@@ -17,6 +18,23 @@ use data::numerals::convert::IntoChurch;
 /// assert_eq!(zero(), 0.into_stumpfu());
 /// ```
 pub fn zero() -> Term { abs!(2, Var(1)) }
+
+/// Applied to a Stump-Fu-encoded number it produces a lambda-encoded boolean, indicating whether its
+/// argument is equal to zero.
+///
+/// IS_ZERO := λn.n (λx.FALSE) TRUE =  λ 1 (λ FALSE) TRUE
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::stumpfu::is_zero;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(is_zero(), 0.into_stumpfu()), NOR, 0), true.into());
+/// assert_eq!(beta(app(is_zero(), 1.into_stumpfu()), NOR, 0), false.into());
+/// ```
+pub fn is_zero() -> Term {
+    abs(app!(Var(1), abs!(2, fls()), tru()))
+}
 
 /// Produces a Stump-Fu-encoded number one.
 ///

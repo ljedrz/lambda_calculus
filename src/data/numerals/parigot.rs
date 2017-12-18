@@ -2,6 +2,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
+use data::boolean::{tru, fls};
 
 /// Produces a Parigot-encoded number zero.
 ///
@@ -15,6 +16,23 @@ use term::Term::*;
 /// assert_eq!(zero(), 0.into_parigot());
 /// ```
 pub fn zero() -> Term { abs!(2, Var(1)) }
+
+/// Applied to a Parigot-encoded number it produces a lambda-encoded boolean, indicating whether its
+/// argument is equal to zero.
+///
+/// IS_ZERO := λn.n (λx.FALSE) TRUE =  λ 1 (λ FALSE) TRUE
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::parigot::is_zero;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(is_zero(), 0.into_parigot()), NOR, 0), true.into());
+/// assert_eq!(beta(app(is_zero(), 1.into_parigot()), NOR, 0), false.into());
+/// ```
+pub fn is_zero() -> Term {
+    abs(app!(Var(1), abs!(2, fls()), tru()))
+}
 
 /// Produces a Parigot-encoded number one.
 ///

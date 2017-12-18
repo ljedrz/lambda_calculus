@@ -646,12 +646,10 @@ pub fn zip_with() -> Term {
 pub fn take(encoding: Encoding) -> Term {
     let (is_zero, pred) = match encoding {
         Church =>  (church::is_zero(),  church::pred()),
-         Scott =>   (scott::is_zero(),   scott::pred()),
-        _ => unimplemented!()
-        // Parigot => (parigot::is_zero(), parigot::pred()),
-        // StumpFu => (stumpfu::is_zero(), stumpfu::pred())
+        Scott =>   (scott::is_zero(),   scott::pred()),
+        Parigot => (parigot::is_zero(), parigot::pred()),
+        StumpFu => (stumpfu::is_zero(), stumpfu::pred())
     };
-    // Z (λ λ λ IS_NIL 1 (λ NIL) (λ IS_ZERO 3 NIL (CONS (HEAD 2) (4 (PRED 3) (TAIL 2)))) I)
 
     app!(
         Z(),
