@@ -210,8 +210,8 @@ pub fn reverse() -> Term {
     )
 }
 
-/// Applied to a lambda-encoded number `n` and `n` `Term`s it creates a lambda-encoded list of
-/// those terms.
+/// Applied to a number `n` with the given `Encoding` and `n` `Term`s it creates a lambda-encoded
+/// list of those terms.
 ///
 /// LIST := λn.n (λfax.f (PAIR x a)) REVERSE NIL = λ 1 (λ λ λ 3 (PAIR 1 2)) REVERSE NIL
 ///
@@ -221,17 +221,22 @@ pub fn reverse() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(list(), 3.into_church(), 1.into_church(), 2.into_church(), 3.into_church()), NOR, 0),
+///     beta(app!(list(Church), 3.into_church(), 1.into_church(), 2.into_church(), 3.into_church()), NOR, 0),
 ///     vec![1, 2, 3].into_church()
 /// );
 /// ```
-pub fn list() -> Term {
-    abs(app!(
-        Var(1),
-        abs!(3, app(Var(3), app!(pair(), Var(1), Var(2)))),
-        reverse(),
-        nil()
-    ))
+pub fn list(encoding: Encoding) -> Term {
+    match encoding {
+        Church => {
+            abs(app!(
+                Var(1),
+                abs!(3, app(Var(3), app!(pair(), Var(1), Var(2)))),
+                reverse(),
+                nil()
+            ))
+        },
+        _ => unimplemented!()
+    }
 }
 
 /// Applied to two lambda-encoded lists it concatenates them.
