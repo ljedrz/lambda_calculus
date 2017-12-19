@@ -8,14 +8,14 @@ use self::ParseError::*;
 use self::Expression::*;
 pub use term::Notation::*;
 
-/// An error returned when a parsing issue is encountered.
+/// An error returned by `parse()` when a parsing issue is encountered.
 #[derive(Debug, PartialEq)]
 pub enum ParseError {
-    /// invalid character
+    /// lexical error; contains the invalid character and its index
     InvalidCharacter((usize, char)),
-    /// invalid expression
+    /// syntax error; the expression is invalid
     InvalidExpression,
-    /// empty expression
+    /// syntax error; the expression is empty
     EmptyExpression
 }
 
@@ -202,7 +202,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
     Ok(Sequence(expr))
 }
 
-/// Parses the input `&str` as a lambda `Term`.
+/// Attempts to parse the input `&str` as a lambda `Term`.
 ///
 /// - lambdas can be represented either with the greek letter (λ) or a backslash (\\ -
 /// less aesthetic, but only one byte in size)
@@ -211,7 +211,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 /// - the indices in the `DeBruijn` notation mode start with 1 and are hexadecimal digits
 /// - `DeBruijn` mode ignores all whitespaces (since indices > 15 are very unlikely)
 ///
-/// # Example
+/// # Examples
 /// ```
 /// use lambda_calculus::parser::*;
 /// use lambda_calculus::combinators::{S, Y};
@@ -222,6 +222,10 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 /// assert_eq!(parse(  &"λλλ31(21)",     DeBruijn), Ok(S()));
 /// assert_eq!(parse(&r#"\\\3 1 (2 1)"#, DeBruijn), Ok(S()));
 /// ```
+///
+/// # Errors
+///
+/// Returns a `ParseError` when a lexing or syntax error is encountered.
 pub fn parse(input: &str, notation: Notation) -> Result<Term, ParseError> {
     let tokens = if notation == DeBruijn {
         tokenize_dbr(input)?
