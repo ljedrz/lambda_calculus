@@ -7,9 +7,7 @@ use std::mem;
 pub use self::Order::*;
 
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
-/// β-reductions. The default is `NOR` (normal order).
-///
-/// They don't always yield the same result:
+/// β-reductions.
 ///
 /// - The `NOR`, `HNO`, `APP` and `HAP` orders reduce expressions to their normal forms
 /// - The `APP` order will fail to fully reduce expressions containing functions without a normal
@@ -19,20 +17,20 @@ pub use self::Order::*;
 /// - The `HSP` order reduces to head normal form
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Order {
-    /// Normal - leftmost outermost; the most popular lambda calculus reduction strategy
+    /// Normal - leftmost outermost; the most popular reduction strategy
     NOR,
     /// Call-by-name - leftmost outermost; no reductions inside abstractions
     CBN,
     /// Head spine - leftmost outermost; abstractions reduced only in head position
     HSP,
-    /// Hybrid normal - a hybrid between `HSP` (head spine) and `NOR` (normal) strategies
+    /// Hybrid normal - a mix between `HSP` (head spine) and `NOR` (normal) strategies
     HNO,
     /// Applicative - leftmost innermost; the most eager strategy; unfit for recursion combinators
     APP,
     /// Call-by-value - leftmost innermost, no reductions inside abstractions
     CBV,
-    /// Hybrid applicative - a hybrid between `CBV` (call-by-value) and `APP` (applicative)
-    /// strategies; usually the fastest-reducing normalizing strategy
+    /// Hybrid applicative - a mix between `CBV` (call-by-value) and `APP` (applicative) strategies;
+    /// usually the fastest-reducing normalizing strategy
     HAP
 }
 
@@ -53,7 +51,7 @@ pub enum Order {
 /// ```
 /// # Errors
 ///
-/// The function will return an error if the `lhs` term is not an `Abs`traction.
+/// Returns a `TermError` if `lhs` is not an `Abs`traction.
 pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, TermError> {
     lhs.unabs_ref()?;
 
