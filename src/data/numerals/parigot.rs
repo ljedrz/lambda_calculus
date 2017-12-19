@@ -95,22 +95,6 @@ pub fn add() -> Term {
     abs!(2, app!(Var(2), abs(succ()), Var(1)))
 }
 
-/// Applied to two Parigot-encoded numbers it yields their product.
-///
-/// MULT := λnm.n (λp.ADD m) ZERO = λ λ 2 (λ ADD 2) ZERO
-///
-/// # Example
-/// ```
-/// use lambda_calculus::data::numerals::parigot::mult;
-/// use lambda_calculus::*;
-///
-/// assert_eq!(beta(app!(mult(), 1.into_parigot(), 2.into_parigot()), NOR, 0), 2.into_parigot());
-/// assert_eq!(beta(app!(mult(), 2.into_parigot(), 3.into_parigot()), NOR, 0), 6.into_parigot());
-/// ```
-pub fn mult() -> Term {
-    abs!(2, app!(Var(2), abs(app(add(), Var(2))), zero()))
-}
-
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
 ///
 /// SUB := λnm.m (λp. PRED) n = λ λ 1 (λ PRED) 2
@@ -126,4 +110,20 @@ pub fn mult() -> Term {
 /// ```
 pub fn sub() -> Term {
     abs!(2, app!(Var(1), abs(pred()), Var(2)))
+}
+
+/// Applied to two Parigot-encoded numbers it yields their product.
+///
+/// MULT := λnm.n (λp.ADD m) ZERO = λ λ 2 (λ ADD 2) ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::parigot::mult;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app!(mult(), 1.into_parigot(), 2.into_parigot()), NOR, 0), 2.into_parigot());
+/// assert_eq!(beta(app!(mult(), 2.into_parigot(), 3.into_parigot()), NOR, 0), 6.into_parigot());
+/// ```
+pub fn mult() -> Term {
+    abs!(2, app!(Var(2), abs(app(add(), Var(2))), zero()))
 }

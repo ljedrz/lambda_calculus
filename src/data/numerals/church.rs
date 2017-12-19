@@ -66,6 +66,27 @@ pub fn succ() -> Term {
     abs!(3, app(Var(2), app!(Var(3), Var(2), Var(1))))
 }
 
+/// Applied to a Church-encoded number it produces its predecessor.
+///
+/// PRED := λnfx.n (λgh.h (g f)) (λu.x) (λu.u) = λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::church::pred;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(pred(), 1.into_church()), NOR, 0), 0.into_church());
+/// assert_eq!(beta(app(pred(), 3.into_church()), NOR, 0), 2.into_church());
+/// ```
+pub fn pred() -> Term {
+    abs!(3, app!(
+        Var(3),
+        abs!(2, app(Var(1), app(Var(2), Var(4)))),
+        abs(Var(2)),
+        abs(Var(1))
+    ))
+}
+
 /// Applied to two Church-encoded numbers it produces their sum.
 ///
 /// ADD := λmnfx.m f (n f x) = λ λ λ λ 4 2 (3 2 1)
@@ -80,6 +101,23 @@ pub fn succ() -> Term {
 /// ```
 pub fn add() -> Term {
     abs!(4, app!(Var(4), Var(2), app!(Var(3), Var(2), Var(1))))
+}
+
+/// Applied to two Church-encoded numbers it subtracts the second one from the first one.
+///
+/// SUB := λab.b PRED a = λ λ 1 PRED 2
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::church::sub;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app!(sub(), 1.into_church(), 0.into_church()), NOR, 0), 1.into_church());
+/// assert_eq!(beta(app!(sub(), 3.into_church(), 1.into_church()), NOR, 0), 2.into_church());
+/// assert_eq!(beta(app!(sub(), 5.into_church(), 2.into_church()), NOR, 0), 3.into_church());
+/// ```
+pub fn sub() -> Term {
+    abs!(2, app!(Var(1), pred(), Var(2)))
 }
 
 /// Applied to two Church-encoded numbers it yields their product.
@@ -119,44 +157,6 @@ pub fn pow() -> Term {
         one(),
         app(Var(1), Var(2))
     ))
-}
-
-/// Applied to a Church-encoded number it produces its predecessor.
-///
-/// PRED := λnfx.n (λgh.h (g f)) (λu.x) (λu.u) = λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1)
-///
-/// # Example
-/// ```
-/// use lambda_calculus::data::numerals::church::pred;
-/// use lambda_calculus::*;
-///
-/// assert_eq!(beta(app(pred(), 1.into_church()), NOR, 0), 0.into_church());
-/// assert_eq!(beta(app(pred(), 3.into_church()), NOR, 0), 2.into_church());
-/// ```
-pub fn pred() -> Term {
-    abs!(3, app!(
-        Var(3),
-        abs!(2, app(Var(1), app(Var(2), Var(4)))),
-        abs(Var(2)),
-        abs(Var(1))
-    ))
-}
-
-/// Applied to two Church-encoded numbers it subtracts the second one from the first one.
-///
-/// SUB := λab.b PRED a = λ λ 1 PRED 2
-///
-/// # Example
-/// ```
-/// use lambda_calculus::data::numerals::church::sub;
-/// use lambda_calculus::*;
-///
-/// assert_eq!(beta(app!(sub(), 1.into_church(), 0.into_church()), NOR, 0), 1.into_church());
-/// assert_eq!(beta(app!(sub(), 3.into_church(), 1.into_church()), NOR, 0), 2.into_church());
-/// assert_eq!(beta(app!(sub(), 5.into_church(), 2.into_church()), NOR, 0), 3.into_church());
-/// ```
-pub fn sub() -> Term {
-    abs!(2, app!(Var(1), pred(), Var(2)))
 }
 
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
