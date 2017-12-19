@@ -279,7 +279,7 @@ impl Term {
         if let Ok((_, rhs)) = self.unapp_mut() { Ok(rhs) } else { Err(NotApp) }
     }
 
-    /// Returns `true` if the term is a
+    /// Returns `true` if `self` is a
     /// [supercombinator](https://en.wikipedia.org/wiki/Supercombinator).
     ///
     /// # Example
