@@ -83,7 +83,7 @@ pub fn pred() -> Term {
 
 /// Applied to two Scott-encoded numbers it produces their sum.
 ///
-/// ADD := λfmn.m n (λo. SUCC (f o n)) = λ λ λ 2 1 (λ SUCC (4 1 2))
+/// ADD := Z (λfmn.m n (λo. SUCC (f o n))) = Z (λ λ λ 2 1 (λ SUCC (4 1 2)))
 ///
 /// # Example
 /// ```
@@ -100,4 +100,40 @@ pub fn pred() -> Term {
 pub fn add() -> Term {
     app(Z(), abs!(3, app!(Var(2), Var(1), abs(app(succ(), app!(Var(4), Var(1), Var(2)))))))
 }
+/*
+/// Applied to two Scott-encoded numbers it subtracts the second one from the first one.
+///
+/// SUB :=
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::scott::sub;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app!(sub(), 1.into_scott(), 0.into_scott()), NOR, 0), 1.into_scott());
+/// assert_eq!(beta(app!(sub(), 3.into_scott(), 1.into_scott()), NOR, 0), 2.into_scott());
+/// assert_eq!(beta(app!(sub(), 5.into_scott(), 2.into_scott()), NOR, 0), 3.into_scott());
+/// ```
+pub fn sub() -> Term {
 
+}
+*/
+/// Applied to two Scott-encoded numbers it yields their product.
+///
+/// MULT := Z (λfmn.m ZERO (λo. ADD n (f o n))) = Z (λ λ λ 2 ZERO (λ ADD 2 (4 1 2)))
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::scott::mult;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app!(mult(), 1.into_scott(), 2.into_scott()), NOR, 0), 2.into_scott());
+/// assert_eq!(beta(app!(mult(), 2.into_scott(), 3.into_scott()), NOR, 0), 6.into_scott());
+/// ```
+/// # Errors
+///
+/// This function will overflow the stack if used with an applicative-family (`APP` or `HAP`)
+/// reduction order.
+pub fn mult() -> Term {
+    app(Z(), abs!(3, app!(Var(2), zero(), abs(app!(add(), Var(2), app!(Var(4), Var(1), Var(2)))))))
+}

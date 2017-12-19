@@ -36,7 +36,7 @@ test_num!(parigot, parigot_sub, into_parigot, sub, 0, 0 => 0, 0, 1 => 0, 1, 0 =>
 //test_num!(stumpfu, stumpfu_sub, into_stumpfu, sub, 0, 0 => 0, 0, 1 => 0, 1, 0 => 1, 3, 2 => 1);
 
 test_num!(church,  church_mult,  into_church,  mult, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
-//test_num!(scott,  scott_mult,  into_scott,  mult, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
+test_num!(scott,   scott_mult,   into_scott,   mult, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
 test_num!(parigot, parigot_mult, into_parigot, mult, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
 //test_num!(stumpfu, stumpfu_mult, into_stumpfu, mult, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
 
