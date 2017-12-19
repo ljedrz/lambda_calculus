@@ -30,7 +30,7 @@ bench_num!(parigot, parigot_pred, into_parigot, pred, HAP, 1);
 bench_num!(stumpfu, stumpfu_pred, into_stumpfu, pred, HAP, 1);
 
 bench_num!(church,  church_add,  into_church,  add, HAP, 2, 2);
-//bench_num!(scott,   scott_add,   into_scott,  add, HAP, 2, 2);
+bench_num!(scott,   scott_add,   into_scott,   add, HNO, 2, 2); // HAP overflows
 bench_num!(parigot, parigot_add, into_parigot, add, HAP, 2, 2);
 bench_num!(stumpfu, stumpfu_add, into_stumpfu, add, HAP, 2, 2);
 

@@ -3,6 +3,7 @@
 use data::boolean::{tru, fls};
 use term::{Term, abs, app};
 use term::Term::*;
+use combinators::Z;
 
 /// Produces a Scott-encoded number zero.
 ///
@@ -46,7 +47,7 @@ pub fn is_zero() -> Term {
 ///
 /// assert_eq!(one(), 1.into_scott());
 /// ```
-pub fn one() -> Term { abs!(2, app(Var(1), abs!(2, Var(2)))) }
+pub fn one() -> Term { abs!(2, app(Var(1), zero())) }
 
 /// Applied to a Scott-encoded number it produces its successor.
 ///
@@ -79,3 +80,20 @@ pub fn succ() -> Term {
 pub fn pred() -> Term {
     abs(app!(Var(1), zero(), abs(Var(1))))
 }
+
+/// Applied to two Scott-encoded numbers it produces their sum.
+///
+/// ADD := λfmn.m n (λo. SUCC (f o n)) = λ λ λ 2 1 (λ SUCC (4 1 2))
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::scott::add;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app!(add(), 1.into_scott(), 2.into_scott()), NOR, 0), 3.into_scott());
+/// assert_eq!(beta(app!(add(), 2.into_scott(), 3.into_scott()), NOR, 0), 5.into_scott());
+/// ```
+pub fn add() -> Term {
+    app(Z(), abs!(3, app!(Var(2), Var(1), abs(app(succ(), app!(Var(4), Var(1), Var(2)))))))
+}
+

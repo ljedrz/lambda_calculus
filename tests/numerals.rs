@@ -10,7 +10,7 @@ macro_rules! test_num {
     ($encoding:ident, $name:ident, $conversion:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
         #[test]
         fn $name() {
-            $(assert_eq!(beta(app!($encoding::$function(), $($n.$conversion()),*), HAP, 0), $result.$conversion());)*
+            $(assert_eq!(beta(app!($encoding::$function(), $($n.$conversion()),*), HNO, 0), $result.$conversion());)*
         }
     );
 }
@@ -26,7 +26,7 @@ test_num!(parigot, parigot_pred, into_parigot, pred, 1 => 0, 2 => 1, 3 => 2);
 test_num!(stumpfu, stumpfu_pred, into_stumpfu, pred, 1 => 0, 2 => 1, 3 => 2);
 
 test_num!(church,  church_add,  into_church,  add, 0, 0 => 0, 0, 1 => 1, 1, 0 => 1, 2, 3 => 5);
-//test_num!(scott,  scott_add,  into_scott,  add, 0, 0 => 0, 0, 1 => 1, 1, 0 => 1, 2, 3 => 5);
+test_num!(scott,   scott_add,   into_scott,   add, 0, 0 => 0, 0, 1 => 1, 1, 0 => 1, 2, 3 => 5);
 test_num!(parigot, parigot_add, into_parigot, add, 0, 0 => 0, 0, 1 => 1, 1, 0 => 1, 2, 3 => 5);
 test_num!(stumpfu, stumpfu_add, into_stumpfu, add, 0, 0 => 0, 0, 1 => 1, 1, 0 => 1, 2, 3 => 5);
 
