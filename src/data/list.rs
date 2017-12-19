@@ -708,7 +708,7 @@ pub fn take_while() -> Term {
         abs!(3, app!(
             Var(1),
             abs!(5, Var(1)),
-            abs!(2, Var(1)),
+            abs!(2, Var(2)),
             abs!(3, Var(1)),
             abs(app!(
                 Var(3),
