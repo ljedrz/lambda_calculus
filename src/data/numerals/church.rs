@@ -568,18 +568,18 @@ pub fn max() -> Term {
 /// Applied to two Church-encoded numbers `a` and `b` it returns the left [logical
 /// shift](https://en.wikipedia.org/wiki/Logical_shift) of `a` performed `b` times.
 ///
-/// LSHIFT := λaλb.MUL a (POW (SUCC ONE a)) = λ λ MUL 2 (POW (SUCC ONE) 1)
+/// SHL := λaλb.MUL a (POW (SUCC ONE a)) = λ λ MUL 2 (POW (SUCC ONE) 1)
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::lshift;
+/// use lambda_calculus::data::numerals::church::shl;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(lshift(), 0.into_church(), 2.into_church()), NOR, 0), 0.into_church());
-/// assert_eq!(beta(app!(lshift(), 1.into_church(), 0.into_church()), NOR, 0), 1.into_church());
-/// assert_eq!(beta(app!(lshift(), 2.into_church(), 0.into_church()), NOR, 0), 2.into_church());
+/// assert_eq!(beta(app!(shl(), 0.into_church(), 2.into_church()), NOR, 0), 0.into_church());
+/// assert_eq!(beta(app!(shl(), 1.into_church(), 0.into_church()), NOR, 0), 1.into_church());
+/// assert_eq!(beta(app!(shl(), 2.into_church(), 0.into_church()), NOR, 0), 2.into_church());
 /// ```
-pub fn lshift() -> Term {
+pub fn shl() -> Term {
     abs!(3, app(
         Var(3),
         app!(
@@ -596,19 +596,19 @@ pub fn lshift() -> Term {
 /// Applied to two Church-encoded numbers `a` and `b` it returns the right [logical
 /// shift](https://en.wikipedia.org/wiki/Logical_shift) of `a` performed `b` times.
 ///
-/// RSHIFT := λaλb.(IS_ZERO b) a (QUOT a (POW (SUCC ONE) b)) =
+/// SHR := λaλb.(IS_ZERO b) a (QUOT a (POW (SUCC ONE) b)) =
 /// λ λ (IS_ZERO 1) 2 (QUOT 2 (POW (SUCC ONE) 1))
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::rshift;
+/// use lambda_calculus::data::numerals::church::shr;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(rshift(), 0.into_church(), 2.into_church()), NOR, 0), 0.into_church());
-/// assert_eq!(beta(app!(rshift(), 2.into_church(), 1.into_church()), NOR, 0), 1.into_church());
-/// assert_eq!(beta(app!(rshift(), 2.into_church(), 0.into_church()), NOR, 0), 2.into_church());
+/// assert_eq!(beta(app!(shr(), 0.into_church(), 2.into_church()), NOR, 0), 0.into_church());
+/// assert_eq!(beta(app!(shr(), 2.into_church(), 1.into_church()), NOR, 0), 1.into_church());
+/// assert_eq!(beta(app!(shr(), 2.into_church(), 0.into_church()), NOR, 0), 2.into_church());
 /// ```
-pub fn rshift() -> Term {
+pub fn shr() -> Term {
     abs!(2, app!(
         Var(1),
         abs!(3, Var(1)),

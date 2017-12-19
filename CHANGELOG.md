@@ -11,23 +11,25 @@ adding `impl<T> IntoChurch for Option<T> where T: IntoChurch`
 Breaking changes
 -------
 
-- restructure the modules
+- restructure modules
 - rework compilation features
 - remove `impl Term` from Church data types
-- simplify and rename `term::Error` to `term::TermError`
-- shorten `TermError` variant names
+- remove `Term::{app, apply}`
+- rename `term::Error` to `term::TermError`
+- rename `TermError` variant names
 - rename `church` modules
 - rename combinators
-- unify test and bench names
-- make `reduction::{beta, compare}` IO-free
-- split `Into<Term>` conversion into `IntoChurch`, `IntoScott` and `IntoParigot`
 - rename `*::numerals::plus` to `add`
-- remove `Term::{app, apply}`
+- rename `*::numerals::mult` to `mul`
+- rename `church::numerals::{lshift, rshift}` to `{shl, shr}`
 - rename `Term::beta` to `Term::reduce`
 - rename `church::lists::null` to `is_nil`
 - rename `parser::Error` to `ParseError`
-- rename `*::numerals::mult` to `mul`
+- simplify `term::Error`
 - make `lists::{length, index, take, list}` dependent on given numeral encoding
+- unify test and bench names
+- make `reduction::{beta, compare}` IO-free
+- split `Into<Term>` conversion into `IntoChurch`, `IntoScott` and `IntoParigot`
 
 Changes
 -------

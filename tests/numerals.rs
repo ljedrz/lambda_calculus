@@ -178,15 +178,15 @@ test_num!(church,  church_max,  into_church,  max, 0, 0 => 0, 0, 1 => 1, 1, 0 =>
 //test_num!(parigot, parigot_max, into_parigot, max, 0, 0 => 0, 0, 1 => 1, 1, 0 => 1, 1, 2 => 2);
 //test_num!(stumpfu, stumpfu_max, into_stumpfu, max, 0, 0 => 0, 0, 1 => 1, 1, 0 => 1, 1, 2 => 2);
 
-test_num!(church,  church_lshift,  into_church,  lshift, 0, 2 => 0, 1, 0 => 1, 2, 0 => 2, 2, 2 => 8, 3, 2 => 12, 2, 3 => 16, 5, 1 => 10);
-//test_num!(scott,   scott_lshift,   into_scott,   lshift, 0, 2 => 0, 1, 0 => 0, 2, 0 => 2, 2, 2 => 8, 3, 2 => 12, 2, 3 => 16, 5, 1 => 10);
-//test_num!(parigot, parigot_lshift, into_parigot, lshift, 0, 2 => 0, 1, 0 => 0, 2, 0 => 2, 2, 2 => 8, 3, 2 => 12, 2, 3 => 16, 5, 1 => 10);
-//test_num!(stumpfu, stumpfu_lshift, into_stumpfu, lshift, 0, 2 => 0, 1, 0 => 0, 2, 0 => 2, 2, 2 => 8, 3, 2 => 12, 2, 3 => 16, 5, 1 => 10);
+test_num!(church,  church_shl,  into_church,  shl, 0, 2 => 0, 1, 0 => 1, 2, 0 => 2, 2, 2 => 8, 3, 2 => 12, 2, 3 => 16, 5, 1 => 10);
+//test_num!(scott,   scott_shl,   into_scott,   shl, 0, 2 => 0, 1, 0 => 0, 2, 0 => 2, 2, 2 => 8, 3, 2 => 12, 2, 3 => 16, 5, 1 => 10);
+//test_num!(parigot, parigot_shl, into_parigot, shl, 0, 2 => 0, 1, 0 => 0, 2, 0 => 2, 2, 2 => 8, 3, 2 => 12, 2, 3 => 16, 5, 1 => 10);
+//test_num!(stumpfu, stumpfu_shl, into_stumpfu, shl, 0, 2 => 0, 1, 0 => 0, 2, 0 => 2, 2, 2 => 8, 3, 2 => 12, 2, 3 => 16, 5, 1 => 10);
 
-test_num!(church,  church_rshift,  into_church,  rshift, 1, 0 => 1, 2, 0 => 2, 2, 1 => 1, 2, 2 => 0, 5, 1 => 2, 9, 1 => 4, 7, 1 => 3);
-//test_num!(scott,   scott_rshift,   into_scott,   rshift, 1, 0 => 1, 2, 0 => 2, 2, 1 => 1, 2, 2 => 0, 5, 1 => 2, 9, 1 => 4, 7, 1 => 3);
-//test_num!(parigot, parigot_rshift, into_parigot, rshift, 1, 0 => 1, 2, 0 => 2, 2, 1 => 1, 2, 2 => 0, 5, 1 => 2, 9, 1 => 4, 7, 1 => 3);
-//test_num!(stumpfu, stumpfu_rshift, into_stumpfu, rshift, 1, 0 => 1, 2, 0 => 2, 2, 1 => 1, 2, 2 => 0, 5, 1 => 2, 9, 1 => 4, 7, 1 => 3);
+test_num!(church,  church_shr,  into_church,  shr, 1, 0 => 1, 2, 0 => 2, 2, 1 => 1, 2, 2 => 0, 5, 1 => 2, 9, 1 => 4, 7, 1 => 3);
+//test_num!(scott,   scott_shr,   into_scott,   shr, 1, 0 => 1, 2, 0 => 2, 2, 1 => 1, 2, 2 => 0, 5, 1 => 2, 9, 1 => 4, 7, 1 => 3);
+//test_num!(parigot, parigot_shr, into_parigot, shr, 1, 0 => 1, 2, 0 => 2, 2, 1 => 1, 2, 2 => 0, 5, 1 => 2, 9, 1 => 4, 7, 1 => 3);
+//test_num!(stumpfu, stumpfu_shr, into_stumpfu, shr, 1, 0 => 1, 2, 0 => 2, 2, 1 => 1, 2, 2 => 0, 5, 1 => 2, 9, 1 => 4, 7, 1 => 3);
 
 test_num!(church,  church_fac,  into_church,  fac, 0 => 1, 1 => 1, 2 => 2, 3 => 6);
 //test_num!(scott,   scott_fac,   into_scott,   fac, 0 => 1, 1 => 1, 2 => 2, 3 => 6);

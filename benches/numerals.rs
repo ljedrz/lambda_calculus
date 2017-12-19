@@ -60,6 +60,6 @@ bench_num!(church, church_min,  into_church, min,  HAP, 2, 2);
 bench_num!(church, church_max,  into_church, max,  HAP, 2, 2);
 bench_num!(church, church_is_even, into_church, is_even, HAP, 2);
 bench_num!(church, church_is_odd,  into_church, is_odd,  HAP, 2);
-bench_num!(church, church_lshift,  into_church, lshift, HAP, 2, 2);
-bench_num!(church, church_rshift,  into_church, rshift, HAP, 2, 2);
+bench_num!(church, church_shl, into_church, shl, HAP, 2, 2);
+bench_num!(church, church_shr, into_church, shr, HAP, 2, 2);
 bench_num!(church, church_fac, into_church, fac, HAP, 3);
