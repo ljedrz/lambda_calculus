@@ -45,6 +45,8 @@ bench_num!(parigot, parigot_mult, into_parigot, mult, HAP, 2, 2);
 //bench_num!(stumpfu, stumpfu_mult, into_stumpfu, mult, HAP, 2, 2);
 
 bench_num!(church, church_pow,  into_church, pow,  HAP, 2, 2);
+bench_num!(scott,  scott_pow,   into_scott,  pow,  HNO, 2, 2);
+
 bench_num!(church, church_div,  into_church, div,  HAP, 2, 2);
 bench_num!(church, church_quot, into_church, quot, HAP, 2, 2);
 bench_num!(church, church_rem,  into_church, rem,  HAP, 2, 2);

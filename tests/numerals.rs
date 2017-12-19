@@ -41,7 +41,7 @@ test_num!(parigot, parigot_mult, into_parigot, mult, 0, 0 => 0, 0, 1 => 0, 1, 0 
 //test_num!(stumpfu, stumpfu_mult, into_stumpfu, mult, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
 
 test_num!(church,  church_pow,  into_church,  pow, 0, 0 => 1, 0, 1 => 0, 1, 0 => 1, 1, 3 => 1, 2, 4 => 16);
-//test_num!(scott,   scott_pow,   into_scott,   pow, 0, 0 => 1, 0, 1 => 0, 1, 0 => 1, 1, 3 => 1, 2, 4 => 16);
+test_num!(scott,   scott_pow,   into_scott,   pow, 0, 0 => 1, 0, 1 => 0, 1, 0 => 1, 1, 3 => 1, 2, 4 => 16);
 //test_num!(parigot, parigot_pow, into_parigot, pow, 0, 0 => 1, 0, 1 => 0, 1, 0 => 1, 1, 3 => 1, 2, 4 => 16);
 //test_num!(stumpfu, stumpfu_pow, into_stumpfu, pow, 0, 0 => 1, 0, 1 => 0, 1, 0 => 1, 1, 3 => 1, 2, 4 => 16);
 
