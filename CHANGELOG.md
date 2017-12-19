@@ -26,6 +26,7 @@ Breaking changes
 - rename `Term::beta` to `Term::reduce`
 - rename `church::lists::null` to `is_nil`
 - rename `parser::Error` to `ParseError`
+- rename `*::numerals::mult` to `mul`
 - make `lists::{length, index, take, list}` dependent on given numeral encoding
 
 Changes
@@ -44,7 +45,7 @@ Changes
 - refactor numeral benchmarks using a macro
 - refactor numeral integration tests using a macro
 - refactor list integration tests using macros
-- add `scott::is_zero`
+- add `scott::{is_zero, one, add, mul, pow}`
 
 Version 1.4.0
 =============
