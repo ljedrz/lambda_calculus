@@ -3,6 +3,7 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
+use data::numerals::scott;
 use combinators::Z;
 
 /// Produces a Church-encoded number zero.
@@ -650,4 +651,21 @@ pub fn is_even() -> Term {
 /// ```
 pub fn is_odd() -> Term {
     abs(app!(Var(1), abs(app!(Var(1), fls(), tru())), fls()))
+}
+
+/// Applied to a Church-encoded number it produces the equivalent Scott-encoded number.
+///
+/// TO_SCOTT := λn.n SUCC ZERO = λ 1 SUCC ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::church::to_scott;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(to_scott(), 0.into_church()), NOR, 0), 0.into_scott());
+/// assert_eq!(beta(app(to_scott(), 1.into_church()), NOR, 0), 1.into_scott());
+/// assert_eq!(beta(app(to_scott(), 2.into_church()), NOR, 0), 2.into_scott());
+/// ```
+pub fn to_scott() -> Term {
+    abs(app!(Var(1), scott::succ(), scott::zero()))
 }
