@@ -11,11 +11,11 @@ pub use term::Notation::*;
 /// An error returned when a parsing issue is encountered.
 #[derive(Debug, PartialEq)]
 pub enum ParseError {
-    /// an invalid character was encountered
+    /// invalid character
     InvalidCharacter((usize, char)),
-    /// the expression is invalid
+    /// invalid expression
     InvalidExpression,
-    /// the expression is empty
+    /// empty expression
     EmptyExpression
 }
 
@@ -61,7 +61,7 @@ pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, ParseError> {
                 } else if c.is_whitespace() {
                     ()
                 } else {
-                    return Err(InvalidCharacter((i + 1, c)))
+                    return Err(InvalidCharacter((i, c)))
                 }
             }
         }
@@ -86,7 +86,7 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
                     } else if valid_chars.contains(c) {
                         name.push(c)
                     } else {
-                        return Err(InvalidCharacter((i + 1, c)))
+                        return Err(InvalidCharacter((i, c)))
                     }
                 }
                 tokens.push(CLambda(name))
@@ -108,7 +108,7 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
                     }
                     tokens.push(CName(name))
                 } else {
-                    return Err(InvalidCharacter((i + 1, c)))
+                    return Err(InvalidCharacter((i, c)))
                 }
             }
         }
@@ -281,8 +281,8 @@ mod tests {
 
     #[test]
     fn tokenization_error() {
-        assert_eq!(tokenize_dbr(&"λλx2"),    Err(InvalidCharacter((3, 'x'))));
-        assert_eq!(tokenize_cla(&"λa.λb a"), Err(InvalidCharacter((6, ' '))));
+        assert_eq!(tokenize_dbr(&"λλx2"),    Err(InvalidCharacter((2, 'x'))));
+        assert_eq!(tokenize_cla(&"λa.λb a"), Err(InvalidCharacter((5, ' '))));
     }
 
     #[test]
