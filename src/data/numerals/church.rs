@@ -348,7 +348,7 @@ pub fn gt() -> Term {
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
-/// division - the quotient and the remainder. It loops indefinitely if the divisor is `zero()`.
+/// division - the quotient and the remainder.
 ///
 /// DIV := Z (λzqab.LT a b (λx.PAIR q a) (λx.z (SUCC q) (SUB a b) b) I) ZERO =
 /// Z (λ λ λ λ LT 2 1 (λ PAIR 4 3) (λ 5 (SUCC 4) (SUB 3 2) 2) I) ZERO
@@ -367,6 +367,9 @@ pub fn gt() -> Term {
 ///     (1, 2).into_church()
 /// );
 /// ```
+/// # Errors
+///
+/// This function will loop indefinitely if the divisor is `zero()`.
 pub fn div() -> Term {
     app!(
         Z(),
@@ -399,7 +402,6 @@ pub fn div() -> Term {
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
-/// It loops indefinitely if the second argument is `zero()`.
 ///
 /// QUOT := Z (λzab.LT a b (λx.ZERO) (λx.SUCC (z (SUB a b) b)) I) =
 /// Z (λ λ λ LT 2 1 (λ ZERO) (λ SUCC (4 (SUB 3 2) 2)) I)
@@ -412,6 +414,9 @@ pub fn div() -> Term {
 /// assert_eq!(beta(app!(quot(), 4.into_church(), 2.into_church()), NOR, 0), 2.into_church());
 /// assert_eq!(beta(app!(quot(), 5.into_church(), 3.into_church()), NOR, 0), 1.into_church());
 /// ```
+/// # Errors
+///
+/// This function will loop indefinitely if the second argument is `zero()`
 pub fn quot() -> Term {
     app(
         Z(),
@@ -444,7 +449,6 @@ pub fn quot() -> Term {
 }
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded remainder of their division.
-/// It loops indefinitely if the second argument is `zero()`.
 ///
 /// REM := Z (λzab.LT a b (λx.a) (λx.z (SUB a b) b) I) = Z (λ λ λ LT 2 1 (λ 3) (λ 4 (SUB 3 2) 2) I)
 ///
@@ -456,6 +460,9 @@ pub fn quot() -> Term {
 /// assert_eq!(beta(app!(rem(), 4.into_church(), 2.into_church()), NOR, 0), 0.into_church());
 /// assert_eq!(beta(app!(rem(), 5.into_church(), 3.into_church()), NOR, 0), 2.into_church());
 /// ```
+/// # Errors
+///
+/// This function will loop indefinitely if the second argument is `zero()`
 pub fn rem() -> Term {
     app(
         Z(),
@@ -495,6 +502,9 @@ pub fn rem() -> Term {
 /// assert_eq!(beta(app(fac(), 3.into_church()), NOR, 0), 6.into_church());
 /// assert_eq!(beta(app(fac(), 4.into_church()), NOR, 0), 24.into_church());
 /// ```
+/// # Errors
+///
+/// This function may overflow the stack if its argument is high enough.
 pub fn fac() -> Term {
     abs(app!(
         Var(1),

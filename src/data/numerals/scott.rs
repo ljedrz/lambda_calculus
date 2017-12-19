@@ -93,6 +93,10 @@ pub fn pred() -> Term {
 /// assert_eq!(beta(app!(add(), 1.into_scott(), 2.into_scott()), NOR, 0), 3.into_scott());
 /// assert_eq!(beta(app!(add(), 2.into_scott(), 3.into_scott()), NOR, 0), 5.into_scott());
 /// ```
+/// # Errors
+///
+/// This function will overflow the stack if used with an applicative-family (`APP` or `HAP`)
+/// reduction order.
 pub fn add() -> Term {
     app(Z(), abs!(3, app!(Var(2), Var(1), abs(app(succ(), app!(Var(4), Var(1), Var(2)))))))
 }
