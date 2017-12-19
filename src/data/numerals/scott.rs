@@ -79,3 +79,20 @@ pub fn succ() -> Term {
 pub fn pred() -> Term {
     abs(app!(Var(1), zero(), abs(Var(1))))
 }
+
+/// Applied to a Church-encoded number it produces the equivalent Scott-encoded number.
+///
+/// CHURCH_TO_SCOTT := λn.n SUCC ZERO = λ 1 SUCC ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::scott::church_to_scott;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(church_to_scott(), 0.into_church()), NOR, 0), 0.into_scott());
+/// assert_eq!(beta(app(church_to_scott(), 1.into_church()), NOR, 0), 1.into_scott());
+/// assert_eq!(beta(app(church_to_scott(), 2.into_church()), NOR, 0), 2.into_scott());
+/// ```
+pub fn church_to_scott() -> Term {
+    abs(app!(Var(1), succ(), zero()))
+}
