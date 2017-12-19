@@ -31,13 +31,13 @@ extern crate lambda_calculus;
 
 Compilation features:
 - `backslash_lambda`: changes the display of lambdas from `λ` to `\`
-- `encoding`: builds the encoding modules; default feature
+- `encoding`: builds the data encoding modules; default feature
 
 Example feature setup in Cargo.toml:
 ```
 [dependencies.lambda_calculus]
 version = "^2.0"
-default-features = false # do not build the encoding modules
+default-features = false # do not build the data encoding modules
 features = ["backslash_lambda"] # use a backslash lambda
 ```
 
@@ -132,4 +132,27 @@ hybrid applicative: 40
 applicative: 65
 normal: 87
 hybrid normal: 87
+```
+
+### Comparing different numeral encodings
+
+code:
+```
+use lambda_calculus::*;
+
+fn main() {
+    println!("comparing different encodings of number 3 (De Bruijn indices):");
+    println!("  Church encoding: {:?}", 3.into_church());
+    println!("   Scott encoding: {:?}", 3.into_scott());
+    println!(" Parigot encoding: {:?}", 3.into_parigot());
+    println!("Stump-Fu encoding: {:?}", 3.into_stumpfu());
+}
+```
+stdout:
+```
+comparing different encodings of number 3 (De Bruijn indices):
+  Church encoding: λλ2(2(21))
+   Scott encoding: λλ1(λλ1(λλ1(λλ2)))
+ Parigot encoding: λλ2(λλ2(λλ2(λλ1)1)(2(λλ1)1))(2(λλ2(λλ1)1)(2(λλ1)1))
+Stump-Fu encoding: λλ2(λλ2(2(21)))(λλ2(λλ2(21))(λλ2(λλ21)(λλ1)))
 ```

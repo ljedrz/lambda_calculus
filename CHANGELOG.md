@@ -28,6 +28,7 @@ Breaking changes
 - make `lists::{length, index, take, list}` dependent on given numeral encoding
 - unify test and bench names
 - make `reduction::{beta, compare}` IO-free
+- make `ParseError::InvalidCharacter` 0-indexed
 - split `Into<Term>` conversion into `IntoChurch`, `IntoScott` and `IntoParigot`
 
 Changes
