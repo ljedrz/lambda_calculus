@@ -35,10 +35,10 @@ test_num!(church,  church_sub,  into_church,  sub, 0, 0 => 0, 0, 1 => 0, 1, 0 =>
 test_num!(parigot, parigot_sub, into_parigot, sub, 0, 0 => 0, 0, 1 => 0, 1, 0 => 1, 3, 2 => 1);
 //test_num!(stumpfu, stumpfu_sub, into_stumpfu, sub, 0, 0 => 0, 0, 1 => 0, 1, 0 => 1, 3, 2 => 1);
 
-test_num!(church,  church_mult,  into_church,  mult, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
-test_num!(scott,   scott_mult,   into_scott,   mult, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
-test_num!(parigot, parigot_mult, into_parigot, mult, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
-//test_num!(stumpfu, stumpfu_mult, into_stumpfu, mult, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
+test_num!(church,  church_mul,  into_church,  mul, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
+test_num!(scott,   scott_mul,   into_scott,   mul, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
+test_num!(parigot, parigot_mul, into_parigot, mul, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
+//test_num!(stumpfu, stumpfu_mul, into_stumpfu, mul, 0, 0 => 0, 0, 1 => 0, 1, 0 => 0, 3, 2 => 6);
 
 test_num!(church,  church_pow,  into_church,  pow, 0, 0 => 1, 0, 1 => 0, 1, 0 => 1, 1, 3 => 1, 2, 4 => 16);
 test_num!(scott,   scott_pow,   into_scott,   pow, 0, 0 => 1, 0, 1 => 0, 1, 0 => 1, 1, 3 => 1, 2, 4 => 16);

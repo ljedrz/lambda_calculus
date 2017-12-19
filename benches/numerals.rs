@@ -39,10 +39,10 @@ bench_num!(church,  church_sub,  into_church,  sub, HAP, 2, 2);
 bench_num!(parigot, parigot_sub, into_parigot, sub, HAP, 2, 2);
 //bench_num!(stumpfu, stumpfu_sub, into_stumpfu, sub, HAP, 2, 2);
 
-bench_num!(church,  church_mult,  into_church,  mult, HAP, 2, 2);
-bench_num!(scott,   scott_mult,   into_scott,   mult, HNO, 2, 2);
-bench_num!(parigot, parigot_mult, into_parigot, mult, HAP, 2, 2);
-//bench_num!(stumpfu, stumpfu_mult, into_stumpfu, mult, HAP, 2, 2);
+bench_num!(church,  church_mul,  into_church,  mul, HAP, 2, 2);
+bench_num!(scott,   scott_mul,   into_scott,   mul, HNO, 2, 2);
+bench_num!(parigot, parigot_mul, into_parigot, mul, HAP, 2, 2);
+//bench_num!(stumpfu, stumpfu_mul, into_stumpfu, mul, HAP, 2, 2);
 
 bench_num!(church, church_pow,  into_church, pow,  HAP, 2, 2);
 bench_num!(scott,  scott_pow,   into_scott,  pow,  HNO, 2, 2);

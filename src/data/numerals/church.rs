@@ -122,17 +122,17 @@ pub fn sub() -> Term {
 
 /// Applied to two Church-encoded numbers it yields their product.
 ///
-/// MULT := λmnf.m (n f) = λ λ λ 3 (2 1)
+/// MUL := λmnf.m (n f) = λ λ λ 3 (2 1)
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::mult;
+/// use lambda_calculus::data::numerals::church::mul;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(mult(), 1.into_church(), 2.into_church()), NOR, 0), 2.into_church());
-/// assert_eq!(beta(app!(mult(), 2.into_church(), 3.into_church()), NOR, 0), 6.into_church());
+/// assert_eq!(beta(app!(mul(), 1.into_church(), 2.into_church()), NOR, 0), 2.into_church());
+/// assert_eq!(beta(app!(mul(), 2.into_church(), 3.into_church()), NOR, 0), 6.into_church());
 /// ```
-pub fn mult() -> Term {
+pub fn mul() -> Term {
     abs!(3, app(Var(3), app(Var(2), Var(1))))
 }
 
@@ -491,8 +491,8 @@ pub fn rem() -> Term {
 
 /// Applied to a Church-encoded number it yields its Church-encoded factorial.
 ///
-/// FAC := λn. n (λfab. f (MULT a b) (SUCC b)) K ONE ONE =
-/// λ 1 (λ λ λ 3 (MULT 2 1) (SUCC 1)) K ONE ONE
+/// FAC := λn. n (λfab. f (MUL a b) (SUCC b)) K ONE ONE =
+/// λ 1 (λ λ λ 3 (MUL 2 1) (SUCC 1)) K ONE ONE
 ///
 /// # Example
 /// ```
@@ -568,7 +568,7 @@ pub fn max() -> Term {
 /// Applied to two Church-encoded numbers `a` and `b` it returns the left [logical
 /// shift](https://en.wikipedia.org/wiki/Logical_shift) of `a` performed `b` times.
 ///
-/// LSHIFT := λaλb.MULT a (POW (SUCC ONE a)) = λ λ MULT 2 (POW (SUCC ONE) 1)
+/// LSHIFT := λaλb.MUL a (POW (SUCC ONE a)) = λ λ MUL 2 (POW (SUCC ONE) 1)
 ///
 /// # Example
 /// ```

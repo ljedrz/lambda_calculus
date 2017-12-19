@@ -120,27 +120,27 @@ pub fn sub() -> Term {
 */
 /// Applied to two Scott-encoded numbers it yields their product.
 ///
-/// MULT := Z (λfmn.m ZERO (λo. ADD n (f o n))) = Z (λ λ λ 2 ZERO (λ ADD 2 (4 1 2)))
+/// MUL := Z (λfmn.m ZERO (λo. ADD n (f o n))) = Z (λ λ λ 2 ZERO (λ ADD 2 (4 1 2)))
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::mult;
+/// use lambda_calculus::data::numerals::scott::mul;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app!(mult(), 1.into_scott(), 2.into_scott()), NOR, 0), 2.into_scott());
-/// assert_eq!(beta(app!(mult(), 2.into_scott(), 3.into_scott()), NOR, 0), 6.into_scott());
+/// assert_eq!(beta(app!(mul(), 1.into_scott(), 2.into_scott()), NOR, 0), 2.into_scott());
+/// assert_eq!(beta(app!(mul(), 2.into_scott(), 3.into_scott()), NOR, 0), 6.into_scott());
 /// ```
 /// # Errors
 ///
 /// This function will overflow the stack if used with an applicative-family (`APP` or `HAP`)
 /// reduction order.
-pub fn mult() -> Term {
+pub fn mul() -> Term {
     app(Z(), abs!(3, app!(Var(2), zero(), abs(app!(add(), Var(2), app!(Var(4), Var(1), Var(2)))))))
 }
 
 /// Applied to two Scott-encoded numbers it raises the first one to the power of the second one.
 ///
-/// POW := Z (λfmn.n ONE (λo. MULT m (f m o))) = Z (λ λ λ 1 ONE (λ MULT 3 (4 3 1)))
+/// POW := Z (λfmn.n ONE (λo. MUL m (f m o))) = Z (λ λ λ 1 ONE (λ MUL 3 (4 3 1)))
 ///
 /// # Example
 /// ```
@@ -155,5 +155,5 @@ pub fn mult() -> Term {
 /// This function will overflow the stack if used with an applicative-family (`APP` or `HAP`)
 /// reduction order.
 pub fn pow() -> Term {
-    app(Z(), abs!(3, app!(Var(1), one(), abs(app!(mult(), Var(3), app!(Var(4), Var(3), Var(1)))))))
+    app(Z(), abs!(3, app!(Var(1), one(), abs(app!(mul(), Var(3), app!(Var(4), Var(3), Var(1)))))))
 }
