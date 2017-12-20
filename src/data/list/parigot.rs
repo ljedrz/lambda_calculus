@@ -47,6 +47,13 @@ pub fn is_nil() -> Term {
 ///             )
 ///         )
 ///     );
+///
+/// let list_into = vec![1.into_parigot(), 2.into_parigot(), 3.into_parigot()].into_parigot_list();
+///
+/// assert_eq!(
+///     beta(list_consed, NOR, 0),
+///     list_into
+/// );
 /// ```
 pub fn cons() -> Term {
     abs!(4, app!(
@@ -71,22 +78,12 @@ pub fn cons() -> Term {
 /// use lambda_calculus::data::list::parigot::{head, nil, cons};
 /// use lambda_calculus::*;
 ///
-/// let list_consed =
-///     app!(
-///         cons(),
-///         1.into_parigot(),
-///         app!(
-///             cons(),
-///             2.into_parigot(),
-///             app!(
-///                 cons(),
-///                 3.into_parigot(),
-///                 nil()
-///             )
-///         )
-///     );
+/// let list = vec![1.into_parigot(), 2.into_parigot(), 3.into_parigot()].into_parigot_list();
 ///
-/// assert_eq!(beta(app(head(), list_consed), NOR, 0), 1.into_parigot());
+/// assert_eq!(
+///     beta(app(head(), list), NOR, 0),
+///     1.into_parigot()
+/// );
 /// ```
 pub fn head() -> Term {
     abs(app!(Var(1), UD, abs!(3, Var(3))))
@@ -101,35 +98,11 @@ pub fn head() -> Term {
 /// use lambda_calculus::data::list::parigot::{tail, cons, nil};
 /// use lambda_calculus::*;
 ///
-/// let list_consed1 =
-///     app!(
-///         cons(),
-///         1.into_parigot(),
-///         app!(
-///             cons(),
-///             2.into_parigot(),
-///             app!(
-///                 cons(),
-///                 3.into_parigot(),
-///                 nil()
-///             )
-///         )
-///     );
-///
-/// let list_consed2 =
-///     app!(
-///         cons(),
-///         2.into_parigot(),
-///         app!(
-///             cons(),
-///             3.into_parigot(),
-///             nil()
-///         )
-///     );
+/// let list = vec![1.into_parigot(), 2.into_parigot(), 3.into_parigot()].into_parigot_list();
 ///
 /// assert_eq!(
-///     beta(app(tail(), list_consed1), NOR, 0),
-///     beta(list_consed2, NOR, 0)
+///     beta(app(tail(), list), NOR, 0),
+///     vec![2.into_parigot(), 3.into_parigot()].into_parigot_list()
 /// );
 /// ```
 pub fn tail() -> Term {

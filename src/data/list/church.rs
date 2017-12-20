@@ -48,6 +48,13 @@ pub fn is_nil() -> Term {
 ///             )
 ///         )
 ///     );
+///
+/// let list_into = vec![1.into_church(), 2.into_church(), 3.into_church()].into_church_list();
+///
+/// assert_eq!(
+///     beta(list_consed, NOR, 0),
+///     list_into
+/// );
 /// ```
 pub fn cons() -> Term {
     abs!(4, app!(
@@ -71,22 +78,12 @@ pub fn cons() -> Term {
 /// use lambda_calculus::data::list::church::{head, nil, cons};
 /// use lambda_calculus::*;
 ///
-/// let list_consed =
-///     app!(
-///         cons(),
-///         1.into_church(),
-///         app!(
-///             cons(),
-///             2.into_church(),
-///             app!(
-///                 cons(),
-///                 3.into_church(),
-///                 nil()
-///             )
-///         )
-///     );
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_church_list();
 ///
-/// assert_eq!(beta(app(head(), list_consed), NOR, 0), 1.into_church());
+/// assert_eq!(
+///     beta(app(head(), list), NOR, 0),
+///     1.into_church()
+/// );
 /// ```
 pub fn head() -> Term {
     abs(app!(Var(1), UD, abs!(2, Var(2))))
@@ -94,57 +91,19 @@ pub fn head() -> Term {
 
 /// Applied to a Church-encoded list it returns a new list with all its elements but the first one.
 ///
-/// TAIL := λlnc.FST (l (PAIR UD NIL) (λap. PAIR (SND p) (CONS a (SND p))))
-///       = λ λ λ FST (3 (PAIR UD NIL) (λ λ PAIR (SND 1) (CONS 2 (SND 1))))
+/// TAIL := λl.FST (l (PAIR UD NIL) (λap. PAIR (SND p) (CONS a (SND p))))
+///       = λ FST (1 (PAIR UD NIL) (λ λ PAIR (SND 1) (CONS 2 (SND 1))))
 ///
 /// # Example
 /// ```
 /// use lambda_calculus::data::list::church::{tail, cons, nil};
 /// use lambda_calculus::*;
 ///
-/// let list_consed1 = ||
-///     app!(
-///         cons(),
-///         1.into_church(),
-///         app!(
-///             cons(),
-///             2.into_church(),
-///             app!(
-///                 cons(),
-///                 3.into_church(),
-///                 nil()
-///             )
-///         )
-///     );
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_church_list();
 ///
-/// let list_consed2 = ||
-///     app!(
-///         cons(),
-///         2.into_church(),
-///         app!(
-///             cons(),
-///             3.into_church(),
-///             nil()
-///         )
-///     );
-///
-/// let list_consed3 = ||
-///     app!(
-///         cons(),
-///         3.into_church(),
-///         nil()
-///     );
 /// assert_eq!(
-///     beta(app(tail(), list_consed1()), NOR, 0),
-///     beta(list_consed2(), NOR, 0)
-/// );
-/// assert_eq!(
-///     beta(app(tail(), list_consed2()), NOR, 0),
-///     beta(list_consed3(), NOR, 0)
-/// );
-/// assert_eq!(
-///     beta(app(tail(), nil()), NOR, 0),
-///     UD
+///     beta(app(tail(), list), NOR, 0),
+///     vec![2.into_church(), 3.into_church()].into_church_list()
 /// );
 /// ```
 pub fn tail() -> Term {
