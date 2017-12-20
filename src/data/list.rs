@@ -162,11 +162,6 @@ pub fn length(encoding: Encoding) -> Term {
 ///     beta(app!(index(Scott), 0.into_scott(), list().into_scott()), NOR, 0),
 ///     1.into_scott()
 /// );
-///
-/// assert_eq!(
-///     beta(app!(index(Scott), 1.into_scott(), list().into_scott()), NOR, 0),
-///     2.into_scott()
-/// );
 /// ```
 pub fn index(encoding: Encoding) -> Term {
     match encoding {
@@ -179,7 +174,9 @@ pub fn index(encoding: Encoding) -> Term {
             ))
         },
         Scott => {
-            unimplemented!()
+            abs!(2, app(
+                fst(), app!(app(scott::to_church(), Var(2)), snd(), Var(1)) // can do better
+            ))
         },
         _ => unimplemented!()
     }
