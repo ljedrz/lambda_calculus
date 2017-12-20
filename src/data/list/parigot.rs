@@ -49,7 +49,17 @@ pub fn is_nil() -> Term {
 ///     );
 /// ```
 pub fn cons() -> Term {
-    abs!(4, app!(Var(1), Var(4), Var(3), app!(abs(Var(1)), Var(3), Var(2), Var(1))))
+    abs!(4, app!(
+        Var(1),
+        Var(4),
+        Var(3),
+        app!(
+            abs(Var(1)),
+            Var(3),
+            Var(2),
+            Var(1)
+        )
+    ))
 }
 
 /// Applied to a Parigot-encoded list it returns its first element.
