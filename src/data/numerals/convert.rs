@@ -95,27 +95,6 @@ impl_pair!(IntoScott, into_scott);
 impl_pair!(IntoParigot, into_parigot);
 impl_pair!(IntoStumpFu, into_stumpfu);
 
-macro_rules! impl_list {
-    ($trait_name:ident, $function_name:ident) => (
-        impl<T> $trait_name for Vec<T> where T: $trait_name {
-            fn $function_name(self) -> Term {
-                let mut ret = abs!(2, Var(1));
-
-                for term in self.into_iter().rev() {
-                    ret = abs(app!(Var(1), term.$function_name(), ret))
-                }
-
-                ret
-            }
-        }
-    );
-}
-
-impl_list!(IntoChurch, into_church);
-impl_list!(IntoScott, into_scott);
-impl_list!(IntoParigot, into_parigot);
-impl_list!(IntoStumpFu, into_stumpfu);
-
 macro_rules! impl_option {
     ($trait_name:ident, $function_name:ident) => (
         impl<T> $trait_name for Option<T> where T: $trait_name {

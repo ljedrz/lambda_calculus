@@ -1,4 +1,4 @@
-//! [Lambda-encoded single-pair list](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
+//! [Single-pair list](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
 
 use term::{Term, abs, app};
 use term::Term::*;
@@ -9,18 +9,18 @@ use data::numerals::convert::Encoding;
 use data::numerals::convert::Encoding::*;
 use data::numerals::{church, scott, parigot, stumpfu};
 
-/// Produces a `nil`, the last link of a lambda-encoded list; equivalent to `boolean::fls()`.
+/// Produces a `nil`, the last link of a pair-encoded list; equivalent to `boolean::fls()`.
 ///
 /// NIL := FALSE
 pub fn nil() -> Term { fls() }
 
-/// Applied to a lambda-encoded list it determines if it is empty.
+/// Applied to a pair-encoded list it determines if it is empty.
 ///
 /// IS_NIL := λl.l (λhtd.FALSE) TRUE = λ 1 (λ λ λ FALSE) TRUE
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::is_nil;
+/// use lambda_calculus::data::list::pair::is_nil;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(is_nil(), vec![].into()), NOR, 0), true.into());
@@ -31,13 +31,13 @@ pub fn is_nil() -> Term {
     abs(app!(Var(1), abs!(3, fls()), tru()))
 }
 
-/// Applied to two terms it returns them contained in a lambda-encoded list; equivalent to `pair::pair()`.
+/// Applied to two terms it returns them contained in a pair-encoded list; equivalent to `pair::pair()`.
 ///
 /// CONS := PAIR
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::{nil, cons};
+/// use lambda_calculus::data::list::pair::{nil, cons};
 /// use lambda_calculus::*;
 ///
 /// let list_consed =
@@ -61,13 +61,13 @@ pub fn is_nil() -> Term {
 /// ```
 pub fn cons() -> Term { pair() }
 
-/// Applied to a lambda-encoded list it returns its first element; equivalent to `pair::fst()`.
+/// Applied to a pair-encoded list it returns its first element; equivalent to `pair::fst()`.
 ///
 /// HEAD := FST
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::head;
+/// use lambda_calculus::data::list::pair::head;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1, 2, 3].into_church();
@@ -76,14 +76,14 @@ pub fn cons() -> Term { pair() }
 /// ```
 pub fn head() -> Term { fst() }
 
-/// Applied to a lambda-encoded list it returns a new list with all its elements but the first one;
+/// Applied to a pair-encoded list it returns a new list with all its elements but the first one;
 /// equivalent to `pair::snd()`.
 ///
 /// TAIL := SND
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::tail;
+/// use lambda_calculus::data::list::pair::tail;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1, 2, 3].into_church();
@@ -95,7 +95,7 @@ pub fn head() -> Term { fst() }
 /// ```
 pub fn tail() -> Term { snd() }
 
-/// Applied to a lambda-encoded list and a specific `Encoding` it returns its length in the given
+/// Applied to a pair-encoded list and a specific `Encoding` it returns its length in the given
 /// encoding.
 ///
 /// LENGTH := Z (λzal.IS_NIL l (λx.a) (λx.z (SUCC a) (SND l)) I) ZERO
@@ -103,7 +103,7 @@ pub fn tail() -> Term { snd() }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::{length, nil};
+/// use lambda_calculus::data::list::pair::{length, nil};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -141,14 +141,14 @@ pub fn length(encoding: Encoding) -> Term {
     )
 }
 
-/// Applied to a number `i` with the given `Encoding` and a lambda-encoded list it returns the `i`-th
+/// Applied to a number `i` with the given `Encoding` and a pair-encoded list it returns the `i`-th
 /// (zero-indexed) element of the list.
 ///
 /// INDEX := λil. FST (l SND i) = λ λ FST (2 SND 1)
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::index;
+/// use lambda_calculus::data::list::pair::index;
 /// use lambda_calculus::*;
 ///
 /// let list = || vec![1, 2, 3];
@@ -182,14 +182,14 @@ pub fn index(encoding: Encoding) -> Term {
     }
 }
 
-/// Reverses a lambda-encoded list.
+/// Reverses a pair-encoded list.
 ///
 /// REVERSE := Z (λzal.IS_NIL l (λx.a) (λx.z (PAIR (FST l) a) (SND l) I)) NIL =
 /// Z (λ λ λ IS_NIL 1 (λ 3) (λ 4 (PAIR (FST 2) 3) (SND 2)) I) NIL
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::reverse;
+/// use lambda_calculus::data::list::pair::reverse;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1, 2, 3].into_church();
@@ -222,14 +222,14 @@ pub fn reverse() -> Term {
     )
 }
 
-/// Applied to a number `n` with the given `Encoding` and `n` `Term`s it creates a lambda-encoded
+/// Applied to a number `n` with the given `Encoding` and `n` `Term`s it creates a pair-encoded
 /// list of those terms.
 ///
 /// LIST := λn.n (λfax.f (PAIR x a)) REVERSE NIL = λ 1 (λ λ λ 3 (PAIR 1 2)) REVERSE NIL
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::list;
+/// use lambda_calculus::data::list::pair::list;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -264,14 +264,14 @@ pub fn list(encoding: Encoding) -> Term {
     }
 }
 
-/// Applied to two lambda-encoded lists it concatenates them.
+/// Applied to two pair-encoded lists it concatenates them.
 ///
 /// APPEND := Z (λzab. IS_NIL a (λx.b) (λx.PAIR (FST a) (z (SND a) b)) I) =
 /// Z (λ λ λ IS_NIL 2 (λ 2) (λ PAIR (FST 3) (4 (SND 3) 2)) I)
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::append;
+/// use lambda_calculus::data::list::pair::append;
 /// use lambda_calculus::*;
 ///
 /// let list1 = vec![1, 2].into_church();
@@ -304,14 +304,14 @@ pub fn append() -> Term {
     )
 }
 
-/// Applied to a function and a lambda-encoded list it maps the function over it.
+/// Applied to a function and a pair-encoded list it maps the function over it.
 ///
 /// MAP := Z (λzfl. IS_NIL l (λx.NIL) (λx.PAIR (f (FST l)) (z f (SND l))) I) =
 /// Z (λ λ λ IS_NIL 1 (λ NIL) (λ PAIR (3 (FST 2)) (4 3 (SND 2))) I)
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::map;
+/// use lambda_calculus::data::list::pair::map;
 /// use lambda_calculus::data::numerals::church::succ;
 /// use lambda_calculus::*;
 ///
@@ -347,7 +347,7 @@ pub fn map() -> Term {
     )
 }
 
-/// Applied to a function, a starting value and a lambda-encoded list it performs a
+/// Applied to a function, a starting value and a pair-encoded list it performs a
 /// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists)
 /// on the list.
 ///
@@ -356,7 +356,7 @@ pub fn map() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::foldl;
+/// use lambda_calculus::data::list::pair::foldl;
 /// use lambda_calculus::data::numerals::church::{add, sub};
 /// use lambda_calculus::*;
 ///
@@ -388,7 +388,7 @@ pub fn foldl() -> Term {
     )
 }
 
-/// Applied to a function, a starting value and a lambda-encoded list it performs a
+/// Applied to a function, a starting value and a pair-encoded list it performs a
 /// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists)
 /// on the list.
 ///
@@ -397,7 +397,7 @@ pub fn foldl() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::foldr;
+/// use lambda_calculus::data::list::pair::foldr;
 /// use lambda_calculus::data::numerals::church::{add, sub};
 /// use lambda_calculus::*;
 ///
@@ -425,14 +425,14 @@ pub fn foldr() -> Term {
     ))
 }
 
-/// Applied to a predicate and a lambda-encoded list it filters the list based on the predicate.
+/// Applied to a predicate and a pair-encoded list it filters the list based on the predicate.
 ///
 /// FILTER := Z (λzpl. IS_NIL l (λx.NIL) (λx.p (FST l) (PAIR (FST l)) I (z p (SND l))) I) =
 /// Z (λ λ λ IS_NIL 1 (λ NIL) (λ 3 (FST 2) (PAIR (FST 2)) I (4 3 (SND 2))) I)
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::filter;
+/// use lambda_calculus::data::list::pair::filter;
 /// use lambda_calculus::data::numerals::church::{is_zero, gt};
 /// use lambda_calculus::combinators::C;
 /// use lambda_calculus::*;
@@ -477,14 +477,14 @@ pub fn filter() -> Term {
     )
 }
 
-/// Applied to a lambda-encoded list it returns the last element.
+/// Applied to a pair-encoded list it returns the last element.
 ///
 /// LAST := Z (λzl.IS_NIL l (λx.NIL) (λx.IS_NIL (TAIL l) (HEAD l) (z (TAIL l))) I) =
 /// Z (λ 2 1. IS_NIL 1 (λ NIL) (λ IS_NIL (TAIL 2) (HEAD 2) (3 (TAIL 2))) I)
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::{last};
+/// use lambda_calculus::data::list::pair::{last};
 /// use lambda_calculus::*;
 ///
 /// let list = vec![0, 1, 2, 3].into_church();
@@ -512,14 +512,14 @@ pub fn last() -> Term {
     )
 }
 
-/// Applied to a lambda-encoded list it returns the list without the last element.
+/// Applied to a pair-encoded list it returns the list without the last element.
 ///
 /// INIT := Z (λzl.IS_NIL l (λx.NIL) (λx.(IS_NIL (FST l) NIL (PAIR (FST l) (z (SND l))))) I) =
 /// Z (λ λ IS_NIL 1 (λ NIL) (λ (IS_NIL (FST 2) NIL (PAIR (FST 2) (3 (SND 2))))) I)
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::init;
+/// use lambda_calculus::data::list::pair::init;
 /// use lambda_calculus::*;
 ///
 /// let list1 = vec![0, 1, 2, 3].into_church();
@@ -552,7 +552,7 @@ pub fn init() -> Term {
     )
 }
 
-/// Applied to two lambda-encoded lists it returns a list of corresponding pairs. If one input list
+/// Applied to two pair-encoded lists it returns a list of corresponding pairs. If one input list
 /// is shorter, excess elements of the longer list are discarded.
 ///
 /// ZIP := Z (λ.zab IS_NIL b (λ.x NIL) (λ.x IS_NIL a NIL (CONS (PAIR (HEAD b) (HEAD a)) (z (TAIL b) (TAIL a)))) I) =
@@ -560,7 +560,7 @@ pub fn init() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::zip;
+/// use lambda_calculus::data::list::pair::zip;
 /// use lambda_calculus::*;
 ///
 /// let list  = || vec![0, 1].into_church();
@@ -600,7 +600,7 @@ pub fn zip() -> Term {
     )
 }
 
-/// Applied to a function and two lambda-encoded lists it applies the function to the corresponding
+/// Applied to a function and two pair-encoded lists it applies the function to the corresponding
 /// elements and returns the resulting list. If one input list is shorter, excess elements of the
 /// longer list are discarded.
 ///
@@ -609,7 +609,7 @@ pub fn zip() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::zip_with;
+/// use lambda_calculus::data::list::pair::zip_with;
 /// use lambda_calculus::data::numerals::church::add;
 /// use lambda_calculus::*;
 ///
@@ -651,7 +651,7 @@ pub fn zip_with() -> Term {
     )
 }
 
-/// Applied to a number `n` with the specified `Encoding` and a lambda-encoded list it returns a new
+/// Applied to a number `n` with the specified `Encoding` and a pair-encoded list it returns a new
 /// list with the first `n` elements of the supplied list.
 ///
 /// TAKE := Z (λznl.IS_NIL l (λx.NIL) (λx.IS_ZERO n NIL (CONS (HEAD l) (z (PRED n) (TAIL l)))) I) =
@@ -659,7 +659,7 @@ pub fn zip_with() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::take;
+/// use lambda_calculus::data::list::pair::take;
 /// use lambda_calculus::*;
 ///
 /// let list = || vec![1, 2, 3];
@@ -708,7 +708,7 @@ pub fn take(encoding: Encoding) -> Term {
     )
 }
 
-/// Applied to a predicate function and a lambda-encoded list it returns the longest prefix of the
+/// Applied to a predicate function and a pair-encoded list it returns the longest prefix of the
 /// list whose elements all satisfy the predicate function.
 ///
 /// TAKE_WHILE := Z (λzfl. IS_NIL l (λx.NIL) (λx.f (HEAD l) (CONS (HEAD l) (z f (TAIL l))) NIL) I) =
@@ -716,7 +716,7 @@ pub fn take(encoding: Encoding) -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::take_while;
+/// use lambda_calculus::data::list::pair::take_while;
 /// use lambda_calculus::data::numerals::church::is_zero;
 /// use lambda_calculus::*;
 ///
