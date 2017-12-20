@@ -230,3 +230,29 @@ pub fn Z() -> Term {
 pub fn R() -> Term {
     abs!(2, app(Var(1), Var(2)))
 }
+
+/// Θ - Turing's fixed-point combinator (call-by-value form)
+///
+/// Θ := (λxy.y (λz.x x y)) (λxy.y (λz.x x y)) = (λ λ 1 (λ 3 3 2)) (λ λ 1 (λ 3 3 2))
+///
+/// It is suitable for `NOR` (normal), `HNO` (hybrid normal), `CBN` (call-by-name), `CBV`
+/// (call-by-value), and `HSP` (head spine) reduction `Order`s.
+///
+/// # Example
+/// ```
+/// use lambda_calculus::combinators::t;
+/// use lambda_calculus::*;
+///
+/// fn dummy() -> Term { abs(Var(2)) } // a dummy term that won't easily reduce
+///
+/// assert_eq!(
+///     beta(app(t(), dummy()), CBV, 0),
+///     beta(app(dummy(), app(t(), dummy())), CBV, 0)
+/// );
+/// ```
+pub fn t() -> Term {
+    app(
+        abs!(2, app(Var(1), abs(app!(Var(3), Var(3), Var(2))))),
+        abs!(2, app(Var(1), abs(app!(Var(3), Var(3), Var(2)))))
+    )
+}
