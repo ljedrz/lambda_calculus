@@ -8,6 +8,8 @@ use term::Term::*;
 /// The encoding type applicable to numerals.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum ListEncoding {
+    /// Single pair encoding,
+    Pair,
     /// Church encoding
     Church,
     /// Scott encoding
@@ -25,9 +27,22 @@ macro_rules! make_trait {
     );
 }
 
+make_trait!(IntoPairList, into_pair_list);
 make_trait!(IntoChurchList, into_church_list);
 make_trait!(IntoScottList, into_scott_list);
 make_trait!(IntoParigotList, into_parigot_list);
+
+impl IntoPairList for Vec<Term> {
+    fn into_pair_list(self) -> Term {
+        let mut ret = abs!(2, Var(1));
+
+        for t in self.into_iter().rev() {
+            ret = abs(app!(Var(1), t, ret))
+        }
+
+        ret
+    }
+}
 
 impl IntoChurchList for Vec<Term> {
     fn into_church_list(self) -> Term {

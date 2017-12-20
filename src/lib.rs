@@ -22,3 +22,7 @@ pub mod data;
 pub use data::numerals::convert::*;
 #[cfg(feature = "encoding")]
 pub use data::numerals::convert::Encoding::*;
+#[cfg(feature = "encoding")]
+pub use data::list::convert::*;
+#[cfg(feature = "encoding")]
+pub use data::list::convert::ListEncoding::*;
