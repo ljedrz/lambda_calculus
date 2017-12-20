@@ -157,6 +157,16 @@ pub fn length(encoding: Encoding) -> Term {
 ///     beta(app!(index(Church), 0.into_church(), list().into_church()), NOR, 0),
 ///     1.into_church()
 /// );
+///
+/// assert_eq!(
+///     beta(app!(index(Scott), 0.into_scott(), list().into_scott()), NOR, 0),
+///     1.into_scott()
+/// );
+///
+/// assert_eq!(
+///     beta(app!(index(Scott), 1.into_scott(), list().into_scott()), NOR, 0),
+///     2.into_scott()
+/// );
 /// ```
 pub fn index(encoding: Encoding) -> Term {
     match encoding {
@@ -167,6 +177,9 @@ pub fn index(encoding: Encoding) -> Term {
                 Var(1),
                 abs!(2, Var(2))
             ))
+        },
+        Scott => {
+            unimplemented!()
         },
         _ => unimplemented!()
     }
@@ -236,6 +249,9 @@ pub fn list(encoding: Encoding) -> Term {
                 reverse(),
                 nil()
             ))
+        },
+        Scott => {
+            unimplemented!()
         },
         _ => unimplemented!()
     }

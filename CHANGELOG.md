@@ -4,7 +4,7 @@ Version 2.0.0
 Thanks
 -------
 @billpmurphy for the idea to make `reduction::{beta, compare}` IO-free, splitting conversions (and
-thus allowing all encodings to be compiled together), adding `term::is_supercombinator` and
+thus allowing all encodings to be compiled together), adding `term::is_supercombinator`,
 `option::{map, unwrap_or, and_then}`, `church::to_scott` and `scott::{is_zero, to_church}`,
 improving conversions into terms and adding `impl<T> IntoChurch for Option<T> where T: IntoChurch`
 

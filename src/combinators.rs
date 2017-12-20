@@ -7,7 +7,7 @@
 //! * the self-application combinator ω
 //! * the divergent combinator Ω
 //! * [the fixed-point combinators Y and Z](https://en.wikipedia.org/wiki/Fixed-point_combinator)
-//! * the reverse application combinator T
+//! * the reverse application (thrush) combinator R
 
 #![allow(non_snake_case)]
 
@@ -188,9 +188,9 @@ pub fn Y() -> Term {
 ///
 /// It will work with all the reduction orders suitable for its lazy counterpart (the `Y`
 /// combinator). In addition, it will also work with `CBV` (call-by-value) and `HAP` (hybrid
-/// applicative) reduction `Order`s, but with them it's not a drop-in replacement for the `Y`
-/// combinator - in order for such expressions to work, they need to be modified so that the
-/// evaluation of arguments of conditionals and other terms that need to be lazy is delayed.
+/// applicative) reduction `Order`s, though it is not a drop-in replacement - in order for such
+/// expressions to work, they need to be modified so that the evaluation of arguments of conditionals
+/// and other terms that need to be lazy is delayed.
 ///
 /// Z := λf.(λx.f (λv.x x v)) (λx.f (λv.x x v)) = λ (λ 2 (λ 2 2 1)) (λ 2 (λ 2 2 1))
 ///
@@ -213,20 +213,20 @@ pub fn Z() -> Term {
     ))
 }
 
-/// T - the reverse application combinator.
+/// R - the reverse application (thrush) combinator.
 ///
-/// T := λxf. f x = λ λ 1 2
+/// R := λxf.f x = λ λ 1 2
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::combinators::T;
+/// use lambda_calculus::combinators::R;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(T(), Var(1), Var(2)), NOR, 0),
+///     beta(app!(R(), Var(1), Var(2)), NOR, 0),
 ///     app(Var(2), Var(1))
 /// );
 /// ```
-pub fn T() -> Term {
+pub fn R() -> Term {
     abs!(2, app(Var(1), Var(2)))
 }
