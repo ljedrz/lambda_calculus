@@ -53,42 +53,14 @@ impl IntoScottList for Vec<Term> {
     }
 }
 
-impl IntoParigotList for Vec<Term> { // WIP
+impl IntoParigotList for Vec<Term> {
     fn into_parigot_list(self) -> Term {
         let mut ret  = abs!(2, Var(2));
-        let mut part = Var(0);
 
         for t in self.into_iter().rev() {
-            part = app!(Var(1), t, abs!(2, Var(2)), Var(2));
-            ret = app(abs!(2, part.clone()), part);
+            ret = abs!(2, app!(Var(1), t, ret.clone(), ret.unabs().and_then(|r| r.unabs()).unwrap()));
         }
 
         ret
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use data::list::parigot;
-    use reduction::*;
-
-    #[test]
-    fn temp() {
-        let list =
-             app!(
-                 parigot::cons(),
-                 abs!(3, Var(1)),
-                 app!(
-                     parigot::cons(),
-                     abs!(3, Var(2)),
-                     parigot::nil()
-                 )
-            );
-
-        let ret = beta(list, NOR, 0);
-
-        println!("{:?}", ret);
-        println!("{:?}", vec![abs!(3, Var(1)), abs!(3, Var(2))].into_parigot_list());
     }
 }
