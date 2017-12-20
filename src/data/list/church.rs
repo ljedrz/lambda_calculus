@@ -50,7 +50,16 @@ pub fn is_nil() -> Term {
 ///     );
 /// ```
 pub fn cons() -> Term {
-    abs!(4, app!(Var(1), Var(4), app!(abs(Var(1)), Var(3), Var(2), Var(1))))
+    abs!(4, app!(
+        Var(1),
+        Var(4),
+        app!(
+            abs(Var(1)),
+            Var(3),
+            Var(2),
+            Var(1)
+        )
+    ))
 }
 
 /// Applied to a Church-encoded list it returns its first element.
@@ -93,39 +102,56 @@ pub fn head() -> Term {
 /// use lambda_calculus::data::list::church::{tail, cons, nil};
 /// use lambda_calculus::*;
 ///
-/// let list_consed1 =
+/// let list_consed1 = ||
 ///     app!(
 ///         cons(),
 ///         1.into_church(),
 ///         app!(
 ///             cons(),
 ///             2.into_church(),
+///             app!(
+///                 cons(),
+///                 3.into_church(),
+///                 nil()
+///             )
+///         )
+///     );
+///
+/// let list_consed2 = ||
+///     app!(
+///         cons(),
+///         2.into_church(),
+///         app!(
+///             cons(),
+///             3.into_church(),
 ///             nil()
 ///         )
 ///     );
 ///
-/// let list_consed2 =
+/// let list_consed3 = ||
 ///     app!(
 ///         cons(),
-///         2.into_church(),
+///         3.into_church(),
 ///         nil()
 ///     );
-///
 /// assert_eq!(
-///     beta(app(tail(), list_consed1), NOR, 0),
-///     beta(list_consed2, NOR, 0)
+///     beta(app(tail(), list_consed1()), NOR, 0),
+///     beta(list_consed2(), NOR, 0)
+/// );
+/// assert_eq!(
+///     beta(app(tail(), list_consed2()), NOR, 0),
+///     beta(list_consed3(), NOR, 0)
 /// );
 /// assert_eq!(
 ///     beta(app(tail(), nil()), NOR, 0),
-///     nil()
+///     UD
 /// );
 /// ```
-pub fn tail() -> Term { // 2 abstractions too many with the first way
-    /*
-    abs!(3, app(
+pub fn tail() -> Term {
+    abs(app!(
         fst(),
         app!(
-            Var(3),
+            Var(1),
             app!(pair(), UD, nil()),
             abs!(2, app!(
                 pair(),
@@ -137,16 +163,5 @@ pub fn tail() -> Term { // 2 abstractions too many with the first way
                 )
             ))
         )
-    ))
-    */
-    abs!(3, app!(
-        Var(3),
-        abs(Var(3)),
-        abs!(3, app!(
-            Var(1),
-            Var(3),
-            app(Var(2), Var(4))
-        )),
-        abs!(2, Var(1))
     ))
 }
