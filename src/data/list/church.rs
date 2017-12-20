@@ -49,7 +49,7 @@ pub fn is_nil() -> Term {
 ///         )
 ///     );
 ///
-/// let list_into = vec![1.into_church(), 2.into_church(), 3.into_church()].into_church_list();
+/// let list_into = vec![1.into_church(), 2.into_church(), 3.into_church()].into_church();
 ///
 /// assert_eq!(
 ///     beta(list_consed, NOR, 0),
@@ -78,7 +78,7 @@ pub fn cons() -> Term {
 /// use lambda_calculus::data::list::church::{head, nil, cons};
 /// use lambda_calculus::*;
 ///
-/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_church_list();
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_church();
 ///
 /// assert_eq!(
 ///     beta(app(head(), list), NOR, 0),
@@ -99,11 +99,11 @@ pub fn head() -> Term {
 /// use lambda_calculus::data::list::church::{tail, cons, nil};
 /// use lambda_calculus::*;
 ///
-/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_church_list();
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_church();
 ///
 /// assert_eq!(
 ///     beta(app(tail(), list), NOR, 0),
-///     vec![2.into_church(), 3.into_church()].into_church_list()
+///     vec![2.into_church(), 3.into_church()].into_church()
 /// );
 /// ```
 pub fn tail() -> Term {

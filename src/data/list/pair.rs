@@ -5,9 +5,7 @@ use term::Term::*;
 use data::boolean::{tru, fls};
 use data::pair::{pair, fst, snd};
 use combinators::{I, Z};
-use data::numerals::convert::Encoding;
-use data::numerals::convert::Encoding::*;
-use data::numerals::{church, scott, parigot, stumpfu};
+use data::numerals::church::{zero, is_zero, succ, pred};
 
 /// Produces a `nil`, the last link of a pair-encoded list; equivalent to `boolean::fls()`.
 ///
@@ -23,9 +21,8 @@ pub fn nil() -> Term { fls() }
 /// use lambda_calculus::data::list::pair::is_nil;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(is_nil(), vec![].into()), NOR, 0), true.into());
-/// assert_eq!(beta(app(is_nil(), vec![1].into_church()), NOR, 0), false.into());
-/// assert_eq!(beta(app(is_nil(), vec![2].into_scott()),  NOR, 0), false.into());
+/// assert_eq!(beta(app(is_nil(),                vec![].into_pair_list()), NOR, 0),  true.into());
+/// assert_eq!(beta(app(is_nil(), vec![1.into_church()].into_pair_list()), NOR, 0), false.into());
 /// ```
 pub fn is_nil() -> Term {
     abs(app!(Var(1), abs!(3, fls()), tru()))
@@ -55,7 +52,7 @@ pub fn is_nil() -> Term {
 ///         )
 ///     );
 ///
-/// let list_from_vec = vec![1, 2, 3].into_church();
+/// let list_from_vec = vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
 ///
 /// assert_eq!(beta(list_consed, NOR, 0), list_from_vec);
 /// ```
@@ -70,7 +67,7 @@ pub fn cons() -> Term { pair() }
 /// use lambda_calculus::data::list::pair::head;
 /// use lambda_calculus::*;
 ///
-/// let list = vec![1, 2, 3].into_church();
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
 ///
 /// assert_eq!(beta(app(head(), list), NOR, 0), 1.into_church());
 /// ```
@@ -86,17 +83,16 @@ pub fn head() -> Term { fst() }
 /// use lambda_calculus::data::list::pair::tail;
 /// use lambda_calculus::*;
 ///
-/// let list = vec![1, 2, 3].into_church();
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
 ///
 /// assert_eq!(
 ///     beta(app(tail(), list), NOR, 0),
-///     vec![2, 3].into_church()
+///     vec![2.into_church(), 3.into_church()].into_pair_list()
 /// );
 /// ```
 pub fn tail() -> Term { snd() }
 
-/// Applied to a pair-encoded list and a specific `Encoding` it returns its length in the given
-/// encoding.
+/// Applied to a pair-encoded list and a Church-encoded number it returns its Church-encoded length.
 ///
 /// LENGTH := Z (λzal.IS_NIL l (λx.a) (λx.z (SUCC a) (SND l)) I) ZERO
 /// = Z (λλλ IS_NIL 1 (λ 3) (λ 4 (SUCC 3) (SND 2)) I) ZERO
@@ -107,23 +103,11 @@ pub fn tail() -> Term { snd() }
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app(length(Church), nil()), NOR, 0),
+///     beta(app(length(), nil()), NOR, 0),
 ///     0.into_church()
 /// );
-///
-/// assert_eq!(
-///     beta(app(length(Parigot), vec![1, 2, 3, 4].into_parigot()), NOR, 0),
-///     4.into_parigot()
-/// );
 /// ```
-pub fn length(encoding: Encoding) -> Term {
-    let (succ, zero) = match encoding {
-        Church =>  (church::succ(),  church::zero()),
-        Scott =>   (scott::succ(),   scott::zero()),
-        Parigot => (parigot::succ(), parigot::zero()),
-        StumpFu => (stumpfu::succ(), stumpfu::zero())
-    };
-
+pub fn length() -> Term {
     app!(
         Z(),
         abs!(3, app!(
@@ -132,16 +116,16 @@ pub fn length(encoding: Encoding) -> Term {
             abs(Var(3)),
             abs(app!(
                 Var(4),
-                app(succ, Var(3)),
+                app(succ(), Var(3)),
                 app(snd(), Var(2))
             )),
             I()
         )),
-        zero
+        zero()
     )
 }
 
-/// Applied to a number `i` with the given `Encoding` and a pair-encoded list it returns the `i`-th
+/// Applied to a Church-encoded number `i` and a pair-encoded list it returns the `i`-th
 /// (zero-indexed) element of the list.
 ///
 /// INDEX := λil. FST (l SND i) = λ λ FST (2 SND 1)
@@ -151,35 +135,20 @@ pub fn length(encoding: Encoding) -> Term {
 /// use lambda_calculus::data::list::pair::index;
 /// use lambda_calculus::*;
 ///
-/// let list = || vec![1, 2, 3];
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()];
 ///
 /// assert_eq!(
-///     beta(app!(index(Church), 0.into_church(), list().into_church()), NOR, 0),
+///     beta(app!(index(), 0.into_church(), list.into_pair_list()), NOR, 0),
 ///     1.into_church()
 /// );
-///
-/// assert_eq!(
-///     beta(app!(index(Scott), 0.into_scott(), list().into_scott()), NOR, 0),
-///     1.into_scott()
-/// );
 /// ```
-pub fn index(encoding: Encoding) -> Term {
-    match encoding {
-        Church => {
-            abs!(2, app!(
-                Var(2),
-                abs(app(Var(1), abs!(2, Var(1)))),
-                Var(1),
-                abs!(2, Var(2))
-            ))
-        },
-        Scott => {
-            abs!(2, app(
-                fst(), app!(app(scott::to_church(), Var(2)), snd(), Var(1)) // can do better
-            ))
-        },
-        _ => unimplemented!()
-    }
+pub fn index() -> Term {
+    abs!(2, app!(
+        Var(2),
+        abs(app(Var(1), abs!(2, Var(1)))),
+        Var(1),
+        abs!(2, Var(2))
+    ))
 }
 
 /// Reverses a pair-encoded list.
@@ -192,11 +161,11 @@ pub fn index(encoding: Encoding) -> Term {
 /// use lambda_calculus::data::list::pair::reverse;
 /// use lambda_calculus::*;
 ///
-/// let list = vec![1, 2, 3].into_church();
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
 ///
 /// assert_eq!(
 ///     beta(app(reverse(), list), NOR, 0),
-///     vec![3, 2, 1].into_church()
+///     vec![3.into_church(), 2.into_church(), 1.into_church()].into_pair_list()
 /// );
 /// ```
 pub fn reverse() -> Term {
@@ -222,8 +191,8 @@ pub fn reverse() -> Term {
     )
 }
 
-/// Applied to a number `n` with the given `Encoding` and `n` `Term`s it creates a pair-encoded
-/// list of those terms.
+/// Applied to a Church-encoded number `n` and `n` `Term`s it creates a pair-encoded list of those
+/// terms.
 ///
 /// LIST := λn.n (λfax.f (PAIR x a)) REVERSE NIL = λ 1 (λ λ λ 3 (PAIR 1 2)) REVERSE NIL
 ///
@@ -233,35 +202,17 @@ pub fn reverse() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(list(Church), 3.into_church(), 1.into_church(), 2.into_church(), 3.into_church()), NOR, 0),
-///     vec![1, 2, 3].into_church()
-/// );
-///
-/// assert_eq!(
-///     beta(app!(list(Scott), 3.into_scott(), 1.into_scott(), 2.into_scott(), 3.into_scott()), NOR, 0),
-///     vec![1, 2, 3].into_scott()
+///     beta(app!(list(), 3.into_church(), 1.into_church(), 2.into_church(), 3.into_church()), NOR, 0),
+///     vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list()
 /// );
 /// ```
-pub fn list(encoding: Encoding) -> Term {
-    match encoding {
-        Church => {
-            abs(app!(
-                Var(1),
-                abs!(3, app(Var(3), app!(pair(), Var(1), Var(2)))),
-                reverse(),
-                nil()
-            ))
-        },
-        Scott => {
-            abs(app!(
-                app(scott::to_church(), Var(1)), // a bit of a hack
-                abs!(3, app(Var(3), app!(pair(), Var(1), Var(2)))),
-                reverse(),
-                nil()
-            ))
-        },
-        _ => unimplemented!()
-    }
+pub fn list() -> Term {
+    abs(app!(
+        Var(1),
+        abs!(3, app(Var(3), app!(pair(), Var(1), Var(2)))),
+        reverse(),
+        nil()
+    ))
 }
 
 /// Applied to two pair-encoded lists it concatenates them.
@@ -274,12 +225,12 @@ pub fn list(encoding: Encoding) -> Term {
 /// use lambda_calculus::data::list::pair::append;
 /// use lambda_calculus::*;
 ///
-/// let list1 = vec![1, 2].into_church();
-/// let list2 = vec![3, 4].into_church();
+/// let list1 = vec![1.into_church(), 2.into_church()].into_pair_list();
+/// let list2 = vec![3.into_church(), 4.into_church()].into_pair_list();
 ///
 /// assert_eq!(
 ///     beta(app!(append(), list1, list2), NOR, 0),
-///     vec![1, 2, 3, 4].into_church()
+///     vec![1.into_church(), 2.into_church(), 3.into_church(), 4.into_church()].into_pair_list()
 /// );
 /// ```
 pub fn append() -> Term {
@@ -315,11 +266,11 @@ pub fn append() -> Term {
 /// use lambda_calculus::data::numerals::church::succ;
 /// use lambda_calculus::*;
 ///
-/// let list = vec![1, 2, 3].into_church();
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
 ///
 /// assert_eq!(
 ///     beta(app!(map(), succ(), list), NOR, 0),
-///     vec![2, 3, 4].into_church()
+///     vec![2.into_church(), 3.into_church(), 4.into_church()].into_pair_list()
 /// );
 /// ```
 pub fn map() -> Term {
@@ -360,7 +311,7 @@ pub fn map() -> Term {
 /// use lambda_calculus::data::numerals::church::{add, sub};
 /// use lambda_calculus::*;
 ///
-/// let list = || vec![1, 2, 3].into_church();
+/// let list = || vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
 ///
 /// assert_eq!(beta(app!(foldl(), add(), 0.into_church(), list()), NOR, 0), 6.into_church());
 /// assert_eq!(beta(app!(foldl(), sub(), 6.into_church(), list()), NOR, 0), 0.into_church());
@@ -401,7 +352,7 @@ pub fn foldl() -> Term {
 /// use lambda_calculus::data::numerals::church::{add, sub};
 /// use lambda_calculus::*;
 ///
-/// let list = || vec![1, 2, 3].into_church();
+/// let list = || vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
 ///
 /// assert_eq!(beta(app!(foldr(), add(), 0.into_church(), list()), NOR, 0), 6.into_church());
 /// assert_eq!(beta(app!(foldr(), sub(), 6.into_church(), list()), NOR, 0), 0.into_church());
@@ -437,16 +388,16 @@ pub fn foldr() -> Term {
 /// use lambda_calculus::combinators::C;
 /// use lambda_calculus::*;
 ///
-/// let list = || vec![0, 1, 2, 3].into_church();
+/// let list = || vec![0.into_church(), 1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
 /// let gt_1 = app!(C(), gt(), 1.into_church()); // greater than 1
 ///
 /// assert_eq!(
 ///     beta(app!(filter(), is_zero(), list()), NOR, 0),
-///     vec![0].into_church()
+///     vec![0.into_church()].into_pair_list()
 /// );
 /// assert_eq!(
 ///     beta(app!(filter(), gt_1, list()), NOR, 0),
-///     vec![2, 3].into_church()
+///     vec![2.into_church(), 3.into_church()].into_pair_list()
 /// );
 /// ```
 pub fn filter() -> Term {
@@ -487,7 +438,7 @@ pub fn filter() -> Term {
 /// use lambda_calculus::data::list::pair::{last};
 /// use lambda_calculus::*;
 ///
-/// let list = vec![0, 1, 2, 3].into_church();
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
 ///
 /// assert_eq!(beta(app(last(), list), NOR, 0), 3.into_church());
 /// ```
@@ -522,8 +473,8 @@ pub fn last() -> Term {
 /// use lambda_calculus::data::list::pair::init;
 /// use lambda_calculus::*;
 ///
-/// let list1 = vec![0, 1, 2, 3].into_church();
-/// let list2 = vec![0, 1, 2].into_church();
+/// let list1 = vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
+/// let list2 = vec![1.into_church(), 2.into_church()].into_pair_list();
 ///
 /// assert_eq!(beta(app(init(), list1), NOR, 0), list2);
 /// ```
@@ -563,8 +514,8 @@ pub fn init() -> Term {
 /// use lambda_calculus::data::list::pair::zip;
 /// use lambda_calculus::*;
 ///
-/// let list  = || vec![0, 1].into_church();
-/// let pairs = || vec![(0, 0), (1, 1)].into_church();
+/// let list  = || vec![0.into_church(), 1.into_church()].into_pair_list();
+/// let pairs = || vec![(0, 0).into_church(), (1, 1).into_church()].into_pair_list();
 ///
 /// assert_eq!(beta(app!(zip(), list(), list()), NOR, 0), pairs());
 /// ```
@@ -613,8 +564,8 @@ pub fn zip() -> Term {
 /// use lambda_calculus::data::numerals::church::add;
 /// use lambda_calculus::*;
 ///
-/// let list1 = || vec![2, 3].into_church();
-/// let list2 = || vec![4, 6].into_church();
+/// let list1 = || vec![2.into_church(), 3.into_church()].into_pair_list();
+/// let list2 = || vec![4.into_church(), 6.into_church()].into_pair_list();
 ///
 /// assert_eq!(beta(app!(zip_with(), add(), list1(), list1()), NOR, 0), list2());
 /// ```
@@ -651,8 +602,8 @@ pub fn zip_with() -> Term {
     )
 }
 
-/// Applied to a number `n` with the specified `Encoding` and a pair-encoded list it returns a new
-/// list with the first `n` elements of the supplied list.
+/// Applied to a Church-encoded number `n` and a pair-encoded list it returns a new list with the
+/// first `n` elements of the supplied list.
 ///
 /// TAKE := Z (λznl.IS_NIL l (λx.NIL) (λx.IS_ZERO n NIL (CONS (HEAD l) (z (PRED n) (TAIL l)))) I) =
 /// Z (λ λ λ IS_NIL 1 (λ NIL) (λ IS_ZERO 3 NIL (CONS (HEAD 2) (4 (PRED 3) (TAIL 2)))) I)
@@ -662,25 +613,14 @@ pub fn zip_with() -> Term {
 /// use lambda_calculus::data::list::pair::take;
 /// use lambda_calculus::*;
 ///
-/// let list = || vec![1, 2, 3];
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()];
 ///
 /// assert_eq!(
-///     beta(app!(take(Church), 2.into_church(), list().into_church()), NOR, 0),
-///     vec![1, 2].into_church()
-/// );
-/// assert_eq!(
-///     beta(app!(take(Scott), 1.into_scott(), list().into_scott()), NOR, 0),
-///     vec![1].into_scott()
+///     beta(app!(take(), 2.into_church(), list.into_pair_list()), NOR, 0),
+///     vec![1.into_church(), 2.into_church()].into_pair_list()
 /// );
 /// ```
-pub fn take(encoding: Encoding) -> Term {
-    let (is_zero, pred) = match encoding {
-        Church =>  (church::is_zero(),  church::pred()),
-        Scott =>   (scott::is_zero(),   scott::pred()),
-        Parigot => (parigot::is_zero(), parigot::pred()),
-        StumpFu => (stumpfu::is_zero(), stumpfu::pred())
-    };
-
+pub fn take() -> Term {
     app!(
         Z(),
         abs!(3, app!(
@@ -689,7 +629,7 @@ pub fn take(encoding: Encoding) -> Term {
             abs(nil()),
             abs(
                 app!(
-                    is_zero,
+                    is_zero(),
                     Var(3),
                     nil(),
                     app!(
@@ -697,7 +637,7 @@ pub fn take(encoding: Encoding) -> Term {
                         app(head(), Var(2)),
                         app!(
                             Var(4),
-                            app(pred, Var(3)),
+                            app(pred(), Var(3)),
                             app(tail(), Var(2))
                         )
                     )
@@ -720,8 +660,8 @@ pub fn take(encoding: Encoding) -> Term {
 /// use lambda_calculus::data::numerals::church::is_zero;
 /// use lambda_calculus::*;
 ///
-/// let list1 = vec![0, 0, 1].into_church();
-/// let list2 = vec![0, 0].into_church();
+/// let list1 = vec![0.into_church(), 0.into_church(), 1.into_church()].into_pair_list();
+/// let list2 = vec![0.into_church(), 0.into_church()].into_pair_list();
 ///
 /// assert_eq!(beta(app!(take_while(), is_zero(), list1), NOR, 0), list2);
 /// ```

@@ -28,9 +28,9 @@ macro_rules! make_trait {
 }
 
 make_trait!(IntoPairList, into_pair_list);
-make_trait!(IntoChurchList, into_church_list);
-make_trait!(IntoScottList, into_scott_list);
-make_trait!(IntoParigotList, into_parigot_list);
+make_trait!(IntoChurchList, into_church);
+make_trait!(IntoScottList, into_scott);
+make_trait!(IntoParigotList, into_parigot);
 
 impl IntoPairList for Vec<Term> {
     fn into_pair_list(self) -> Term {
@@ -45,7 +45,7 @@ impl IntoPairList for Vec<Term> {
 }
 
 impl IntoChurchList for Vec<Term> {
-    fn into_church_list(self) -> Term {
+    fn into_church(self) -> Term {
         let mut ret = Var(2);
 
         for t in self.into_iter().rev() {
@@ -57,7 +57,7 @@ impl IntoChurchList for Vec<Term> {
 }
 
 impl IntoScottList for Vec<Term> {
-    fn into_scott_list(self) -> Term {
+    fn into_scott(self) -> Term {
         let mut ret = abs!(2, Var(2));
 
         for t in self.into_iter().rev() {
@@ -69,7 +69,7 @@ impl IntoScottList for Vec<Term> {
 }
 
 impl IntoParigotList for Vec<Term> {
-    fn into_parigot_list(self) -> Term {
+    fn into_parigot(self) -> Term {
         let mut ret  = abs!(2, Var(2));
 
         for t in self.into_iter().rev() {

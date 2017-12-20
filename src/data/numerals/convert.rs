@@ -7,7 +7,7 @@ use term::Term::*;
 
 /// The encoding type applicable to numerals.
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub enum Encoding {
+pub enum NumEncoding {
     /// Church encoding
     Church,
     /// Scott encoding
@@ -27,12 +27,12 @@ macro_rules! make_trait {
     );
 }
 
-make_trait!(IntoChurch, into_church);
-make_trait!(IntoScott, into_scott);
-make_trait!(IntoParigot, into_parigot);
-make_trait!(IntoStumpFu, into_stumpfu);
+make_trait!(IntoChurchNum, into_church);
+make_trait!(IntoScottNum, into_scott);
+make_trait!(IntoParigotNum, into_parigot);
+make_trait!(IntoStumpFuNum, into_stumpfu);
 
-impl IntoChurch for usize {
+impl IntoChurchNum for usize {
     fn into_church(self) -> Term {
         let mut ret = Var(1);
 
@@ -44,7 +44,7 @@ impl IntoChurch for usize {
     }
 }
 
-impl IntoScott for usize {
+impl IntoScottNum for usize {
     fn into_scott(self) -> Term {
         let mut ret = abs!(2, Var(2));
 
@@ -56,7 +56,7 @@ impl IntoScott for usize {
     }
 }
 
-impl IntoParigot for usize {
+impl IntoParigotNum for usize {
     fn into_parigot(self) -> Term {
         let mut ret = abs!(2, Var(1));
 
@@ -68,7 +68,7 @@ impl IntoParigot for usize {
     }
 }
 
-impl IntoStumpFu for usize {
+impl IntoStumpFuNum for usize {
     fn into_stumpfu(self) -> Term {
         let mut ret = abs!(2, Var(1));
 
@@ -90,10 +90,10 @@ macro_rules! impl_pair {
     );
 }
 
-impl_pair!(IntoChurch, into_church);
-impl_pair!(IntoScott, into_scott);
-impl_pair!(IntoParigot, into_parigot);
-impl_pair!(IntoStumpFu, into_stumpfu);
+impl_pair!(IntoChurchNum, into_church);
+impl_pair!(IntoScottNum, into_scott);
+impl_pair!(IntoParigotNum, into_parigot);
+impl_pair!(IntoStumpFuNum, into_stumpfu);
 
 macro_rules! impl_option {
     ($trait_name:ident, $function_name:ident) => (
@@ -108,7 +108,7 @@ macro_rules! impl_option {
     );
 }
 
-impl_option!(IntoChurch, into_church);
-impl_option!(IntoScott, into_scott);
-impl_option!(IntoParigot, into_parigot);
-impl_option!(IntoStumpFu, into_stumpfu);
+impl_option!(IntoChurchNum, into_church);
+impl_option!(IntoScottNum, into_scott);
+impl_option!(IntoParigotNum, into_parigot);
+impl_option!(IntoStumpFuNum, into_stumpfu);
