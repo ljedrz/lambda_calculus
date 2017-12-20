@@ -239,6 +239,11 @@ pub fn reverse() -> Term {
 ///     beta(app!(list(Church), 3.into_church(), 1.into_church(), 2.into_church(), 3.into_church()), NOR, 0),
 ///     vec![1, 2, 3].into_church()
 /// );
+///
+/// assert_eq!(
+///     beta(app!(list(Scott), 3.into_scott(), 1.into_scott(), 2.into_scott(), 3.into_scott()), NOR, 0),
+///     vec![1, 2, 3].into_scott()
+/// );
 /// ```
 pub fn list(encoding: Encoding) -> Term {
     match encoding {
@@ -251,7 +256,12 @@ pub fn list(encoding: Encoding) -> Term {
             ))
         },
         Scott => {
-            unimplemented!()
+            abs(app!(
+                app(scott::to_church(), Var(1)), // a bit of a hack
+                abs!(3, app(Var(3), app!(pair(), Var(1), Var(2)))),
+                reverse(),
+                nil()
+            ))
         },
         _ => unimplemented!()
     }

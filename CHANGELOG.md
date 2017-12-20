@@ -24,6 +24,7 @@ Breaking changes
 - rename `Term::beta` to `Term::reduce`
 - rename `church::lists::null` to `is_nil`
 - rename `parser::Error` to `ParseError`
+- rename `combinators::T` to `R`
 - simplify `term::Error`
 - make `lists::{length, index, take, list}` dependent on given numeral encoding
 - unify test and bench names
