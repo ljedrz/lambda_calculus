@@ -231,7 +231,7 @@ pub fn R() -> Term {
     abs!(2, app(Var(1), Var(2)))
 }
 
-/// Θ - Turing's fixed-point combinator (call-by-value form)
+/// Θ - Turing's fixed-point combinator
 ///
 /// Θ := (λxy.y (x x y)) (λxy.y (x x y)) = (λ λ 1 (2 2 1)) (λ λ 1 (2 2 1))
 ///
