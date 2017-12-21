@@ -4,6 +4,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
+use data::numerals::convert::*;
 
 macro_rules! make_trait {
     ($trait_name:ident, $function_name:ident) => (
@@ -43,6 +44,12 @@ impl IntoChurchList for Vec<Term> {
     }
 }
 
+impl<T: IntoChurchNum> IntoChurchList for Vec<T> {
+    fn into_church(self) -> Term {
+        self.into_iter().map(|t| t.into_church()).collect::<Vec<Term>>().into_church()
+    }
+}
+
 impl IntoScottList for Vec<Term> {
     fn into_scott(self) -> Term {
         let mut ret = abs!(2, Var(2));
@@ -55,6 +62,12 @@ impl IntoScottList for Vec<Term> {
     }
 }
 
+impl<T: IntoScottNum> IntoScottList for Vec<T> {
+    fn into_scott(self) -> Term {
+        self.into_iter().map(|t| t.into_scott()).collect::<Vec<Term>>().into_scott()
+    }
+}
+
 impl IntoParigotList for Vec<Term> {
     fn into_parigot(self) -> Term {
         let mut ret  = abs!(2, Var(2));
@@ -64,5 +77,11 @@ impl IntoParigotList for Vec<Term> {
         }
 
         ret
+    }
+}
+
+impl<T: IntoParigotNum> IntoParigotList for Vec<T> {
+    fn into_parigot(self) -> Term {
+        self.into_iter().map(|t| t.into_parigot()).collect::<Vec<Term>>().into_parigot()
     }
 }
