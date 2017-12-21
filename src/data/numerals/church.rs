@@ -3,7 +3,7 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
-use data::numerals::scott;
+use data::numerals::{scott, parigot, stumpfu};
 use combinators::Z;
 
 /// Produces a Church-encoded number zero.
@@ -678,4 +678,38 @@ pub fn is_odd() -> Term {
 /// ```
 pub fn to_scott() -> Term {
     abs(app!(Var(1), scott::succ(), scott::zero()))
+}
+
+/// Applied to a Church-encoded number it produces the equivalent Parigot-encoded number.
+///
+/// TO_PARIGOT := λn.n SUCC ZERO = λ 1 SUCC ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::church::to_parigot;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(to_parigot(), 0.into_church()), NOR, 0), 0.into_parigot());
+/// assert_eq!(beta(app(to_parigot(), 1.into_church()), NOR, 0), 1.into_parigot());
+/// assert_eq!(beta(app(to_parigot(), 2.into_church()), NOR, 0), 2.into_parigot());
+/// ```
+pub fn to_parigot() -> Term {
+    abs(app!(Var(1), parigot::succ(), parigot::zero()))
+}
+
+/// Applied to a Church-encoded number it produces the equivalent Stump-Fu-encoded number.
+///
+/// TO_STUMPFU := λn.n SUCC ZERO = λ 1 SUCC ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::numerals::church::to_stumpfu;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(to_stumpfu(), 0.into_church()), NOR, 0), 0.into_stumpfu());
+/// assert_eq!(beta(app(to_stumpfu(), 1.into_church()), NOR, 0), 1.into_stumpfu());
+/// assert_eq!(beta(app(to_stumpfu(), 2.into_church()), NOR, 0), 2.into_stumpfu());
+/// ```
+pub fn to_stumpfu() -> Term {
+    abs(app!(Var(1), stumpfu::succ(), stumpfu::zero()))
 }
