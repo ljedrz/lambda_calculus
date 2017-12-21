@@ -75,7 +75,7 @@ pub fn cons() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::church::{head, nil, cons};
+/// use lambda_calculus::data::list::church::head;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1, 2, 3].into_church();
@@ -96,7 +96,7 @@ pub fn head() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::church::{tail, cons, nil};
+/// use lambda_calculus::data::list::church::tail;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1, 2, 3].into_church();

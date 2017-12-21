@@ -65,7 +65,7 @@ pub fn cons() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::scott::{head, nil, cons};
+/// use lambda_calculus::data::list::scott::head;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1, 2, 3].into_scott();
@@ -85,7 +85,7 @@ pub fn head() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::scott::{tail, cons, nil};
+/// use lambda_calculus::data::list::scott::tail;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1, 2, 3].into_scott();
