@@ -1,4 +1,4 @@
-//! Conversions to different `Term` encodings
+//! Conversions to different list encodings
 
 #![allow(missing_docs)]
 
