@@ -5,19 +5,6 @@
 use term::{Term, abs, app};
 use term::Term::*;
 
-/// The encoding type applicable to numerals.
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum Encoding {
-    /// Church encoding
-    Church,
-    /// Scott encoding
-    Scott,
-    /// Parigot encoding
-    Parigot,
-    /// Stump-Fu (embedded iterators) encoding
-    StumpFu
-}
-
 macro_rules! make_trait {
     ($trait_name:ident, $function_name:ident) => (
         pub trait $trait_name {

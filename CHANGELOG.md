@@ -5,8 +5,9 @@ Thanks
 -------
 @billpmurphy for the idea to make `reduction::{beta, compare}` IO-free, splitting conversions (and
 thus allowing all encodings to be compiled together), adding `term::is_supercombinator`,
-`option::{map, unwrap_or, and_then}`, `church::to_scott` and `scott::{is_zero, to_church}`,
-improving conversions into terms and adding `impl<T> IntoChurch for Option<T> where T: IntoChurch`
+`option::{map, unwrap_or, and_then}`, `church::{to_scott, to_parigot, to_stumpfu}`, `combinators::T`
+ and `scott::{is_zero, to_church}`, improving conversions into terms and adding
+`impl<T> IntoChurch for Option<T> where T: IntoChurch`
 
 Breaking changes
 -------
@@ -26,7 +27,6 @@ Breaking changes
 - rename `parser::Error` to `ParseError`
 - rename `combinators::T` to `R`
 - simplify `term::Error`
-- make `lists::{length, index, take, list}` dependent on given numeral encoding
 - unify test and bench names
 - make `reduction::{beta, compare}` IO-free
 - make `ParseError::InvalidCharacter` 0-indexed
@@ -49,8 +49,9 @@ Changes
 - add `impl<T> IntoChurch for Option<T> where T: IntoChurch`
 - add macros for automated creation of conversion traits and implementations
 - add `scott::{is_zero, one, add, mul, pow}`
-- add `church::to_scott`
+- add `church::{to_scott, to_parigot, to_stumpfu}`
 - add `scott::to_church`
+- add `combinators::T` (Turing combinator)
 
 Version 1.4.0
 =============

@@ -44,18 +44,6 @@ macro_rules! test_list_hof2 {
     );
 }
 
-macro_rules! test_list_enc {
-    ($name:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
-        #[test]
-        fn $name() {
-            $(assert_eq!(beta(app!($function(Church),  $($n.into_church()),*), HAP, 0),  $result.into_church());)*
-            $(assert_eq!(beta(app!($function(Scott),   $($n.into_scott()),*), HAP, 0),   $result.into_scott());)*
-            $(assert_eq!(beta(app!($function(Parigot), $($n.into_parigot()),*), HAP, 0), $result.into_parigot());)*
-            $(assert_eq!(beta(app!($function(StumpFu), $($n.into_stumpfu()),*), HAP, 0), $result.into_stumpfu());)*
-        }
-    );
-}
-
 fn empty() -> Vec<usize> { vec![] } // a workaround to pass vec![] to the testing macro
 
 test_list!(list_head, head,
@@ -70,14 +58,8 @@ test_list!(list_tail, tail,
     vec![1, 2, 3] => vec![2, 3]
 );
 
-test_list_enc!(list_length, length,
-    empty() => 0,
-    vec![1] => 1,
-    vec![1, 2] => 2,
-    vec![1, 2, 3] => 3
-);
+// test_list_enc!(list_length, length,
 
-// index() not finished
 // test_list_enc!(list_index, index,
 
 test_list!(list_reverse, reverse,
@@ -159,16 +141,7 @@ test_list_hof!(list_zip_with, zip_with, add,
     vec![1, 2], vec![3, 4] => vec![4, 6]
 );
 
-test_list_enc!(list_take, take,
-    0, empty() => empty(),
-    1, empty() => empty(),
-    0, vec![1] => empty(),
-    1, vec![1] => vec![1],
-    2, vec![1] => vec![1],
-    1, vec![1, 2] => vec![1],
-    2, vec![1, 2] => vec![1, 2],
-    3, vec![1, 2] => vec![1, 2]
-);
+//test_list_enc!(list_take, take,
 
 test_list_hof!(list_take_while, take_while, is_zero,
     empty() => empty(),
