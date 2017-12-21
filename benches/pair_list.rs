@@ -8,14 +8,14 @@ extern crate lambda_calculus as lambda;
 
 use test::Bencher;
 use lambda::data::boolean::fls;
-use lambda::data::list::*;
+use lambda::data::list::pair::*;
 use lambda::data::numerals::church::*;
 use lambda::combinators::C;
 use lambda::*;
 
-fn list1() -> Term { vec![1].into_church() }
-fn list2() -> Term { vec![2, 3].into_church() }
-fn list3() -> Term { vec![1, 2, 3].into_church() }
+fn list1() -> Term { vec![1.into_church()].into_pair_list() }
+fn list2() -> Term { vec![2.into_church(), 3.into_church()].into_pair_list() }
+fn list3() -> Term { vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list() }
 fn   gt1() -> Term { app!(C(), gt(), 1.into_church()) }
 
 #[bench]
