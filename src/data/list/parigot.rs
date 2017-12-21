@@ -48,7 +48,7 @@ pub fn is_nil() -> Term {
 ///         )
 ///     );
 ///
-/// let list_into = vec![1.into_parigot(), 2.into_parigot(), 3.into_parigot()].into_parigot();
+/// let list_into = vec![1, 2, 3].into_parigot();
 ///
 /// assert_eq!(
 ///     beta(list_consed, NOR, 0),
@@ -78,7 +78,7 @@ pub fn cons() -> Term {
 /// use lambda_calculus::data::list::parigot::{head, nil, cons};
 /// use lambda_calculus::*;
 ///
-/// let list = vec![1.into_parigot(), 2.into_parigot(), 3.into_parigot()].into_parigot();
+/// let list = vec![1, 2, 3].into_parigot();
 ///
 /// assert_eq!(
 ///     beta(app(head(), list), NOR, 0),
@@ -98,11 +98,11 @@ pub fn head() -> Term {
 /// use lambda_calculus::data::list::parigot::{tail, cons, nil};
 /// use lambda_calculus::*;
 ///
-/// let list = vec![1.into_parigot(), 2.into_parigot(), 3.into_parigot()].into_parigot();
+/// let list = vec![1, 2, 3].into_parigot();
 ///
 /// assert_eq!(
 ///     beta(app(tail(), list), NOR, 0),
-///     vec![2.into_parigot(), 3.into_parigot()].into_parigot()
+///     vec![2, 3].into_parigot()
 /// );
 /// ```
 pub fn tail() -> Term {

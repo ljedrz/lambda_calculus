@@ -48,7 +48,7 @@ pub fn is_nil() -> Term {
 ///         )
 ///     );
 ///
-/// let list_into = vec![1.into_scott(), 2.into_scott(), 3.into_scott()].into_scott();
+/// let list_into = vec![1, 2, 3].into_scott();
 ///
 /// assert_eq!(
 ///     beta(list_consed, NOR, 0),
@@ -68,7 +68,7 @@ pub fn cons() -> Term {
 /// use lambda_calculus::data::list::scott::{head, nil, cons};
 /// use lambda_calculus::*;
 ///
-/// let list = vec![1.into_scott(), 2.into_scott(), 3.into_scott()].into_scott();
+/// let list = vec![1, 2, 3].into_scott();
 ///
 /// assert_eq!(
 ///     beta(app(head(), list), NOR, 0),
@@ -88,11 +88,11 @@ pub fn head() -> Term {
 /// use lambda_calculus::data::list::scott::{tail, cons, nil};
 /// use lambda_calculus::*;
 ///
-/// let list = vec![1.into_scott(), 2.into_scott(), 3.into_scott()].into_scott();
+/// let list = vec![1, 2, 3].into_scott();
 ///
 /// assert_eq!(
 ///     beta(app(tail(), list), NOR, 0),
-///     vec![2.into_scott(), 3.into_scott()].into_scott()
+///     vec![2, 3].into_scott()
 /// );
 /// ```
 pub fn tail() -> Term {
