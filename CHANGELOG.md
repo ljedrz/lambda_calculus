@@ -6,18 +6,17 @@ Thanks
 @billpmurphy for the idea to make `reduction::{beta, compare}` IO-free, splitting conversions (and
 thus allowing all encodings to be compiled together), adding `term::is_supercombinator`,
 `option::{map, unwrap_or, and_then}`, `church::{to_scott, to_parigot, to_stumpfu}`, `combinators::T`
- and `scott::{is_zero, to_church}`, improving conversions into terms and adding
+and `scott::{is_zero, to_church}`, improving conversions into terms and adding
 `impl<T> IntoChurch for Option<T> where T: IntoChurch`
 
 Breaking changes
 -------
-- restructure modules
+- restructure and rename modules
 - rework compilation features
 - remove `impl Term` from Church data types
 - remove `Term::{app, apply}`
 - rename `term::Error` to `term::TermError`
 - rename `TermError` variant names
-- rename `church` modules
 - rename combinators
 - rename `*::numerals::plus` to `add`
 - rename `*::numerals::mult` to `mul`
@@ -39,10 +38,11 @@ Changes
 - refactor integration tests using macros
 - improve documentation
 - implement conversions to pair, list and option for all numeral types
+- add Stump-Fu numeral encoding
+- add Church-, Scott- and Parigot-encoded list
 - add `reduction::beta_verbose`
 - add `option::{map, unwrap_or, and_then}`
 - add `term::is_supercombinator`
-- add Stump-Fu encoding
 - add `stumpfu::{zero, is_zero, one, succ, pred, add}`
 - add an `encoding` feature and make it default
 - add `parigot::{is_zero, one, mult, sub}`
@@ -52,6 +52,7 @@ Changes
 - add `church::{to_scott, to_parigot, to_stumpfu}`
 - add `scott::to_church`
 - add `combinators::T` (Turing combinator)
+- add `lists::{church, scott, parigot}::{nil, is_nil, cons, head, tail}`
 
 Version 1.4.0
 =============

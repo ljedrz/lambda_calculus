@@ -12,8 +12,10 @@
 - a parser for lambda expressions, both in classic and De Bruijn index notation
 - 7 β-reduction strategies with optional display of reduction steps
 - a set of standard terms (combinators)
-- lambda-encoded boolean, pair, list and option
-- Church-, Scott-, Parigot-, and Stump-Fu-encoded numerals
+- lambda-encoded boolean, pair and option
+- single-pair-encoded list
+- Church-, Scott- and Parigot-encoded numerals and lists
+- Stump-Fu (embedded iterators)-encoded numerals
 
 ## Installation
 

@@ -16,6 +16,9 @@ pub const LAMBDA: char = '\\';
 #[cfg(not(feature = "backslash_lambda"))]
 pub const LAMBDA: char = 'λ';
 
+/// An undefined term that can be returned by invalid/inapplicable operations.
+pub const UD: Term = Var(0);
+
 /// The notation used for parsing and displaying purposes.
 ///
 /// # Examples

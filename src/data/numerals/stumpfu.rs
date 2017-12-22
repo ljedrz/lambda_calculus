@@ -3,7 +3,7 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use data::numerals::church as church;
-use data::numerals::convert::IntoChurch;
+use data::numerals::convert::IntoChurchNum;
 use data::boolean::{tru, fls};
 
 /// Produces a Stump-Fu-encoded number zero.
