@@ -188,7 +188,7 @@ pub fn lt() -> Term {
 }
 
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
-/// its first argument is less than or egual to the second one.
+/// its first argument is less than or equal to the second one.
 ///
 /// LEQ := λmn.IS_ZERO (SUB m n) = λ λ IS_ZERO (SUB 2 1)
 ///
@@ -213,7 +213,7 @@ pub fn leq() -> Term {
 }
 
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
-/// its first argument is egual to the second one.
+/// its first argument is equal to the second one.
 ///
 /// EQ := λmn.AND (LEQ m n) (LEQ n m) = λ λ AND (LEQ 2 1) (LEQ 1 2)
 ///
@@ -252,7 +252,7 @@ pub fn eq() -> Term {
 }
 
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
-/// its first argument is not egual to the second one.
+/// its first argument is not equal to the second one.
 ///
 /// NEQ := λab.OR (NOT (LEQ a b)) (NOT (LEQ b a)) = λ λ OR (NOT (LEQ 2 1)) (NOT (LEQ 1 2))
 ///
@@ -297,7 +297,7 @@ pub fn neq() -> Term {
 }
 
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
-/// its first argument is greater than or egual to the second one.
+/// its first argument is greater than or equal to the second one.
 ///
 /// GEQ := λab.LEQ b a = λ λ LEQ 1 2
 ///
