@@ -111,34 +111,6 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
     term
 }
 
-/// For a given `Term` and a set of β-reduction `Order`s it returns a vector of pairs containing
-/// the `Order`s and their corresponding numbers of reductions required for the `Term` to reach its
-/// fully reduced form (which, depending on the reduction strategy, might not be the normal form).
-///
-/// # Example
-///
-/// ```
-/// use lambda_calculus::reduction::compare;
-/// use lambda_calculus::*;
-///
-/// let factorial_3 = parse(&"(λa.a (λb.λc.λd.b (λe.c (d e)) (λe.λf.e (d e f))) (λb.λc.b)\
-///     (λb.λc.b c) (λb.λc.b c)) (λa.λb.a (a (a b)))", Classic).unwrap();
-///
-/// assert_eq!(
-///     compare(&factorial_3, &[NOR, APP, HNO, HAP]),
-///     vec![(NOR, 35), (APP, 36), (HNO, 35), (HAP, 30)]
-/// );
-/// ```
-pub fn compare(term: &Term, orders: &[Order]) -> Vec<(Order, usize)> {
-    let mut ret = Vec::with_capacity(orders.len());
-
-    for order in orders {
-        ret.push((order.to_owned(), term.to_owned().reduce(*order, 0)));
-    }
-
-    ret
-}
-
 impl Term {
     /// Reduces an `App`lication by substitution and variable update.
     ///

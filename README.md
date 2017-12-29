@@ -116,24 +116,21 @@ use lambda_calculus::reduction::compare;
 use lambda_calculus::data::numerals::church::fac;
 
 fn main() {
-    let expr = app!(fac(), 4.into_church());
-    let mut comparison = compare(&expr, &[NOR, APP, HNO, HAP]); // these are normalizing strategies
-    comparison.sort_by_key(|p| p.1); // sort by the reduction count
+    let expr = app(fac(), 4.into_church());
 
-    println!("comparing normalizing reduction step count for FAC 4:");
-
-    for (order, count) in comparison {
-        println!("{}: {}", order, count);
+    println!("comparing normalizing orders' reduction step count for FAC 4:");
+    for &order in [NOR, APP, HNO, HAP].iter() {
+        println!("{}: {}", order, expr.clone().reduce(order, 0));
     }
 }
 ```
 stdout:
 ```
-comparing normalizing reduction step count for FAC 4:
-hybrid applicative: 40
-applicative: 65
+comparing normalizing orders' reduction step count for FAC 4:
 normal: 87
+applicative: 65
 hybrid normal: 87
+hybrid applicative: 40
 ```
 
 ### Comparing different numeral encodings

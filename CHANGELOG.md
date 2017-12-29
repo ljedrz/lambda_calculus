@@ -3,7 +3,7 @@ Version 2.0.0
 
 Thanks
 -------
-@billpmurphy for the idea to make `reduction::{beta, compare}` IO-free, splitting conversions (and
+@billpmurphy for the idea to make `reduction::beta` IO-free, splitting conversions (and
 thus allowing all encodings to be compiled together), adding `term::is_supercombinator`,
 `option::{map, unwrap_or, and_then}`, `church::{to_scott, to_parigot, to_stumpfu}`, `combinators::T`
 and `scott::{is_zero, to_church}`, improving conversions into terms and adding
@@ -14,6 +14,7 @@ Breaking changes
 - restructure and rename modules
 - rework compilation features
 - remove `impl Term` from Church data types
+- remove `reduction::compare`
 - remove `Term::{app, apply}`
 - rename `term::Error` to `term::TermError`
 - rename `TermError` variant names
@@ -27,7 +28,7 @@ Breaking changes
 - rename `combinators::T` to `R`
 - simplify `term::Error`
 - unify test and bench names
-- make `reduction::{beta, compare}` IO-free
+- make `reduction::beta` IO-free
 - make `ParseError::InvalidCharacter` 0-indexed
 - split `Into<Term>` conversion into `IntoChurch`, `IntoScott` and `IntoParigot`
 
