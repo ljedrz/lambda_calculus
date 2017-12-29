@@ -112,7 +112,6 @@ normal order β-reduction steps for PRED 1 are:
 code:
 ```
 use lambda_calculus::*;
-use lambda_calculus::reduction::compare;
 use lambda_calculus::data::numerals::church::fac;
 
 fn main() {
