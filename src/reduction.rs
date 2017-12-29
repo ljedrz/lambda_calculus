@@ -111,60 +111,6 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
     term
 }
 
-/// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
-/// on the number of reductions (`0` means no limit) and returns a vector with all the states
-/// of the `Term` during the reduction process.
-///
-/// # Example
-///
-/// ```
-/// use lambda_calculus::*;
-///
-/// let mut expr = parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap();
-/// let reduction_stages = beta_verbose(expr, NOR, 0);
-///
-/// assert_eq!(
-///     reduction_stages,
-///     vec![
-///         parse(&"(λa.λb.λc.b (a b c)) (λa.λb.b)", Classic).unwrap(),
-///         parse(&"λa.λb.a ((λc.λd.d) a b)",        Classic).unwrap(),
-///         parse(&"λa.λb.a ((λc.c) b)",             Classic).unwrap(),
-///         parse(&"λa.λb.a b",                      Classic).unwrap()
-///     ]
-/// );
-/// ```
-pub fn beta_verbose(mut term: Term, order: Order, limit: usize) -> Vec<Term> {
-    let mut count = 0;
-    let mut ret = Vec::new();
-    let limit = if limit == 0 {
-        usize::max_value() // this should always suffice
-    } else {
-        limit + 1 // +1 for the range to be inclusive
-    };
-
-    ret.push(term.clone());
-
-    for l in 1..limit {
-        match order {
-            CBN => term.beta_cbn(l, &mut count),
-            NOR => term.beta_nor(l, &mut count),
-            CBV => term.beta_cbv(l, &mut count),
-            APP => term.beta_app(l, &mut count),
-            HSP => term.beta_hsp(l, &mut count),
-            HNO => term.beta_hno(l, &mut count),
-            HAP => term.beta_hap(l, &mut count)
-        }
-
-        if term != *ret.last().unwrap() { // safe, always non-empty
-            ret.push(term.clone());
-        } else {
-            break
-        }
-    }
-
-    ret
-}
-
 /// For a given `Term` and a set of β-reduction `Order`s it returns a vector of pairs containing
 /// the `Order`s and their corresponding numbers of reductions required for the `Term` to reach its
 /// fully reduced form (which, depending on the reduction strategy, might not be the normal form).

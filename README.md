@@ -84,27 +84,27 @@ use lambda_calculus::*;
 use lambda_calculus::data::numerals::church::pred;
 
 fn main() {
-    let expr = app!(pred(), 1.into_church());
-    let steps = beta_verbose(expr, NOR, 0);
+    let mut expr = app!(pred(), 1.into_church());
 
-    println!("the {} β-reduction steps for PRED 1 are:", NOR);
+    println!("{} order β-reduction steps for PRED 1 are:", NOR);
 
-    for (step, ref term) in steps.iter().enumerate() {
-        println!("{}: {}", step, term);
+    println!("{}", expr);
+    while expr.reduce(NOR, 1) != 0 {
+        println!("{}", expr);
     }
 }
 ```
 stdout:
 ```
-the normal β-reduction steps for PRED 1 are:
-0: (λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)) (λa.λb.a b)
-1: λa.λb.(λc.λd.c d) (λc.λd.d (c a)) (λc.b) (λc.c)
-2: λa.λb.(λc.(λd.λe.e (d a)) c) (λc.b) (λc.c)
-3: λa.λb.(λc.λd.d (c a)) (λc.b) (λc.c)
-4: λa.λb.(λc.c ((λd.b) a)) (λc.c)
-5: λa.λb.(λc.c) ((λc.b) a)
-6: λa.λb.(λc.b) a
-7: λa.λb.b
+normal order β-reduction steps for PRED 1 are:
+(λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)) (λa.λb.a b)
+λa.λb.(λc.λd.c d) (λc.λd.d (c a)) (λc.b) (λc.c)
+λa.λb.(λc.(λd.λe.e (d a)) c) (λc.b) (λc.c)
+λa.λb.(λc.λd.d (c a)) (λc.b) (λc.c)
+λa.λb.(λc.c ((λd.b) a)) (λc.c)
+λa.λb.(λc.c) ((λc.b) a)
+λa.λb.(λc.b) a
+λa.λb.b
 ```
 
 ### Comparing the number of steps for different reduction strategies

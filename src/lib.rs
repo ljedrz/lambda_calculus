@@ -12,7 +12,7 @@ pub mod combinators;
 pub use self::term::{Term, abs, app, UD};
 pub use self::term::Term::*;
 pub use self::term::Notation::*;
-pub use self::reduction::{beta, beta_verbose};
+pub use self::reduction::beta;
 pub use self::reduction::Order::*;
 pub use self::parser::parse;
 

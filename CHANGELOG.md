@@ -40,7 +40,6 @@ Changes
 - implement conversions to pair, list and option for all numeral types
 - add Stump-Fu numeral encoding
 - add Church-, Scott- and Parigot-encoded list
-- add `reduction::beta_verbose`
 - add `option::{map, unwrap_or, and_then}`
 - add `term::is_supercombinator`
 - add `stumpfu::{zero, is_zero, one, succ, pred, add}`
