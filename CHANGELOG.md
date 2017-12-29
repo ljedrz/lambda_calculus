@@ -40,7 +40,11 @@ Changes
 - improve documentation
 - implement conversions to pair, list and option for all numeral types
 - add Stump-Fu numeral encoding
+- add binary numeral encoding
 - add Church-, Scott- and Parigot-encoded list
+- add tuple data type
+- add `tuple::{tuple, projection}`
+- add `numerals::binary::{b0, b1, zero, is_zero, one, lsb, shl0, shl1, strip, succ, pred}`
 - add `option::{map, unwrap_or, and_then}`
 - add `term::is_supercombinator`
 - add `stumpfu::{zero, is_zero, one, succ, pred, add}`

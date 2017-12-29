@@ -3,7 +3,6 @@
 #![deny(missing_docs)]
 
 #[macro_use]
-
 pub mod term;
 pub mod parser;
 pub mod reduction;

@@ -10,12 +10,12 @@
 ## Features
 
 - a parser for lambda expressions, both in classic and De Bruijn index notation
-- 7 β-reduction strategies with optional display of reduction steps
+- 7 β-reduction strategies
 - a set of standard terms (combinators)
-- lambda-encoded boolean, pair and option
+- lambda-encoded boolean, pair, tuple and option
 - single-pair-encoded list
 - Church-, Scott- and Parigot-encoded numerals and lists
-- Stump-Fu (embedded iterators)-encoded numerals
+- Stump-Fu (embedded iterators)- and binary-encoded numerals
 
 ## Installation
 

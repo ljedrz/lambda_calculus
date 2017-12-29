@@ -18,6 +18,7 @@ make_trait!(IntoChurchNum, into_church);
 make_trait!(IntoScottNum, into_scott);
 make_trait!(IntoParigotNum, into_parigot);
 make_trait!(IntoStumpFuNum, into_stumpfu);
+make_trait!(IntoBinaryNum, into_binary);
 
 impl IntoChurchNum for usize {
     fn into_church(self) -> Term {
@@ -67,6 +68,25 @@ impl IntoStumpFuNum for usize {
     }
 }
 
+impl IntoBinaryNum for usize {
+    fn into_binary(self) -> Term {
+        let mut ret = Var(3);
+
+        if self != 0 {
+            let binstr = format!("{:b}", self).into_bytes();
+
+            for bit in binstr.into_iter() {
+                if bit == b'0' {
+                    ret = app(Var(2), ret);
+                } else {
+                    ret = app(Var(1), ret);
+                }
+            }
+        }
+
+        abs!(3, ret)
+    }
+}
 macro_rules! impl_pair {
     ($trait_name:ident, $function_name:ident) => (
         impl<T, U> $trait_name for (T, U) where T: $trait_name, U: $trait_name {
@@ -81,6 +101,7 @@ impl_pair!(IntoChurchNum, into_church);
 impl_pair!(IntoScottNum, into_scott);
 impl_pair!(IntoParigotNum, into_parigot);
 impl_pair!(IntoStumpFuNum, into_stumpfu);
+impl_pair!(IntoBinaryNum, into_binary);
 
 macro_rules! impl_option {
     ($trait_name:ident, $function_name:ident) => (
@@ -99,3 +120,4 @@ impl_option!(IntoChurchNum, into_church);
 impl_option!(IntoScottNum, into_scott);
 impl_option!(IntoParigotNum, into_parigot);
 impl_option!(IntoStumpFuNum, into_stumpfu);
+impl_option!(IntoBinaryNum, into_binary);
