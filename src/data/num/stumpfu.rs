@@ -2,8 +2,8 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use data::numerals::church as church;
-use data::numerals::convert::IntoChurchNum;
+use data::num::church as church;
+use data::num::convert::IntoChurchNum;
 use data::boolean::{tru, fls};
 
 /// Produces a Stump-Fu-encoded number zero.
@@ -12,7 +12,7 @@ use data::boolean::{tru, fls};
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::stumpfu::zero;
+/// use lambda_calculus::data::num::stumpfu::zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(zero(), 0.into_stumpfu());
@@ -26,7 +26,7 @@ pub fn zero() -> Term { abs!(2, Var(1)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::stumpfu::is_zero;
+/// use lambda_calculus::data::num::stumpfu::is_zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(is_zero(), 0.into_stumpfu()), NOR, 0), true.into());
@@ -42,7 +42,7 @@ pub fn is_zero() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::stumpfu::one;
+/// use lambda_calculus::data::num::stumpfu::one;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(one(), 1.into_stumpfu());
@@ -55,7 +55,7 @@ pub fn one() -> Term { abs!(2, app!(Var(2), 1.into_church(), zero())) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::stumpfu::succ;
+/// use lambda_calculus::data::num::stumpfu::succ;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(succ(), 0.into_stumpfu()), NOR, 0), 1.into_stumpfu());
@@ -75,7 +75,7 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::stumpfu::pred;
+/// use lambda_calculus::data::num::stumpfu::pred;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(pred(), 1.into_stumpfu()), NOR, 0), 0.into_stumpfu());
@@ -91,7 +91,7 @@ pub fn pred() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::stumpfu::add;
+/// use lambda_calculus::data::num::stumpfu::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(add(), 1.into_stumpfu(), 2.into_stumpfu()), NOR, 0), 3.into_stumpfu());

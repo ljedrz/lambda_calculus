@@ -4,7 +4,7 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use data::numerals::convert::*;
+use data::num::convert::*;
 
 macro_rules! make_trait {
     ($trait_name:ident, $function_name:ident) => (

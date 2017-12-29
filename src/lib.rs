@@ -18,6 +18,6 @@ pub use self::parser::parse;
 #[cfg(feature = "encoding")]
 pub mod data;
 #[cfg(feature = "encoding")]
-pub use data::numerals::convert::*;
+pub use data::num::convert::*;
 #[cfg(feature = "encoding")]
 pub use data::list::convert::*;

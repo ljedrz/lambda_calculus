@@ -5,7 +5,7 @@ use term::Term::*;
 use data::boolean::{tru, fls};
 use data::pair::{pair, fst, snd};
 use combinators::{I, Z};
-use data::numerals::church::{zero, is_zero, succ, pred};
+use data::num::church::{zero, is_zero, succ, pred};
 
 /// Produces a `nil`, the last link of a pair-encoded list; equivalent to `boolean::fls()`.
 ///
@@ -263,7 +263,7 @@ pub fn append() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::data::list::pair::map;
-/// use lambda_calculus::data::numerals::church::succ;
+/// use lambda_calculus::data::num::church::succ;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
@@ -308,7 +308,7 @@ pub fn map() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::data::list::pair::foldl;
-/// use lambda_calculus::data::numerals::church::{add, sub};
+/// use lambda_calculus::data::num::church::{add, sub};
 /// use lambda_calculus::*;
 ///
 /// let list = || vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
@@ -349,7 +349,7 @@ pub fn foldl() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::data::list::pair::foldr;
-/// use lambda_calculus::data::numerals::church::{add, sub};
+/// use lambda_calculus::data::num::church::{add, sub};
 /// use lambda_calculus::*;
 ///
 /// let list = || vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
@@ -384,7 +384,7 @@ pub fn foldr() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::data::list::pair::filter;
-/// use lambda_calculus::data::numerals::church::{is_zero, gt};
+/// use lambda_calculus::data::num::church::{is_zero, gt};
 /// use lambda_calculus::combinators::C;
 /// use lambda_calculus::*;
 ///
@@ -561,7 +561,7 @@ pub fn zip() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::data::list::pair::zip_with;
-/// use lambda_calculus::data::numerals::church::add;
+/// use lambda_calculus::data::num::church::add;
 /// use lambda_calculus::*;
 ///
 /// let list1 = || vec![2.into_church(), 3.into_church()].into_pair_list();
@@ -657,7 +657,7 @@ pub fn take() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::data::list::pair::take_while;
-/// use lambda_calculus::data::numerals::church::is_zero;
+/// use lambda_calculus::data::num::church::is_zero;
 /// use lambda_calculus::*;
 ///
 /// let list1 = vec![0.into_church(), 0.into_church(), 1.into_church()].into_pair_list();

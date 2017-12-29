@@ -11,7 +11,7 @@ use combinators::Z;
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::zero;
+/// use lambda_calculus::data::num::scott::zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(zero(), 0.into_scott());
@@ -25,7 +25,7 @@ pub fn zero() -> Term { abs!(2, Var(2)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::is_zero;
+/// use lambda_calculus::data::num::scott::is_zero;
 /// use lambda_calculus::data::boolean::{tru, fls};
 /// use lambda_calculus::*;
 ///
@@ -42,7 +42,7 @@ pub fn is_zero() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::one;
+/// use lambda_calculus::data::num::scott::one;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(one(), 1.into_scott());
@@ -55,7 +55,7 @@ pub fn one() -> Term { abs!(2, app(Var(1), zero())) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::succ;
+/// use lambda_calculus::data::num::scott::succ;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(succ(), 0.into_scott()), NOR, 0), 1.into_scott());
@@ -71,7 +71,7 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::pred;
+/// use lambda_calculus::data::num::scott::pred;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(pred(), 1.into_scott()), NOR, 0), 0.into_scott());
@@ -87,7 +87,7 @@ pub fn pred() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::add;
+/// use lambda_calculus::data::num::scott::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(add(), 1.into_scott(), 2.into_scott()), NOR, 0), 3.into_scott());
@@ -116,7 +116,7 @@ pub fn add() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::sub;
+/// use lambda_calculus::data::num::scott::sub;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(sub(), 1.into_scott(), 0.into_scott()), NOR, 0), 1.into_scott());
@@ -133,7 +133,7 @@ pub fn sub() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::mul;
+/// use lambda_calculus::data::num::scott::mul;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(mul(), 1.into_scott(), 2.into_scott()), NOR, 0), 2.into_scott());
@@ -164,7 +164,7 @@ pub fn mul() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::pow;
+/// use lambda_calculus::data::num::scott::pow;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(pow(), 1.into_scott(), 2.into_scott()), NOR, 0), 1.into_scott());
@@ -195,7 +195,7 @@ pub fn pow() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::scott::to_church;
+/// use lambda_calculus::data::num::scott::to_church;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(to_church(), 0.into_scott()), NOR, 0), 0.into_church());

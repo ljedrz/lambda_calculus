@@ -4,7 +4,7 @@ extern crate lambda_calculus as lambda;
 
 use lambda::*;
 use lambda::data::option::*;
-use lambda::data::numerals::church::succ;
+use lambda::data::num::church::succ;
 
 #[test]
 fn option_none() {

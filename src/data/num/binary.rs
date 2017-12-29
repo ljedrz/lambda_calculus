@@ -17,7 +17,7 @@ pub fn b1() -> Term { fls() }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::binary::zero;
+/// use lambda_calculus::data::num::binary::zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(zero(), 0.into_binary());
@@ -31,7 +31,7 @@ pub fn zero() -> Term { abs!(3, Var(3)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::binary::is_zero;
+/// use lambda_calculus::data::num::binary::is_zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(is_zero(), 0.into_binary()), NOR, 0), true.into());
@@ -47,7 +47,7 @@ pub fn is_zero() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::binary::one;
+/// use lambda_calculus::data::num::binary::one;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(one(), 1.into_binary());
@@ -70,7 +70,7 @@ pub fn one() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::binary::succ;
+/// use lambda_calculus::data::num::binary::succ;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(succ(), 0.into_binary()), NOR, 0), 1.into_binary());
@@ -100,7 +100,7 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::binary::pred;
+/// use lambda_calculus::data::num::binary::pred;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(pred(), 1.into_binary()), NOR, 0), 0.into_binary());
@@ -122,7 +122,7 @@ pub fn pred() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::binary::{lsb, b0, b1};
+/// use lambda_calculus::data::num::binary::{lsb, b0, b1};
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(lsb(), 1.into_binary()), NOR, 0), b1());
@@ -140,7 +140,7 @@ pub fn lsb() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::binary::shl0;
+/// use lambda_calculus::data::num::binary::shl0;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(shl0(), 1.into_binary()), NOR, 0), 2.into_binary());
@@ -157,7 +157,7 @@ pub fn shl0() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::binary::shl1;
+/// use lambda_calculus::data::num::binary::shl1;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(shl1(), 1.into_binary()), NOR, 0), 3.into_binary());
@@ -182,7 +182,7 @@ pub fn shl1() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::binary::{strip, shl0};
+/// use lambda_calculus::data::num::binary::{strip, shl0};
 /// use lambda_calculus::*;
 ///
 /// let zero_with_a_leading_zero = beta(app(shl0(), 0.into_binary()), NOR, 0);

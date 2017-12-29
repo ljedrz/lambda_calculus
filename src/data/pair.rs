@@ -62,7 +62,7 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 /// # Example
 /// ```
 /// use lambda_calculus::data::pair::uncurry;
-/// use lambda_calculus::data::numerals::church::add;
+/// use lambda_calculus::data::num::church::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(

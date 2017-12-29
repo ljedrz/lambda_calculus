@@ -7,7 +7,7 @@ extern crate test;
 extern crate lambda_calculus as lambda;
 
 use test::Bencher;
-use lambda::data::numerals::{church, scott, parigot, stumpfu};
+use lambda::data::num::{church, scott, parigot, stumpfu};
 use lambda::*;
 
 macro_rules! bench_num {

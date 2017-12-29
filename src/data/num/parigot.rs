@@ -10,7 +10,7 @@ use data::boolean::{tru, fls};
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::parigot::zero;
+/// use lambda_calculus::data::num::parigot::zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(zero(), 0.into_parigot());
@@ -24,7 +24,7 @@ pub fn zero() -> Term { abs!(2, Var(1)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::parigot::is_zero;
+/// use lambda_calculus::data::num::parigot::is_zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(is_zero(), 0.into_parigot()), NOR, 0), true.into());
@@ -40,7 +40,7 @@ pub fn is_zero() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::parigot::one;
+/// use lambda_calculus::data::num::parigot::one;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(one(), 1.into_parigot());
@@ -53,7 +53,7 @@ pub fn one() -> Term { abs!(2, app!(Var(2), zero(), Var(1))) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::parigot::succ;
+/// use lambda_calculus::data::num::parigot::succ;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(succ(), 0.into_parigot()), NOR, 0), 1.into_parigot());
@@ -69,7 +69,7 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::parigot::pred;
+/// use lambda_calculus::data::num::parigot::pred;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(pred(), 1.into_parigot()), NOR, 0), 0.into_parigot());
@@ -85,7 +85,7 @@ pub fn pred() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::parigot::add;
+/// use lambda_calculus::data::num::parigot::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(add(), 1.into_parigot(), 2.into_parigot()), NOR, 0), 3.into_parigot());
@@ -101,7 +101,7 @@ pub fn add() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::parigot::sub;
+/// use lambda_calculus::data::num::parigot::sub;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(sub(), 1.into_parigot(), 0.into_parigot()), NOR, 0), 1.into_parigot());
@@ -118,7 +118,7 @@ pub fn sub() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::parigot::mul;
+/// use lambda_calculus::data::num::parigot::mul;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(mul(), 1.into_parigot(), 2.into_parigot()), NOR, 0), 2.into_parigot());

@@ -9,7 +9,7 @@ extern crate lambda_calculus as lambda;
 use test::Bencher;
 use lambda::data::boolean::fls;
 use lambda::data::list::pair::*;
-use lambda::data::numerals::church::*;
+use lambda::data::num::church::*;
 use lambda::combinators::C;
 use lambda::*;
 

@@ -3,7 +3,7 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
-use data::numerals::{scott, parigot, stumpfu};
+use data::num::{scott, parigot, stumpfu};
 use combinators::Z;
 
 /// Produces a Church-encoded number zero.
@@ -12,7 +12,7 @@ use combinators::Z;
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::zero;
+/// use lambda_calculus::data::num::church::zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(zero(), 0.into_church());
@@ -26,7 +26,7 @@ pub fn zero() -> Term { abs!(2, Var(1)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::is_zero;
+/// use lambda_calculus::data::num::church::is_zero;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(is_zero(), 0.into_church()), NOR, 0), true.into());
@@ -42,7 +42,7 @@ pub fn is_zero() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::one;
+/// use lambda_calculus::data::num::church::one;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(one(), 1.into_church());
@@ -57,7 +57,7 @@ pub fn one() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::succ;
+/// use lambda_calculus::data::num::church::succ;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(succ(), 0.into_church()), NOR, 0), 1.into_church());
@@ -73,7 +73,7 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::pred;
+/// use lambda_calculus::data::num::church::pred;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(pred(), 1.into_church()), NOR, 0), 0.into_church());
@@ -94,7 +94,7 @@ pub fn pred() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::add;
+/// use lambda_calculus::data::num::church::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(add(), 1.into_church(), 2.into_church()), NOR, 0), 3.into_church());
@@ -110,7 +110,7 @@ pub fn add() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::sub;
+/// use lambda_calculus::data::num::church::sub;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(sub(), 1.into_church(), 0.into_church()), NOR, 0), 1.into_church());
@@ -127,7 +127,7 @@ pub fn sub() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::mul;
+/// use lambda_calculus::data::num::church::mul;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(mul(), 1.into_church(), 2.into_church()), NOR, 0), 2.into_church());
@@ -143,7 +143,7 @@ pub fn mul() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::pow;
+/// use lambda_calculus::data::num::church::pow;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(pow(), 3.into_church(), 0.into_church()), NOR, 0), 1.into_church());
@@ -167,7 +167,7 @@ pub fn pow() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::data::numerals::church::lt;
+/// use lambda_calculus::data::num::church::lt;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(lt(), 0.into_church(), 0.into_church()), NOR, 0), false.into());
@@ -194,7 +194,7 @@ pub fn lt() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::data::numerals::church::leq;
+/// use lambda_calculus::data::num::church::leq;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(leq(), 0.into_church(), 0.into_church()), NOR, 0), true.into());
@@ -219,7 +219,7 @@ pub fn leq() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::data::numerals::church::eq;
+/// use lambda_calculus::data::num::church::eq;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(eq(), 0.into_church(), 0.into_church()), NOR, 0), true.into());
@@ -258,7 +258,7 @@ pub fn eq() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::data::numerals::church::neq;
+/// use lambda_calculus::data::num::church::neq;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(neq(), 0.into_church(), 0.into_church()), NOR, 0), false.into());
@@ -303,7 +303,7 @@ pub fn neq() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::data::numerals::church::geq;
+/// use lambda_calculus::data::num::church::geq;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(geq(), 0.into_church(), 0.into_church()), NOR, 0), true.into());
@@ -328,7 +328,7 @@ pub fn geq() -> Term {
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::data::numerals::church::gt;
+/// use lambda_calculus::data::num::church::gt;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(gt(), 0.into_church(), 0.into_church()), NOR, 0), false.into());
@@ -356,7 +356,7 @@ pub fn gt() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::div;
+/// use lambda_calculus::data::num::church::div;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -409,7 +409,7 @@ pub fn div() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::quot;
+/// use lambda_calculus::data::num::church::quot;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(quot(), 4.into_church(), 2.into_church()), NOR, 0), 2.into_church());
@@ -455,7 +455,7 @@ pub fn quot() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::rem;
+/// use lambda_calculus::data::num::church::rem;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(rem(), 4.into_church(), 2.into_church()), NOR, 0), 0.into_church());
@@ -497,7 +497,7 @@ pub fn rem() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::fac;
+/// use lambda_calculus::data::num::church::fac;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(fac(), 3.into_church()), NOR, 0), 6.into_church());
@@ -526,7 +526,7 @@ pub fn fac() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::min;
+/// use lambda_calculus::data::num::church::min;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(min(), 4.into_church(), 3.into_church()), NOR, 0), 3.into_church());
@@ -549,7 +549,7 @@ pub fn min() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::max;
+/// use lambda_calculus::data::num::church::max;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(max(), 4.into_church(), 3.into_church()), NOR, 0), 4.into_church());
@@ -573,7 +573,7 @@ pub fn max() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::shl;
+/// use lambda_calculus::data::num::church::shl;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(shl(), 0.into_church(), 2.into_church()), NOR, 0), 0.into_church());
@@ -602,7 +602,7 @@ pub fn shl() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::shr;
+/// use lambda_calculus::data::num::church::shr;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app!(shr(), 0.into_church(), 2.into_church()), NOR, 0), 0.into_church());
@@ -636,7 +636,7 @@ pub fn shr() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::is_even;
+/// use lambda_calculus::data::num::church::is_even;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(is_even(), 0.into_church()), NOR, 0), true.into());
@@ -653,7 +653,7 @@ pub fn is_even() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::is_odd;
+/// use lambda_calculus::data::num::church::is_odd;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(is_odd(), 0.into_church()), NOR, 0), false.into());
@@ -669,7 +669,7 @@ pub fn is_odd() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::to_scott;
+/// use lambda_calculus::data::num::church::to_scott;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(to_scott(), 0.into_church()), NOR, 0), 0.into_scott());
@@ -686,7 +686,7 @@ pub fn to_scott() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::to_parigot;
+/// use lambda_calculus::data::num::church::to_parigot;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(to_parigot(), 0.into_church()), NOR, 0), 0.into_parigot());
@@ -703,7 +703,7 @@ pub fn to_parigot() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::numerals::church::to_stumpfu;
+/// use lambda_calculus::data::num::church::to_stumpfu;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(to_stumpfu(), 0.into_church()), NOR, 0), 0.into_stumpfu());

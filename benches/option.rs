@@ -8,7 +8,7 @@ extern crate lambda_calculus as lambda;
 
 use test::Bencher;
 use lambda::data::option::*;
-use lambda::data::numerals::church::succ;
+use lambda::data::num::church::succ;
 use lambda::*;
 
 #[bench]

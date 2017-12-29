@@ -49,7 +49,7 @@ features = ["backslash_lambda"] # use a backslash lambda
 
 code:
 ```
-use lambda_calculus::data::numerals::church::{succ, pred};
+use lambda_calculus::data::num::church::{succ, pred};
 
 fn main() {
     println!("SUCC := {0} = {0:?}", succ());
@@ -81,7 +81,7 @@ fn main() {
 code:
 ```
 use lambda_calculus::*;
-use lambda_calculus::data::numerals::church::pred;
+use lambda_calculus::data::num::church::pred;
 
 fn main() {
     let mut expr = app!(pred(), 1.into_church());
@@ -112,7 +112,7 @@ normal order β-reduction steps for PRED 1 are:
 code:
 ```
 use lambda_calculus::*;
-use lambda_calculus::data::numerals::church::fac;
+use lambda_calculus::data::num::church::fac;
 
 fn main() {
     let expr = app(fac(), 4.into_church());

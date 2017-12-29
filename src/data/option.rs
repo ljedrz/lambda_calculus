@@ -66,7 +66,7 @@ pub fn is_some() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::data::option::{map, none};
-/// use lambda_calculus::data::numerals::church::succ;
+/// use lambda_calculus::data::num::church::succ;
 /// use lambda_calculus::*;
 ///
 /// let some_one: Term = Some(1).into_church();
@@ -90,7 +90,7 @@ pub fn map() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::data::option::{map_or, none};
-/// use lambda_calculus::data::numerals::church::succ;
+/// use lambda_calculus::data::num::church::succ;
 /// use lambda_calculus::*;
 ///
 /// let some_one: Term = Some(1).into_church();
@@ -129,7 +129,7 @@ pub fn unwrap_or() -> Term {
 /// # Example
 /// ```
 /// use lambda_calculus::data::option::{and_then, some, none};
-/// use lambda_calculus::data::numerals::church::succ;
+/// use lambda_calculus::data::num::church::succ;
 /// use lambda_calculus::*;
 ///
 /// // Equivalent to the closure `|x| { Some(x+1) }` in Rust
