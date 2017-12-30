@@ -1,4 +1,4 @@
-//! Conversions to different numeral encodings
+//! Numeral encoding conversions
 
 #![allow(missing_docs)]
 

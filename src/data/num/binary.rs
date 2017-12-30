@@ -1,4 +1,4 @@
-//! [Binary numbers](http://repository.readscheme.org/ftp/papers/topps/D-456.pdf)
+//! [Mogensen's binary number encoding](http://repository.readscheme.org/ftp/papers/topps/D-456.pdf)
 
 use term::{Term, abs, app};
 use term::Term::*;

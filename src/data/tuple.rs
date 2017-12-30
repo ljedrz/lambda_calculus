@@ -1,6 +1,6 @@
 //! [Lambda-encoded `n`-tuple](https://www.mathstat.dal.ca/~selinger/papers/lambdanotes.pdf)
 //!
-//! This module contains the `tuple` and `projection` macros.
+//! This module contains the `tuple` and `pi` macros.
 
 /// A macro for creating lambda-encoded tuples.
 ///

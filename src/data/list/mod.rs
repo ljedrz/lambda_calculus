@@ -1,4 +1,4 @@
-//! Different lambda encodings of a list
+//! List encodings
 
 pub mod pair;
 pub mod church;
