@@ -16,7 +16,9 @@ pub const LAMBDA: char = '\\';
 #[cfg(not(feature = "backslash_lambda"))]
 pub const LAMBDA: char = 'λ';
 
-/// An undefined term that can be returned by invalid/inapplicable operations.
+/// An undefined term that can be used as a value returned by invalid/inapplicable operations, e.g.
+/// obtaining an element of an empty list. Since this implementation uses De Bruijn indices greater
+/// than zero, `Var(0)` will not occur naturally. It is displayed as `undefined`.
 pub const UD: Term = Var(0);
 
 /// The notation used for parsing and displaying purposes.
@@ -342,6 +344,9 @@ impl fmt::Display for Term {
 
 fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
+        Var(0) => {
+            format!("undefined")
+        },
         Var(i) => {
             if depth >= i as u32 {
                 format!("{}", from_u32(depth + 97 - i as u32).expect("error while printing term"))
@@ -377,6 +382,9 @@ impl fmt::Debug for Term {
 
 fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
+        Var(0) => {
+            format!("undefined")
+        },
         Var(i) => {
             format!("{:X}", i)
         },
