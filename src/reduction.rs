@@ -112,29 +112,11 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
 }
 
 impl Term {
-    /// Reduces an `App`lication by substitution and variable update.
-    ///
-    /// # Example
-    /// ```
-    /// use lambda_calculus::*;
-    /// use lambda_calculus::combinators::I;
-    ///
-    /// assert_eq!(app(I(), Var(1)).eval(), Ok(Var(1)));
-    /// ```
-    /// # Errors
-    ///
-    /// The function will return an error if `self` is not an `App`lication or if its left hand
-    /// side term is not an `Abs`traction.
-    pub fn eval(self) -> Result<Term, TermError> {
-        let (lhs, rhs) = self.unapp()?;
-
-        apply(lhs, &rhs)
-    }
-
-    fn _eval(&mut self, count: &mut usize) {
-        let mut to_eval = mem::replace(self, Var(0)); // replace self with a dummy
-        to_eval = to_eval.eval().unwrap(); // safe; only called in reduction sites
-        mem::replace(self, to_eval); // move self back to its place
+    fn eval(&mut self, count: &mut usize) {
+        let to_apply = mem::replace(self, Var(0)); // replace self with a dummy
+        let (lhs, rhs) = to_apply.unapp().unwrap(); // safe; only called in reduction sites
+        let applied = apply(lhs, &rhs).unwrap(); // ditto
+        mem::replace(self, applied); // move self back to its place
 
         *count += 1;
     }
@@ -182,7 +164,7 @@ impl Term {
             self.lhs_mut().unwrap().beta_cbn(limit, count);
 
             if self.is_reducible(limit, count) {
-                self._eval(count);
+                self.eval(count);
                 self.beta_cbn(limit, count);
             }
         }
@@ -197,7 +179,7 @@ impl Term {
                 self.lhs_mut().unwrap().beta_cbn(limit, count);
 
                 if self.is_reducible(limit, count) {
-                    self._eval(count);
+                    self.eval(count);
                     self.beta_nor(limit, count);
                 } else {
                     self.lhs_mut().unwrap().beta_nor(limit, count);
@@ -216,7 +198,7 @@ impl Term {
             self.rhs_mut().unwrap().beta_cbv(limit, count);
 
             if self.is_reducible(limit, count) {
-                self._eval(count);
+                self.eval(count);
                 self.beta_cbv(limit, count);
             }
         }
@@ -232,7 +214,7 @@ impl Term {
                 self.rhs_mut().unwrap().beta_app(limit, count);
 
                 if self.is_reducible(limit, count) {
-                    self._eval(count);
+                    self.eval(count);
                     self.beta_app(limit, count);
                 }
             },
@@ -250,7 +232,7 @@ impl Term {
                 self.rhs_mut().unwrap().beta_hap(limit, count);
 
                 if self.is_reducible(limit, count) {
-                    self._eval(count);
+                    self.eval(count);
                     self.beta_hap(limit, count);
                 } else {
                     self.lhs_mut().unwrap().beta_hap(limit, count);
@@ -269,7 +251,7 @@ impl Term {
                 self.lhs_mut().unwrap().beta_hsp(limit, count);
 
                 if self.is_reducible(limit, count) {
-                    self._eval(count);
+                    self.eval(count);
                     self.beta_hsp(limit, count)
                 }
             },
@@ -286,7 +268,7 @@ impl Term {
                 self.lhs_mut().unwrap().beta_hsp(limit, count);
 
                 if self.is_reducible(limit, count) {
-                    self._eval(count);
+                    self.eval(count);
                     self.beta_hno(limit, count)
                 } else {
                     self.lhs_mut().unwrap().beta_hno(limit, count);
