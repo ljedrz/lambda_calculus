@@ -4,14 +4,14 @@ use term::{Term, abs, app, UD};
 use term::Term::*;
 use data::boolean::{tru, fls};
 
-/// Produces a `nil`, the last link of a Parigot-encoded list; equivalent to `boolean::tru()`.
+/// Produces a `nil`, the last link of a Parigot-encoded list; equivalent to `boolean::tru`.
 ///
-/// NIL := TRUE
+/// NIL ≡ λab.a ≡ λ λ 2 ≡ TRUE
 pub fn nil() -> Term { tru() }
 
 /// Applied to a Parigot-encoded list it determines if it is empty.
 ///
-/// IS_NIL := λl.l TRUE (λax.FALSE) = λ 1 TRUE (λ λ FALSE)
+/// IS_NIL ≡ λl.l TRUE (λax.FALSE) ≡ λ 1 TRUE (λ λ FALSE)
 ///
 /// # Example
 /// ```
@@ -26,7 +26,7 @@ pub fn is_nil() -> Term {
 
 /// Applied to two terms it returns them contained in a Parigot-encoded list.
 ///
-/// CONS := λaxnc.c a x ((λl.l) x n c) = λ λ λ λ 1 4 3 ((λ 1) 3 2 1)
+/// CONS ≡ λaxnc.c a x ((λl.l) x n c) ≡ λ λ λ λ 1 4 3 ((λ 1) 3 2 1)
 ///
 /// # Example
 /// ```
@@ -71,7 +71,7 @@ pub fn cons() -> Term {
 
 /// Applied to a Parigot-encoded list it returns its first element.
 ///
-/// HEAD := λl.l UD (λhtx.h) = λ 1 UD (λ λ λ 3)
+/// HEAD ≡ λl.l UD (λhtx.h) ≡ λ 1 UD (λ λ λ 3)
 ///
 /// # Example
 /// ```
@@ -91,7 +91,7 @@ pub fn head() -> Term {
 
 /// Applied to a Parigot-encoded list it returns a new list with all its elements but the first one.
 ///
-/// TAIL := λl.l UD (λhtx.t) = λ 1 UD (λ λ λ 2)
+/// TAIL ≡ λl.l UD (λhtx.t) ≡ λ 1 UD (λ λ λ 2)
 ///
 /// # Example
 /// ```

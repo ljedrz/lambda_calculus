@@ -4,9 +4,9 @@ use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
 
-/// Produces a Parigot-encoded number zero.
+/// Produces a Parigot-encoded number zero; equivalent to `boolean::fls`.
 ///
-/// ZERO := λsz.z = λ λ 1
+/// ZERO ≡ λsz.z ≡ λ λ 1 ≡ FALSE
 ///
 /// # Example
 /// ```
@@ -15,12 +15,12 @@ use data::boolean::{tru, fls};
 ///
 /// assert_eq!(zero(), 0.into_parigot());
 /// ```
-pub fn zero() -> Term { abs!(2, Var(1)) }
+pub fn zero() -> Term { fls() }
 
 /// Applied to a Parigot-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
 ///
-/// IS_ZERO := λn.n (λx.FALSE) TRUE =  λ 1 (λ FALSE) TRUE
+/// IS_ZERO ≡ λn.n (λxy.FALSE) TRUE ≡ λ 1 (λ λ FALSE) TRUE
 ///
 /// # Example
 /// ```
@@ -36,7 +36,7 @@ pub fn is_zero() -> Term {
 
 /// Produces a Parigot-encoded number one.
 ///
-/// ONE := λsz.s ZERO z = λ λ 2 ZERO 1
+/// ONE ≡ λsz.s ZERO z ≡ λ λ 2 ZERO 1
 ///
 /// # Example
 /// ```
@@ -49,7 +49,7 @@ pub fn one() -> Term { abs!(2, app!(Var(2), zero(), Var(1))) }
 
 /// Applied to a Parigot-encoded number it produces its successor.
 ///
-/// SUCC := λnsz.s n (n s z) = λ λ λ 2 3 (3 2 1)
+/// SUCC ≡ λnsz.s n (n s z) ≡ λ λ λ 2 3 (3 2 1)
 ///
 /// # Example
 /// ```
@@ -65,7 +65,7 @@ pub fn succ() -> Term {
 
 /// Applied to a Parigot-encoded number it produces its predecessor.
 ///
-/// PRED := λn.n (λxy.y) ZERO  = λ 1 (λ λ 1) ZERO
+/// PRED ≡ λn.n (λxy.y) ZERO ≡ λ 1 (λ λ 1) ZERO
 ///
 /// # Example
 /// ```
@@ -81,7 +81,7 @@ pub fn pred() -> Term {
 
 /// Applied to two Parigot-encoded numbers it produces their sum.
 ///
-/// ADD := λnm.n (λp.SUCC) m = λ λ 2 (λ SUCC) 1
+/// ADD ≡ λnm.n (λp.SUCC) m ≡ λ λ 2 (λ SUCC) 1
 ///
 /// # Example
 /// ```
@@ -97,7 +97,7 @@ pub fn add() -> Term {
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
 ///
-/// SUB := λnm.m (λp. PRED) n = λ λ 1 (λ PRED) 2
+/// SUB ≡ λnm.m (λp. PRED) n ≡ λ λ 1 (λ PRED) 2
 ///
 /// # Example
 /// ```
@@ -114,7 +114,7 @@ pub fn sub() -> Term {
 
 /// Applied to two Parigot-encoded numbers it yields their product.
 ///
-/// MUL := λnm.n (λp.ADD m) ZERO = λ λ 2 (λ ADD 2) ZERO
+/// MUL ≡ λnm.n (λp.ADD m) ZERO ≡ λ λ 2 (λ ADD 2) ZERO
 ///
 /// # Example
 /// ```

@@ -5,9 +5,9 @@ use term::{Term, abs, app};
 use term::Term::*;
 use combinators::Z;
 
-/// Produces a Scott-encoded number zero.
+/// Produces a Scott-encoded number zero; equivalent to `boolean::tru`.
 ///
-/// ZERO := λxy.x = λ λ 2
+/// ZERO ≡ λxy.x ≡ λ λ 2 ≡ TRUE
 ///
 /// # Example
 /// ```
@@ -16,12 +16,12 @@ use combinators::Z;
 ///
 /// assert_eq!(zero(), 0.into_scott());
 /// ```
-pub fn zero() -> Term { abs!(2, Var(2)) }
+pub fn zero() -> Term { tru() }
 
 /// Applied to a Scott-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
 ///
-/// IS_ZERO := λn.n TRUE (λx.FALSE) =  λ 1 TRUE (λ FALSE)
+/// IS_ZERO ≡ λn.n TRUE (λx.FALSE) ≡ λ 1 TRUE (λ FALSE)
 ///
 /// # Example
 /// ```
@@ -38,7 +38,7 @@ pub fn is_zero() -> Term {
 
 /// Produces a Scott-encoded number one.
 ///
-/// ONE := λab.b ZERO = λ λ 1 ZERO
+/// ONE ≡ λab.b ZERO ≡ λ λ 1 ZERO
 ///
 /// # Example
 /// ```
@@ -51,7 +51,7 @@ pub fn one() -> Term { abs!(2, app(Var(1), zero())) }
 
 /// Applied to a Scott-encoded number it produces its successor.
 ///
-/// SUCC := λnxy.y n = λ λ λ 1 3
+/// SUCC ≡ λnxy.y n ≡ λ λ λ 1 3
 ///
 /// # Example
 /// ```
@@ -67,7 +67,7 @@ pub fn succ() -> Term {
 
 /// Applied to a Scott-encoded number it produces its predecessor.
 ///
-/// PRED := λn.n ZERO (λx.x) = λ 1 ZERO (λ 1)
+/// PRED ≡ λn.n ZERO (λx.x) ≡ λ 1 ZERO (λ 1)
 ///
 /// # Example
 /// ```
@@ -83,7 +83,7 @@ pub fn pred() -> Term {
 
 /// Applied to two Scott-encoded numbers it produces their sum.
 ///
-/// ADD := Z (λfmn.m n (λo. SUCC (f o n))) = Z (λ λ λ 2 1 (λ SUCC (4 1 2)))
+/// ADD ≡ Z (λfmn.m n (λo. SUCC (f o n))) ≡ Z (λ λ λ 2 1 (λ SUCC (4 1 2)))
 ///
 /// # Example
 /// ```
@@ -112,7 +112,7 @@ pub fn add() -> Term {
 /*
 /// Applied to two Scott-encoded numbers it subtracts the second one from the first one.
 ///
-/// SUB :=
+/// SUB ≡
 ///
 /// # Example
 /// ```
@@ -129,7 +129,7 @@ pub fn sub() -> Term {
 */
 /// Applied to two Scott-encoded numbers it yields their product.
 ///
-/// MUL := Z (λfmn.m ZERO (λo. ADD n (f o n))) = Z (λ λ λ 2 ZERO (λ ADD 2 (4 1 2)))
+/// MUL ≡ Z (λfmn.m ZERO (λo. ADD n (f o n))) ≡ Z (λ λ λ 2 ZERO (λ ADD 2 (4 1 2)))
 ///
 /// # Example
 /// ```
@@ -160,7 +160,7 @@ pub fn mul() -> Term {
 
 /// Applied to two Scott-encoded numbers it raises the first one to the power of the second one.
 ///
-/// POW := Z (λfmn.n ONE (λo. MUL m (f m o))) = Z (λ λ λ 1 ONE (λ MUL 3 (4 3 1)))
+/// POW ≡ Z (λfmn.n ONE (λo. MUL m (f m o))) ≡ Z (λ λ λ 1 ONE (λ MUL 3 (4 3 1)))
 ///
 /// # Example
 /// ```
@@ -191,7 +191,8 @@ pub fn pow() -> Term {
 
 /// Applied to a Scott-encoded number it produces the equivalent Church-encoded number.
 ///
-/// TO_CHURCH := λabc.Z (λdefg.g f (λh.e (d e f h))) b c a = λ λ λ Z (λ λ λ λ 1 2 (λ 4 (5 4 3 1))) 2 1 3
+/// TO_CHURCH ≡ λabc.Z (λdefg.g f (λh.e (d e f h))) b c a
+///           ≡ λ λ λ Z (λ λ λ λ 1 2 (λ 4 (5 4 3 1))) 2 1 3
 ///
 /// # Example
 /// ```

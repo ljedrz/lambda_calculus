@@ -6,9 +6,9 @@ use data::boolean::{tru, fls};
 use data::num::{scott, parigot, stumpfu};
 use combinators::Z;
 
-/// Produces a Church-encoded number zero.
+/// Produces a Church-encoded number zero; equivalent to `boolean::fls`.
 ///
-/// ZERO := λfx.x = λ λ 1
+/// ZERO ≡ λfx.x ≡ λ λ 1 ≡ FALSE
 ///
 /// # Example
 /// ```
@@ -22,7 +22,7 @@ pub fn zero() -> Term { abs!(2, Var(1)) }
 /// Applied to a Church-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
 ///
-/// IS_ZERO := λn.n (λx.FALSE) TRUE =  λ 1 (λ FALSE) TRUE
+/// IS_ZERO ≡ λn.n (λx.FALSE) TRUE ≡ λ 1 (λ FALSE) TRUE
 ///
 /// # Example
 /// ```
@@ -38,7 +38,7 @@ pub fn is_zero() -> Term {
 
 /// Produces a Church-encoded number one.
 ///
-/// ONE := λfx.f x = λ λ 2 1
+/// ONE ≡ λfx.f x ≡ λ λ 2 1
 ///
 /// # Example
 /// ```
@@ -53,7 +53,7 @@ pub fn one() -> Term {
 
 /// Applied to a Church-encoded number it produces its successor.
 ///
-/// SUCC := λnfx.f (n f x) = λ λ λ 2 (3 2 1)
+/// SUCC ≡ λnfx.f (n f x) ≡ λ λ λ 2 (3 2 1)
 ///
 /// # Example
 /// ```
@@ -69,7 +69,7 @@ pub fn succ() -> Term {
 
 /// Applied to a Church-encoded number it produces its predecessor.
 ///
-/// PRED := λnfx.n (λgh.h (g f)) (λu.x) (λu.u) = λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1)
+/// PRED ≡ λnfx.n (λgh.h (g f)) (λu.x) (λu.u) ≡ λ λ λ 3 (λ λ 1 (2 4)) (λ 2) (λ 1)
 ///
 /// # Example
 /// ```
@@ -90,7 +90,7 @@ pub fn pred() -> Term {
 
 /// Applied to two Church-encoded numbers it produces their sum.
 ///
-/// ADD := λmnfx.m f (n f x) = λ λ λ λ 4 2 (3 2 1)
+/// ADD ≡ λmnfx.m f (n f x) ≡ λ λ λ λ 4 2 (3 2 1)
 ///
 /// # Example
 /// ```
@@ -106,7 +106,7 @@ pub fn add() -> Term {
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
 ///
-/// SUB := λab.b PRED a = λ λ 1 PRED 2
+/// SUB ≡ λab.b PRED a ≡ λ λ 1 PRED 2
 ///
 /// # Example
 /// ```
@@ -123,7 +123,7 @@ pub fn sub() -> Term {
 
 /// Applied to two Church-encoded numbers it yields their product.
 ///
-/// MUL := λmnf.m (n f) = λ λ λ 3 (2 1)
+/// MUL ≡ λmnf.m (n f) ≡ λ λ λ 3 (2 1)
 ///
 /// # Example
 /// ```
@@ -139,7 +139,7 @@ pub fn mul() -> Term {
 
 /// Applied to two Church-encoded numbers it raises the first one to the power of the second one.
 ///
-/// POW := λab.IS_ZERO b ONE (b a) = λ λ IS_ZERO 1 ONE (1 2)
+/// POW ≡ λab.IS_ZERO b ONE (b a) ≡ λ λ IS_ZERO 1 ONE (1 2)
 ///
 /// # Example
 /// ```
@@ -163,7 +163,7 @@ pub fn pow() -> Term {
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is less than the second one.
 ///
-/// LT := λab.NOT (LEQ b a) = λ λ NOT (LEQ 1 2)
+/// LT ≡ λab.NOT (LEQ b a) ≡ λ λ NOT (LEQ 1 2)
 ///
 /// # Examples
 /// ```
@@ -190,7 +190,7 @@ pub fn lt() -> Term {
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is less than or equal to the second one.
 ///
-/// LEQ := λmn.IS_ZERO (SUB m n) = λ λ IS_ZERO (SUB 2 1)
+/// LEQ ≡ λmn.IS_ZERO (SUB m n) ≡ λ λ IS_ZERO (SUB 2 1)
 ///
 /// # Examples
 /// ```
@@ -215,7 +215,7 @@ pub fn leq() -> Term {
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is equal to the second one.
 ///
-/// EQ := λmn.AND (LEQ m n) (LEQ n m) = λ λ AND (LEQ 2 1) (LEQ 1 2)
+/// EQ ≡ λmn.AND (LEQ m n) (LEQ n m) ≡ λ λ AND (LEQ 2 1) (LEQ 1 2)
 ///
 /// # Examples
 /// ```
@@ -254,7 +254,7 @@ pub fn eq() -> Term {
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is not equal to the second one.
 ///
-/// NEQ := λab.OR (NOT (LEQ a b)) (NOT (LEQ b a)) = λ λ OR (NOT (LEQ 2 1)) (NOT (LEQ 1 2))
+/// NEQ ≡ λab.OR (NOT (LEQ a b)) (NOT (LEQ b a)) ≡ λ λ OR (NOT (LEQ 2 1)) (NOT (LEQ 1 2))
 ///
 /// # Examples
 /// ```
@@ -299,7 +299,7 @@ pub fn neq() -> Term {
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is greater than or equal to the second one.
 ///
-/// GEQ := λab.LEQ b a = λ λ LEQ 1 2
+/// GEQ ≡ λab.LEQ b a ≡ λ λ LEQ 1 2
 ///
 /// # Examples
 /// ```
@@ -324,7 +324,7 @@ pub fn geq() -> Term {
 /// Applied to two Church-encoded numbers it returns a lambda-encoded boolean indicating whether
 /// its first argument is greater than the second one.
 ///
-/// GT := λab.NOT (LEQ a b) = λ λ NOT (LEQ 2 1)
+/// GT ≡ λab.NOT (LEQ a b) ≡ λ λ NOT (LEQ 2 1)
 ///
 /// # Examples
 /// ```
@@ -351,8 +351,8 @@ pub fn gt() -> Term {
 /// Applied to two Church-encoded numbers it returns a Church-encoded pair with the result of their
 /// division - the quotient and the remainder.
 ///
-/// DIV := Z (λzqab.LT a b (λx.PAIR q a) (λx.z (SUCC q) (SUB a b) b) I) ZERO =
-/// Z (λ λ λ λ LT 2 1 (λ PAIR 4 3) (λ 5 (SUCC 4) (SUB 3 2) 2) I) ZERO
+/// DIV ≡ Z (λzqab.LT a b (λx.PAIR q a) (λx.z (SUCC q) (SUB a b) b) I) ZERO
+///     ≡ Z (λ λ λ λ LT 2 1 (λ PAIR 4 3) (λ 5 (SUCC 4) (SUB 3 2) 2) I) ZERO
 ///
 /// # Example
 /// ```
@@ -404,8 +404,8 @@ pub fn div() -> Term {
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded quotient of their division.
 ///
-/// QUOT := Z (λzab.LT a b (λx.ZERO) (λx.SUCC (z (SUB a b) b)) I) =
-/// Z (λ λ λ LT 2 1 (λ ZERO) (λ SUCC (4 (SUB 3 2) 2)) I)
+/// QUOT ≡ Z (λzab.LT a b (λx.ZERO) (λx.SUCC (z (SUB a b) b)) I)
+///      ≡ Z (λ λ λ LT 2 1 (λ ZERO) (λ SUCC (4 (SUB 3 2) 2)) I)
 ///
 /// # Example
 /// ```
@@ -451,7 +451,7 @@ pub fn quot() -> Term {
 
 /// Applied to two Church-encoded numbers it returns a Church-encoded remainder of their division.
 ///
-/// REM := Z (λzab.LT a b (λx.a) (λx.z (SUB a b) b) I) = Z (λ λ λ LT 2 1 (λ 3) (λ 4 (SUB 3 2) 2) I)
+/// REM ≡ Z (λzab.LT a b (λx.a) (λx.z (SUB a b) b) I) ≡ Z (λ λ λ LT 2 1 (λ 3) (λ 4 (SUB 3 2) 2) I)
 ///
 /// # Example
 /// ```
@@ -492,8 +492,8 @@ pub fn rem() -> Term {
 
 /// Applied to a Church-encoded number it yields its Church-encoded factorial.
 ///
-/// FAC := λn. n (λfab. f (MUL a b) (SUCC b)) K ONE ONE =
-/// λ 1 (λ λ λ 3 (MUL 2 1) (SUCC 1)) K ONE ONE
+/// FAC ≡ λn. n (λfab. f (MUL a b) (SUCC b)) K ONE ONE
+///     ≡ λ 1 (λ λ λ 3 (MUL 2 1) (SUCC 1)) K ONE ONE
 ///
 /// # Example
 /// ```
@@ -522,7 +522,7 @@ pub fn fac() -> Term {
 
 /// Applied to two Church-encoded numbers it returns the smaller one.
 ///
-/// MIN := λaλb.(LEQ a b) a b = λ λ (LEQ 2 1) 2 1
+/// MIN ≡ λaλb.(LEQ a b) a b ≡ λ λ (LEQ 2 1) 2 1
 ///
 /// # Example
 /// ```
@@ -545,7 +545,7 @@ pub fn min() -> Term {
 
 /// Applied to two Church-encoded numbers it returns the greater one.
 ///
-/// MAX := λaλb.(LEQ a b) b a = λ λ (LEQ 2 1) 1 2
+/// MAX ≡ λaλb.(LEQ a b) b a ≡ λ λ (LEQ 2 1) 1 2
 ///
 /// # Example
 /// ```
@@ -569,7 +569,7 @@ pub fn max() -> Term {
 /// Applied to two Church-encoded numbers `a` and `b` it returns the left [logical
 /// shift](https://en.wikipedia.org/wiki/Logical_shift) of `a` performed `b` times.
 ///
-/// SHL := λaλb.MUL a (POW (SUCC ONE a)) = λ λ MUL 2 (POW (SUCC ONE) 1)
+/// SHL ≡ λaλb.MUL a (POW (SUCC ONE a)) ≡ λ λ MUL 2 (POW (SUCC ONE) 1)
 ///
 /// # Example
 /// ```
@@ -597,8 +597,8 @@ pub fn shl() -> Term {
 /// Applied to two Church-encoded numbers `a` and `b` it returns the right [logical
 /// shift](https://en.wikipedia.org/wiki/Logical_shift) of `a` performed `b` times.
 ///
-/// SHR := λaλb.(IS_ZERO b) a (QUOT a (POW (SUCC ONE) b)) =
-/// λ λ (IS_ZERO 1) 2 (QUOT 2 (POW (SUCC ONE) 1))
+/// SHR ≡ λaλb.(IS_ZERO b) a (QUOT a (POW (SUCC ONE) b))
+///     ≡ λ λ (IS_ZERO 1) 2 (QUOT 2 (POW (SUCC ONE) 1))
 ///
 /// # Example
 /// ```
@@ -632,7 +632,7 @@ pub fn shr() -> Term {
 /// Applied to a Church-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is even.
 ///
-/// IS_EVEN := NOT TRUE
+/// IS_EVEN ≡ λx.x (λp.p FALSE TRUE) TRUE ≡ λ 1 (λ 1 FALSE TRUE) TRUE ≡ NOT TRUE
 ///
 /// # Example
 /// ```
@@ -649,7 +649,7 @@ pub fn is_even() -> Term {
 /// Applied to a Church-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is odd.
 ///
-/// IS_ODD := NOT FALSE
+/// IS_ODD ≡ λx.x (λp.p FALSE TRUE) FALSE ≡ λ 1 (λ 1 FALSE TRUE) FALSE ≡ NOT FALSE
 ///
 /// # Example
 /// ```
@@ -665,7 +665,7 @@ pub fn is_odd() -> Term {
 
 /// Applied to a Church-encoded number it produces the equivalent Scott-encoded number.
 ///
-/// TO_SCOTT := λn.n SUCC ZERO = λ 1 SUCC ZERO
+/// TO_SCOTT ≡ λn.n SUCC ZERO ≡ λ 1 SUCC ZERO
 ///
 /// # Example
 /// ```
@@ -682,7 +682,7 @@ pub fn to_scott() -> Term {
 
 /// Applied to a Church-encoded number it produces the equivalent Parigot-encoded number.
 ///
-/// TO_PARIGOT := λn.n SUCC ZERO = λ 1 SUCC ZERO
+/// TO_PARIGOT ≡ λn.n SUCC ZERO ≡ λ 1 SUCC ZERO
 ///
 /// # Example
 /// ```
@@ -699,7 +699,7 @@ pub fn to_parigot() -> Term {
 
 /// Applied to a Church-encoded number it produces the equivalent Stump-Fu-encoded number.
 ///
-/// TO_STUMPFU := λn.n SUCC ZERO = λ 1 SUCC ZERO
+/// TO_STUMPFU ≡ λn.n SUCC ZERO ≡ λ 1 SUCC ZERO
 ///
 /// # Example
 /// ```

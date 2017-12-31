@@ -16,7 +16,7 @@ use term::Term::*;
 
 /// I - the identity combinator.
 ///
-/// I := λx.x = λ 1
+/// I ≡ λx.x ≡ λ 1
 ///
 /// # Example
 /// ```
@@ -28,9 +28,9 @@ use term::Term::*;
 /// ```
 pub fn I() -> Term { abs(Var(1)) }
 
-/// K - the constant / discarding combinator.
+/// K - the constant / discarding combinator; equivalent to `boolean::tru`.
 ///
-/// K := λxy.x = λ λ 2 = TRUE
+/// K ≡ λxy.x ≡ λ λ 2 ≡ TRUE
 ///
 /// # Example
 /// ```
@@ -44,7 +44,7 @@ pub fn K() -> Term { abs!(2, Var(2)) }
 
 /// S - the substitution combinator.
 ///
-/// S := λxyz.x z (y z) = λ λ λ 3 1 (2 1)
+/// S ≡ λxyz.x z (y z) ≡ λ λ λ 3 1 (2 1)
 ///
 /// # Example
 /// ```
@@ -62,7 +62,7 @@ pub fn S() -> Term {
 
 /// Iota - the universal combinator.
 ///
-/// i := λx.x S K = λ 1 S K
+/// i ≡ λx.x S K ≡ λ 1 S K
 ///
 /// # Example
 /// ```
@@ -77,7 +77,7 @@ pub fn i() -> Term { abs(app!(Var(1), S(), K())) }
 
 /// B - the composition combinator.
 ///
-/// B := λxyz.x (y z) = λ λ λ 3 (2 1)
+/// B ≡ λxyz.x (y z) ≡ λ λ λ 3 (2 1)
 ///
 /// # Example
 /// ```
@@ -95,7 +95,7 @@ pub fn B() -> Term {
 
 /// C - the swapping combinator.
 ///
-/// C := λxyz.x z y = λ λ λ 3 1 2
+/// C ≡ λxyz.x z y ≡ λ λ λ 3 1 2
 ///
 /// # Example
 /// ```
@@ -113,7 +113,7 @@ pub fn C() -> Term {
 
 /// W - the duplicating combinator.
 ///
-/// W := λxy.x y y = λ λ 2 1 1
+/// W ≡ λxy.x y y ≡ λ λ 2 1 1
 ///
 /// # Example
 /// ```
@@ -131,7 +131,7 @@ pub fn W() -> Term {
 
 /// ω - the self-application combinator.
 ///
-/// ω := λx.x x = λ 1 1
+/// ω ≡ λx.x x ≡ λ 1 1
 ///
 /// # Example
 /// ```
@@ -147,7 +147,7 @@ pub fn o() -> Term { abs(app(Var(1), Var(1))) }
 
 /// Ω - the divergent combinator.
 ///
-/// Ω := ω ω
+/// Ω ≡ ω ω
 ///
 /// # Example
 /// ```
@@ -163,7 +163,7 @@ pub fn O() -> Term { app(o(), o()) }
 /// It is suitable for `NOR` (normal), `HNO` (hybrid normal), `CBN` (call-by-name) and `HSP`
 /// (head spine) reduction `Order`s.
 ///
-/// Y := λf.(λx.f (x x)) (λx.f (x x)) = λ (λ 2 (1 1)) (λ 2 (1 1))
+/// Y ≡ λf.(λx.f (x x)) (λx.f (x x)) ≡ λ (λ 2 (1 1)) (λ 2 (1 1))
 ///
 /// # Example
 /// ```
@@ -192,7 +192,7 @@ pub fn Y() -> Term {
 /// expressions to work, they need to be modified so that the evaluation of arguments of conditionals
 /// and other terms that need to be lazy is delayed.
 ///
-/// Z := λf.(λx.f (λv.x x v)) (λx.f (λv.x x v)) = λ (λ 2 (λ 2 2 1)) (λ 2 (λ 2 2 1))
+/// Z ≡ λf.(λx.f (λv.x x v)) (λx.f (λv.x x v)) ≡ λ (λ 2 (λ 2 2 1)) (λ 2 (λ 2 2 1))
 ///
 /// # Example
 /// ```
@@ -215,7 +215,7 @@ pub fn Z() -> Term {
 
 /// R - the reverse application (thrush) combinator.
 ///
-/// R := λxf.f x = λ λ 1 2
+/// R ≡ λxf.f x ≡ λ λ 1 2
 ///
 /// # Example
 /// ```
@@ -233,7 +233,7 @@ pub fn R() -> Term {
 
 /// Θ - Turing's fixed-point combinator
 ///
-/// Θ := (λxy.y (x x y)) (λxy.y (x x y)) = (λ λ 1 (2 2 1)) (λ λ 1 (2 2 1))
+/// Θ ≡ (λxy.y (x x y)) (λxy.y (x x y)) ≡ (λ λ 1 (2 2 1)) (λ λ 1 (2 2 1))
 ///
 /// It is suitable for `NOR` (normal), `HNO` (hybrid normal), `CBN` (call-by-name), and `HSP` (head
 /// spine) reduction `Order`s.

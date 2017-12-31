@@ -5,14 +5,14 @@ use term::Term::*;
 use data::boolean::{tru, fls};
 use data::pair::{pair, fst, snd};
 
-/// Produces a `nil`, the last link of a Church-encoded list; equivalent to `boolean::tru()`.
+/// Produces a `nil`, the last link of a Church-encoded list; equivalent to `boolean::tru`.
 ///
-/// NIL := TRUE
+/// NIL ≡ λab.a ≡ λ λ 2 ≡ TRUE
 pub fn nil() -> Term { tru() }
 
 /// Applied to a Church-encoded list it determines if it is empty.
 ///
-/// IS_NIL := λl.l TRUE (λax.FALSE) = λ 1 TRUE (λ λ FALSE)
+/// IS_NIL ≡ λl.l TRUE (λax.FALSE) ≡ λ 1 TRUE (λ λ FALSE)
 ///
 /// # Example
 /// ```
@@ -27,7 +27,7 @@ pub fn is_nil() -> Term {
 
 /// Applied to two terms it returns them contained in a Church-encoded list.
 ///
-/// CONS := λaxnc.c a ((λl.l) x n c) = λ λ λ λ 1 4 ((λ 1) 3 2 1)
+/// CONS ≡ λaxnc.c a ((λl.l) x n c) ≡ λ λ λ λ 1 4 ((λ 1) 3 2 1)
 ///
 /// # Example
 /// ```
@@ -71,7 +71,7 @@ pub fn cons() -> Term {
 
 /// Applied to a Church-encoded list it returns its first element.
 ///
-/// HEAD := λl.l UD (λht.h) = λ 1 UD (λ λ 2)
+/// HEAD ≡ λl.l UD (λht.h) ≡ λ 1 UD (λ λ 2)
 ///
 /// # Example
 /// ```
@@ -91,8 +91,8 @@ pub fn head() -> Term {
 
 /// Applied to a Church-encoded list it returns a new list with all its elements but the first one.
 ///
-/// TAIL := λl.FST (l (PAIR UD NIL) (λap. PAIR (SND p) (CONS a (SND p))))
-///       = λ FST (1 (PAIR UD NIL) (λ λ PAIR (SND 1) (CONS 2 (SND 1))))
+/// TAIL ≡ λl.FST (l (PAIR UD NIL) (λap. PAIR (SND p) (CONS a (SND p))))
+///      ≡ λ FST (1 (PAIR UD NIL) (λ λ PAIR (SND 1) (CONS 2 (SND 1))))
 ///
 /// # Example
 /// ```

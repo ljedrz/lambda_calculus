@@ -4,14 +4,14 @@ use term::{Term, abs, app, UD};
 use term::Term::*;
 use data::boolean::{tru, fls};
 
-/// Produces a `nil`, the last link of a Scott-encoded list; equivalent to `boolean::tru()`.
+/// Produces a `nil`, the last link of a Scott-encoded list; equivalent to `boolean::tru`.
 ///
-/// NIL := TRUE
+/// NIL ≡ λab.a ≡ λ λ 2 ≡ TRUE
 pub fn nil() -> Term { tru() }
 
 /// Applied to a Scott-encoded list it determines if it is empty.
 ///
-/// IS_NIL := λl.l TRUE (λax.FALSE) = λ 1 TRUE (λ λ FALSE)
+/// IS_NIL ≡ λl.l TRUE (λax.FALSE) ≡ λ 1 TRUE (λ λ FALSE)
 ///
 /// # Example
 /// ```
@@ -26,7 +26,7 @@ pub fn is_nil() -> Term {
 
 /// Applied to two terms it returns them contained in a Scott-encoded list.
 ///
-/// CONS := λaxnc.c a x = λ λ λ λ 1 4 3
+/// CONS ≡ λaxnc.c a x ≡ λ λ λ λ 1 4 3
 ///
 /// # Example
 /// ```
@@ -61,7 +61,7 @@ pub fn cons() -> Term {
 
 /// Applied to a Scott-encoded list it returns its first element.
 ///
-/// HEAD := λl.l UD (λht.h) = λ 1 UD (λ λ 2)
+/// HEAD ≡ λl.l UD (λht.h) ≡ λ 1 UD (λ λ 2)
 ///
 /// # Example
 /// ```
@@ -81,7 +81,7 @@ pub fn head() -> Term {
 
 /// Applied to a Scott-encoded list it returns a new list with all its elements but the first one.
 ///
-/// TAIL := λl.l UD (λht.t) = λ 1 UD (λ λ 1)
+/// TAIL ≡ λl.l UD (λht.t) ≡ λ 1 UD (λ λ 1)
 ///
 /// # Example
 /// ```

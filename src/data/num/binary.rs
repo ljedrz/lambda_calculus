@@ -5,15 +5,19 @@ use term::Term::*;
 use data::boolean::{tru, fls};
 use combinators::I;
 
-/// A 0 bit (equivalent to `booleans::tru`).
+/// A 0 bit; equivalent to `boolean::tru`.
+///
+/// B0 ≡ λab.a ≡ λ λ 2 ≡ TRUE
 pub fn b0() -> Term { tru() }
 
-/// A 1 bit (equivalent to `booleans::fls`).
+/// A 1 bit; equivalent to `boolean::fls`.
+///
+/// B1 ≡ λab.b ≡ λ λ 1 ≡ FALSE
 pub fn b1() -> Term { fls() }
 
 /// Produces a binary-encoded number zero.
 ///
-/// ZERO := λzxy.z = λ λ λ 3
+/// ZERO ≡ λzxy.z ≡ λ λ λ 3
 ///
 /// # Example
 /// ```
@@ -27,7 +31,7 @@ pub fn zero() -> Term { abs!(3, Var(3)) }
 /// Applied to a binary-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
 ///
-/// IS_ZERO := λn.n TRUE I (λx.FALSE) = λ 1 TRUE I (λ FALSE)
+/// IS_ZERO ≡ λn.n TRUE I (λx.FALSE) ≡ λ 1 TRUE I (λ FALSE)
 ///
 /// # Example
 /// ```
@@ -43,7 +47,7 @@ pub fn is_zero() -> Term {
 
 /// Produces a binary-encoded number one.
 ///
-/// ONE := λzxy.y z = λ λ λ 1 3
+/// ONE ≡ λzxy.y z ≡ λ λ λ 1 3
 ///
 /// # Example
 /// ```
@@ -58,15 +62,15 @@ pub fn one() -> Term {
 /*
 /// Applied to a binary-encoded number it produces its successor.
 ///
-/// SUCC := λn.π22 (n Z A B) = λ π22 (1 Z A B)
+/// SUCC ≡ λn.π22 (n Z A B) ≡ λ π22 (1 Z A B)
 ///
 /// where
 ///
-/// Z := (ZERO, ONE)
+/// Z ≡ (ZERO, ONE)
 ///
-/// A := λp.p (λnm.(SHL0 n, SHL1 n)) = λ 1 (λ λ (SHL0 2, SHL1 2))
+/// A ≡ λp.p (λnm.(SHL0 n, SHL1 n)) ≡ λ 1 (λ λ (SHL0 2, SHL1 2))
 ///
-/// B := λp.p (λnm.(SHL1 n, SHL0 m)) = λ 1 (λ λ (SHL1 2, SHL0 1))
+/// B ≡ λp.p (λnm.(SHL1 n, SHL0 m)) ≡ λ 1 (λ λ (SHL1 2, SHL0 1))
 ///
 /// # Example
 /// ```
@@ -88,15 +92,15 @@ pub fn succ() -> Term {
 
 /// Applied to a binary-encoded number it produces its predecessor.
 ///
-/// PRED := λn.π22 (n Z A B) = λ π22 (1 Z A B)
+/// PRED ≡ λn.π22 (n Z A B) ≡ λ π22 (1 Z A B)
 ///
 /// where
 ///
-/// Z := (ZERO, ZERO)
+/// Z ≡ (ZERO, ZERO)
 ///
-/// A := λp.p (λnm.(SHL0 n, SHL1 m)) = λ 1 (λ λ (SHL0 2, SHL1 1))
+/// A ≡ λp.p (λnm.(SHL0 n, SHL1 m)) ≡ λ 1 (λ λ (SHL0 2, SHL1 1))
 ///
-/// B := λp.p (λnm.(SHL1 n, SHL0 n)) = λ 1 (λ λ (SHL1 2, SHL0 2))
+/// B ≡ λp.p (λnm.(SHL1 n, SHL0 n)) ≡ λ 1 (λ λ (SHL1 2, SHL0 2))
 ///
 /// # Example
 /// ```
@@ -118,7 +122,7 @@ pub fn pred() -> Term {
 */
 /// Applied to a binary-encoded number it returns its least significant bit.
 ///
-/// LSB := λn.n TRUE (λx.TRUE) (λx.FALSE) = λ 1 TRUE (λ TRUE) (λ FALSE)
+/// LSB ≡ λn.n TRUE (λx.TRUE) (λx.FALSE) ≡ λ 1 TRUE (λ TRUE) (λ FALSE)
 ///
 /// # Example
 /// ```
@@ -136,7 +140,7 @@ pub fn lsb() -> Term {
 
 /// Applied to a binary-encoded number it shifts it up by a single zero bit.
 ///
-/// SHL0 := λnbzo.z (n b z o) = λ λ λ λ 2 (4 3 2 1)
+/// SHL0 ≡ λnbzo.z (n b z o) ≡ λ λ λ λ 2 (4 3 2 1)
 ///
 /// # Example
 /// ```
@@ -153,7 +157,7 @@ pub fn shl0() -> Term {
 
 /// Applied to a binary-encoded number it shifts it up by a single one bit.
 ///
-/// SHL1 := λnbzo.o (n b z o) = λ λ λ λ 1 (4 3 2 1)
+/// SHL1 ≡ λnbzo.o (n b z o) ≡ λ λ λ λ 1 (4 3 2 1)
 ///
 /// # Example
 /// ```
@@ -170,15 +174,15 @@ pub fn shl1() -> Term {
 
 /// Applied to a binary-encoded number it strips its leading zeroes.
 ///
-/// STRIP := λn.π12 (n Z A B) = λ π12 (n Z A B)
+/// STRIP ≡ λn.π12 (n Z A B) ≡ λ π12 (n Z A B)
 ///
 /// where
 ///
-/// Z := (ZERO, TRUE)
+/// Z ≡ (ZERO, TRUE)
 ///
-/// A := λp.p (λnz.(z ZERO (SHL0 n), z)) = λ 1 (λ λ (1 ZERO (SHL0 2), 1))
+/// A ≡ λp.p (λnz.(z ZERO (SHL0 n), z)) ≡ λ 1 (λ λ (1 ZERO (SHL0 2), 1))
 ///
-/// B := λp.p (λnz.(SHL1 n, FALSE)) = λ 1 (λ λ (SHL1 2, FALSE))
+/// B ≡ λp.p (λnz.(SHL1 n, FALSE)) ≡ λ 1 (λ λ (SHL1 2, FALSE))
 ///
 /// # Example
 /// ```

@@ -6,9 +6,9 @@ use data::num::church as church;
 use data::num::convert::IntoChurchNum;
 use data::boolean::{tru, fls};
 
-/// Produces a Stump-Fu-encoded number zero.
+/// Produces a Stump-Fu-encoded number zero; equivalent to `boolean::fls`.
 ///
-/// ZERO := λf.λa.a = λ λ 1
+/// ZERO ≡ λf.λa.a ≡ λ λ 1 ≡ FALSE
 ///
 /// # Example
 /// ```
@@ -17,12 +17,12 @@ use data::boolean::{tru, fls};
 ///
 /// assert_eq!(zero(), 0.into_stumpfu());
 /// ```
-pub fn zero() -> Term { abs!(2, Var(1)) }
+pub fn zero() -> Term { fls() }
 
 /// Applied to a Stump-Fu-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
 ///
-/// IS_ZERO := λn.n (λx.FALSE) TRUE =  λ 1 (λ FALSE) TRUE
+/// IS_ZERO ≡ λn.n (λxy.FALSE) TRUE ≡ λ 1 (λ λ FALSE) TRUE
 ///
 /// # Example
 /// ```
@@ -38,7 +38,7 @@ pub fn is_zero() -> Term {
 
 /// Produces a Stump-Fu-encoded number one.
 ///
-/// ONE := λf.λa.f CHURCH_ONE ZERO = λ λ 2 CHURCH_ONE ZERO
+/// ONE ≡ λf.λa.f CHURCH_ONE ZERO ≡ λ λ 2 CHURCH_ONE ZERO
 ///
 /// # Example
 /// ```
@@ -51,7 +51,7 @@ pub fn one() -> Term { abs!(2, app!(Var(2), 1.into_church(), zero())) }
 
 /// Applied to a Stump-Fu-encoded number it produces its successor.
 ///
-/// SUCC := λn.n (λcpfa.f (CHURCH_SUCC c) n) ONE = λ 1 (λ λ λ λ 2 (CHURCH_SUCC 4) 5) ONE
+/// SUCC ≡ λn.n (λcpfa.f (CHURCH_SUCC c) n) ONE ≡ λ 1 (λ λ λ λ 2 (CHURCH_SUCC 4) 5) ONE
 ///
 /// # Example
 /// ```
@@ -71,7 +71,7 @@ pub fn succ() -> Term {
 
 /// Applied to a Stump-Fu-encoded number it produces its predecessor.
 ///
-/// PRED := λn.n (λcs.s) ZERO = λ 1 (λ λ 1) ZERO
+/// PRED ≡ λn.n (λcs.s) ZERO ≡ λ 1 (λ λ 1) ZERO
 ///
 /// # Example
 /// ```
@@ -87,7 +87,7 @@ pub fn pred() -> Term {
 
 /// Applied to two Stump-Fu-encoded numbers it produces their sum.
 ///
-/// ADD := λnm.n (λcp.c SUCC m) m = λ λ 2 (λ λ 2 SUCC 3) 1
+/// ADD ≡ λnm.n (λcp.c SUCC m) m ≡ λ λ 2 (λ λ 2 SUCC 3) 1
 ///
 /// # Example
 /// ```

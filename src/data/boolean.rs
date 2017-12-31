@@ -5,17 +5,17 @@ use term::Term::*;
 
 /// A lambda-encoded boolean `true`.
 ///
-/// TRUE := λab.a = λ λ 2
+/// TRUE ≡ λab.a ≡ λ λ 2
 pub fn tru() -> Term { abs!(2, Var(2)) }
 
 /// A lambda-encoded boolean `false`.
 ///
-/// FALSE := λab.b = λ λ 1
+/// FALSE ≡ λab.b ≡ λ λ 1
 pub fn fls() -> Term { abs!(2, Var(1)) }
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded conjunction.
 ///
-/// AND := λpq.p q p = λ λ 2 1 2
+/// AND ≡ λpq.p q p ≡ λ λ 2 1 2
 ///
 /// # Examples
 /// ```
@@ -33,7 +33,7 @@ pub fn and() -> Term {
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded disjunction.
 ///
-/// OR := λpq.p p q = λ λ 2 2 1
+/// OR ≡ λpq.p p q ≡ λ λ 2 2 1
 ///
 /// # Examples
 /// ```
@@ -51,7 +51,7 @@ pub fn or() -> Term {
 
 /// Applied to a lambda-encoded boolean it returns its lambda-encoded negation.
 ///
-/// NOT := λp.p FALSE TRUE = λ 1 FALSE TRUE
+/// NOT ≡ λp.p FALSE TRUE ≡ λ 1 FALSE TRUE
 ///
 /// # Examples
 /// ```
@@ -67,7 +67,7 @@ pub fn not() -> Term {
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded exclusive disjunction.
 ///
-/// XOR := λpq.p (NOT q) q = λ λ 2 (NOT 1) 1
+/// XOR ≡ λpq.p (NOT q) q ≡ λ λ 2 (NOT 1) 1
 ///
 /// # Examples
 /// ```
@@ -95,7 +95,7 @@ pub fn xor() -> Term {
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded joint denial.
 ///
-/// NOR := λpq.NOT (OR p q) = λ λ NOT (OR 2 1)
+/// NOR ≡ λpq.NOT (OR p q) ≡ λ λ NOT (OR 2 1)
 ///
 /// # Examples
 /// ```
@@ -121,7 +121,7 @@ pub fn nor() -> Term {
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded alternative denial.
 ///
-/// NAND := λpq.NOT (AND p q) = λ λ NOT (AND 2 1)
+/// NAND ≡ λpq.NOT (AND p q) ≡ λ λ NOT (AND 2 1)
 ///
 /// # Examples
 /// ```
@@ -148,7 +148,7 @@ pub fn nand() -> Term {
 /// Applied to a lambda-encoded predicate and two terms it returns the first one if the predicate
 /// is true or the second one if the predicate is false.
 ///
-/// IF_ELSE := λpab.p a b = λ λ λ 3 2 1
+/// IF_ELSE ≡ λpab.p a b ≡ λ λ λ 3 2 1
 ///
 /// # Examples
 /// ```

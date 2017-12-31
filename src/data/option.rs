@@ -4,14 +4,14 @@ use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
 
-/// Produces a lambda-encoded empty option.
+/// Produces a lambda-encoded empty option; equivalent to `boolean::tru`.
 ///
-/// NONE := λns.n = λ λ 2
+/// NONE ≡ λns.n ≡ λ λ 2 ≡ TRUE
 pub fn none() -> Term { tru() }
 
 /// Applied to an argument it consumes it and produces a lambda-encoded option that contains it.
 ///
-/// SOME := λans.s a = λ λ λ 1 3
+/// SOME ≡ λans.s a ≡ λ λ λ 1 3
 ///
 /// # Example
 /// ```
@@ -27,7 +27,7 @@ pub fn some() -> Term {
 /// Applied to a lambda-encoded option it produces a lambda-encoded boolean indicating whether it
 /// is empty.
 ///
-/// IS_NONE := λa.a TRUE (λx.FALSE) = λ 1 TRUE (λ FALSE)
+/// IS_NONE ≡ λa.a TRUE (λx.FALSE) ≡ λ 1 TRUE (λ FALSE)
 ///
 /// # Example
 /// ```
@@ -44,7 +44,7 @@ pub fn is_none() -> Term {
 /// Applied to a lambda-encoded option it produces a lambda-encoded boolean indicating whether it
 /// is not empty.
 ///
-/// IS_SOME := λa.a FALSE (λx.TRUE) = λ 1 FALSE (λ TRUE)
+/// IS_SOME ≡ λa.a FALSE (λx.TRUE) ≡ λ 1 FALSE (λ TRUE)
 ///
 /// # Example
 /// ```
@@ -61,7 +61,7 @@ pub fn is_some() -> Term {
 /// Applied to a function and a lambda-encoded option it applies the function to the contents of
 /// the option, returning the empty option if the option does not contain a value.
 ///
-/// MAP := λfm.m NONE (λx.SOME (f x)) =  λ λ 1 NONE (λ SOME (3 1))
+/// MAP ≡ λfm.m NONE (λx.SOME (f x)) ≡ λ λ 1 NONE (λ SOME (3 1))
 ///
 /// # Example
 /// ```
@@ -85,7 +85,7 @@ pub fn map() -> Term {
 /// Applied to two arguments and a lambda-encoded option it returns the second argument applied to
 /// the contents of the option if it contains a value or the first argument if it doesn't.
 ///
-/// MAP_OR := λdfm.m d f = λ λ λ 3 1 2
+/// MAP_OR ≡ λdfm.m d f ≡ λ λ λ 3 1 2
 ///
 /// # Example
 /// ```
@@ -105,7 +105,7 @@ pub fn map_or() -> Term {
 /// Applied to one argument and a lambda-encoded option it returns the value inside the option or
 /// the first argument if the option doesn't contain a value.
 ///
-/// UNWRAP_OR := λdm.m d I = λ λ 1 2 I
+/// UNWRAP_OR ≡ λdm.m d I ≡ λ λ 1 2 I
 ///
 /// # Example
 /// ```
@@ -124,7 +124,7 @@ pub fn unwrap_or() -> Term {
 /// Applied to a lambda-encoded option and a function that returns a lambda-encoded option, it
 /// applies the function to the contents of the option.
 ///
-/// AND_THEN := λmf.m NONE f = λ λ 2 NONE 1
+/// AND_THEN ≡ λmf.m NONE f ≡ λ λ 2 NONE 1
 ///
 /// # Example
 /// ```

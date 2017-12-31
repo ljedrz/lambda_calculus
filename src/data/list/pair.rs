@@ -7,14 +7,14 @@ use data::pair::{pair, fst, snd};
 use combinators::{I, Z};
 use data::num::church::{zero, is_zero, succ, pred};
 
-/// Produces a `nil`, the last link of a pair-encoded list; equivalent to `boolean::fls()`.
+/// Produces a `nil`, the last link of a pair-encoded list; equivalent to `boolean::fls`.
 ///
-/// NIL := FALSE
+/// NIL ≡ λab.b ≡ λ λ 1 ≡ FALSE
 pub fn nil() -> Term { fls() }
 
 /// Applied to a pair-encoded list it determines if it is empty.
 ///
-/// IS_NIL := λl.l (λhtd.FALSE) TRUE = λ 1 (λ λ λ FALSE) TRUE
+/// IS_NIL ≡ λl.l (λhtd.FALSE) TRUE ≡ λ 1 (λ λ λ FALSE) TRUE
 ///
 /// # Example
 /// ```
@@ -28,9 +28,9 @@ pub fn is_nil() -> Term {
     abs(app!(Var(1), abs!(3, fls()), tru()))
 }
 
-/// Applied to two terms it returns them contained in a pair-encoded list; equivalent to `pair::pair()`.
+/// Applied to two terms it returns them contained in a pair-encoded list; equivalent to `pair::pair`.
 ///
-/// CONS := PAIR
+/// CONS ≡ λxyz.z x y ≡ λ λ λ 1 3 2 ≡ PAIR
 ///
 /// # Example
 /// ```
@@ -58,9 +58,9 @@ pub fn is_nil() -> Term {
 /// ```
 pub fn cons() -> Term { pair() }
 
-/// Applied to a pair-encoded list it returns its first element; equivalent to `pair::fst()`.
+/// Applied to a pair-encoded list it returns its first element; equivalent to `pair::fst`.
 ///
-/// HEAD := FST
+/// HEAD ≡ λp.p TRUE ≡ λ 1 TRUE ≡ FST
 ///
 /// # Example
 /// ```
@@ -74,9 +74,9 @@ pub fn cons() -> Term { pair() }
 pub fn head() -> Term { fst() }
 
 /// Applied to a pair-encoded list it returns a new list with all its elements but the first one;
-/// equivalent to `pair::snd()`.
+/// equivalent to `pair::snd`.
 ///
-/// TAIL := SND
+/// TAIL ≡ λp.p FALSE ≡ λ 1 FALSE ≡ SND
 ///
 /// # Example
 /// ```
@@ -94,8 +94,8 @@ pub fn tail() -> Term { snd() }
 
 /// Applied to a pair-encoded list and a Church-encoded number it returns its Church-encoded length.
 ///
-/// LENGTH := Z (λzal.IS_NIL l (λx.a) (λx.z (SUCC a) (SND l)) I) ZERO
-/// = Z (λλλ IS_NIL 1 (λ 3) (λ 4 (SUCC 3) (SND 2)) I) ZERO
+/// LENGTH ≡ Z (λzal.IS_NIL l (λx.a) (λx.z (SUCC a) (SND l)) I) ZERO
+///        ≡ Z (λλλ IS_NIL 1 (λ 3) (λ 4 (SUCC 3) (SND 2)) I) ZERO
 ///
 /// # Example
 /// ```
@@ -128,7 +128,7 @@ pub fn length() -> Term {
 /// Applied to a Church-encoded number `i` and a pair-encoded list it returns the `i`-th
 /// (zero-indexed) element of the list.
 ///
-/// INDEX := λil. FST (l SND i) = λ λ FST (2 SND 1)
+/// INDEX ≡ λil. FST (l SND i) ≡ λ λ FST (2 SND 1)
 ///
 /// # Example
 /// ```
@@ -153,8 +153,8 @@ pub fn index() -> Term {
 
 /// Reverses a pair-encoded list.
 ///
-/// REVERSE := Z (λzal.IS_NIL l (λx.a) (λx.z (PAIR (FST l) a) (SND l) I)) NIL =
-/// Z (λ λ λ IS_NIL 1 (λ 3) (λ 4 (PAIR (FST 2) 3) (SND 2)) I) NIL
+/// REVERSE ≡ Z (λzal.IS_NIL l (λx.a) (λx.z (PAIR (FST l) a) (SND l) I)) NIL
+///         ≡ Z (λ λ λ IS_NIL 1 (λ 3) (λ 4 (PAIR (FST 2) 3) (SND 2)) I) NIL
 ///
 /// # Example
 /// ```
@@ -194,7 +194,7 @@ pub fn reverse() -> Term {
 /// Applied to a Church-encoded number `n` and `n` `Term`s it creates a pair-encoded list of those
 /// terms.
 ///
-/// LIST := λn.n (λfax.f (PAIR x a)) REVERSE NIL = λ 1 (λ λ λ 3 (PAIR 1 2)) REVERSE NIL
+/// LIST ≡ λn.n (λfax.f (PAIR x a)) REVERSE NIL ≡ λ 1 (λ λ λ 3 (PAIR 1 2)) REVERSE NIL
 ///
 /// # Example
 /// ```
@@ -217,8 +217,8 @@ pub fn list() -> Term {
 
 /// Applied to two pair-encoded lists it concatenates them.
 ///
-/// APPEND := Z (λzab. IS_NIL a (λx.b) (λx.PAIR (FST a) (z (SND a) b)) I) =
-/// Z (λ λ λ IS_NIL 2 (λ 2) (λ PAIR (FST 3) (4 (SND 3) 2)) I)
+/// APPEND ≡ Z (λzab. IS_NIL a (λx.b) (λx.PAIR (FST a) (z (SND a) b)) I)
+///        ≡ Z (λ λ λ IS_NIL 2 (λ 2) (λ PAIR (FST 3) (4 (SND 3) 2)) I)
 ///
 /// # Example
 /// ```
@@ -257,8 +257,8 @@ pub fn append() -> Term {
 
 /// Applied to a function and a pair-encoded list it maps the function over it.
 ///
-/// MAP := Z (λzfl. IS_NIL l (λx.NIL) (λx.PAIR (f (FST l)) (z f (SND l))) I) =
-/// Z (λ λ λ IS_NIL 1 (λ NIL) (λ PAIR (3 (FST 2)) (4 3 (SND 2))) I)
+/// MAP ≡ Z (λzfl. IS_NIL l (λx.NIL) (λx.PAIR (f (FST l)) (z f (SND l))) I)
+///     ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ PAIR (3 (FST 2)) (4 3 (SND 2))) I)
 ///
 /// # Example
 /// ```
@@ -302,8 +302,8 @@ pub fn map() -> Term {
 /// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists)
 /// on the list.
 ///
-/// FOLDL := Z (λzfsl. IS_NIL l (λx.s) (λx.z f (f s (FST l)) (SND l)) I) =
-/// Z (λ λ λ λ IS_NIL 1 (λ 3) (λ 5 4 (4 3 (FST 2)) (SND 2)) I)
+/// FOLDL ≡ Z (λzfsl. IS_NIL l (λx.s) (λx.z f (f s (FST l)) (SND l)) I)
+///       ≡ Z (λ λ λ λ IS_NIL 1 (λ 3) (λ 5 4 (4 3 (FST 2)) (SND 2)) I)
 ///
 /// # Example
 /// ```
@@ -343,8 +343,8 @@ pub fn foldl() -> Term {
 /// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists)
 /// on the list.
 ///
-/// FOLDR := λfsl. Z (λzt. IS_NIL t (λx.s) (λx.f (FST t) (z (SND t))) I) l =
-/// λ λ λ Z (λ λ IS_NIL 1 (λ 5) (λ 6 (FST 2) (3 (SND 2))) I) 1
+/// FOLDR ≡ λfsl. Z (λzt. IS_NIL t (λx.s) (λx.f (FST t) (z (SND t))) I) l
+///       ≡ λ λ λ Z (λ λ IS_NIL 1 (λ 5) (λ 6 (FST 2) (3 (SND 2))) I) 1
 ///
 /// # Example
 /// ```
@@ -378,8 +378,8 @@ pub fn foldr() -> Term {
 
 /// Applied to a predicate and a pair-encoded list it filters the list based on the predicate.
 ///
-/// FILTER := Z (λzpl. IS_NIL l (λx.NIL) (λx.p (FST l) (PAIR (FST l)) I (z p (SND l))) I) =
-/// Z (λ λ λ IS_NIL 1 (λ NIL) (λ 3 (FST 2) (PAIR (FST 2)) I (4 3 (SND 2))) I)
+/// FILTER ≡ Z (λzpl. IS_NIL l (λx.NIL) (λx.p (FST l) (PAIR (FST l)) I (z p (SND l))) I)
+///        ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ 3 (FST 2) (PAIR (FST 2)) I (4 3 (SND 2))) I)
 ///
 /// # Example
 /// ```
@@ -430,8 +430,8 @@ pub fn filter() -> Term {
 
 /// Applied to a pair-encoded list it returns the last element.
 ///
-/// LAST := Z (λzl.IS_NIL l (λx.NIL) (λx.IS_NIL (TAIL l) (HEAD l) (z (TAIL l))) I) =
-/// Z (λ 2 1. IS_NIL 1 (λ NIL) (λ IS_NIL (TAIL 2) (HEAD 2) (3 (TAIL 2))) I)
+/// LAST ≡ Z (λzl.IS_NIL l (λx.NIL) (λx.IS_NIL (TAIL l) (HEAD l) (z (TAIL l))) I)
+///      ≡ Z (λ 2 1. IS_NIL 1 (λ NIL) (λ IS_NIL (TAIL 2) (HEAD 2) (3 (TAIL 2))) I)
 ///
 /// # Example
 /// ```
@@ -465,8 +465,8 @@ pub fn last() -> Term {
 
 /// Applied to a pair-encoded list it returns the list without the last element.
 ///
-/// INIT := Z (λzl.IS_NIL l (λx.NIL) (λx.(IS_NIL (FST l) NIL (PAIR (FST l) (z (SND l))))) I) =
-/// Z (λ λ IS_NIL 1 (λ NIL) (λ (IS_NIL (FST 2) NIL (PAIR (FST 2) (3 (SND 2))))) I)
+/// INIT ≡ Z (λzl.IS_NIL l (λx.NIL) (λx.(IS_NIL (FST l) NIL (PAIR (FST l) (z (SND l))))) I)
+///      ≡ Z (λ λ IS_NIL 1 (λ NIL) (λ (IS_NIL (FST 2) NIL (PAIR (FST 2) (3 (SND 2))))) I)
 ///
 /// # Example
 /// ```
@@ -506,8 +506,8 @@ pub fn init() -> Term {
 /// Applied to two pair-encoded lists it returns a list of corresponding pairs. If one input list
 /// is shorter, excess elements of the longer list are discarded.
 ///
-/// ZIP := Z (λ.zab IS_NIL b (λ.x NIL) (λ.x IS_NIL a NIL (CONS (PAIR (HEAD b) (HEAD a)) (z (TAIL b) (TAIL a)))) I) =
-/// Z (λ λ λ IS_NIL 2 (λ NIL) (λ IS_NIL 2 NIL (CONS (PAIR (HEAD 3) (HEAD 2)) (4 (TAIL 3) (TAIL 2)))) I)
+/// ZIP ≡ Z (λ.zab IS_NIL b (λ.x NIL) (λ.x IS_NIL a NIL (CONS (PAIR (HEAD b) (HEAD a)) (z (TAIL b) (TAIL a)))) I)
+///     ≡ Z (λ λ λ IS_NIL 2 (λ NIL) (λ IS_NIL 2 NIL (CONS (PAIR (HEAD 3) (HEAD 2)) (4 (TAIL 3) (TAIL 2)))) I)
 ///
 /// # Example
 /// ```
@@ -555,8 +555,8 @@ pub fn zip() -> Term {
 /// elements and returns the resulting list. If one input list is shorter, excess elements of the
 /// longer list are discarded.
 ///
-/// ZIP_WITH := Z (λ.zfab IS_NIL b (λ.x NIL) (λ.x IS_NIL a NIL (CONS (f (HEAD b) (HEAD a)) (z f (TAIL b) (TAIL a)))) I) =
-/// Z (λ λ λ λ IS_NIL 2 (λ NIL) (λ IS_NIL 2 NIL (CONS (4 (HEAD 3) (HEAD 2)) (5 4 (TAIL 3) (TAIL 2)))) I)
+/// ZIP_WITH ≡ Z (λ.zfab IS_NIL b (λ.x NIL) (λ.x IS_NIL a NIL (CONS (f (HEAD b) (HEAD a)) (z f (TAIL b) (TAIL a)))) I)
+///          ≡ Z (λ λ λ λ IS_NIL 2 (λ NIL) (λ IS_NIL 2 NIL (CONS (4 (HEAD 3) (HEAD 2)) (5 4 (TAIL 3) (TAIL 2)))) I)
 ///
 /// # Example
 /// ```
@@ -605,8 +605,8 @@ pub fn zip_with() -> Term {
 /// Applied to a Church-encoded number `n` and a pair-encoded list it returns a new list with the
 /// first `n` elements of the supplied list.
 ///
-/// TAKE := Z (λznl.IS_NIL l (λx.NIL) (λx.IS_ZERO n NIL (CONS (HEAD l) (z (PRED n) (TAIL l)))) I) =
-/// Z (λ λ λ IS_NIL 1 (λ NIL) (λ IS_ZERO 3 NIL (CONS (HEAD 2) (4 (PRED 3) (TAIL 2)))) I)
+/// TAKE ≡ Z (λznl.IS_NIL l (λx.NIL) (λx.IS_ZERO n NIL (CONS (HEAD l) (z (PRED n) (TAIL l)))) I)
+///      ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ IS_ZERO 3 NIL (CONS (HEAD 2) (4 (PRED 3) (TAIL 2)))) I)
 ///
 /// # Example
 /// ```
@@ -651,8 +651,8 @@ pub fn take() -> Term {
 /// Applied to a predicate function and a pair-encoded list it returns the longest prefix of the
 /// list whose elements all satisfy the predicate function.
 ///
-/// TAKE_WHILE := Z (λzfl. IS_NIL l (λx.NIL) (λx.f (HEAD l) (CONS (HEAD l) (z f (TAIL l))) NIL) I) =
-/// Z (λ λ λ IS_NIL 1 (λ NIL) (λ 3 (HEAD 2) (CONS (HEAD 2) (4 3 (TAIL 2))) NIL) I)
+/// TAKE_WHILE ≡ Z (λzfl. IS_NIL l (λx.NIL) (λx.f (HEAD l) (CONS (HEAD l) (z f (TAIL l))) NIL) I)
+///            ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ 3 (HEAD 2) (CONS (HEAD 2) (4 3 (TAIL 2))) NIL) I)
 ///
 /// # Example
 /// ```

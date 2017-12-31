@@ -6,7 +6,7 @@ use data::boolean::{tru, fls};
 
 /// Applied to two `Term`s it contains them in a lambda-encoded pair.
 ///
-/// PAIR := λxyz.z x y = λ λ λ 1 3 2
+/// PAIR ≡ λxyz.z x y ≡ λ λ λ 1 3 2
 ///
 /// # Example
 /// ```
@@ -24,7 +24,7 @@ pub fn pair() -> Term {
 
 /// Applied to a lambda-encoded pair `(a, b)` it yields `a`.
 ///
-/// FST := λp.p TRUE = λ 1 TRUE
+/// FST ≡ λp.p TRUE ≡ λ 1 TRUE
 ///
 /// # Example
 /// ```
@@ -40,7 +40,7 @@ pub fn fst() -> Term { abs(app(Var(1), tru())) }
 
 /// Applied to a lambda-encoded pair `(a, b)` it yields `b`.
 ///
-/// SND := λp.p FALSE = λ 1 FALSE
+/// SND ≡ λp.p FALSE ≡ λ 1 FALSE
 ///
 /// # Example
 /// ```
@@ -57,7 +57,7 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 /// Applied to a function and a lambda-encoded pair `(a, b)` it uncurries it
 /// and applies the function to `a` and then `b`.
 ///
-/// UNCURRY := λf.λp.f (FST p) (SND p) = λ λ 2 (FST 1) (SND 1)
+/// UNCURRY ≡ λf.λp.f (FST p) (SND p) ≡ λ λ 2 (FST 1) (SND 1)
 ///
 /// # Example
 /// ```
@@ -81,7 +81,7 @@ pub fn uncurry() -> Term {
 /// Applied to a function and two arguments `a` and `b`, it applies the function to the
 /// lambda-encoded pair `(a, b)`.
 ///
-/// CURRY := λfab.f (PAIR a b) = λ λ λ 3 (PAIR 2 1)
+/// CURRY ≡ λfab.f (PAIR a b) ≡ λ λ λ 3 (PAIR 2 1)
 ///
 /// # Example
 /// ```
@@ -102,7 +102,7 @@ pub fn curry() -> Term {
 
 /// Applied to a lambda-encoded pair `(a, b)` it swaps its elements so that it becomes `(b, a)`.
 ///
-/// SWAP := λp.p PAIR (SND p) (FST p) = λ 1 PAIR (SND 1) (FST 1)
+/// SWAP ≡ λp.p PAIR (SND p) (FST p) ≡ λ 1 PAIR (SND 1) (FST 1)
 ///
 /// # Example
 /// ```
