@@ -34,8 +34,7 @@ pub enum Order {
     HAP
 }
 
-/// Applies two `Term`s with substitution and variable update, consuming the first one in the
-/// process.
+/// Applies two `Term`s via substitution and variable update, consuming the first one in the process.
 ///
 /// # Example
 /// ```
