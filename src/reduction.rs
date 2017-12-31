@@ -34,64 +34,6 @@ pub enum Order {
     HAP
 }
 
-/// Applies two `Term`s via substitution and variable update, consuming the first one in the process.
-///
-/// # Example
-/// ```
-/// use lambda_calculus::reduction::apply;
-/// use lambda_calculus::*;
-///
-/// // these are valid terms, but be careful with unwraps in your code
-/// let lhs    = parse(&"λλ42(λ13)", DeBruijn).unwrap();
-/// let rhs    = parse(&"λ51", DeBruijn).unwrap();
-/// let result = parse(&"λ3(λ61)(λ1(λ71))", DeBruijn).unwrap();
-///
-/// assert_eq!(apply(lhs, &rhs), Ok(result));
-/// ```
-/// # Errors
-///
-/// Returns a `TermError` if `lhs` is not an `Abs`traction.
-pub fn apply(mut lhs: Term, rhs: &Term) -> Result<Term, TermError> {
-    lhs.unabs_ref()?;
-
-    _apply(&mut lhs, rhs, 0);
-
-    lhs.unabs()
-}
-
-fn _apply(lhs: &mut Term, rhs: &Term, depth: usize) {
-    match *lhs {
-        Var(i) => if i == depth {
-            *lhs = rhs.to_owned(); // substitute a top-level variable from lhs with rhs
-            update_free_variables(lhs, depth - 1, 0); // update indices of free variables from rhs
-        } else if i > depth {
-            *lhs = Var(i - 1) // decrement a free variable's index
-        },
-        Abs(ref mut abstracted) => {
-            _apply(abstracted, rhs, depth + 1)
-        },
-        App(ref mut lhs_lhs, ref mut lhs_rhs) => {
-            _apply(lhs_lhs, rhs, depth);
-            _apply(lhs_rhs, rhs, depth)
-        }
-    }
-}
-
-fn update_free_variables(term: &mut Term, added_depth: usize, own_depth: usize) {
-    match *term {
-        Var(ref mut i) => if *i > own_depth {
-            *i += added_depth
-        },
-        Abs(ref mut abstracted) => {
-            update_free_variables(abstracted, added_depth, own_depth + 1)
-        },
-        App(ref mut lhs, ref mut rhs) => {
-            update_free_variables(lhs, added_depth, own_depth);
-            update_free_variables(rhs, added_depth, own_depth)
-        }
-    }
-}
-
 /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit on
 /// the number of reductions (`0` means no limit) and returns the reduced `Term`.
 ///
@@ -111,11 +53,73 @@ pub fn beta(mut term: Term, order: Order, limit: usize) -> Term {
 }
 
 impl Term {
+    /// Applies a `Term` to `self` via substitution and variable update.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::*;
+    ///
+    /// // these are valid terms, but be careful with unwraps in your code
+    /// let mut term1  = parse(&"λλ42(λ13)", DeBruijn).unwrap();
+    /// let term2      = parse(&"λ51", DeBruijn).unwrap();
+    /// let result     = parse(&"λ3(λ61)(λ1(λ71))", DeBruijn).unwrap();
+    ///
+    /// term1.apply(&term2);
+    ///
+    /// assert_eq!(term1, result);
+    /// ```
+    /// # Errors
+    ///
+    /// Returns a `TermError` if `self` is not an `Abs`traction.
+    pub fn apply(&mut self, rhs: &Term) -> Result<(), TermError> {
+        self.unabs_ref()?;
+
+        self._apply(rhs, 0);
+
+        let ret = mem::replace(self, Var(0)); // replace self with a dummy
+        mem::replace(self, ret.unabs().unwrap()); // move unabstracted self back to its place
+
+        Ok(())
+    }
+
+    fn _apply(&mut self, rhs: &Term, depth: usize) {
+        match *self {
+            Var(i) => if i == depth {
+                *self = rhs.to_owned(); // substitute a top-level variable from lhs with rhs
+                self.update_free_variables(depth - 1, 0); // update indices of free variables from rhs
+            } else if i > depth {
+                *self = Var(i - 1) // decrement a free variable's index
+            },
+            Abs(ref mut abstracted) => {
+                abstracted._apply(rhs, depth + 1)
+            },
+            App(ref mut lhs_lhs, ref mut lhs_rhs) => {
+                lhs_lhs._apply(rhs, depth);
+                lhs_rhs._apply(rhs, depth)
+            }
+        }
+    }
+
+    fn update_free_variables(&mut self, added_depth: usize, own_depth: usize) {
+        match *self {
+            Var(ref mut i) => if *i > own_depth {
+                *i += added_depth
+            },
+            Abs(ref mut abstracted) => {
+                abstracted.update_free_variables(added_depth, own_depth + 1)
+            },
+            App(ref mut lhs, ref mut rhs) => {
+                lhs.update_free_variables(added_depth, own_depth);
+                rhs.update_free_variables(added_depth, own_depth)
+            }
+        }
+    }
+
     fn eval(&mut self, count: &mut usize) {
         let to_apply = mem::replace(self, Var(0)); // replace self with a dummy
-        let (lhs, rhs) = to_apply.unapp().unwrap(); // safe; only called in reduction sites
-        let applied = apply(lhs, &rhs).unwrap(); // ditto
-        mem::replace(self, applied); // move self back to its place
+        let (mut lhs, rhs) = to_apply.unapp().unwrap(); // safe; only called in reduction sites
+        lhs.apply(&rhs).unwrap(); // ditto
+        mem::replace(self, lhs); // move self back to its place
 
         *count += 1;
     }
