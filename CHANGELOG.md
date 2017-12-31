@@ -15,7 +15,7 @@ Breaking changes
 - rework compilation features
 - remove `impl Term` from Church data types
 - remove `reduction::compare`
-- remove `Term::{app, apply}`
+- remove `Term::{app, apply, eval}`
 - rename `term::Error` to `term::TermError`
 - rename `TermError` variant names
 - rename combinators
@@ -29,6 +29,7 @@ Breaking changes
 - simplify `term::Error`
 - unify test and bench names
 - make `reduction::beta` IO-free
+- turn `reduction::apply` into a method on `Term`
 - make `ParseError::InvalidCharacter` 0-indexed
 - split `Into<Term>` conversion into `IntoChurch`, `IntoScott` and `IntoParigot`
 

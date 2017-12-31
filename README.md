@@ -66,7 +66,7 @@ PRED := λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d) = λλλ3(λλ1(24))(λ2
 
 code:
 ```
-use lambda_calculus::parser::*;
+use lambda_calculus::*;
 
 fn main() {
     assert_eq!(
