@@ -9,27 +9,27 @@ pub use self::Order::*;
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
 /// β-reductions.
 ///
-/// - The `NOR`, `HNO`, `APP` and `HAP` orders reduce expressions to their normal forms
-/// - The `APP` order will fail to fully reduce expressions containing functions without a normal
-/// form, e.g. the `Y` combinator (they will expand forever)
-/// - The `CBN` order reduces to weak head normal form
-/// - The `CBV` order reduces to weak normal form
-/// - The `HSP` order reduces to head normal form
+/// - the `NOR`, `HNO`, `APP` and `HAP` orders reduce expressions to their normal form
+/// - the `APP` order will fail to fully reduce expressions containing terms without a normal form,
+/// e.g. the `Y` combinator (they will expand forever)
+/// - the `CBN` order reduces to weak head normal form
+/// - the `CBV` order reduces to weak normal form
+/// - the `HSP` order reduces to head normal form
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Order {
-    /// Normal - leftmost outermost; the most popular reduction strategy
+    /// normal - leftmost outermost; the most popular reduction strategy
     NOR,
-    /// Call-by-name - leftmost outermost; no reductions inside abstractions
+    /// call-by-name - leftmost outermost, no reductions inside abstractions
     CBN,
-    /// Head spine - leftmost outermost; abstractions reduced only in head position
+    /// head spine - leftmost outermost, abstractions reduced only in head position
     HSP,
-    /// Hybrid normal - a mix between `HSP` (head spine) and `NOR` (normal) strategies
+    /// hybrid normal - a mix between `HSP` (head spine) and `NOR` (normal) strategies
     HNO,
-    /// Applicative - leftmost innermost; the most eager strategy; unfit for recursion combinators
+    /// applicative - leftmost innermost; the most eager strategy; unfit for recursion combinators
     APP,
-    /// Call-by-value - leftmost innermost, no reductions inside abstractions
+    /// call-by-value - leftmost innermost, no reductions inside abstractions
     CBV,
-    /// Hybrid applicative - a mix between `CBV` (call-by-value) and `APP` (applicative) strategies;
+    /// hybrid applicative - a mix between `CBV` (call-by-value) and `APP` (applicative) strategies;
     /// usually the fastest-reducing normalizing strategy
     HAP
 }
@@ -59,7 +59,6 @@ impl Term {
     /// ```
     /// use lambda_calculus::*;
     ///
-    /// // these are valid terms, but be careful with unwraps in your code
     /// let mut term1  = parse(&"λλ42(λ13)", DeBruijn).unwrap();
     /// let term2      = parse(&"λ51", DeBruijn).unwrap();
     /// let result     = parse(&"λ3(λ61)(λ1(λ71))", DeBruijn).unwrap();

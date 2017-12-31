@@ -202,18 +202,18 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
     Ok(Sequence(expr))
 }
 
-/// Attempts to parse the input `&str` as a lambda `Term`.
+/// Attempts to parse the input `&str` as a lambda `Term` encoded in the given `Notation`.
 ///
 /// - lambdas can be represented either with the greek letter (λ) or a backslash (\\ -
 /// less aesthetic, but only one byte in size)
-/// - the identifiers in `Classic` mode are `String`s of ASCII alphabetic characters
-/// - `Classic` mode ignores whitespaces where unambiguous
-/// - the indices in the `DeBruijn` notation mode start with 1 and are hexadecimal digits
-/// - `DeBruijn` mode ignores all whitespaces (since indices > 15 are very unlikely)
+/// - the identifiers in `Classic` notation are `String`s of ASCII alphabetic characters
+/// - `Classic` notation ignores whitespaces where unambiguous
+/// - the indices in the `DeBruijn` notation start with 1 and are hexadecimal digits
+/// - `DeBruijn` notation ignores all whitespaces (since indices > 15 are very unlikely)
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::parser::*;
+/// use lambda_calculus::*;
 /// use lambda_calculus::combinators::{S, Y};
 ///
 /// assert_eq!(parse(&"λf.(λx.f (x x)) (λx.f (x x))", Classic), Ok(Y()));

@@ -44,15 +44,16 @@ Changes
 - add binary numeral encoding
 - add Church-, Scott- and Parigot-encoded list
 - add tuple data type
+- add macros for automated creation of conversion traits and implementations
+- add an `encoding` feature and make it default
+- add an undefined term `term::UD`
 - add `tuple::{tuple, projection}`
 - add `numerals::binary::{b0, b1, zero, is_zero, one, lsb, shl0, shl1, strip, succ, pred}`
 - add `option::{map, unwrap_or, and_then}`
 - add `term::is_supercombinator`
 - add `stumpfu::{zero, is_zero, one, succ, pred, add}`
-- add an `encoding` feature and make it default
 - add `parigot::{is_zero, one, mult, sub}`
 - add `impl<T> IntoChurch for Option<T> where T: IntoChurch`
-- add macros for automated creation of conversion traits and implementations
 - add `scott::{is_zero, one, add, mul, pow}`
 - add `church::{to_scott, to_parigot, to_stumpfu}`
 - add `scott::to_church`

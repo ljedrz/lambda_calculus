@@ -66,7 +66,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(Var(1).unvar(), Ok(1));
     /// ```
@@ -81,7 +81,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(Var(1).unvar_ref(), Ok(&1));
     /// ```
@@ -96,7 +96,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(Var(1).unvar_mut(), Ok(&mut 1));
     /// ```
@@ -111,7 +111,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(abs(Var(1)).unabs(), Ok(Var(1)));
     /// ```
@@ -126,7 +126,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(abs(Var(1)).unabs_ref(), Ok(&Var(1)));
     /// ```
@@ -141,7 +141,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(abs(Var(1)).unabs_mut(), Ok(&mut Var(1)));
     /// ```
@@ -156,7 +156,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(app(Var(1), Var(2)).unapp(), Ok((Var(1), Var(2))));
     /// ```
@@ -171,7 +171,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(app(Var(1), Var(2)).unapp_ref(), Ok((&Var(1), &Var(2))));
     /// ```
@@ -186,7 +186,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(app(Var(1), Var(2)).unapp_mut(), Ok((&mut Var(1), &mut Var(2))));
     /// ```
@@ -201,7 +201,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(app(Var(1), Var(2)).lhs(), Ok(Var(1)));
     /// ```
@@ -216,7 +216,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(app(Var(1), Var(2)).lhs_ref(), Ok(&Var(1)));
     /// ```
@@ -231,7 +231,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(app(Var(1), Var(2)).lhs_mut(), Ok(&mut Var(1)));
     /// ```
@@ -243,7 +243,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(app(Var(1), Var(2)).rhs(), Ok(Var(2)));
     /// ```
@@ -258,7 +258,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(app(Var(1), Var(2)).rhs_ref(), Ok(&Var(2)));
     /// ```
@@ -273,7 +273,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// assert_eq!(app(Var(1), Var(2)).rhs_mut(), Ok(&mut Var(2)));
     /// ```
@@ -289,7 +289,7 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::term::*;
+    /// use lambda_calculus::*;
     ///
     /// let term1 = abs(app(Var(1), abs(Var(1)))); // λ 1 (λ 1)
     /// let term2 = app(abs(Var(2)), abs(Var(1))); // (λ 2) (λ 1)
@@ -319,7 +319,7 @@ impl Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::term::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(abs(Var(1)), Abs(Box::new(Var(1))));
 /// ```
@@ -330,7 +330,7 @@ pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::term::*;
+/// use lambda_calculus::*;
 ///
 /// assert_eq!(app(Var(1), Var(2)), App(Box::new(Var(1)), Box::new(Var(2))));
 /// ```
