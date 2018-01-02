@@ -2,9 +2,10 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use data::boolean::{tru, fls};
+use data::boolean::{tru, fls, and, or, not};
 use data::num::{scott, parigot, stumpfu};
-use combinators::Z;
+use data::pair::pair;
+use combinators::{I, K, Z};
 
 /// Produces a Church-encoded number zero; equivalent to `boolean::fls`.
 ///
@@ -17,7 +18,7 @@ use combinators::Z;
 ///
 /// assert_eq!(zero(), 0.into_church());
 /// ```
-pub fn zero() -> Term { abs!(2, Var(1)) }
+pub fn zero() -> Term { fls() }
 
 /// Applied to a Church-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
@@ -90,7 +91,7 @@ pub fn pred() -> Term {
 
 /// Applied to two Church-encoded numbers it produces their sum.
 ///
-/// ADD ≡ λmnfx.m f (n f x) ≡ λ λ λ λ 4 2 (3 2 1)
+/// ADD ≡ λmn.n SUCC m ≡ λ λ 1 SUCC 2
 ///
 /// # Example
 /// ```
@@ -101,7 +102,7 @@ pub fn pred() -> Term {
 /// assert_eq!(beta(app!(add(), 2.into_church(), 3.into_church()), NOR, 0), 5.into_church());
 /// ```
 pub fn add() -> Term {
-    abs!(4, app!(Var(4), Var(2), app!(Var(3), Var(2), Var(1))))
+    abs!(2, app!(Var(1), succ(), Var(2)))
 }
 
 /// Applied to two Church-encoded numbers it subtracts the second one from the first one.
@@ -152,9 +153,8 @@ pub fn mul() -> Term {
 /// ```
 pub fn pow() -> Term {
     abs!(2, app!(
+        is_zero(),
         Var(1),
-        abs!(3, Var(1)),
-        abs!(2, Var(2)),
         one(),
         app(Var(1), Var(2))
     ))
@@ -176,14 +176,13 @@ pub fn pow() -> Term {
 /// assert_eq!(beta(app!(lt(), 1.into_church(), 0.into_church()), NOR, 0), false.into());
 /// ```
 pub fn lt() -> Term {
-    abs!(2, app!(
-        Var(2),
-        pred(),
-        Var(1),
-        abs!(3, Var(1)),
-        abs!(2, Var(2)),
-        abs!(2, Var(1)),
-        abs!(2, Var(2))
+    abs!(2, app(
+        not(),
+        app!(
+            leq(),
+            Var(1),
+            Var(2)
+        )
     ))
 }
 
@@ -203,12 +202,13 @@ pub fn lt() -> Term {
 /// assert_eq!(beta(app!(leq(), 1.into_church(), 0.into_church()), NOR, 0), false.into());
 /// ```
 pub fn leq() -> Term {
-    abs!(2, app!(
-        Var(1),
-        pred(),
-        Var(2),
-        abs!(3, Var(1)),
-        abs!(2, Var(2))
+    abs!(2, app(
+        is_zero(),
+        app!(
+            sub(),
+            Var(2),
+            Var(1)
+        )
     ))
 }
 
@@ -229,24 +229,16 @@ pub fn leq() -> Term {
 /// ```
 pub fn eq() -> Term {
     abs!(2, app!(
-        Var(1),
-        pred(),
-        Var(2),
-        abs!(3, Var(1)),
-        abs!(2, Var(2)),
+        and(),
         app!(
+            leq(),
             Var(2),
-            pred(),
-            Var(1),
-            abs!(3, Var(1)),
-            abs!(2, Var(2))
+            Var(1)
         ),
         app!(
+            leq(),
             Var(1),
-            pred(),
-            Var(2),
-            abs!(3, Var(1)),
-            abs!(2, Var(2))
+            Var(2)
         )
     ))
 }
@@ -268,30 +260,22 @@ pub fn eq() -> Term {
 /// ```
 pub fn neq() -> Term {
     abs!(2, app!(
-        Var(1),
-        pred(),
-        Var(2),
-        abs!(3, Var(1)),
-        abs!(2, Var(2)),
-        abs!(2, Var(1)),
-        abs!(2, Var(2)),
-        app!(
-            Var(1),
-            pred(),
-            Var(2),
-            abs!(3, Var(1)),
-            abs!(2, Var(2)),
-            abs!(2, Var(1)),
-            abs!(2, Var(2))
+        or(),
+        app(
+            not(),
+            app!(
+                leq(),
+                Var(2),
+                Var(1)
+            )
         ),
-        app!(
-            Var(2),
-            pred(),
-            Var(1),
-            abs!(3, Var(1)),
-            abs!(2, Var(2)),
-            abs!(2, Var(1)),
-            abs!(2, Var(2))
+        app(
+            not(),
+            app!(
+                leq(),
+                Var(1),
+                Var(2)
+            )
         )
     ))
 }
@@ -313,11 +297,9 @@ pub fn neq() -> Term {
 /// ```
 pub fn geq() -> Term {
     abs!(2, app!(
-        Var(2),
-        pred(),
+        leq(),
         Var(1),
-        abs!(3, Var(1)),
-        abs!(2, Var(2))
+        Var(2)
     ))
 }
 
@@ -337,14 +319,13 @@ pub fn geq() -> Term {
 /// assert_eq!(beta(app!(gt(), 1.into_church(), 0.into_church()), NOR, 0), true.into());
 /// ```
 pub fn gt() -> Term {
-    abs!(2, app!(
-        Var(1),
-        pred(),
-        Var(2),
-        abs!(3, Var(1)),
-        abs!(2, Var(2)),
-        abs!(2, Var(1)),
-        abs!(2, Var(2))
+    abs!(2, app(
+        not(),
+        app!(
+            leq(),
+            Var(2),
+            Var(1)
+        )
     ))
 }
 
@@ -375,28 +356,21 @@ pub fn div() -> Term {
     app!(
         Z(),
         abs!(4, app!(
+            lt(),
             Var(2),
-            pred(),
             Var(1),
-            abs!(3, Var(1)),
-            abs!(2, Var(2)),
-            abs!(2, Var(1)),
-            abs!(2, Var(2)),
-            abs!(2, app!(Var(1), Var(5), Var(4))),
+            abs(app!(
+                pair(),
+                Var(4),
+                Var(3)
+            )),
             abs(app!(
                 Var(5),
-                abs!(2, app(
-                    Var(2),
-                    app!(Var(6), Var(2), Var(1))
-                )),
-                app!(
-                    Var(2),
-                    pred(),
-                    Var(3)
-                ),
+                app(succ(), Var(4)),
+                app!(sub(), Var(3), Var(2)),
                 Var(2)
             )),
-            abs(Var(1))
+            I()
         )),
         zero()
     )
@@ -422,29 +396,19 @@ pub fn quot() -> Term {
     app(
         Z(),
         abs!(3, app!(
+            lt(),
             Var(2),
-            pred(),
             Var(1),
-            abs!(3, Var(1)),
-            abs!(2, Var(2)),
-            abs!(2, Var(1)),
-            abs!(2, Var(2)),
-            abs!(3, Var(1)),
-            abs!(3, app(
-                Var(2),
+            abs(zero()),
+            abs(app(
+                succ(),
                 app!(
-                    Var(6),
-                    app!(
-                        Var(4),
-                        pred(),
-                        Var(5)
-                    ),
                     Var(4),
-                    Var(2),
-                    Var(1)
+                    app!(sub(), Var(3), Var(2)),
+                    Var(2)
                 )
             )),
-            abs(Var(1))
+            I()
         ))
     )
 }
@@ -468,26 +432,18 @@ pub fn rem() -> Term {
     app(
         Z(),
         abs!(3, app!(
+            lt(),
             Var(2),
-            pred(),
             Var(1),
-            abs!(3, Var(1)),
-            abs!(2, Var(2)),
-            abs!(2, Var(1)),
-            abs!(2, Var(2)),
             abs(Var(3)),
             abs(app!(
                 Var(4),
-                app!(
-                    Var(2),
-                    pred(),
-                    Var(3)
-                ),
+                app!(sub(), Var(3), Var(2)),
                 Var(2)
             )),
-            abs(Var(1))
+            I()
         ))
-    )
+     )
 }
 
 /// Applied to a Church-encoded number it yields its Church-encoded factorial.
@@ -511,10 +467,10 @@ pub fn fac() -> Term {
         Var(1),
         abs!(3, app!(
             Var(3),
-            abs(app(Var(3), app(Var(2), Var(1)))),
-            abs!(2, app(Var(2), app!(Var(3), Var(2), Var(1))))
+            app!(mul(), Var(2), Var(1)),
+            app!(succ(), Var(1))
         )),
-        abs!(2, Var(2)),
+        K(),
         one(),
         one()
     ))
@@ -533,11 +489,11 @@ pub fn fac() -> Term {
 /// ```
 pub fn min() -> Term {
 	abs!(2, app!(
-        Var(1),
-        pred(),
-        Var(2),
-        abs!(3, Var(1)),
-        abs!(2, Var(2)),
+        app!(
+            leq(),
+            Var(2),
+            Var(1)
+        ),
         Var(2),
         Var(1)
     ))
@@ -556,11 +512,11 @@ pub fn min() -> Term {
 /// ```
 pub fn max() -> Term {
 	abs!(2, app!(
-        Var(1),
-        pred(),
-        Var(2),
-        abs!(3, Var(1)),
-        abs!(2, Var(2)),
+        app!(
+            leq(),
+            Var(2),
+            Var(1)
+        ),
         Var(1),
         Var(2)
     ))
@@ -569,7 +525,7 @@ pub fn max() -> Term {
 /// Applied to two Church-encoded numbers `a` and `b` it returns the left [logical
 /// shift](https://en.wikipedia.org/wiki/Logical_shift) of `a` performed `b` times.
 ///
-/// SHL ≡ λaλb.MUL a (POW (SUCC ONE a)) ≡ λ λ MUL 2 (POW (SUCC ONE) 1)
+/// SHL ≡ λab.MUL a (POW (SUCC ONE) b) ≡ λ λ MUL 2 (POW (SUCC ONE) 1)
 ///
 /// # Example
 /// ```
@@ -581,14 +537,15 @@ pub fn max() -> Term {
 /// assert_eq!(beta(app!(shl(), 2.into_church(), 0.into_church()), NOR, 0), 2.into_church());
 /// ```
 pub fn shl() -> Term {
-    abs!(3, app(
-        Var(3),
+    abs!(2, app!(
+        mul(),
+        Var(2),
         app!(
-            Var(2),
-            abs!(3, Var(1)),
-            abs!(2, Var(2)),
-            one(),
-            app(Var(2), abs!(2, app(Var(2), app(Var(2), Var(1))))),
+            pow(),
+            app(
+                succ(),
+                one()
+            ),
             Var(1)
         )
     ))
@@ -597,8 +554,8 @@ pub fn shl() -> Term {
 /// Applied to two Church-encoded numbers `a` and `b` it returns the right [logical
 /// shift](https://en.wikipedia.org/wiki/Logical_shift) of `a` performed `b` times.
 ///
-/// SHR ≡ λaλb.(IS_ZERO b) a (QUOT a (POW (SUCC ONE) b))
-///     ≡ λ λ (IS_ZERO 1) 2 (QUOT 2 (POW (SUCC ONE) 1))
+/// SHR ≡ λab.IS_ZERO b a (QUOT a (POW (SUCC ONE) b))
+///     ≡ λ λ IS_ZERO 1 2 (QUOT 2 (POW (SUCC ONE) 1))
 ///
 /// # Example
 /// ```
@@ -611,19 +568,16 @@ pub fn shl() -> Term {
 /// ```
 pub fn shr() -> Term {
     abs!(2, app!(
+        is_zero(),
         Var(1),
-        abs!(3, Var(1)),
-        abs!(2, Var(2)),
         Var(2),
         app!(
             quot(),
             Var(2),
             app!(
-                Var(1),
-                abs!(3, Var(1)),
-                abs!(2, Var(2)),
-                one(),
-                app(Var(1), abs!(2, app(Var(2), app(Var(2), Var(1)))))
+                pow(),
+                app(succ(), one()),
+                Var(1)
             )
         )
     ))
@@ -632,7 +586,7 @@ pub fn shr() -> Term {
 /// Applied to a Church-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is even.
 ///
-/// IS_EVEN ≡ λx.x (λp.p FALSE TRUE) TRUE ≡ λ 1 (λ 1 FALSE TRUE) TRUE ≡ NOT TRUE
+/// IS_EVEN ≡ λx.x NOT TRUE ≡ λ 1 NOT TRUE
 ///
 /// # Example
 /// ```
@@ -641,15 +595,17 @@ pub fn shr() -> Term {
 ///
 /// assert_eq!(beta(app(is_even(), 0.into_church()), NOR, 0), true.into());
 /// assert_eq!(beta(app(is_even(), 1.into_church()), NOR, 0), false.into());
+/// assert_eq!(beta(app(is_even(), 2.into_church()), NOR, 0), true.into());
+/// assert_eq!(beta(app(is_even(), 3.into_church()), NOR, 0), false.into());
 /// ```
 pub fn is_even() -> Term {
-    abs(app!(Var(1), abs(app!(Var(1), fls(), tru())), tru()))
+    abs(app!(Var(1), not(), tru()))
 }
 
 /// Applied to a Church-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is odd.
 ///
-/// IS_ODD ≡ λx.x (λp.p FALSE TRUE) FALSE ≡ λ 1 (λ 1 FALSE TRUE) FALSE ≡ NOT FALSE
+/// IS_ODD ≡ λx.x NOT FALSE ≡ λ 1 NOT FALSE
 ///
 /// # Example
 /// ```
@@ -658,9 +614,11 @@ pub fn is_even() -> Term {
 ///
 /// assert_eq!(beta(app(is_odd(), 0.into_church()), NOR, 0), false.into());
 /// assert_eq!(beta(app(is_odd(), 1.into_church()), NOR, 0), true.into());
+/// assert_eq!(beta(app(is_odd(), 2.into_church()), NOR, 0), false.into());
+/// assert_eq!(beta(app(is_odd(), 3.into_church()), NOR, 0), true.into());
 /// ```
 pub fn is_odd() -> Term {
-    abs(app!(Var(1), abs(app!(Var(1), fls(), tru())), fls()))
+    abs(app!(Var(1), not(), fls()))
 }
 
 /// Applied to a Church-encoded number it produces the equivalent Scott-encoded number.

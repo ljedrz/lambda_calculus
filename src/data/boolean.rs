@@ -80,22 +80,16 @@ pub fn not() -> Term {
 /// assert_eq!(beta(app!(xor(), fls(), fls()), NOR, 0), fls());
 /// ```
 pub fn xor() -> Term {
-    abs!(2,
-        app!(
-            Var(2),
-            app!(
-                Var(1),
-                abs!(2, Var(1)),
-                abs!(2, Var(2))
-            ),
-            Var(1)
-        )
-    )
+    abs!(2, app!(
+        Var(2),
+        app!(not(), Var(1)),
+        Var(1)
+    ))
 }
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded joint denial.
 ///
-/// NOR ≡ λpq.NOT (OR p q) ≡ λ λ NOT (OR 2 1)
+/// NOR ≡ λpq.p p q FALSE TRUE ≡ λ λ 2 2 1 FALSE TRUE
 ///
 /// # Examples
 /// ```
@@ -113,15 +107,15 @@ pub fn nor() -> Term {
             Var(2),
             Var(2),
             Var(1),
-            abs!(2, Var(1)),
-            abs!(2, Var(2))
+            fls(),
+            tru()
         )
     )
 }
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded alternative denial.
 ///
-/// NAND ≡ λpq.NOT (AND p q) ≡ λ λ NOT (AND 2 1)
+/// NAND ≡ λpq.p q p FALSE TRUE ≡ λ λ 2 1 2 FALSE TRUE
 ///
 /// # Examples
 /// ```
@@ -139,8 +133,8 @@ pub fn nand() -> Term {
             Var(2),
             Var(1),
             Var(2),
-            abs!(2, Var(1)),
-            abs!(2, Var(2))
+            fls(),
+            tru()
         )
     )
 }

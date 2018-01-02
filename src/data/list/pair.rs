@@ -94,8 +94,8 @@ pub fn tail() -> Term { snd() }
 
 /// Applied to a pair-encoded list and a Church-encoded number it returns its Church-encoded length.
 ///
-/// LENGTH ≡ Z (λzal.IS_NIL l (λx.a) (λx.z (SUCC a) (SND l)) I) ZERO
-///        ≡ Z (λλλ IS_NIL 1 (λ 3) (λ 4 (SUCC 3) (SND 2)) I) ZERO
+/// LENGTH ≡ Z (λzal.IS_NIL l (λx.a) (λx.z (SUCC a) (TAIL l)) I) ZERO
+///        ≡ Z (λλλ IS_NIL 1 (λ 3) (λ 4 (SUCC 3) (TAIL 2)) I) ZERO
 ///
 /// # Example
 /// ```
@@ -117,7 +117,7 @@ pub fn length() -> Term {
             abs(app!(
                 Var(4),
                 app(succ(), Var(3)),
-                app(snd(), Var(2))
+                app(tail(), Var(2))
             )),
             I()
         )),
@@ -128,7 +128,7 @@ pub fn length() -> Term {
 /// Applied to a Church-encoded number `i` and a pair-encoded list it returns the `i`-th
 /// (zero-indexed) element of the list.
 ///
-/// INDEX ≡ λil. FST (l SND i) ≡ λ λ FST (2 SND 1)
+/// INDEX ≡ λil.HEAD (i TAIL l) ≡ λ λ HEAD (2 TAIL 1)
 ///
 /// # Example
 /// ```
@@ -143,18 +143,20 @@ pub fn length() -> Term {
 /// );
 /// ```
 pub fn index() -> Term {
-    abs!(2, app!(
-        Var(2),
-        abs(app(Var(1), abs!(2, Var(1)))),
-        Var(1),
-        abs!(2, Var(2))
+    abs!(2, app(
+        head(),
+        app!(
+            Var(2),
+            tail(),
+            Var(1)
+        )
     ))
 }
 
 /// Reverses a pair-encoded list.
 ///
-/// REVERSE ≡ Z (λzal.IS_NIL l (λx.a) (λx.z (PAIR (FST l) a) (SND l) I)) NIL
-///         ≡ Z (λ λ λ IS_NIL 1 (λ 3) (λ 4 (PAIR (FST 2) 3) (SND 2)) I) NIL
+/// REVERSE ≡ Z (λzal.IS_NIL l (λx.a) (λx.z (CONS (HEAD l) a) (TAIL l) I)) NIL
+///         ≡ Z (λ λ λ IS_NIL 1 (λ 3) (λ 4 (CONS (HEAD 2) 3) (TAIL 2)) I) NIL
 ///
 /// # Example
 /// ```
@@ -172,20 +174,19 @@ pub fn reverse() -> Term {
     app!(
         Z(),
         abs!(3, app!(
+            is_nil(),
             Var(1),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
             abs(Var(3)),
             abs(app!(
                 Var(4),
-                abs(app!(
-                    Var(1),
-                    app(Var(3), abs!(2, Var(2))),
-                    Var(4)
-                )),
-                app(Var(2), abs!(2, Var(1)))
+                app!(
+                    cons(),
+                    app(head(), Var(2)),
+                    Var(3)
+                ),
+                app(tail(), Var(2))
             )),
-            abs(Var(1))
+            I()
         )),
         nil()
     )
@@ -194,7 +195,7 @@ pub fn reverse() -> Term {
 /// Applied to a Church-encoded number `n` and `n` `Term`s it creates a pair-encoded list of those
 /// terms.
 ///
-/// LIST ≡ λn.n (λfax.f (PAIR x a)) REVERSE NIL ≡ λ 1 (λ λ λ 3 (PAIR 1 2)) REVERSE NIL
+/// LIST ≡ λn.n (λfax.f (CONS x a)) REVERSE NIL ≡ λ 1 (λ λ λ 3 (CONS 1 2)) REVERSE NIL
 ///
 /// # Example
 /// ```
@@ -209,7 +210,7 @@ pub fn reverse() -> Term {
 pub fn list() -> Term {
     abs(app!(
         Var(1),
-        abs!(3, app(Var(3), app!(pair(), Var(1), Var(2)))),
+        abs!(3, app(Var(3), app!(cons(), Var(1), Var(2)))),
         reverse(),
         nil()
     ))
@@ -217,8 +218,8 @@ pub fn list() -> Term {
 
 /// Applied to two pair-encoded lists it concatenates them.
 ///
-/// APPEND ≡ Z (λzab. IS_NIL a (λx.b) (λx.PAIR (FST a) (z (SND a) b)) I)
-///        ≡ Z (λ λ λ IS_NIL 2 (λ 2) (λ PAIR (FST 3) (4 (SND 3) 2)) I)
+/// APPEND ≡ Z (λzab.IS_NIL a (λx.b) (λx.CONS (HEAD a) (z (TAIL a) b)) I)
+///        ≡ Z (λ λ λ IS_NIL 2 (λ 2) (λ CONS (HEAD 3) (4 (TAIL 3) 2)) I)
 ///
 /// # Example
 /// ```
@@ -237,28 +238,27 @@ pub fn append() -> Term {
     app(
         Z(),
         abs!(3, app!(
+            is_nil(),
             Var(2),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
             abs(Var(2)),
-            abs!(2, app!(
-                Var(1),
-                app(Var(4), abs!(2, Var(2))),
+            abs(app!(
+                cons(),
+                app(head(), Var(3)),
                 app!(
-                    Var(5),
-                    app(Var(4), abs!(2, Var(1))),
-                    Var(3)
+                    Var(4),
+                    app(tail(), Var(3)),
+                    Var(2)
                 )
             )),
-            Var(1)
+            I()
         ))
     )
 }
 
 /// Applied to a function and a pair-encoded list it maps the function over it.
 ///
-/// MAP ≡ Z (λzfl. IS_NIL l (λx.NIL) (λx.PAIR (f (FST l)) (z f (SND l))) I)
-///     ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ PAIR (3 (FST 2)) (4 3 (SND 2))) I)
+/// MAP ≡ Z (λzfl.IS_NIL l (λx.NIL) (λx.CONS (f (HEAD l)) (z f (TAIL l))) I)
+///     ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ CONS (3 (HEAD 2)) (4 3 (TAIL 2))) I)
 ///
 /// # Example
 /// ```
@@ -277,23 +277,22 @@ pub fn map() -> Term {
     app(
         Z(),
         abs!(3, app!(
+            is_nil(),
             Var(1),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
-            abs!(3, Var(1)),
-            abs!(2, app!(
-                Var(1),
+            abs(nil()),
+            abs(app!(
+                cons(),
                 app(
-                    Var(4),
-                    app(Var(3), abs!(2, Var(2)))
+                    Var(3),
+                    app(head(), Var(2))
                 ),
                 app!(
-                    Var(5),
                     Var(4),
-                    app(Var(3), abs!(2, Var(1)))
+                    Var(3),
+                    app(tail(), Var(2))
                 )
             )),
-            abs(Var(1))
+            I()
         ))
     )
 }
@@ -302,8 +301,8 @@ pub fn map() -> Term {
 /// [left fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists)
 /// on the list.
 ///
-/// FOLDL ≡ Z (λzfsl. IS_NIL l (λx.s) (λx.z f (f s (FST l)) (SND l)) I)
-///       ≡ Z (λ λ λ λ IS_NIL 1 (λ 3) (λ 5 4 (4 3 (FST 2)) (SND 2)) I)
+/// FOLDL ≡ Z (λzfsl.IS_NIL l (λx.s) (λx.z f (f s (HEAD l)) (TAIL l)) I)
+///       ≡ Z (λ λ λ λ IS_NIL 1 (λ 3) (λ 5 4 (4 3 (HEAD 2)) (TAIL 2)) I)
 ///
 /// # Example
 /// ```
@@ -320,9 +319,8 @@ pub fn foldl() -> Term {
     app(
         Z(),
         abs!(4, app!(
+            is_nil(),
             Var(1),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
             abs(Var(3)),
             abs(app!(
                 Var(5),
@@ -330,11 +328,11 @@ pub fn foldl() -> Term {
                 app!(
                     Var(4),
                     Var(3),
-                    app(Var(2), abs!(2, Var(2)))
+                    app(head(), Var(2))
                 ),
-                app(Var(2), abs!(2, Var(1)))
+                app(tail(), Var(2))
             )),
-            abs(Var(1))
+            I()
         ))
     )
 }
@@ -343,8 +341,8 @@ pub fn foldl() -> Term {
 /// [right fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_on_lists)
 /// on the list.
 ///
-/// FOLDR ≡ λfsl. Z (λzt. IS_NIL t (λx.s) (λx.f (FST t) (z (SND t))) I) l
-///       ≡ λ λ λ Z (λ λ IS_NIL 1 (λ 5) (λ 6 (FST 2) (3 (SND 2))) I) 1
+/// FOLDR ≡ λfal.Z (λzt.IS_NIL t (λx.a) (λx.f (HEAD t) (z (TAIL t))) I) l
+///       ≡ λ λ λ Z (λ λ IS_NIL 1 (λ 5) (λ 6 (HEAD 2) (3 (TAIL 2))) I) 1
 ///
 /// # Example
 /// ```
@@ -361,16 +359,18 @@ pub fn foldr() -> Term {
     abs!(3, app!(
         Z(),
         abs!(2, app!(
+            is_nil(),
             Var(1),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
             abs(Var(5)),
             abs(app!(
                 Var(6),
-                app(Var(2), abs!(2, Var(2))),
-                app(Var(3), app(Var(2), abs!(2, Var(1))))
+                app(head(), Var(2)),
+                app!(
+                    Var(3),
+                    app(tail(), Var(2))
+                )
             )),
-            abs(Var(1))
+            I()
         )),
         Var(1)
     ))
@@ -378,8 +378,8 @@ pub fn foldr() -> Term {
 
 /// Applied to a predicate and a pair-encoded list it filters the list based on the predicate.
 ///
-/// FILTER ≡ Z (λzpl. IS_NIL l (λx.NIL) (λx.p (FST l) (PAIR (FST l)) I (z p (SND l))) I)
-///        ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ 3 (FST 2) (PAIR (FST 2)) I (4 3 (SND 2))) I)
+/// FILTER ≡ Z (λzpl.IS_NIL l (λx.NIL) (λx.p (HEAD l) (CONS (HEAD l)) I (z p (TAIL l))) I)
+///        ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ 3 (HEAD 2) (CONS (HEAD 2)) I (4 3 (TAIL 2))) I)
 ///
 /// # Example
 /// ```
@@ -404,26 +404,17 @@ pub fn filter() -> Term {
     app(
         Z(),
         abs!(3, app!(
+            is_nil(),
             Var(1),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
-            abs!(3, Var(1)),
+            abs(nil()),
             abs(app!(
-                Var(3),
-                app(Var(2), abs!(2, Var(2))),
-                abs!(2, app!(
-                    Var(1),
-                    app(Var(4), abs!(2, Var(2))),
-                    Var(2)
-                )),
-                abs(Var(1)),
-                app!(
-                    Var(4),
-                    Var(3),
-                    app(Var(2), abs!(2, Var(1)))
-                )
+             Var(3),
+                app(head(), Var(2)),
+                app(cons(), app(head(), Var(2))),
+                I(),
+                app!(Var(4), Var(3), app(tail(), Var(2)))
             )),
-            abs(Var(1))
+            I()
         ))
     )
 }
@@ -431,11 +422,11 @@ pub fn filter() -> Term {
 /// Applied to a pair-encoded list it returns the last element.
 ///
 /// LAST ≡ Z (λzl.IS_NIL l (λx.NIL) (λx.IS_NIL (TAIL l) (HEAD l) (z (TAIL l))) I)
-///      ≡ Z (λ 2 1. IS_NIL 1 (λ NIL) (λ IS_NIL (TAIL 2) (HEAD 2) (3 (TAIL 2))) I)
+///      ≡ Z (λ λ IS_NIL 1 (λ NIL) (λ IS_NIL (TAIL 2) (HEAD 2) (3 (TAIL 2))) I)
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::list::pair::{last};
+/// use lambda_calculus::data::list::pair::last;
 /// use lambda_calculus::*;
 ///
 /// let list = vec![1.into_church(), 2.into_church(), 3.into_church()].into_pair_list();
@@ -446,27 +437,27 @@ pub fn last() -> Term {
     app(
         Z(),
         abs!(2, app!(
+            is_nil(),
             Var(1),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
-            abs!(3, Var(1)),
+            abs(nil()),
             abs(app!(
-                Var(2),
-                abs!(2, Var(1)),
-                abs!(5, Var(1)),
-                abs!(2, Var(2)),
-                app(Var(2), abs!(2, Var(2))),
-                app(Var(3), app(Var(2), abs!(2, Var(1))))
+                is_nil(),
+                app(tail(), Var(2)),
+                app(head(), Var(2)),
+                app(
+                    Var(3),
+                    app(tail(), Var(2))
+                )
             )),
-            abs(Var(1))
+            I()
         ))
     )
 }
 
 /// Applied to a pair-encoded list it returns the list without the last element.
 ///
-/// INIT ≡ Z (λzl.IS_NIL l (λx.NIL) (λx.(IS_NIL (FST l) NIL (PAIR (FST l) (z (SND l))))) I)
-///      ≡ Z (λ λ IS_NIL 1 (λ NIL) (λ (IS_NIL (FST 2) NIL (PAIR (FST 2) (3 (SND 2))))) I)
+/// INIT ≡ Z (λzl.IS_NIL l (λx.NIL) (λx.IS_NIL (TAIL l) NIL (CONS (HEAD l) (z (TAIL l)))) I)
+///      ≡ Z (λ λ IS_NIL 1 (λ NIL) (λ IS_NIL (TAIL 2) NIL (CONS (HEAD 2) (3 (TAIL 2)))) I)
 ///
 /// # Example
 /// ```
@@ -482,23 +473,23 @@ pub fn init() -> Term {
     app(
         Z(),
         abs!(2, app!(
+            is_nil(),
             Var(1),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
-            abs!(3, Var(1)),
+            abs(nil()),
             abs(app!(
-                Var(2),
-                abs!(2, Var(1)),
-                abs!(5, Var(1)),
-                abs!(2, Var(2)),
-                abs!(2, Var(1)),
-                abs(app!(
-                    Var(1),
-                    app(Var(3), abs!(2, Var(2))),
-                    app(Var(4), app(Var(3), abs!(2, Var(1))))
-                ))
+                is_nil(),
+                app(tail(), Var(2)),
+                nil(),
+                app!(
+                    cons(),
+                    app(head(), Var(2)),
+                    app(
+                        Var(3),
+                        app(tail(), Var(2))
+                    )
+                )
             )),
-            abs(Var(1))
+            I()
         ))
     )
 }
@@ -506,8 +497,8 @@ pub fn init() -> Term {
 /// Applied to two pair-encoded lists it returns a list of corresponding pairs. If one input list
 /// is shorter, excess elements of the longer list are discarded.
 ///
-/// ZIP ≡ Z (λ.zab IS_NIL b (λ.x NIL) (λ.x IS_NIL a NIL (CONS (PAIR (HEAD b) (HEAD a)) (z (TAIL b) (TAIL a)))) I)
-///     ≡ Z (λ λ λ IS_NIL 2 (λ NIL) (λ IS_NIL 2 NIL (CONS (PAIR (HEAD 3) (HEAD 2)) (4 (TAIL 3) (TAIL 2)))) I)
+/// ZIP ≡ Z (λzab.IS_NIL b (λx.NIL) (λx.IS_NIL a NIL (CONS (CONS (HEAD b) (HEAD a)) (z (TAIL b) (TAIL a)))) I)
+///     ≡ Z (λ λ λ IS_NIL 2 (λ NIL) (λ IS_NIL 2 NIL (CONS (CONS (HEAD 3) (HEAD 2)) (4 (TAIL 3) (TAIL 2)))) I)
 ///
 /// # Example
 /// ```
@@ -523,30 +514,28 @@ pub fn zip() -> Term {
     app(
         Z(),
         abs!(3, app!(
+            is_nil(),
             Var(2),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
-            abs!(3, Var(1)),
+            abs(nil()),
             abs(app!(
+                is_nil(),
                 Var(2),
-                abs!(5, Var(1)),
-                abs!(2, Var(2)),
-                abs!(2, Var(1)),
-                abs(app!(
-                    Var(1),
-                    abs(app!(
-                        Var(1),
-                        app(Var(5), abs!(2, Var(2))),
-                        app(Var(4), abs!(2, Var(2)))
-                    )),
+                nil(),
+                app!(
+                    cons(),
                     app!(
-                        Var(5),
-                        app(Var(4), abs!(2, Var(1))),
-                        app(Var(3), abs!(2, Var(1)))
+                        cons(),
+                        app(head(), Var(3)),
+                        app(head(), Var(2))
+                    ),
+                    app!(
+                        Var(4),
+                        app(tail(), Var(3)),
+                        app(tail(), Var(2))
                     )
-                ))
+                )
             )),
-            abs(Var(1))
+            I()
         ))
     )
 }
@@ -555,7 +544,7 @@ pub fn zip() -> Term {
 /// elements and returns the resulting list. If one input list is shorter, excess elements of the
 /// longer list are discarded.
 ///
-/// ZIP_WITH ≡ Z (λ.zfab IS_NIL b (λ.x NIL) (λ.x IS_NIL a NIL (CONS (f (HEAD b) (HEAD a)) (z f (TAIL b) (TAIL a)))) I)
+/// ZIP_WITH ≡ Z (λzfab.IS_NIL b (λx.NIL) (λx.IS_NIL a NIL (CONS (f (HEAD b) (HEAD a)) (z f (TAIL b) (TAIL a)))) I)
 ///          ≡ Z (λ λ λ λ IS_NIL 2 (λ NIL) (λ IS_NIL 2 NIL (CONS (4 (HEAD 3) (HEAD 2)) (5 4 (TAIL 3) (TAIL 2)))) I)
 ///
 /// # Example
@@ -573,31 +562,29 @@ pub fn zip_with() -> Term {
     app(
         Z(),
         abs!(4, app!(
+            is_nil(),
             Var(2),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
-            abs!(3, Var(1)),
+            abs(nil()),
             abs(app!(
+                is_nil(),
                 Var(2),
-                abs!(5, Var(1)),
-                abs!(2, Var(2)),
-                abs!(2, Var(1)),
-                abs(app!(
-                    Var(1),
+                nil(),
+                app!(
+                    cons(),
                     app!(
-                        Var(5),
-                        app(Var(4), abs!(2, Var(2))),
-                        app(Var(3), abs!(2, Var(2)))
+                        Var(4),
+                        app(head(), Var(3)),
+                        app(head(), Var(2))
                     ),
                     app!(
-                        Var(6),
                         Var(5),
-                        app(Var(4), abs!(2, Var(1))),
-                        app(Var(3), abs!(2, Var(1)))
+                        Var(4),
+                        app(tail(), Var(3)),
+                        app(tail(), Var(2))
                     )
-                ))
+                )
             )),
-            abs(Var(1))
+            I()
         ))
     )
 }
@@ -627,22 +614,20 @@ pub fn take() -> Term {
             is_nil(),
             Var(1),
             abs(nil()),
-            abs(
+            abs(app!(
+                is_zero(),
+                Var(3),
+                nil(),
                 app!(
-                    is_zero(),
-                    Var(3),
-                    nil(),
+                    cons(),
+                    app(head(), Var(2)),
                     app!(
-                        cons(),
-                        app(head(), Var(2)),
-                        app!(
-                            Var(4),
-                            app(pred(), Var(3)),
-                            app(tail(), Var(2))
-                        )
+                        Var(4),
+                        app(pred(), Var(3)),
+                        app(tail(), Var(2))
                     )
                 )
-            ),
+            )),
             I()
         ))
     )
@@ -669,21 +654,24 @@ pub fn take_while() -> Term {
     app(
         Z(),
         abs!(3, app!(
+            is_nil(),
             Var(1),
-            abs!(5, Var(1)),
-            abs!(2, Var(2)),
-            abs!(3, Var(1)),
+            abs(nil()),
             abs(app!(
                 Var(3),
-                app(Var(2), abs!(2, Var(2))),
-                abs(app!(
-                    Var(1),
-                    app(Var(3), abs!(2, Var(2))),
-                    app!(Var(5), Var(4), app(Var(3), abs!(2, Var(1))))
-                )),
-                abs!(2, Var(1))
+                app(head(), Var(2)),
+                app!(
+                    cons(),
+                    app(head(), Var(2)),
+                    app!(
+                        Var(4),
+                        Var(3),
+                        app(tail(), Var(2))
+                    )
+                ),
+                nil()
             )),
-            abs(Var(1))
+            I()
         ))
     )
 }

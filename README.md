@@ -115,9 +115,9 @@ use lambda_calculus::*;
 use lambda_calculus::data::num::church::fac;
 
 fn main() {
-    let expr = app(fac(), 4.into_church());
+    let expr = app(fac(), 3.into_church());
 
-    println!("comparing normalizing orders' reduction step count for FAC 4:");
+    println!("comparing normalizing orders' reduction step count for FAC 3:");
     for &order in [NOR, APP, HNO, HAP].iter() {
         println!("{}: {}", order, expr.clone().reduce(order, 0));
     }
@@ -126,10 +126,10 @@ fn main() {
 stdout:
 ```
 comparing normalizing orders' reduction step count for FAC 4:
-normal: 87
-applicative: 65
-hybrid normal: 87
-hybrid applicative: 40
+normal: 46
+applicative: 39
+hybrid normal: 46
+hybrid applicative: 39
 ```
 
 ### Comparing different numeral encodings

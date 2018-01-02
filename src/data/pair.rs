@@ -57,7 +57,7 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 /// Applied to a function and a lambda-encoded pair `(a, b)` it uncurries it
 /// and applies the function to `a` and then `b`.
 ///
-/// UNCURRY ≡ λf.λp.f (FST p) (SND p) ≡ λ λ 2 (FST 1) (SND 1)
+/// UNCURRY ≡ λfp.f (FST p) (SND p) ≡ λ λ 2 (FST 1) (SND 1)
 ///
 /// # Example
 /// ```
@@ -73,8 +73,8 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 pub fn uncurry() -> Term {
     abs!(2, app!(
         Var(2),
-        app(Var(1), tru()),
-        app(Var(1), fls())
+        app(fst(), Var(1)),
+        app(snd(), Var(1))
     ))
 }
 
@@ -96,13 +96,13 @@ pub fn uncurry() -> Term {
 pub fn curry() -> Term {
     abs!(3, app(
         Var(3),
-        abs(app!(Var(1), Var(3), Var(2)))
+        app!(pair(), Var(2), Var(1))
     ))
 }
 
 /// Applied to a lambda-encoded pair `(a, b)` it swaps its elements so that it becomes `(b, a)`.
 ///
-/// SWAP ≡ λp.p PAIR (SND p) (FST p) ≡ λ 1 PAIR (SND 1) (FST 1)
+/// SWAP ≡ λp.PAIR (SND p) (FST p) ≡ λ PAIR (SND 1) (FST 1)
 ///
 /// # Example
 /// ```
@@ -110,13 +110,15 @@ pub fn curry() -> Term {
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
-///     beta(app!(swap(), (1, 2).into_church()), NOR, 0), (2, 1).into_church());
+///     beta(app!(swap(), (1, 2).into_church()), NOR, 0),
+///     (2, 1).into_church()
+/// );
 /// ```
 pub fn swap() -> Term {
-    abs!(2, app!(
-        Var(1),
-        app(Var(2), abs!(2, Var(1))),
-        app(Var(2), abs!(2, Var(2)))
+    abs(app!(
+        pair(),
+        app(snd(), Var(1)),
+        app(fst(), Var(1))
     ))
 }
 

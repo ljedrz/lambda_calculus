@@ -3,6 +3,7 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
+use combinators::I;
 
 /// Produces a lambda-encoded empty option; equivalent to `boolean::tru`.
 ///
@@ -78,14 +79,14 @@ pub fn map() -> Term {
     abs!(2, app!(
         Var(1),
         none(),
-        abs!(3, app(Var(1), app(Var(5), Var(3))))
+        abs(app(some(), app(Var(3), Var(1))))
     ))
 }
 
 /// Applied to two arguments and a lambda-encoded option it returns the second argument applied to
 /// the contents of the option if it contains a value or the first argument if it doesn't.
 ///
-/// MAP_OR ≡ λdfm.m d f ≡ λ λ λ 3 1 2
+/// MAP_OR ≡ λdfm.m d f ≡ λ λ λ 1 3 2
 ///
 /// # Example
 /// ```
@@ -118,7 +119,7 @@ pub fn map_or() -> Term {
 /// assert_eq!(beta(app!(unwrap_or(), 2.into_church(), none()), NOR, 0), 2.into_church());
 /// ```
 pub fn unwrap_or() -> Term {
-    abs!(2, app!(Var(1), Var(2), abs(Var(1))))
+    abs!(2, app!(Var(1), Var(2), I()))
 }
 
 /// Applied to a lambda-encoded option and a function that returns a lambda-encoded option, it

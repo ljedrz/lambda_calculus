@@ -59,6 +59,7 @@ Changes
 - add `scott::to_church`
 - add `combinators::T` (Turing combinator)
 - add `lists::{church, scott, parigot}::{nil, is_nil, cons, head, tail}`
+- ensure all functions match their definition in documentation
 
 Version 1.4.0
 =============
