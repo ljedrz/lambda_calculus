@@ -4,6 +4,7 @@ use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
 use combinators::I;
+use data::pair::{pair, snd};
 
 /// A 0 bit; equivalent to `boolean::tru`.
 ///
@@ -59,18 +60,18 @@ pub fn is_zero() -> Term {
 pub fn one() -> Term {
     abs!(3, app(Var(1), Var(3)))
 }
-/*
+
 /// Applied to a binary-encoded number it produces its successor.
 ///
-/// SUCC ≡ λn.π22 (n Z A B) ≡ λ π22 (1 Z A B)
+/// SUCC ≡ λn.SND (n Z A B) ≡ λ SND (1 Z A B)
 ///
 /// where
 ///
-/// Z ≡ (ZERO, ONE)
+/// Z ≡ PAIR ZERO ONE
 ///
-/// A ≡ λp.p (λnm.(SHL0 n, SHL1 n)) ≡ λ 1 (λ λ (SHL0 2, SHL1 2))
+/// A ≡ λp.p (λnm.PAIR (SHL0 n) (SHL1 n)) ≡ λ 1 (λ λ PAIR (SHL0 2) (SHL1 2))
 ///
-/// B ≡ λp.p (λnm.(SHL1 n, SHL0 m)) ≡ λ 1 (λ λ (SHL1 2, SHL0 1))
+/// B ≡ λp.p (λnm.PAIR (SHL1 n) (SHL0 m)) ≡ λ 1 (λ λ PAIR (SHL1 2) (SHL0 1))
 ///
 /// # Example
 /// ```
@@ -82,44 +83,42 @@ pub fn one() -> Term {
 /// assert_eq!(beta(app(succ(), 2.into_binary()), NOR, 0), 3.into_binary());
 /// ```
 pub fn succ() -> Term {
-    let z  = tuple!(zero(), one());
-    let a  = abs(app(Var(1), abs!(2, tuple!(app(shl0(), Var(2)), app(shl1(), Var(2))))));
-    let b  = abs(app(Var(1), abs!(2, tuple!(app(shl1(), Var(2)), app(shl0(), Var(1))))));
-    let pi = pi!(2, 2);
+    let z = app!(pair(), zero(), one());
+    let a = abs(app(Var(1), abs!(2, app!(pair(), app(shl0(), Var(2)), app(shl1(), Var(2))))));
+    let b = abs(app(Var(1), abs!(2, app!(pair(), app(shl1(), Var(2)), app(shl0(), Var(1))))));
 
-    abs(app(pi, app!(Var(1), z, a, b)))
+    abs(app(snd(), app!(Var(1), z, a, b)))
 }
 
 /// Applied to a binary-encoded number it produces its predecessor.
 ///
-/// PRED ≡ λn.π22 (n Z A B) ≡ λ π22 (1 Z A B)
+/// PRED ≡ λn.SND (n Z A B) ≡ λ SND (1 Z A B)
 ///
 /// where
 ///
-/// Z ≡ (ZERO, ZERO)
+/// Z ≡ PAIR ZERO ZERO
 ///
-/// A ≡ λp.p (λnm.(SHL0 n, SHL1 m)) ≡ λ 1 (λ λ (SHL0 2, SHL1 1))
+/// A ≡ λp.p (λnm.PAIR (SHL0 n) (SHL1 m)) ≡ λ 1 (λ λ PAIR (SHL0 2) (SHL1 1))
 ///
-/// B ≡ λp.p (λnm.(SHL1 n, SHL0 n)) ≡ λ 1 (λ λ (SHL1 2, SHL0 2))
+/// B ≡ λp.p (λnm.PAIR (SHL1 n) (SHL0 n)) ≡ λ 1 (λ λ PAIR (SHL1 2) (SHL0 2))
 ///
 /// # Example
 /// ```
 /// use lambda_calculus::data::num::binary::pred;
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(pred(), 1.into_binary()), NOR, 0), 0.into_binary());
-/// assert_eq!(beta(app(pred(), 2.into_binary()), NOR, 0), 1.into_binary());
 /// assert_eq!(beta(app(pred(), 3.into_binary()), NOR, 0), 2.into_binary());
+/// assert_eq!(beta(app(pred(), 5.into_binary()), NOR, 0), 4.into_binary());
+/// assert_eq!(beta(app(pred(), 6.into_binary()), NOR, 0), 5.into_binary());
 /// ```
 pub fn pred() -> Term {
-    let z  = tuple!(zero(), zero());
-    let a  = abs(app(Var(1), abs!(2, tuple!(app(shl0(), Var(2)), app(shl1(), Var(1))))));
-    let b  = abs(app(Var(1), abs!(2, tuple!(app(shl1(), Var(2)), app(shl0(), Var(2))))));
-    let pi = pi!(2, 2);
+    let z = app!(pair(), zero(), zero());
+    let a = abs(app(Var(1), abs!(2, app!(pair(), app(shl0(), Var(2)), app(shl1(), Var(1))))));
+    let b = abs(app(Var(1), abs!(2, app!(pair(), app(shl1(), Var(2)), app(shl0(), Var(2))))));
 
-    abs(app(pi, app!(Var(1), z, a, b)))
+    abs(app(snd(), app!(Var(1), z, a, b)))
 }
-*/
+
 /// Applied to a binary-encoded number it returns its least significant bit.
 ///
 /// LSB ≡ λn.n TRUE (λx.TRUE) (λx.FALSE) ≡ λ 1 TRUE (λ TRUE) (λ FALSE)

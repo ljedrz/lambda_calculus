@@ -125,7 +125,7 @@ fn main() {
 ```
 stdout:
 ```
-comparing normalizing orders' reduction step count for FAC 4:
+comparing normalizing orders' reduction step count for FAC 3:
 normal: 46
 applicative: 39
 hybrid normal: 46
