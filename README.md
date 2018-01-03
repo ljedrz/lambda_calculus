@@ -3,7 +3,7 @@
 [![current version](https://img.shields.io/crates/v/lambda_calculus.svg)](https://crates.io/crates/lambda_calculus)
 [![build status](https://api.travis-ci.org/ljedrz/lambda_calculus.svg?branch=master)](https://travis-ci.org/ljedrz/lambda_calculus)
 
-**lambda_calculus** is a simple implementation of the untyped lambda calculus in Rust.
+**lambda_calculus** is a simple Rust implementation of pure lambda calculus.
 
 ## [Documentation](https://docs.rs/lambda_calculus)
 
@@ -43,7 +43,7 @@ default-features = false # do not build the data encoding modules
 features = ["backslash_lambda"] # use a backslash lambda
 ```
 
-## Usage
+## Examples
 
 ### Comparing classic and De Bruijn index notation
 
