@@ -12,6 +12,11 @@
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
+///     tuple!(1.into_church(), 2.into_church()),
+///     abs(app!(Var(1), 1.into_church(), 2.into_church()))
+/// );
+///
+/// assert_eq!(
 ///     tuple!(1.into_church(), 2.into_church(), 3.into_church()),
 ///     abs(app!(Var(1), 1.into_church(), 2.into_church(), 3.into_church()))
 /// );
@@ -38,10 +43,16 @@ macro_rules! tuple {
 /// use lambda_calculus::term::*;
 /// use lambda_calculus::*;
 ///
-/// let t    = tuple!(1.into_church(), 2.into_church(), 3.into_church());
-/// let pi23 = pi!(2, 3);
+/// let t2 = || tuple!(1.into_church(), 2.into_church());
 ///
-/// assert_eq!(beta(app(pi23, t), NOR, 0), 2.into_church());
+/// assert_eq!(beta(app(pi!(1, 2), t2()), NOR, 0), 1.into_church());
+/// assert_eq!(beta(app(pi!(2, 2), t2()), NOR, 0), 2.into_church());
+///
+/// let t3 = || tuple!(1.into_church(), 2.into_church(), 3.into_church());
+///
+/// assert_eq!(beta(app(pi!(1, 3), t3()), NOR, 0), 1.into_church());
+/// assert_eq!(beta(app(pi!(2, 3), t3()), NOR, 0), 2.into_church());
+/// assert_eq!(beta(app(pi!(3, 3), t3()), NOR, 0), 3.into_church());
 /// # }
 /// ```
 #[macro_export]
