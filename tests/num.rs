@@ -4,7 +4,7 @@
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
-use lambda::data::num::{church, scott, parigot, stumpfu};
+use lambda::data::num::{church, scott, parigot, stumpfu, binary};
 
 macro_rules! test_num {
     ($encoding:ident, $name:ident, $conversion:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
@@ -23,6 +23,7 @@ macro_rules! test_num_all {
             $(assert_eq!(beta(app!(scott::$function(), $($n.into_scott()),*), HNO, 0), $result.into_scott());)*
             $(assert_eq!(beta(app!(parigot::$function(), $($n.into_parigot()),*), HNO, 0), $result.into_parigot());)*
             $(assert_eq!(beta(app!(stumpfu::$function(), $($n.into_stumpfu()),*), HNO, 0), $result.into_stumpfu());)*
+            $(assert_eq!(beta(app(binary::strip(), app!(binary::$function(), $($n.into_binary()),*)), HNO, 0), $result.into_binary());)*
         }
     );
 }
@@ -39,7 +40,31 @@ test_num_all!(num_pred, pred,
     3 => 2
 );
 
-test_num_all!(num_add, add,
+test_num!(church, church_add, into_church, add,
+    0, 0 => 0,
+    0, 1 => 1,
+    1, 0 => 1,
+    2, 3 => 5,
+    4, 2 => 6
+);
+
+test_num!(scott, scott_add, into_scott, add,
+    0, 0 => 0,
+    0, 1 => 1,
+    1, 0 => 1,
+    2, 3 => 5,
+    4, 2 => 6
+);
+
+test_num!(parigot, parigot_add, into_parigot, add,
+    0, 0 => 0,
+    0, 1 => 1,
+    1, 0 => 1,
+    2, 3 => 5,
+    4, 2 => 6
+);
+
+test_num!(stumpfu, stumpfu_add, into_stumpfu, add,
     0, 0 => 0,
     0, 1 => 1,
     1, 0 => 1,

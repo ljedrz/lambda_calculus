@@ -4,7 +4,7 @@ use term::{Term, abs, app};
 use term::Term::*;
 use data::boolean::{tru, fls};
 use combinators::I;
-use data::pair::{pair, snd};
+use data::pair::{pair, fst, snd};
 
 /// A 0 bit; equivalent to `boolean::tru`.
 ///
@@ -90,7 +90,8 @@ pub fn succ() -> Term {
     abs(app(snd(), app!(Var(1), z, a, b)))
 }
 
-/// Applied to a binary-encoded number it produces its predecessor.
+/// Applied to a binary-encoded number it produces its predecessor; inputs that are powers of number
+/// 2 or return them may produce leading zeroes that can be removed using `strip`.
 ///
 /// PRED ≡ λn.SND (n Z A B) ≡ λ SND (1 Z A B)
 ///
@@ -104,10 +105,11 @@ pub fn succ() -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::num::binary::pred;
+/// use lambda_calculus::data::num::binary::{pred, strip};
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(beta(app(pred(), 3.into_binary()), NOR, 0), 2.into_binary());
+/// assert_eq!(beta(app(strip(), app(pred(), 1.into_binary())), NOR, 0), 0.into_binary());
+/// assert_eq!(beta(app(strip(), app(pred(), 2.into_binary())), NOR, 0), 1.into_binary());
 /// assert_eq!(beta(app(pred(), 5.into_binary()), NOR, 0), 4.into_binary());
 /// assert_eq!(beta(app(pred(), 6.into_binary()), NOR, 0), 5.into_binary());
 /// ```
@@ -173,15 +175,15 @@ pub fn shl1() -> Term {
 
 /// Applied to a binary-encoded number it strips its leading zeroes.
 ///
-/// STRIP ≡ λn.π12 (n Z A B) ≡ λ π12 (n Z A B)
+/// STRIP ≡ λn.FST (n Z A B) ≡ λ FST (n Z A B)
 ///
 /// where
 ///
-/// Z ≡ (ZERO, TRUE)
+/// Z ≡ PAIR ZERO TRUE
 ///
-/// A ≡ λp.p (λnz.(z ZERO (SHL0 n), z)) ≡ λ 1 (λ λ (1 ZERO (SHL0 2), 1))
+/// A ≡ λp.p (λnz.PAIR (z ZERO (SHL0 n)) z) ≡ λ 1 (λ λ PAIR (1 ZERO (SHL0 2)) 1)
 ///
-/// B ≡ λp.p (λnz.(SHL1 n, FALSE)) ≡ λ 1 (λ λ (SHL1 2, FALSE))
+/// B ≡ λp.p (λnz.PAIR (SHL1 n) FALSE) ≡ λ 1 (λ λ PAIR (SHL1 2) FALSE)
 ///
 /// # Example
 /// ```
@@ -196,10 +198,9 @@ pub fn shl1() -> Term {
 /// );
 /// ```
 pub fn strip() -> Term {
-    let z  = tuple!(zero(), tru());
-    let a  = abs(app(Var(1), abs!(2, tuple!(app!(Var(1), zero(), app(shl0(), Var(2))), Var(1)))));
-    let b  = abs(app(Var(1), abs!(2, tuple!(app(shl1(), Var(2)), fls()))));
-    let pi = pi!(1, 2);
+    let z  = app!(pair(), zero(), tru());
+    let a  = abs(app(Var(1), abs!(2, app!(pair(), app!(Var(1), zero(), app(shl0(), Var(2))), Var(1)))));
+    let b  = abs(app(Var(1), abs!(2, app!(pair(), app(shl1(), Var(2)), fls()))));
 
-    abs(app(pi, app!(Var(1), z, a, b)))
+    abs(app(fst(), app!(Var(1), z, a, b)))
 }
