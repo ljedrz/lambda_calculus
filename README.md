@@ -144,6 +144,7 @@ fn main() {
     println!("   Scott encoding: {:?}", 3.into_scott());
     println!(" Parigot encoding: {:?}", 3.into_parigot());
     println!("Stump-Fu encoding: {:?}", 3.into_stumpfu());
+    println!("  binary encoding: {:?}", 3.into_binary());
 }
 ```
 stdout:
@@ -153,4 +154,5 @@ comparing different encodings of number 3 (De Bruijn indices):
    Scott encoding: λλ1(λλ1(λλ1(λλ2)))
  Parigot encoding: λλ2(λλ2(λλ2(λλ1)1)(2(λλ1)1))(2(λλ2(λλ1)1)(2(λλ1)1))
 Stump-Fu encoding: λλ2(λλ2(2(21)))(λλ2(λλ2(21))(λλ2(λλ21)(λλ1)))
+  binary encoding: λλλ1(13)
 ```

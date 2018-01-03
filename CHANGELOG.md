@@ -48,17 +48,16 @@ Changes
 - add an `encoding` feature and make it default
 - add an undefined term `term::UD`
 - add `tuple::{tuple, projection}`
-- add `numerals::binary::{b0, b1, zero, is_zero, one, lsb, shl0, shl1, strip, succ, pred}`
+- add `binary::{b0, b1, zero, is_zero, one, lsb, shl0, shl1, strip, succ, pred}`
 - add `option::{map, unwrap_or, and_then}`
 - add `term::is_supercombinator`
 - add `stumpfu::{zero, is_zero, one, succ, pred, add}`
 - add `parigot::{is_zero, one, mult, sub}`
 - add `impl<T> IntoChurch for Option<T> where T: IntoChurch`
-- add `scott::{is_zero, one, add, mul, pow}`
-- add `church::{to_scott, to_parigot, to_stumpfu}`
-- add `scott::to_church`
+- add `num::scott::{is_zero, one, add, mul, pow, to_church}`
+- add `num::church::{to_scott, to_parigot, to_stumpfu}`
 - add `combinators::T` (Turing combinator)
-- add `lists::{church, scott, parigot}::{nil, is_nil, cons, head, tail}`
+- add `list::{church, scott, parigot}::{nil, is_nil, cons, head, tail}`
 - ensure all functions match their definition in documentation
 
 Version 1.4.0
