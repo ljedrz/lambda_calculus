@@ -7,7 +7,7 @@ extern crate test;
 extern crate lambda_calculus as lambda;
 
 use test::Bencher;
-use lambda::data::num::{church, scott, parigot, stumpfu};
+use lambda::data::num::{church, scott, parigot, stumpfu, binary};
 use lambda::*;
 
 macro_rules! bench_num {
@@ -23,11 +23,13 @@ bench_num!(church,  church_succ,  into_church,  succ, HAP, 1);
 bench_num!(scott,   scott_succ,   into_scott,   succ, HAP, 1);
 bench_num!(parigot, parigot_succ, into_parigot, succ, HAP, 1);
 bench_num!(stumpfu, stumpfu_succ, into_stumpfu, succ, HAP, 1);
+bench_num!(binary,  binary_succ,  into_binary,  succ, HAP, 1);
 
 bench_num!(church,  church_pred,  into_church,  pred, HAP, 1);
 bench_num!(scott,   scott_pred,   into_scott,   pred, HAP, 1);
 bench_num!(parigot, parigot_pred, into_parigot, pred, HAP, 1);
 bench_num!(stumpfu, stumpfu_pred, into_stumpfu, pred, HAP, 1);
+bench_num!(binary,  binary_pred,  into_binary,  pred, HAP, 1);
 
 bench_num!(church,  church_add,  into_church,  add, HAP, 2, 2);
 bench_num!(scott,   scott_add,   into_scott,   add, HNO, 2, 2);
