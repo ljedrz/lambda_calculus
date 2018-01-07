@@ -3,7 +3,7 @@
 use term::{Term, abs, app};
 use term::Term::*;
 use data::num::church;
-use data::pair::swap;
+use data::pair::{fst, snd, pair, swap};
 use combinators::Z;
 
 /// Applied to a Church-encoded numeral it produces a pair representing a signed Church-encoded
@@ -19,7 +19,7 @@ use combinators::Z;
 /// assert_eq!(beta(app(to_signed(), 1.into_church()), NOR, 0), (1, 0).into_church());
 /// ```
 pub fn to_signed() -> Term {
-    abs!(2, app!(Var(1), Var(2), church::zero()))
+    abs(app!(pair(), Var(1), church::zero()))
 }
 
 /// Applied to a pair representing a signed Church-encoded integer it flips the sign.
@@ -120,12 +120,10 @@ pub fn normalize() -> Term {
 pub fn absolute_value() -> Term {
     abs(app(
         abs(app!(
-            Var(1),
-            abs!(2, Var(2)),
-            abs!(3, Var(1)),
-            abs!(2, Var(2)),
-            app(Var(1), abs!(2, Var(1))),
-            app(Var(1), abs!(2, Var(2)))
+            church::is_zero(),
+            app(fst(), Var(1)),
+            app(snd(), Var(1)),
+            app(fst(), Var(1))
         )),
         app(normalize(), Var(1))
     ))
@@ -135,7 +133,7 @@ pub fn absolute_value() -> Term {
 /// normalized pair representing their sum.
 ///
 /// SIGNED_ADD ≡ λa.λb.NORMALIZE (PAIR (ADD (FST a) (FST b)) (ADD (SND a) (SND b))) ≡
-/// λ λ NORMALIZE (PAIR (ADD (FST 1) (FST 2)) (ADD (SND 1) (SND 2)))
+/// λ λ NORMALIZE (PAIR (ADD (FST 2) (FST 1)) (ADD (SND 2) (SND 1)))
 ///
 /// # Example
 /// ```
@@ -154,27 +152,19 @@ pub fn absolute_value() -> Term {
 pub fn signed_add() -> Term {
     abs!(2, app(
         normalize(),
-        abs(app!(
-            Var(1),
+        app!(
+            pair(),
             app!(
-                Var(2),
-                abs!(2, Var(2)),
-                abs!(3, app(
-                    Var(2),
-                    app!(Var(3), Var(2), Var(1))
-                )),
-                app(Var(3), abs!(2, Var(2)))
+                church::add(),
+                app(fst(), Var(2)),
+                app(fst(), Var(1))
             ),
             app!(
-                Var(2),
-                abs!(2, Var(1)),
-                abs!(3, app(
-                    Var(2),
-                    app!(Var(3), Var(2), Var(1))
-                )),
-                app(Var(3), abs!(2, Var(1)))
+                church::add(),
+                app(snd(), Var(2)),
+                app(snd(), Var(1))
             )
-        ))
+        )
     ))
 }
 
@@ -182,7 +172,7 @@ pub fn signed_add() -> Term {
 /// normalized pair representing their difference.
 ///
 /// SIGNED_SUB ≡ λa.λb.NORMALIZE (PAIR (ADD (FST a) (SND b)) (ADD (SND a) (FST b))) ≡
-/// λ λ NORMALIZE (PAIR (ADD (FST 1) (SND 2)) (ADD (SND 1) (FST 2)))
+/// λ λ NORMALIZE (PAIR (ADD (FST 2) (SND 1)) (ADD (SND 2) (FST 1)))
 ///
 /// # Example
 /// ```
@@ -201,26 +191,18 @@ pub fn signed_add() -> Term {
 pub fn signed_sub() -> Term {
     abs!(2, app(
         normalize(),
-        abs(app!(
-            Var(1),
+        app!(
+            pair(),
             app!(
-                Var(2),
-                abs!(2, Var(1)),
-                abs!(3, app(
-                    Var(2),
-                    app!(Var(3), Var(2), Var(1))
-                )),
-                app(Var(3), abs!(2, Var(2)))
+                church::add(),
+                app(fst(), Var(2)),
+                app(snd(), Var(1))
             ),
             app!(
-                Var(2),
-                abs!(2, Var(2)),
-                abs!(3, app(
-                    Var(2),
-                    app!(Var(3), Var(2), Var(1))
-                )),
-                app(Var(3), abs!(2, Var(1)))
+                church::add(),
+                app(snd(), Var(2)),
+                app(fst(), Var(1))
             )
-        ))
+        )
     ))
 }
