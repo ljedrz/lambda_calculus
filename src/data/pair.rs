@@ -96,8 +96,8 @@ pub fn uncurry() -> Term {
 pub fn curry() -> Term {
     abs!(3, app(
         Var(3),
-        app!(pair(), Var(2), Var(1))
-    ))
+        abs(app!(Var(1), Var(3), Var(2))))
+    )
 }
 
 /// Applied to a lambda-encoded pair `(a, b)` it swaps its elements so that it becomes `(b, a)`.
@@ -115,10 +115,10 @@ pub fn curry() -> Term {
 /// );
 /// ```
 pub fn swap() -> Term {
-    abs(app!(
-        pair(),
-        app(snd(), Var(1)),
-        app(fst(), Var(1))
+    abs!(2, app!(
+        Var(1),
+        app(Var(2), abs!(2, Var(1))),
+        app(Var(2), abs!(2, Var(2)))
     ))
 }
 
