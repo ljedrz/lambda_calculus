@@ -1,4 +1,4 @@
-//! [Lambda-encoded boolean](https://en.wikipedia.org/wiki/Church_encoding#Church_Booleans)
+//! [Lambda-encoded booleans](https://en.wikipedia.org/wiki/Church_encoding#Church_Booleans)
 
 use term::{Term, abs, app};
 use term::Term::*;
@@ -102,15 +102,36 @@ pub fn xor() -> Term {
 /// assert_eq!(beta(app!(nor(), fls(), fls()), NOR, 0), tru());
 /// ```
 pub fn nor() -> Term {
-    abs!(2,
-        app!(
-            Var(2),
-            Var(2),
-            Var(1),
-            fls(),
-            tru()
-        )
-    )
+    abs!(2, app!(
+        Var(2),
+        Var(2),
+        Var(1),
+        fls(),
+        tru()
+    ))
+}
+
+/// Applied to two lambda-encoded booleans it returns their lambda-encoded exclusive joint denial
+/// (`nor`); it is also known as `iff`.
+///
+/// XNOR ≡ λpq.p q (NOT q) ≡ λ λ 2 1 (NOT 1)
+///
+/// # Examples
+/// ```
+/// use lambda_calculus::data::boolean::{xnor, tru, fls};
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app!(xnor(), tru(), tru()), NOR, 0), tru());
+/// assert_eq!(beta(app!(xnor(), tru(), fls()), NOR, 0), fls());
+/// assert_eq!(beta(app!(xnor(), fls(), tru()), NOR, 0), fls());
+/// assert_eq!(beta(app!(xnor(), fls(), fls()), NOR, 0), tru());
+/// ```
+pub fn xnor() -> Term {
+    abs!(2, app!(
+        Var(2),
+        Var(1),
+        app(not(), Var(1))
+    ))
 }
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded alternative denial.
@@ -128,15 +149,13 @@ pub fn nor() -> Term {
 /// assert_eq!(beta(app!(nand(), fls(), fls()), NOR, 0), tru());
 /// ```
 pub fn nand() -> Term {
-    abs!(2,
-        app!(
-            Var(2),
-            Var(1),
-            Var(2),
-            fls(),
-            tru()
-        )
-    )
+    abs!(2, app!(
+        Var(2),
+        Var(1),
+        Var(2),
+        fls(),
+        tru()
+    ))
 }
 
 /// Applied to a lambda-encoded predicate and two terms it returns the first one if the predicate

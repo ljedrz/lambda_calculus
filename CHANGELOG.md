@@ -1,3 +1,10 @@
+Version 2.1.0
+=============
+
+Changes
+-------
+- add `boolean::xnor`
+
 Version 2.0.0
 =============
 
@@ -71,7 +78,6 @@ map_or}`, adding `church::lists::{init, zip, zip_with, take, take_while}` and si
 
 Changes
 -------
-
 - add Scott encoding as a compilation feature
 - add a Scott numerals module
 - add `scott::{zero, succ, pred}`
@@ -95,7 +101,6 @@ Thanks
 
 Changes
 -------
-
 - add `church::lists::last`
 - change all instances of `try!()` to `?`
 - replace 2 `clone()`s with `replace()`s (**big** performance wins)
@@ -116,7 +121,6 @@ Thanks
 
 Changes
 -------
-
 - add `church::numerals::{min, max, lshift, rshift, is_even, is_odd}` for Church numerals
 - add `church::pairs::uncurry`
 - add `abs!()` macro for multiple abstraction and use it internally
@@ -128,7 +132,6 @@ Version 1.1.1
 
 Changes
 -------
-
 - remove one unnecessary mutability
 - add maintenance badges
 
@@ -137,7 +140,6 @@ Version 1.1.0
 
 Changes
 -------
-
 - core tests no longer use Church-encoded data
 - adhere to [C-REEXPORT](https://github.com/brson/rust-api-guidelines#c-reexport)
 - improved parser performance
