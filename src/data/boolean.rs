@@ -175,6 +175,28 @@ pub fn if_else() -> Term {
     abs!(3, app!(Var(3), Var(2), Var(1)))
 }
 
+/// Applied to two lambda-encoded booleans it returns their lambda-encoded implication.
+///
+/// IMPLY ≡ λpq.OR (NOT p) q ≡ λ λ OR (NOT 2) 1
+///
+/// # Examples
+/// ```
+/// use lambda_calculus::data::boolean::{imply, tru, fls};
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app!(imply(), tru(), tru()), NOR, 0), tru());
+/// assert_eq!(beta(app!(imply(), tru(), fls()), NOR, 0), fls());
+/// assert_eq!(beta(app!(imply(), fls(), tru()), NOR, 0), tru());
+/// assert_eq!(beta(app!(imply(), fls(), fls()), NOR, 0), tru());
+/// ```
+pub fn imply() -> Term {
+    abs!(2, app!(
+        or(),
+        app(not(), Var(2)),
+        Var(1)
+    ))
+}
+
 impl Into<Term> for bool {
     fn into(self) -> Term {
         if self { tru() } else { fls() }

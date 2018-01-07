@@ -3,7 +3,7 @@ Version 2.1.0
 
 Changes
 -------
-- add `boolean::xnor`
+- add `boolean::{xnor, imply}`
 
 Version 2.0.0
 =============
