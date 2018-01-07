@@ -82,7 +82,11 @@ pub fn not() -> Term {
 pub fn xor() -> Term {
     abs!(2, app!(
         Var(2),
-        app!(not(), Var(1)),
+        app!(
+            Var(1),
+            abs!(2, Var(1)),
+            abs!(2, Var(2))
+        ),
         Var(1)
     ))
 }
@@ -130,7 +134,11 @@ pub fn xnor() -> Term {
     abs!(2, app!(
         Var(2),
         Var(1),
-        app(not(), Var(1))
+        app!(
+            Var(1),
+            abs!(2, Var(1)),
+            abs!(2, Var(2))
+        )
     ))
 }
 
@@ -191,8 +199,14 @@ pub fn if_else() -> Term {
 /// ```
 pub fn imply() -> Term {
     abs!(2, app!(
-        or(),
-        app(not(), Var(2)),
+        Var(2),
+        abs!(2, Var(1)),
+        abs!(2, Var(2)),
+        app!(
+            Var(2),
+            abs!(2, Var(1)),
+            abs!(2, Var(2))
+        ),
         Var(1)
     ))
 }
