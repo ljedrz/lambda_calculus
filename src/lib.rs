@@ -20,4 +20,6 @@ pub mod data;
 #[cfg(feature = "encoding")]
 pub use data::num::convert::*;
 #[cfg(feature = "encoding")]
+pub use data::num::convert::Encoding::*;
+#[cfg(feature = "encoding")]
 pub use data::list::convert::*;

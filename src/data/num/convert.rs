@@ -4,6 +4,17 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
+use self::Encoding::*;
+
+/// The type of numeric encoding.
+#[derive(Debug, Clone, Copy)]
+pub enum Encoding {
+    Church,
+    Scott,
+    Parigot,
+    StumpFu,
+    Binary
+}
 
 macro_rules! make_trait {
     ($trait_name:ident, $function_name:ident) => (
@@ -19,7 +30,12 @@ make_trait!(IntoScottNum, into_scott);
 make_trait!(IntoParigotNum, into_parigot);
 make_trait!(IntoStumpFuNum, into_stumpfu);
 make_trait!(IntoBinaryNum, into_binary);
-make_trait!(IntoSignedNum, into_signed);
+
+pub trait IntoSignedNum {
+    #[doc="Performs the conversion."]
+    fn into_signed(self, encoding: Encoding) -> Term;
+}
+
 
 impl IntoChurchNum for usize {
     fn into_church(self) -> Term {
@@ -90,8 +106,17 @@ impl IntoBinaryNum for usize {
 }
 
 impl IntoSignedNum for i32 {
-    fn into_signed(self) -> Term {
-        let numeral = (self.abs() as usize).into_church();
+    fn into_signed(self, encoding: Encoding) -> Term {
+        let modulus = self.abs() as usize;
+
+        let numeral = match encoding {
+            Church  => modulus.into_church(),
+            Scott   => modulus.into_scott(),
+            Parigot => modulus.into_parigot(),
+            StumpFu => modulus.into_stumpfu(),
+            Binary  => panic!("signed binary numbers are not supported")
+        };
+
         if self > 0 {
             tuple!(numeral, abs!(2, Var(1)))
         } else {
@@ -115,7 +140,6 @@ impl_pair!(IntoScottNum, into_scott);
 impl_pair!(IntoParigotNum, into_parigot);
 impl_pair!(IntoStumpFuNum, into_stumpfu);
 impl_pair!(IntoBinaryNum, into_binary);
-impl_pair!(IntoSignedNum, into_signed);
 
 macro_rules! impl_option {
     ($trait_name:ident, $function_name:ident) => (
@@ -135,4 +159,3 @@ impl_option!(IntoScottNum, into_scott);
 impl_option!(IntoParigotNum, into_parigot);
 impl_option!(IntoStumpFuNum, into_stumpfu);
 impl_option!(IntoBinaryNum, into_binary);
-impl_option!(IntoSignedNum, into_signed);
