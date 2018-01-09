@@ -4,7 +4,6 @@ pub mod boolean;
 pub mod pair;
 pub mod list;
 pub mod option;
-pub mod signed;
 #[macro_use]
 pub mod tuple;
 pub mod num;
