@@ -16,6 +16,7 @@
 - single-pair-encoded list
 - Church-, Scott- and Parigot-encoded numerals and lists
 - Stump-Fu (embedded iterators)- and binary-encoded numerals
+- signed numbers
 
 ## Installation
 

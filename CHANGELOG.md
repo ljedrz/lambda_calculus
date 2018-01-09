@@ -1,9 +1,18 @@
 Version 2.1.0
 =============
 
+Thanks
+-------
+@billpmurphy for creating `num::signed` and adding `signed::{add, modulus, neg, simplify, sub,
+to_signed}`
+
 Changes
 -------
 - add `boolean::{xnor, imply}`
+- add signed numbers
+- add `signed::{add, modulus, neg, simplify, sub, to_signed}`
+- add `num::convert::{Encoding, IntoSignedNum}`
+- impl `IntoSignedNum` for `i32`
 
 Version 2.0.0
 =============

@@ -32,7 +32,8 @@ make_trait!(IntoStumpFuNum, into_stumpfu);
 make_trait!(IntoBinaryNum, into_binary);
 
 pub trait IntoSignedNum {
-    #[doc="Performs the conversion."]
+    #[doc="Performs the conversion. The supported `Encoding`s are `Church`, `Scott`, `Parigot` and
+          `StumpFu`."]
     fn into_signed(self, encoding: Encoding) -> Term;
 }
 
