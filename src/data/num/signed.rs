@@ -81,8 +81,8 @@ pub fn simplify() -> Term {
 /// Applied to a pair representing a signed Church-encoded integer it returns its absolute
 /// value as a Church numeral.
 ///
-/// MODULUS ≡ λx.(λy.IS_ZERO (FST y) (SND y) (FST y)) (NORMALIZE x) ≡
-/// λ (λ IS_ZERO (FST 1) (SND 1) (FST 1)) (NORMALIZE 1)
+/// MODULUS ≡ λx.(λy.IS_ZERO (FST y) (SND y) (FST y)) (SIMPLIFY x) ≡
+/// λ (λ IS_ZERO (FST 1) (SND 1) (FST 1)) (SIMPLIFY 1)
 ///
 /// # Example
 /// ```
@@ -107,8 +107,8 @@ pub fn modulus() -> Term {
 /// Applied to a pair of two Church-encoded numerals representing a signed integer it returns a
 /// pair representing their sum.
 ///
-/// ADD ≡ λa.λb.NORMALIZE (PAIR (ADD (FST a) (FST b)) (ADD (SND a) (SND b))) ≡
-/// λ λ NORMALIZE (PAIR (ADD (FST 2) (FST 1)) (ADD (SND 2) (SND 1)))
+/// ADD ≡ λa.λb.SIMPLIFY (PAIR (ADD (FST a) (FST b)) (ADD (SND a) (SND b))) ≡
+/// λ λ SIMPLIFY (PAIR (ADD (FST 2) (FST 1)) (ADD (SND 2) (SND 1)))
 ///
 /// # Example
 /// ```
@@ -142,8 +142,8 @@ pub fn add() -> Term {
 /// Applied to a pair of two Church-encoded numerals representing a signed integer it returns a
 /// pair representing their difference.
 ///
-/// SUB ≡ λa.λb.NORMALIZE (PAIR (ADD (FST a) (SND b)) (ADD (SND a) (FST b))) ≡
-/// λ λ NORMALIZE (PAIR (ADD (FST 2) (SND 1)) (ADD (SND 2) (FST 1)))
+/// SUB ≡ λa.λb.SIMPLIFY (PAIR (ADD (FST a) (SND b)) (ADD (SND a) (FST b))) ≡
+/// λ λ SIMPLIFY (PAIR (ADD (FST 2) (SND 1)) (ADD (SND 2) (FST 1)))
 ///
 /// # Example
 /// ```
