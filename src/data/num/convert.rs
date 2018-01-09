@@ -19,6 +19,7 @@ make_trait!(IntoScottNum, into_scott);
 make_trait!(IntoParigotNum, into_parigot);
 make_trait!(IntoStumpFuNum, into_stumpfu);
 make_trait!(IntoBinaryNum, into_binary);
+make_trait!(IntoSignedNum, into_signed);
 
 impl IntoChurchNum for usize {
     fn into_church(self) -> Term {
@@ -87,6 +88,18 @@ impl IntoBinaryNum for usize {
         abs!(3, ret)
     }
 }
+
+impl IntoSignedNum for i32 {
+    fn into_signed(self) -> Term {
+        let numeral = (self.abs() as usize).into_church();
+        if self > 0 {
+            tuple!(numeral, abs!(2, Var(1)))
+        } else {
+            tuple!(abs!(2, Var(1)), numeral)
+        }
+    }
+}
+
 macro_rules! impl_pair {
     ($trait_name:ident, $function_name:ident) => (
         impl<T, U> $trait_name for (T, U) where T: $trait_name, U: $trait_name {
@@ -102,6 +115,7 @@ impl_pair!(IntoScottNum, into_scott);
 impl_pair!(IntoParigotNum, into_parigot);
 impl_pair!(IntoStumpFuNum, into_stumpfu);
 impl_pair!(IntoBinaryNum, into_binary);
+impl_pair!(IntoSignedNum, into_signed);
 
 macro_rules! impl_option {
     ($trait_name:ident, $function_name:ident) => (
@@ -121,3 +135,4 @@ impl_option!(IntoScottNum, into_scott);
 impl_option!(IntoParigotNum, into_parigot);
 impl_option!(IntoStumpFuNum, into_stumpfu);
 impl_option!(IntoBinaryNum, into_binary);
+impl_option!(IntoSignedNum, into_signed);
