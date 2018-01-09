@@ -81,7 +81,7 @@ pub fn simplify() -> Term {
 /// Applied to a pair representing a signed Church-encoded integer it returns its absolute
 /// value as a Church numeral.
 ///
-/// ABSOLUTE_VALUE ≡ λx.(λy.IS_ZERO (FST y) (SND y) (FST y)) (NORMALIZE x) ≡
+/// MODULUS ≡ λx.(λy.IS_ZERO (FST y) (SND y) (FST y)) (NORMALIZE x) ≡
 /// λ (λ IS_ZERO (FST 1) (SND 1) (FST 1)) (NORMALIZE 1)
 ///
 /// # Example

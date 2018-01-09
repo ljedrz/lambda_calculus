@@ -93,9 +93,9 @@ impl IntoSignedNum for i32 {
     fn into_signed(self) -> Term {
         let numeral = (self.abs() as usize).into_church();
         if self > 0 {
-            abs(app!(Var(1), numeral, abs!(2, Var(1))))
+            tuple!(numeral, abs!(2, Var(1)))
         } else {
-            abs(app!(Var(1), abs!(2, Var(1)), numeral))
+            tuple!(abs!(2, Var(1)), numeral)
         }
     }
 }
