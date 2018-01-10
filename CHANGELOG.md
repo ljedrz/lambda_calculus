@@ -3,14 +3,15 @@ Version 2.1.0
 
 Thanks
 -------
-@billpmurphy for creating `num::signed` and adding `signed::{add, modulus, neg, simplify, sub,
-to_signed}`
+@billpmurphy for creating `num::signed`, adding `signed::{add, modulus, neg, simplify, sub, to_signed,
+mul}` and `stumpfu::mul`
 
 Changes
 -------
 - add `boolean::{xnor, imply}`
 - add signed numbers
-- add `signed::{add, modulus, neg, simplify, sub, to_signed}`
+- add `signed::{add, modulus, neg, simplify, sub, to_signed, mul}`
+- add `stumpfu::mul`
 - add `num::convert::{Encoding, IntoSignedNum}`
 - impl `IntoSignedNum` for `i32`
 
