@@ -61,3 +61,19 @@ fn signed_sub() {
     assert_eq!(beta(app!(sub(Church), 4.into_signed(Church), (-5).into_signed(Church)), NOR, 0), 9.into_signed(Church));
     assert_eq!(beta(app!(sub(Church), 4.into_signed(Church), (-4).into_signed(Church)), NOR, 0), 8.into_signed(Church));
 }
+
+#[test]
+fn signed_mul() {
+    assert_eq!(beta(app!(mul(Church), 0.into_signed(Church), 0.into_signed(Church)), NOR, 0), 0.into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), 1.into_signed(Church), 0.into_signed(Church)), NOR, 0), 0.into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), 2.into_signed(Church), 0.into_signed(Church)), NOR, 0), 0.into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), 0.into_signed(Church), (-1).into_signed(Church)), NOR, 0), 0.into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), 0.into_signed(Church), (-2).into_signed(Church)), NOR, 0), 0.into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), 1.into_signed(Church), 1.into_signed(Church)), NOR, 0), 1.into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), 1.into_signed(Church), (-1).into_signed(Church)), NOR, 0), (-1).into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), (-1).into_signed(Church), (-1).into_signed(Church)), NOR, 0), 1.into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), (-2).into_signed(Church), (-1).into_signed(Church)), NOR, 0), 2.into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), 2.into_signed(Church), 2.into_signed(Church)), NOR, 0), 4.into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), 2.into_signed(Church), 3.into_signed(Church)), NOR, 0), 6.into_signed(Church));
+    assert_eq!(beta(app!(mul(Church), (-2).into_signed(Church), 3.into_signed(Church)), NOR, 0), (-6).into_signed(Church));
+}

@@ -104,3 +104,27 @@ pub fn add() -> Term {
         Var(1)
     ))
 }
+
+/// Applied to two Stump-Fu-encoded numbers it produces their product.
+///
+/// MUL ≡ λnm.n (λcp.c (λx.ADD m x) ZERO) ZERO ≡ λ λ 2 (λ λ 2 (λ ADD 4 1) ZERO) ZERO
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::num::stumpfu::mul;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app!(mul(), 1.into_stumpfu(), 2.into_stumpfu()), NOR, 0), 2.into_stumpfu());
+/// assert_eq!(beta(app!(mul(), 2.into_stumpfu(), 3.into_stumpfu()), NOR, 0), 6.into_stumpfu());
+/// ```
+pub fn mul() -> Term {
+    abs!(2, app!(
+        Var(2),
+        abs!(2, app!(
+            Var(2),
+            abs(app!(add(), Var(4), Var(1))),
+            zero()
+        )),
+        zero()
+    ))
+}
