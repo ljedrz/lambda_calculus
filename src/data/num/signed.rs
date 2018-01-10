@@ -113,7 +113,7 @@ pub fn simplify(encoding: Encoding) -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::num::signed::{to_signed, neg, modulus};
+/// use lambda_calculus::data::num::signed::modulus;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(beta(app(modulus(Church),    1.into_signed(Church)), NOR, 0), 1.into_church());
@@ -147,7 +147,7 @@ pub fn modulus(encoding: Encoding) -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::num::signed::{to_signed, neg, add};
+/// use lambda_calculus::data::num::signed::add;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -190,7 +190,7 @@ pub fn add(encoding: Encoding) -> Term {
 ///
 /// # Example
 /// ```
-/// use lambda_calculus::data::num::signed::{to_signed, neg, sub};
+/// use lambda_calculus::data::num::signed::sub;
 /// use lambda_calculus::*;
 ///
 /// assert_eq!(
@@ -220,6 +220,75 @@ pub fn sub(encoding: Encoding) -> Term {
                 add(),
                 app(snd(), Var(2)),
                 app(fst(), Var(1))
+            )
+        )
+    ))
+}
+
+/// Applied to two signed integers with a specified encoding it returns a signed integer equal to
+/// their product.
+///
+/// MUL ≡ λa.λb.SIMPLIFY (PAIR (MUL (ADD (FST a) (FST b)) (ADD (SND a) (SND b)))
+/// (MUL (ADD (FST a) (SND b)) (ADD (SND a) (FST b)))) ≡
+/// λ λ SIMPLIFY (PAIR (MUL (ADD (FST 2) (FST 1)) (ADD (SND 2) (SND 1)))
+/// (MUL (ADD (FST 2) (SND 1)) (ADD (SND 2) (FST 1))))
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::num::signed::mul;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(
+///     beta(app!(mul(Church), 2.into_signed(Church), (-3).into_signed(Church)), NOR, 0),
+///     beta((-6).into_signed(Church), NOR, 0)
+/// );
+/// ```
+pub fn mul(encoding: Encoding) -> Term {
+    let mul = || match encoding {
+        Church  => church::mul(),
+        Scott   => scott::mul(),
+        Parigot => parigot::mul(),
+        StumpFu => stumpfu::mul(),
+        Binary => panic!("signed binary numbers are not supported")
+    };
+
+    let add = || match encoding {
+        Church => church::add(),
+        Scott => scott::add(),
+        Parigot => parigot::add(),
+        StumpFu => stumpfu::add(),
+        Binary => panic!("signed binary numbers are not supported")
+    };
+
+    abs!(2, app(
+        simplify(encoding),
+        app!(
+            pair(),
+            app!(
+                add(),
+                app!(
+                    mul(),
+                    app(fst(), Var(2)),
+                    app(fst(), Var(1))
+                ),
+                app!(
+                    mul(),
+                    app(snd(), Var(2)),
+                    app(snd(), Var(1))
+                )
+            ),
+            app!(
+                add(),
+                app!(
+                    mul(),
+                    app(fst(), Var(2)),
+                    app(snd(), Var(1))
+                ),
+                app!(
+                    mul(),
+                    app(snd(), Var(2)),
+                    app(fst(), Var(1))
+                )
             )
         )
     ))

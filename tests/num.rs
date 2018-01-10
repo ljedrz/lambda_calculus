@@ -129,7 +129,7 @@ test_num!(parigot, parigot_mul, into_parigot, mul,
     2, 1 => 2,
     3, 2 => 6
 );
-/*
+
 test_num!(stumpfu, stumpfu_mul, into_stumpfu, mul,
     0, 0 => 0,
     0, 1 => 0,
@@ -139,7 +139,7 @@ test_num!(stumpfu, stumpfu_mul, into_stumpfu, mul,
     2, 1 => 2,
     3, 2 => 6
 );
-*/
+
 test_num!(church, church_pow, into_church, pow,
     0, 0 => 1,
     0, 1 => 0,
