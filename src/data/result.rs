@@ -6,10 +6,10 @@ use data::boolean::{tru, fls};
 use data::option::{none, some};
 use combinators::I;
 
-/// Applied to an argument it consumes it and produces a lambda-encoded Result::Ok that contains
+/// Applied to an argument it consumes it and produces a lambda-encoded `Result::Ok` that contains
 /// it.
 ///
-/// OK ≡ λxab.a x ≡ λ λ λ 1 3
+/// OK ≡ λxab.a x ≡ λ λ λ 2 3
 ///
 /// # Example
 /// ```
@@ -23,10 +23,10 @@ pub fn ok() -> Term {
     abs!(3, app(Var(2), Var(3)))
 }
 
-/// Applied to an argument it consumes it and produces a lambda-encoded Result::Err that contains
+/// Applied to an argument it consumes it and produces a lambda-encoded `Result::Err` that contains
 /// it.
 ///
-/// ERR ≡ λxab.b x ≡ λ λ λ 2 3
+/// ERR ≡ λxab.b x ≡ λ λ λ 1 3
 ///
 /// # Example
 /// ```
@@ -40,8 +40,8 @@ pub fn err() -> Term {
     abs!(3, app(Var(1), Var(3)))
 }
 
-/// Applied to a lambda-encoded Result it produces a lambda-encoded boolean indicating whether it
-/// is Result::Ok.
+/// Applied to a lambda-encoded `Result` it produces a lambda-encoded boolean indicating whether it
+/// is `Result::Ok`.
 ///
 /// IS_OK ≡ λa.a (λx.TRUE) (λx.FALSE) ≡ λ 1 (λ TRUE) (λ FALSE)
 ///
@@ -60,10 +60,10 @@ pub fn is_ok() -> Term {
     abs(app!(Var(1), abs(tru()), abs(fls())))
 }
 
-/// Applied to a lambda-encoded Result it produces a lambda-encoded boolean indicating whether it
-/// is Result::Err.
+/// Applied to a lambda-encoded `Result` it produces a lambda-encoded boolean indicating whether it
+/// is `Result::Err`.
 ///
-/// IS_ERR ≡ λa.a FALSE (λx.TRUE) ≡ λ 1 FALSE (λ TRUE)
+/// IS_ERR ≡ λa.a (λx.FALSE) (λx.TRUE) ≡ λ 1 (λ FALSE) (λ TRUE)
 ///
 /// # Example
 /// ```
@@ -80,7 +80,7 @@ pub fn is_err() -> Term {
     abs(app!(Var(1), abs(fls()), abs(tru())))
 }
 
-/// Applied to a lambda-encoded Result it produces a lambda-encoded Option containing the Ok value.
+/// Applied to a lambda-encoded `Result` it produces a lambda-encoded `Option` containing the `Ok` value.
 ///
 /// OPTION_OK ≡ λa.a SOME (λx.NONE) ≡ λ 1 SOME (λ NONE)
 ///
@@ -100,7 +100,8 @@ pub fn option_ok() -> Term {
     abs(app!(Var(1), some(), abs(none())))
 }
 
-/// Applied to a lambda-encoded Result it produces a lambda-encoded Option containing the Err value.
+/// Applied to a lambda-encoded `Result it produces a lambda-encoded Option containing the `Err`
+/// value.
 ///
 /// OPTION_ERR ≡ λa.a (λx.NONE) SOME ≡ λ 1 (λ NONE) SOME
 ///
@@ -120,8 +121,8 @@ pub fn option_err() -> Term {
     abs(app!(Var(1), abs(none()), some()))
 }
 
-/// Applied to one argument and a lambda-encoded Result it returns the value inside the Ok or
-/// the first argument if the Result is not Ok.
+/// Applied to one argument and a lambda-encoded `Result` it returns the value inside the `Ok` or
+/// the first argument if the `Result` is not `Ok`.
 ///
 /// UNWRAP_OR ≡ λdr.r I (λx.d) ≡ λ λ 1 I (λ 3)
 ///
@@ -140,8 +141,8 @@ pub fn unwrap_or() -> Term {
     abs!(2, app!(Var(1), I(), abs(Var(3))))
 }
 
-/// Applied to a function and a lambda-encoded Result it applies the function to the contents of
-/// the Result if it is Ok.
+/// Applied to a function and a lambda-encoded `Result` it applies the function to the contents of
+/// the `Result` if it is `Ok`.
 ///
 /// MAP ≡ λfm.m (λx.OK (f x)) ERR ≡ λ λ 1 (λ OK (3 1)) ERR
 ///
@@ -166,8 +167,8 @@ pub fn map() -> Term {
     ))
 }
 
-/// Applied to a function and a lambda-encoded Result it applies the function to the contents of
-/// the Result if it is Ok.
+/// Applied to a function and a lambda-encoded `Result` it applies the function to the contents of
+/// the `Result` if it is `Ok`.
 ///
 /// MAP_ERR ≡ λfm.m OK (λx.ERR (f x)) ≡ λ λ 1 OK (λ ERR (3 1))
 ///
@@ -192,10 +193,8 @@ pub fn map_err() -> Term {
     ))
 }
 
-
-
-/// Applied to a lambda-encoded Result and a function that returns a lambda-encoded Result, it
-/// applies the function to the contents of the Result if it is Ok.
+/// Applied to a lambda-encoded `Result` and a function that returns a lambda-encoded Result, it
+/// applies the function to the contents of the `Result` if it is `Ok`.
 ///
 /// AND_THEN ≡ λmf.m f ERR ≡ λ λ 2 1 ERR
 ///
