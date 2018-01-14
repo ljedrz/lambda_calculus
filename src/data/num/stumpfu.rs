@@ -2,9 +2,9 @@
 
 use term::{Term, abs, app};
 use term::Term::*;
-use data::num::church as church;
 use data::num::convert::IntoChurchNum;
 use data::boolean::{tru, fls};
+use data::num::{church, scott, parigot};
 
 /// Produces a Stump-Fu-encoded number zero; equivalent to `boolean::fls`.
 ///
@@ -126,5 +126,74 @@ pub fn mul() -> Term {
             zero()
         )),
         zero()
+    ))
+}
+
+/// Applied to a Stump-Fu-encoded number it produces the equivalent Church-encoded number.
+///
+/// TO_CHURCH ≡ λn.n TRUE n ≡ λ 1 TRUE 1
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::num::stumpfu::to_church;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(to_church(), 0.into_stumpfu()), NOR, 0), 0.into_church());
+/// assert_eq!(beta(app(to_church(), 1.into_stumpfu()), NOR, 0), 1.into_church());
+/// assert_eq!(beta(app(to_church(), 4.into_stumpfu()), NOR, 0), 4.into_church());
+/// ```
+pub fn to_church() -> Term {
+    abs(app!(
+        Var(1),
+        tru(),
+        Var(1)
+    ))
+}
+
+/// Applied to a Stump-Fu-encoded number it produces the equivalent Scott-encoded number.
+///
+/// TO_SCOTT ≡ λn.n (λm.m SUCC ZERO) (n TRUE n) ≡ λ 1 (λ 1 SUCC ZERO) (1 TRUE 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::num::stumpfu::to_scott;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(to_scott(), 0.into_stumpfu()), NOR, 0), 0.into_scott());
+/// assert_eq!(beta(app(to_scott(), 1.into_stumpfu()), NOR, 0), 1.into_scott());
+/// assert_eq!(beta(app(to_scott(), 4.into_stumpfu()), NOR, 0), 4.into_scott());
+/// ```
+pub fn to_scott() -> Term {
+    abs(app(
+        abs(app!(Var(1), scott::succ(), scott::zero())),
+        app!(
+            Var(1),
+            tru(),
+            Var(1)
+        )
+    ))
+}
+
+/// Applied to a Stump-Fu-encoded number it produces the equivalent Parigot-encoded number.
+///
+/// TO_PARIGOT ≡ λn.n (λm.m SUCC ZERO) (n TRUE n) ≡ λ 1 (λ 1 SUCC ZERO) (1 TRUE 1)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::num::stumpfu::to_parigot;
+/// use lambda_calculus::*;
+///
+/// assert_eq!(beta(app(to_parigot(), 0.into_stumpfu()), NOR, 0), 0.into_parigot());
+/// assert_eq!(beta(app(to_parigot(), 1.into_stumpfu()), NOR, 0), 1.into_parigot());
+/// assert_eq!(beta(app(to_parigot(), 4.into_stumpfu()), NOR, 0), 4.into_parigot());
+/// ```
+pub fn to_parigot() -> Term {
+    abs(app(
+        abs(app!(Var(1), parigot::succ(), parigot::zero())),
+        app!(
+            Var(1),
+            tru(),
+            Var(1)
+        )
     ))
 }
