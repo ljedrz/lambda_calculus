@@ -100,7 +100,7 @@ pub fn option_ok() -> Term {
     abs(app!(Var(1), some(), abs(none())))
 }
 
-/// Applied to a lambda-encoded `Result` it produces a lambda-encoded Option containing the `Err`
+/// Applied to a lambda-encoded `Result` it produces a lambda-encoded `Option` containing the `Err`
 /// value.
 ///
 /// OPTION_ERR ≡ λa.a (λx.NONE) SOME ≡ λ 1 (λ NONE) SOME
@@ -193,7 +193,7 @@ pub fn map_err() -> Term {
     ))
 }
 
-/// Applied to a lambda-encoded `Result` and a function that returns a lambda-encoded Result, it
+/// Applied to a lambda-encoded `Result` and a function that returns a lambda-encoded `Result`, it
 /// applies the function to the contents of the `Result` if it is `Ok`.
 ///
 /// AND_THEN ≡ λmf.m f ERR ≡ λ λ 2 1 ERR

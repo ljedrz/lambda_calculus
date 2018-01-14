@@ -5,7 +5,8 @@ Thanks
 -------
 @billpmurphy for creating `num::signed` and `data::result` and their applicable `Into` conversions,
 adding `signed::{add, modulus, neg, simplify, sub, to_signed, mul}`, `result::{ok, err, is_ok,
-is_err, option_ok, option_err, unwrap_or, map, map_err, and_then}` and `stumpfu::mul`
+is_err, option_ok, option_err, unwrap_or, map, map_err, and_then}` and `stumpfu::{mul, to_church,
+to_scott, to_parigot}`
 
 Changes
 -------
@@ -14,7 +15,7 @@ Changes
 - add result data type
 - add `signed::{add, modulus, neg, simplify, sub, to_signed, mul}`
 - add `result::{ok, err, is_ok, is_err, option_ok, option_err, unwrap_or, map, map_err, and_then}`
-- add `stumpfu::mul`
+- add `stumpfu::{mul, to_church, to_scott, to_parigot}`
 - add `num::convert::{Encoding, IntoSignedNum}`
 - impl `IntoSignedNum` for `i32`
 
