@@ -160,3 +160,22 @@ impl_option!(IntoScottNum, into_scott);
 impl_option!(IntoParigotNum, into_parigot);
 impl_option!(IntoStumpFuNum, into_stumpfu);
 impl_option!(IntoBinaryNum, into_binary);
+
+macro_rules! impl_result {
+    ($trait_name:ident, $function_name:ident) => (
+        impl<T, U> $trait_name for Result<T, U> where T: $trait_name, U: $trait_name {
+            fn $function_name(self) -> Term {
+                match self {
+                    Ok(ok) => abs!(2, app(Var(2), ok.$function_name())),
+                    Err(err) => abs!(2, app(Var(1), err.$function_name()))
+                }
+            }
+        }
+    );
+}
+
+impl_result!(IntoChurchNum, into_church);
+impl_result!(IntoScottNum, into_scott);
+impl_result!(IntoParigotNum, into_parigot);
+impl_result!(IntoStumpFuNum, into_stumpfu);
+impl_result!(IntoBinaryNum, into_binary);
