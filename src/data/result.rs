@@ -100,7 +100,7 @@ pub fn option_ok() -> Term {
     abs(app!(Var(1), some(), abs(none())))
 }
 
-/// Applied to a lambda-encoded `Result it produces a lambda-encoded Option containing the `Err`
+/// Applied to a lambda-encoded `Result` it produces a lambda-encoded Option containing the `Err`
 /// value.
 ///
 /// OPTION_ERR ≡ λa.a (λx.NONE) SOME ≡ λ 1 (λ NONE) SOME
