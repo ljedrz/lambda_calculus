@@ -152,8 +152,8 @@ pub fn to_church() -> Term {
 
 /// Applied to a Stump-Fu-encoded number it produces the equivalent Scott-encoded number.
 ///
-/// TO_SCOTT ≡ λn.n (λm.m SCOTT_SUCC SCOTT_ZERO) (n TRUE n)
-///          ≡ λ 1 (λ 1 SCOTT_SUCC SCOTT_ZERO) (1 TRUE 1)
+/// TO_SCOTT ≡ λn.(λm.m SCOTT_SUCC SCOTT_ZERO) (n TRUE n)
+///          ≡ λ (λ 1 SCOTT_SUCC SCOTT_ZERO) (1 TRUE 1)
 ///
 /// # Example
 /// ```
@@ -181,8 +181,8 @@ pub fn to_scott() -> Term {
 
 /// Applied to a Stump-Fu-encoded number it produces the equivalent Parigot-encoded number.
 ///
-/// TO_PARIGOT ≡ λn.n (λm.m PARIGOT_SUCC PARIGOT_ZERO) (n TRUE n)
-///            ≡ λ 1 (λ 1 PARIGOT_SUCC PARIGOT_ZERO) (1 TRUE 1)
+/// TO_PARIGOT ≡ λn.(λm.m PARIGOT_SUCC PARIGOT_ZERO) (n TRUE n)
+///            ≡ λ (λ 1 PARIGOT_SUCC PARIGOT_ZERO) (1 TRUE 1)
 ///
 /// # Example
 /// ```

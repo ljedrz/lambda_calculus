@@ -121,7 +121,7 @@ pub fn option_err() -> Term {
     abs(app!(Var(1), abs(none()), some()))
 }
 
-/// Applied to one argument and a lambda-encoded `Result` it returns the value inside the `Ok` or
+/// Applied to a `Term` and a lambda-encoded `Result` it returns the value inside the `Ok` or
 /// the first argument if the `Result` is not `Ok`.
 ///
 /// UNWRAP_OR ≡ λdr.r I (λx.d) ≡ λ λ 1 I (λ 3)
@@ -168,7 +168,7 @@ pub fn map() -> Term {
 }
 
 /// Applied to a function and a lambda-encoded `Result` it applies the function to the contents of
-/// the `Result` if it is `Ok`.
+/// the `Result` if it is `Err`.
 ///
 /// MAP_ERR ≡ λfm.m OK (λx.ERR (f x)) ≡ λ λ 1 OK (λ ERR (3 1))
 ///
@@ -204,7 +204,7 @@ pub fn map_err() -> Term {
 /// use lambda_calculus::data::num::church::succ;
 /// use lambda_calculus::*;
 ///
-/// // Equivalent to the closure `|x| { Ok(x+1) }` in Rust
+/// // Equivalent to a |x| { Ok(x + 1) } closure in Rust
 /// let ok_succ: Term = abs(app(ok(), app(succ(), Var(1))));
 ///
 /// let ok_one: Result<usize, usize> = Ok(1);
@@ -215,6 +215,7 @@ pub fn map_err() -> Term {
 ///     beta(app!(and_then(), err_two.into_church(), ok_succ.clone()), NOR, 0),
 ///     err_two.into_church()
 /// );
+///
 /// assert_eq!(
 ///     beta(app!(and_then(), ok_one.into_church(), ok_succ.clone()), NOR, 0),
 ///     ok_two.into_church()

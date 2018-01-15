@@ -52,7 +52,7 @@ pub fn neg() -> Term {
 /// Applied to a signed integer with a specified encoding, ensure that at least one element of the
 /// pair representing it is equal to zero.
 ///
-/// SIMPLIFY ≡ Z (λz.λx.IS_ZERO (FST x) (λy.x) (λy.IS_ZERO (SND x) x (z (PAIR (PRED (FST x))
+/// SIMPLIFY ≡ Z (λzx.IS_ZERO (FST x) (λy.x) (λy.IS_ZERO (SND x) x (z (PAIR (PRED (FST x))
 /// (PRED (SND x))))) I) ≡
 /// Z (λ λ IS_ZERO (FST 1) (λ 2) (λ IS_ZERO (SND 2) 2 (3 (PAIR (PRED (FST 2)) (PRED (SND 2))))) I)
 ///
@@ -142,7 +142,7 @@ pub fn modulus(encoding: Encoding) -> Term {
 /// Applied to two signed integers with a specified encoding it returns a signed integer equal to
 /// their sum.
 ///
-/// ADD ≡ λa.λb.SIMPLIFY (PAIR (ADD (FST a) (FST b)) (ADD (SND a) (SND b))) ≡
+/// ADD ≡ λab.SIMPLIFY (PAIR (ADD (FST a) (FST b)) (ADD (SND a) (SND b))) ≡
 /// λ λ SIMPLIFY (PAIR (ADD (FST 2) (FST 1)) (ADD (SND 2) (SND 1)))
 ///
 /// # Example
@@ -185,7 +185,7 @@ pub fn add(encoding: Encoding) -> Term {
 /// Applied to two signed integers with a specified encoding it returns a signed integer equal to
 /// their difference.
 ///
-/// SUB ≡ λa.λb.SIMPLIFY (PAIR (ADD (FST a) (SND b)) (ADD (SND a) (FST b))) ≡
+/// SUB ≡ λab.SIMPLIFY (PAIR (ADD (FST a) (SND b)) (ADD (SND a) (FST b))) ≡
 /// λ λ SIMPLIFY (PAIR (ADD (FST 2) (SND 1)) (ADD (SND 2) (FST 1)))
 ///
 /// # Example
@@ -228,7 +228,7 @@ pub fn sub(encoding: Encoding) -> Term {
 /// Applied to two signed integers with a specified encoding it returns a signed integer equal to
 /// their product.
 ///
-/// MUL ≡ λa.λb.SIMPLIFY (PAIR (MUL (ADD (FST a) (FST b)) (ADD (SND a) (SND b)))
+/// MUL ≡ λab.SIMPLIFY (PAIR (MUL (ADD (FST a) (FST b)) (ADD (SND a) (SND b)))
 /// (MUL (ADD (FST a) (SND b)) (ADD (SND a) (FST b)))) ≡
 /// λ λ SIMPLIFY (PAIR (MUL (ADD (FST 2) (FST 1)) (ADD (SND 2) (SND 1)))
 /// (MUL (ADD (FST 2) (SND 1)) (ADD (SND 2) (FST 1))))
