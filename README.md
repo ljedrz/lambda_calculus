@@ -3,7 +3,7 @@
 [![current version](https://img.shields.io/crates/v/lambda_calculus.svg)](https://crates.io/crates/lambda_calculus)
 [![build status](https://api.travis-ci.org/ljedrz/lambda_calculus.svg?branch=master)](https://travis-ci.org/ljedrz/lambda_calculus)
 
-**lambda_calculus** is a simple Rust implementation of pure lambda calculus.
+**lambda_calculus** is a simple, zero-dependency implementation of pure lambda calculus in Safe Rust.
 
 ## [Documentation](https://docs.rs/lambda_calculus)
 

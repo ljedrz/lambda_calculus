@@ -1,6 +1,7 @@
 //! **lambda_calculus** is a simple implementation of the untyped lambda calculus in Rust.
 
 #![deny(missing_docs)]
+#![deny(unsafe_code)]
 
 #[macro_use]
 pub mod term;
