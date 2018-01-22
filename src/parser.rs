@@ -48,7 +48,7 @@ pub enum CToken {
 #[doc(hidden)]
 pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, ParseError> {
     let chars = input.chars().enumerate();
-    let mut tokens = Vec::new();
+    let mut tokens = Vec::with_capacity(input.len());
 
     for (i, c) in chars {
         match c {
@@ -73,8 +73,7 @@ pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, ParseError> {
 #[doc(hidden)]
 pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
     let mut chars = input.chars().enumerate().peekable();
-    let mut tokens = Vec::new();
-    let valid_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let mut tokens = Vec::with_capacity(input.len());
 
     while let Some((i, c)) = chars.next() {
         match c {
@@ -83,7 +82,7 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
                 while let Some((i, c)) = chars.next() {
                     if c == '.' {
                         break
-                    } else if valid_chars.contains(c) {
+                    } else if c.is_alphabetic() {
                         name.push(c)
                     } else {
                         return Err(InvalidCharacter((i, c)))
@@ -96,7 +95,7 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
              _  => {
                 if c.is_whitespace() {
                     ()
-                } else if valid_chars.contains(c) {
+                } else if c.is_alphabetic() {
                     let mut name = c.to_string();
                     while let Some(&(_, c)) = chars.peek() {
                         if c.is_whitespace() || c == '(' || c == ')' {
@@ -119,19 +118,19 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
 
 #[doc(hidden)]
 pub fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
-    _convert_classic_tokens(tokens, &mut Vec::new(), &mut 0)
+    _convert_classic_tokens(tokens, &mut Vec::with_capacity(tokens.len()), &mut 0)
 }
 
-fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut usize) -> Vec<Token>
+fn _convert_classic_tokens<'t, 's>(tokens: &'t [CToken], stack: &'s mut Vec<&'t str>, pos: &mut usize) -> Vec<Token>
 {
-    let mut output = Vec::with_capacity(tokens[*pos..].len());
+    let mut output = Vec::with_capacity(tokens.len() - *pos);
     let mut inner_stack_count = 0;
 
     while let Some(token) = tokens.get(*pos) {
         match *token {
             CLambda(ref name) => {
                 output.push(Lambda);
-                stack.push(name.to_owned());
+                stack.push(name);
                 inner_stack_count += 1;
             },
             CLparen => {
@@ -141,7 +140,8 @@ fn _convert_classic_tokens(tokens: &[CToken], stack: &mut Vec<String>, pos: &mut
             },
             CRparen => {
                 output.push(Rparen);
-                for _ in 0..inner_stack_count { stack.pop(); }
+                let l = stack.len(); // TODO: move when NLL hits stable
+                stack.truncate(l - inner_stack_count);
                 return output
             },
             CName(ref name) => {
@@ -206,7 +206,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 ///
 /// - lambdas can be represented either with the greek letter (λ) or a backslash (\\ -
 /// less aesthetic, but only one byte in size)
-/// - the identifiers in `Classic` notation are `String`s of ASCII alphabetic characters
+/// - the identifiers in `Classic` notation are `String`s of alphabetic Unicode characters
 /// - `Classic` notation ignores whitespaces where unambiguous
 /// - the indices in the `DeBruijn` notation start with 1 and are hexadecimal digits
 /// - `DeBruijn` notation ignores all whitespaces (since indices > 15 are very unlikely)
@@ -217,7 +217,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 /// use lambda_calculus::combinators::{S, Y};
 ///
 /// assert_eq!(parse(&"λf.(λx.f (x x)) (λx.f (x x))", Classic), Ok(Y()));
-/// assert_eq!(parse(&"λf.(λx.f(x x))(λx.f(x x))", Classic),    Ok(Y()));
+/// assert_eq!(parse(&"λƒ.(λℵ.ƒ(ℵ ℵ))(λℵ.ƒ(ℵ ℵ))", Classic),    Ok(Y()));
 ///
 /// assert_eq!(parse(  &"λλλ31(21)",     DeBruijn), Ok(S()));
 /// assert_eq!(parse(&r#"\\\3 1 (2 1)"#, DeBruijn), Ok(S()));
@@ -259,13 +259,7 @@ pub fn fold_exprs(exprs: &[Expression]) -> Result<Term, ParseError> {
         }
     }
 
-    let mut ret = fold_terms(output)?;
-
-    for _ in 0..depth {
-        ret = abs(ret);
-    }
-
-    Ok(ret)
+    Ok(abs!(depth, fold_terms(output)?))
 }
 
 fn fold_terms(mut terms: Vec<Term>) -> Result<Term, ParseError> {

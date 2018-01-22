@@ -1,3 +1,11 @@
+Version 2.2.0
+=============
+
+Changes
+-------
+- `parse` now accepts Unicode variables in `Classic` mode
+- improve parser code (~25% speedup in `Classic` mode)
+
 Version 2.1.0
 =============
 
