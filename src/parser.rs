@@ -4,6 +4,7 @@ use term::{Term, Notation, abs, app};
 use term::Term::*;
 use self::Token::*;
 use self::CToken::*;
+use self::SToken::*;
 use self::ParseError::*;
 use self::Expression::*;
 pub use term::Notation::*;
@@ -45,6 +46,19 @@ pub enum CToken {
     CName(String)
 }
 
+#[derive(Debug, PartialEq)]
+#[doc(hidden)]
+pub enum SToken {
+    /// an abstraction with a bound variable
+    SLambda(char),
+    /// left parenthesis
+    SLparen,
+    /// right parenthesis
+    SRparen,
+    /// a variable with an identifier
+    SName(char)
+}
+
 #[doc(hidden)]
 pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, ParseError> {
     let chars = input.chars().enumerate();
@@ -71,7 +85,7 @@ pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, ParseError> {
 }
 
 #[doc(hidden)]
-pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
+pub fn tokenize_classic(input: &str) -> Result<Vec<CToken>, ParseError> {
     let mut chars = input.chars().enumerate().peekable();
     let mut tokens = Vec::with_capacity(input.len());
 
@@ -117,6 +131,43 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
 }
 
 #[doc(hidden)]
+pub fn tokenize_shortened(input: &str) -> Result<Vec<SToken>, ParseError> {
+    let mut chars = input.chars().enumerate().peekable();
+    let mut tokens = Vec::with_capacity(input.len());
+
+    while let Some((i, c)) = chars.next() {
+        match c {
+            '\\' | 'λ' => {
+                while let Some((i, c)) = chars.next() {
+                    if c == '.' {
+                        break
+                    } else if c.is_alphabetic() {
+                        tokens.push(SLambda(c))
+                    } else if c.is_whitespace() {
+                        ()
+                    } else {
+                        return Err(InvalidCharacter((i, c)))
+                    }
+                }
+            },
+            '(' => { tokens.push(SLparen) },
+            ')' => { tokens.push(SRparen) },
+             _  => {
+                if c.is_whitespace() {
+                    ()
+                } else if c.is_alphabetic() {
+                    tokens.push(SName(c))
+                } else {
+                    return Err(InvalidCharacter((i, c)))
+                }
+            }
+        }
+    }
+
+    Ok(tokens)
+}
+
+#[doc(hidden)]
 pub fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
     _convert_classic_tokens(tokens, &mut Vec::with_capacity(tokens.len()), &mut 0)
 }
@@ -146,6 +197,48 @@ fn _convert_classic_tokens<'t, 's>(tokens: &'t [CToken], stack: &'s mut Vec<&'t 
             },
             CName(ref name) => {
                 if let Some(index) = stack.iter().rev().position(|t| t == name) {
+                    output.push(Number(index + 1))
+                } else {
+                    output.push(Number(stack.len() + 1))
+                }
+            }
+        }
+        *pos += 1;
+    }
+
+    output
+}
+
+#[doc(hidden)]
+pub fn convert_shortened_tokens(tokens: &[SToken]) -> Vec<Token> {
+    _convert_shortened_tokens(tokens, &mut Vec::with_capacity(tokens.len()), &mut 0)
+}
+
+fn _convert_shortened_tokens(tokens: &[SToken], stack: &mut Vec<char>, pos: &mut usize) -> Vec<Token>
+{
+    let mut output = Vec::with_capacity(tokens.len() - *pos);
+    let mut inner_stack_count = 0;
+
+    while let Some(token) = tokens.get(*pos) {
+        match *token {
+            SLambda(name) => {
+                output.push(Lambda);
+                stack.push(name);
+                inner_stack_count += 1;
+            },
+            SLparen => {
+                output.push(Lparen);
+                *pos += 1;
+                output.append(&mut _convert_shortened_tokens(tokens, stack, pos));
+            },
+            SRparen => {
+                output.push(Rparen);
+                let l = stack.len(); // TODO: move when NLL hits stable
+                stack.truncate(l - inner_stack_count);
+                return output
+            },
+            SName(name) => {
+                if let Some(index) = stack.iter().rev().position(|&t| t == name) {
                     output.push(Number(index + 1))
                 } else {
                     output.push(Number(stack.len() + 1))
@@ -217,7 +310,10 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 /// use lambda_calculus::combinators::{S, Y};
 ///
 /// assert_eq!(parse(&"λf.(λx.f (x x)) (λx.f (x x))", Classic), Ok(Y()));
-/// assert_eq!(parse(&"λƒ.(λℵ.ƒ(ℵ ℵ))(λℵ.ƒ(ℵ ℵ))", Classic),    Ok(Y()));
+/// assert_eq!(parse(&"λƒ.(λℵ.ƒ(ℵ ℵ))(λℵ.ƒ(ℵ ℵ))",     Classic), Ok(Y()));
+///
+/// assert_eq!(parse(&"λxyz.x z (y z)",   Shortened), Ok(S()));
+/// assert_eq!(parse(&"λx y z.x z (y z)", Shortened), Ok(S()));
 ///
 /// assert_eq!(parse(  &"λλλ31(21)",     DeBruijn), Ok(S()));
 /// assert_eq!(parse(&r#"\\\3 1 (2 1)"#, DeBruijn), Ok(S()));
@@ -227,10 +323,10 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 ///
 /// Returns a `ParseError` when a lexing or syntax error is encountered.
 pub fn parse(input: &str, notation: Notation) -> Result<Term, ParseError> {
-    let tokens = if notation == DeBruijn {
-        tokenize_dbr(input)?
-    } else {
-        convert_classic_tokens(&tokenize_cla(input)?)
+    let tokens = match notation {
+        DeBruijn => tokenize_dbr(input)?,
+        Classic => convert_classic_tokens(&tokenize_classic(input)?),
+        Shortened => convert_shortened_tokens(&tokenize_shortened(input)?)
     };
     let ast = get_ast(&tokens)?;
 
@@ -280,11 +376,11 @@ mod tests {
     #[test]
     fn tokenization_error() {
         assert_eq!(tokenize_dbr(&"λλx2"),    Err(InvalidCharacter((2, 'x'))));
-        assert_eq!(tokenize_cla(&"λa.λb a"), Err(InvalidCharacter((5, ' '))));
+        assert_eq!(tokenize_classic(&"λa.λb a"), Err(InvalidCharacter((5, ' '))));
     }
 
     #[test]
-    fn tokenization_success() {
+    fn tokenization_success_debruijn() {
         let quine = "λ 1 ( (λ 1 1) (λ λ λ λ λ 1 4 (3 (5 5) 2) ) ) 1";
         let tokens = tokenize_dbr(&quine);
 
@@ -301,7 +397,7 @@ mod tests {
             (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
         let blc_cla = format!("{}", parse(&blc_dbr, DeBruijn).unwrap());
 
-        let tokens_cla = tokenize_cla(&blc_cla);
+        let tokens_cla = tokenize_classic(&blc_cla);
         let tokens_dbr = tokenize_dbr(&blc_dbr);
 
         assert!(tokens_cla.is_ok());

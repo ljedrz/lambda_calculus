@@ -34,6 +34,8 @@ pub const UD: Term = Var(0);
 pub enum Notation {
     /// classic lambda calculus notation; used by `fmt::Display`
     Classic,
+    /// shortened notation - sequence of abstractions are contracted
+    Shortened,
     /// De Bruijn indices; used by `fmt::Debug`
     DeBruijn
 }
