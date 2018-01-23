@@ -6,6 +6,7 @@ use self::TermError::*;
 use std::fmt;
 use std::borrow::Cow;
 use std::char::from_u32;
+use parser;
 
 /// The character used to display lambda abstractions (a backslash).
 #[cfg(feature = "backslash_lambda")]
@@ -409,6 +410,33 @@ fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
         format!("({})", input).into()
     } else {
         input.into()
+    }
+}
+
+/// Shortens a term in `Classic` display mode.
+///
+/// # Example
+/// ```
+/// use lambda_calculus::*;
+/// use lambda_calculus::term::shorten;
+///
+/// let term1 = "λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)";
+/// let term2 = "λone.λtwo.λthree.two (one two three)";
+///
+/// assert_eq!(shorten(&term1).unwrap(), "λabc.a (λde.e (d b)) (λd.c) (λd.d)");
+/// assert_eq!(shorten(&term2).unwrap(), "λone two three.two (one two three)");
+/// ```
+/// # Errors
+///
+/// Returns a `ParseError` if `term` is not valid.
+pub fn shorten(term: &str) -> Result<String, parser::ParseError> {
+    if parser::tokenize_classic(input)?
+        .iter()
+        .any(|ref t| if let &parser::CToken::CName(ref n) = *t { n.len() > 1 } else { false })
+    {
+        Ok(input.replace(".λ", " "))
+    } else {
+        Ok(input.replace(".λ", ""))
     }
 }
 
