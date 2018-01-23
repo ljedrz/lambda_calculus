@@ -217,7 +217,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 /// use lambda_calculus::combinators::{S, Y};
 ///
 /// assert_eq!(parse(&"λf.(λx.f (x x)) (λx.f (x x))", Classic), Ok(Y()));
-/// assert_eq!(parse(&"λƒ.(λℵ.ƒ(ℵ ℵ))(λℵ.ƒ(ℵ ℵ))", Classic),    Ok(Y()));
+/// assert_eq!(parse(&"λƒ.(λℵ.ƒ(ℵ ℵ))(λℵ.ƒ(ℵ ℵ))", Classic),  Ok(Y()));
 ///
 /// assert_eq!(parse(  &"λλλ31(21)",     DeBruijn), Ok(S()));
 /// assert_eq!(parse(&r#"\\\3 1 (2 1)"#, DeBruijn), Ok(S()));
@@ -250,12 +250,9 @@ pub fn fold_exprs(exprs: &[Expression]) -> Result<Term, ParseError> {
 
     for expr in exprs.iter() {
         match *expr {
-            Variable(i) => output.push(Var(i)),
-            Abstraction => depth += 1,
-            Sequence(ref exprs) => {
-                let subexpr = fold_exprs(exprs)?;
-                output.push(subexpr)
-            }
+            Abstraction         => depth += 1,
+            Variable(i)         => output.push(Var(i)),
+            Sequence(ref exprs) => output.push(fold_exprs(exprs)?)
         }
     }
 
@@ -263,13 +260,15 @@ pub fn fold_exprs(exprs: &[Expression]) -> Result<Term, ParseError> {
 }
 
 fn fold_terms(mut terms: Vec<Term>) -> Result<Term, ParseError> {
-    if terms.len() > 1 {
-        let fst = terms.remove(0);
-        Ok( terms.into_iter().fold(fst, app) )
-    } else if terms.len() == 1 {
-        Ok( terms.pop().unwrap() ) // safe; ensured above
-    } else {
+    if terms.is_empty() {
         Err(EmptyExpression)
+    } else {
+        let fst = terms.remove(0);
+        if terms.is_empty() {
+            Ok( fst )
+        } else {
+            Ok( terms.into_iter().fold(fst, app) )
+        }
     }
 }
 
