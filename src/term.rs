@@ -430,13 +430,13 @@ fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
 ///
 /// Returns a `ParseError` if `term` is not valid.
 pub fn shorten(term: &str) -> Result<String, parser::ParseError> {
-    if parser::tokenize_classic(input)?
+    if parser::tokenize_classic(term)?
         .iter()
         .any(|ref t| if let &parser::CToken::CName(ref n) = *t { n.len() > 1 } else { false })
     {
-        Ok(input.replace(".λ", " "))
+        Ok(term.replace(".λ", " "))
     } else {
-        Ok(input.replace(".λ", ""))
+        Ok(term.replace(".λ", ""))
     }
 }
 
