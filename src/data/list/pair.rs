@@ -716,10 +716,10 @@ pub fn drop() -> Term {
     )
 }
 
-/// Applied to a predicate function and a pair-encoded list it returns the elements of the list
-/// after the longest prefix of the list whose elements all satisfy the predicate function.
+/// Applied to a predicate function and a pair-encoded list it returns a new list without
+/// the prefix of the supplied list whose elements satisfy the predicate function.
 ///
-/// DROP_WHILE ≡ Z (λzfl. IS_NIL l (λx.NIL) (λx.f (HEAD l) (z f (TAIL l)) l) I)
+/// DROP_WHILE ≡ Z (λzfl.IS_NIL l (λx.NIL) (λx.f (HEAD l) (z f (TAIL l)) l) I)
 ///            ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ 3 (HEAD 2) (4 3 (TAIL 2)) 2) I)
 ///
 /// # Example
@@ -728,8 +728,8 @@ pub fn drop() -> Term {
 /// use lambda_calculus::data::num::church::is_zero;
 /// use lambda_calculus::*;
 ///
-/// let list1 = vec![0.into_church(), 0.into_church(), 1.into_church()].into_pair_list();
-/// let list2 = vec![1.into_church()].into_pair_list();
+/// let list1 = vec![0.into_church(), 0.into_church(), 1.into_church(), 0.into_church()].into_pair_list();
+/// let list2 = vec![1.into_church(), 0.into_church()].into_pair_list();
 ///
 /// assert_eq!(beta(app!(drop_while(), is_zero(), list1), NOR, 0), list2);
 /// ```

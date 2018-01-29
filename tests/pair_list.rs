@@ -5,6 +5,7 @@ extern crate lambda_calculus as lambda;
 
 use lambda::*;
 use lambda::data::list::pair::*;
+use lambda::data::num::church::is_zero;
 
 macro_rules! vec_church {
     ( $( $e:expr ),* ) => {
@@ -99,6 +100,22 @@ test_pair_list_all_lists!(pair_list_append, append,
        vec_church![1], vec_church![2, 3] =>    vec_church![1, 2, 3],
     vec_church![1, 2], vec_church![3, 4] => vec_church![1, 2, 3, 4]
 );
+
+test_pair_list!(pair_list_drop, drop,
+    0.into_church(),        vec_church![].into_pair_list() =>  vec_church![].into_pair_list(),
+    0.into_church(),       vec_church![1].into_pair_list() => vec_church![1].into_pair_list(),
+    1.into_church(),       vec_church![1].into_pair_list() =>  vec_church![].into_pair_list(),
+    1.into_church(),    vec_church![1, 2].into_pair_list() => vec_church![2].into_pair_list(),
+    2.into_church(), vec_church![1, 2, 3].into_pair_list() => vec_church![3].into_pair_list()
+);
+
+test_pair_list!(pair_list_drop_while, drop_while,
+    is_zero(),     vec_church![].into_pair_list() =>     vec_church![].into_pair_list(),
+    is_zero(),    vec_church![1].into_pair_list() =>    vec_church![1].into_pair_list(),
+    is_zero(), vec_church![0, 1].into_pair_list() =>    vec_church![1].into_pair_list(),
+    is_zero(), vec_church![1, 0].into_pair_list() => vec_church![1, 0].into_pair_list()
+);
+
 /*
 test_list_hof!(list_map, map, succ,
     empty() => empty(),
