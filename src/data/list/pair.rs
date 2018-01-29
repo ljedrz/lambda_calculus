@@ -676,6 +676,85 @@ pub fn take_while() -> Term {
     )
 }
 
+/// Applied to a Church-encoded number `n` and a pair-encoded list it returns a new list without
+/// the first `n` elements of the supplied list.
+///
+/// DROP ≡ Z (λznl.IS_NIL l (λx.NIL) (λx.IS_ZERO n l (z (PRED n) (TAIL l))) I)
+///      ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ IS_ZERO 3 2 (4 (PRED 3) (TAIL 2))) I)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::list::pair::drop;
+/// use lambda_calculus::*;
+///
+/// let list = vec![1.into_church(), 2.into_church(), 3.into_church()];
+///
+/// assert_eq!(
+///     beta(app!(drop(), 1.into_church(), list.into_pair_list()), NOR, 0),
+///     vec![2.into_church(), 3.into_church()].into_pair_list()
+/// );
+/// ```
+pub fn drop() -> Term {
+    app!(
+        Z(),
+        abs!(3, app!(
+            is_nil(),
+            Var(1),
+            abs(nil()),
+            abs(app!(
+                is_zero(),
+                Var(3),
+                Var(2),
+                app!(
+                    Var(4),
+                    app(pred(), Var(3)),
+                    app(tail(), Var(2))
+                )
+            )),
+            I()
+        ))
+    )
+}
+
+/// Applied to a predicate function and a pair-encoded list it returns the elements of the list
+/// after the longest prefix of the list whose elements all satisfy the predicate function.
+///
+/// DROP_WHILE ≡ Z (λzfl. IS_NIL l (λx.NIL) (λx.f (HEAD l) (z f (TAIL l)) l) I)
+///            ≡ Z (λ λ λ IS_NIL 1 (λ NIL) (λ 3 (HEAD 2) (4 3 (TAIL 2)) 2) I)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::list::pair::drop_while;
+/// use lambda_calculus::data::num::church::is_zero;
+/// use lambda_calculus::*;
+///
+/// let list1 = vec![0.into_church(), 0.into_church(), 1.into_church()].into_pair_list();
+/// let list2 = vec![1.into_church()].into_pair_list();
+///
+/// assert_eq!(beta(app!(drop_while(), is_zero(), list1), NOR, 0), list2);
+/// ```
+pub fn drop_while() -> Term {
+    app(
+        Z(),
+        abs!(3, app!(
+            is_nil(),
+            Var(1),
+            abs(nil()),
+            abs(app!(
+                Var(3),
+                app(head(), Var(2)),
+                app!(
+                    Var(4),
+                    Var(3),
+                    app(tail(), Var(2))
+                ),
+                Var(2)
+            )),
+            I()
+        ))
+    )
+}
+
 impl Into<Term> for Vec<Term> {
     fn into(self) -> Term {
         let mut ret = nil();
