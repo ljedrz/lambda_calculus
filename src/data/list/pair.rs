@@ -92,7 +92,7 @@ pub fn head() -> Term { fst() }
 /// ```
 pub fn tail() -> Term { snd() }
 
-/// Applied to a pair-encoded list and a Church-encoded number it returns its Church-encoded length.
+/// Applied to a pair-encoded list it returns its Church-encoded length.
 ///
 /// LENGTH ≡ Z (λzal.IS_NIL l (λx.a) (λx.z (SUCC a) (TAIL l)) I) ZERO
 ///        ≡ Z (λλλ IS_NIL 1 (λ 3) (λ 4 (SUCC 3) (TAIL 2)) I) ZERO
