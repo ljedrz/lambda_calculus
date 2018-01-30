@@ -116,6 +116,13 @@ test_pair_list!(pair_list_drop_while, drop_while,
     is_zero(), vec_church![1, 0].into_pair_list() => vec_church![1, 0].into_pair_list()
 );
 
+test_pair_list!(pair_list_replicate, replicate,
+    0.into_church(), 2.into_church() => vec_church![].into_pair_list(),
+    1.into_church(), 2.into_church() => vec_church![2].into_pair_list(),
+    2.into_church(), 2.into_church() => vec_church![2, 2].into_pair_list(),
+    3.into_church(), 2.into_church() => vec_church![2, 2, 2].into_pair_list()
+);
+
 /*
 test_list_hof!(list_map, map, succ,
     empty() => empty(),

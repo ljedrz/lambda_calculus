@@ -755,6 +755,44 @@ pub fn drop_while() -> Term {
     )
 }
 
+/// Applied to a Church-encoded number `n` and an argument, it produces a list containing the
+/// argument repeated `n` times.
+///
+/// REPLICATE ≡ Z (λzny.IS_ZERO n (λx.NIL) (λx.PAIR y (z (PRED n) y)) I)
+///           ≡ Z (λ λ λ IS_ZERO 2 (λ NIL) (λ PAIR 2 (4 (PRED 3) 2)) I)
+///
+/// # Example
+/// ```
+/// use lambda_calculus::data::list::pair::replicate;
+/// use lambda_calculus::*;
+///
+/// let list1 = vec![2.into_church(), 2.into_church(), 2.into_church()].into_pair_list();
+/// let list2 = vec![].into_pair_list();
+///
+/// assert_eq!(beta(app!(replicate(), 3.into_church(), 2.into_church()), NOR, 0), list1);
+/// assert_eq!(beta(app!(replicate(), 0.into_church(), 4.into_church()), NOR, 0), list2);
+/// ```
+pub fn replicate() -> Term {
+    app(
+        Z(),
+        abs!(3, app!(
+            is_zero(),
+            Var(2),
+            abs(nil()),
+            abs(app!(
+                pair(),
+                Var(2),
+                app!(
+                    Var(4),
+                    app(pred(), Var(3)),
+                    Var(2)
+                )
+            )),
+            I()
+        ))
+    )
+}
+
 impl Into<Term> for Vec<Term> {
     fn into(self) -> Term {
         let mut ret = nil();
