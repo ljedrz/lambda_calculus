@@ -3,13 +3,13 @@ Version 2.2.0
 
 Thanks
 -------
-@billpmurphy for adding `list::pair::{drop, drop_while}` and a docfix
+@billpmurphy for adding `list::pair::{drop, drop_while, replicate}` and a docfix
 
 Changes
 -------
 - `parse` now accepts Unicode variables in `Classic` mode
 - improve parser code (~25% speedup in `Classic` mode)
-- add `list::pair::{drop, drop_while}`
+- add `list::pair::{drop, drop_while, replicate}`
 
 Version 2.1.0
 =============
