@@ -345,7 +345,7 @@ impl fmt::Display for Term {
 fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
         Var(0) => {
-            format!("undefined")
+            "undefined".to_string()
         },
         Var(i) => {
             if depth >= i as u32 {
@@ -383,7 +383,7 @@ impl fmt::Debug for Term {
 fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
         Var(0) => {
-            format!("undefined")
+            "undefined".to_string()
         },
         Var(i) => {
             format!("{:X}", i)

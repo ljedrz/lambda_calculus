@@ -123,8 +123,8 @@ impl Term {
         *count += 1;
     }
 
-    fn is_reducible(&self, limit: usize, count: &usize) -> bool {
-        self.lhs_ref().and_then(|t| t.unabs_ref()).is_ok() && (limit == 0 || *count < limit )
+    fn is_reducible(&self, limit: usize, count: usize) -> bool {
+        self.lhs_ref().and_then(|t| t.unabs_ref()).is_ok() && (limit == 0 || count < limit )
     }
 
     /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
@@ -165,7 +165,7 @@ impl Term {
         if let App(_, _) = *self {
             self.lhs_mut().unwrap().beta_cbn(limit, count);
 
-            if self.is_reducible(limit, count) {
+            if self.is_reducible(limit, *count) {
                 self.eval(count);
                 self.beta_cbn(limit, count);
             }
@@ -180,7 +180,7 @@ impl Term {
             App(_, _) => {
                 self.lhs_mut().unwrap().beta_cbn(limit, count);
 
-                if self.is_reducible(limit, count) {
+                if self.is_reducible(limit, *count) {
                     self.eval(count);
                     self.beta_nor(limit, count);
                 } else {
@@ -199,7 +199,7 @@ impl Term {
             self.lhs_mut().unwrap().beta_cbv(limit, count);
             self.rhs_mut().unwrap().beta_cbv(limit, count);
 
-            if self.is_reducible(limit, count) {
+            if self.is_reducible(limit, *count) {
                 self.eval(count);
                 self.beta_cbv(limit, count);
             }
@@ -215,7 +215,7 @@ impl Term {
                 self.lhs_mut().unwrap().beta_app(limit, count);
                 self.rhs_mut().unwrap().beta_app(limit, count);
 
-                if self.is_reducible(limit, count) {
+                if self.is_reducible(limit, *count) {
                     self.eval(count);
                     self.beta_app(limit, count);
                 }
@@ -233,7 +233,7 @@ impl Term {
                 self.lhs_mut().unwrap().beta_cbv(limit, count);
                 self.rhs_mut().unwrap().beta_hap(limit, count);
 
-                if self.is_reducible(limit, count) {
+                if self.is_reducible(limit, *count) {
                     self.eval(count);
                     self.beta_hap(limit, count);
                 } else {
@@ -252,7 +252,7 @@ impl Term {
             App(_, _) => {
                 self.lhs_mut().unwrap().beta_hsp(limit, count);
 
-                if self.is_reducible(limit, count) {
+                if self.is_reducible(limit, *count) {
                     self.eval(count);
                     self.beta_hsp(limit, count)
                 }
@@ -269,7 +269,7 @@ impl Term {
             App(_, _) => {
                 self.lhs_mut().unwrap().beta_hsp(limit, count);
 
-                if self.is_reducible(limit, count) {
+                if self.is_reducible(limit, *count) {
                     self.eval(count);
                     self.beta_hno(limit, count)
                 } else {

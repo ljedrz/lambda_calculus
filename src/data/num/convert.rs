@@ -93,7 +93,7 @@ impl IntoBinaryNum for usize {
         if self != 0 {
             let binstr = format!("{:b}", self).into_bytes();
 
-            for bit in binstr.into_iter() {
+            for bit in binstr {
                 if bit == b'0' {
                     ret = app(Var(2), ret);
                 } else {
