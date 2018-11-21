@@ -25,7 +25,9 @@ pub const UD: Term = Var(0);
 ///
 /// # Examples
 /// ```
-/// use lambda_calculus::combinators::S;
+/// use lambda_calculus::*;
+///
+/// let S = || abs!(3, app!(Var(3), Var(1), app(Var(2), Var(1))));
 ///
 /// assert_eq!(&format!(  "{}", S()), "λa.λb.λc.a c (b c)"); // Classic notation
 /// assert_eq!(&format!("{:?}", S()), "λλλ31(21)");          // DeBruijn index notation

@@ -213,7 +213,12 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 /// # Examples
 /// ```
 /// use lambda_calculus::*;
-/// use lambda_calculus::combinators::{S, Y};
+///
+/// let S = || abs!(3, app!(Var(3), Var(1), app(Var(2), Var(1))));
+/// let Y = || abs(app(
+///     abs(app(Var(2), app(Var(1), Var(1)))),
+///     abs(app(Var(2), app(Var(1), Var(1))))
+/// ));
 ///
 /// assert_eq!(parse(&"λf.(λx.f (x x)) (λx.f (x x))", Classic), Ok(Y()));
 /// assert_eq!(parse(&"λƒ.(λℵ.ƒ(ℵ ℵ))(λℵ.ƒ(ℵ ℵ))", Classic),  Ok(Y()));

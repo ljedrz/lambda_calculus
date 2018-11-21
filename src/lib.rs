@@ -10,7 +10,6 @@
 pub mod term;
 pub mod parser;
 pub mod reduction;
-pub mod combinators;
 
 pub use self::term::{Term, abs, app, UD};
 pub use self::term::Term::*;
@@ -18,12 +17,3 @@ pub use self::term::Notation::*;
 pub use self::reduction::beta;
 pub use self::reduction::Order::*;
 pub use self::parser::parse;
-
-#[cfg(feature = "encoding")]
-pub mod data;
-#[cfg(feature = "encoding")]
-pub use data::num::convert::*;
-#[cfg(feature = "encoding")]
-pub use data::num::convert::Encoding::*;
-#[cfg(feature = "encoding")]
-pub use data::list::convert::*;

@@ -1,8 +1,15 @@
+#![allow(non_snake_case)]
+
 extern crate lambda_calculus as lambda;
 
 use lambda::*;
-use lambda::combinators::{I, O};
 use std::thread;
+
+fn I() -> Term { abs(Var(1)) }
+
+fn o() -> Term { abs(app(Var(1), Var(1))) }
+
+fn O() -> Term { app(o(), o()) }
 
 #[test]
 fn reduction_nor() {
