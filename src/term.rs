@@ -298,8 +298,8 @@ impl Term {
     /// assert_eq!(term2.is_supercombinator(), false);
     /// ```
     pub fn is_supercombinator(&self) -> bool {
-        let mut stack = Vec::new();
-        stack.push((0usize, self));
+        let mut stack = vec![(0usize, self)];
+
         while let Some((depth, term)) = stack.pop() {
             match *term {
                 Var(i) => if i > depth { return false },
@@ -345,13 +345,13 @@ impl fmt::Display for Term {
 fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
         Var(0) => {
-            "undefined".to_string()
+            "undefined".to_owned()
         },
         Var(i) => {
             if depth >= i as u32 {
-                format!("{}", from_u32(depth + 97 - i as u32).expect("error while printing term"))
+                from_u32(depth + 97 - i as u32).expect("error while printing term").to_string()
             } else {
-                format!("{}", from_u32(96 + i as u32).expect("error while printing term"))
+                from_u32(96 + i as u32).expect("error while printing term").to_string()
             }
         },
         Abs(ref t) => {
@@ -383,7 +383,7 @@ impl fmt::Debug for Term {
 fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -> String {
     match *term {
         Var(0) => {
-            "undefined".to_string()
+            "undefined".to_owned()
         },
         Var(i) => {
             format!("{:X}", i)
