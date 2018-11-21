@@ -3,6 +3,9 @@
 #![deny(missing_docs)]
 #![deny(unsafe_code)]
 
+#![feature(box_patterns)]
+#![feature(nll)]
+
 #[macro_use]
 pub mod term;
 pub mod parser;
