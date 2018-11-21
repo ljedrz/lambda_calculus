@@ -1,7 +1,7 @@
 //! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form) for lambda `Term`s
 
-use term::{Term, TermError};
-use term::Term::*;
+use crate::term::{Term, TermError};
+use crate::term::Term::*;
 use std::fmt;
 use std::mem;
 pub use self::Order::*;

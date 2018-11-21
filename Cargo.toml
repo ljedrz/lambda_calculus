@@ -1,6 +1,7 @@
 [package]
 name = "lambda_calculus"
 version = "3.0.0"
+edition = "2018"
 description = "A simple, zero-dependency implementation of pure lambda calculus in Safe Rust"
 repository = "https://github.com/ljedrz/lambda_calculus"
 documentation = "https://docs.rs/lambda_calculus"

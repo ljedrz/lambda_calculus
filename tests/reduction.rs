@@ -2,7 +2,7 @@
 
 extern crate lambda_calculus as lambda;
 
-use lambda::*;
+use crate::lambda::*;
 use std::thread;
 
 fn I() -> Term { abs(Var(1)) }

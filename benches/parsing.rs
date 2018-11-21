@@ -4,9 +4,9 @@ extern crate test;
 extern crate lambda_calculus as lambda;
 
 use test::Bencher;
-use lambda::parser::*;
-use lambda::parser::Token::*;
-use lambda::parser::Expression::*;
+use crate::lambda::parser::*;
+use crate::lambda::parser::Token::*;
+use crate::lambda::parser::Expression::*;
 
 #[bench]
 fn parser_tokenizing_dbr(b: &mut Bencher) {

@@ -5,7 +5,7 @@ extern crate test;
 extern crate lambda_calculus as lambda;
 
 use test::Bencher;
-use lambda::term::*;
+use crate::lambda::term::*;
 
 #[bench]
 fn term_is_supercombinator(b: &mut Bencher) {
