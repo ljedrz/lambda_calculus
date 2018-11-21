@@ -482,10 +482,10 @@ mod tests {
 
     #[test]
     fn open_term_display() {
-        assert_eq!(&format!("{}",     abs(Var(2))) , "λa.b");
-        assert_eq!(&format!("{}",     abs(Var(3))) , "λa.c");
-        assert_eq!(&format!("{}", abs!(2, Var(3))), "λa.λb.c");
-        assert_eq!(&format!("{}", abs!(2, Var(4))), "λa.λb.d");
+        assert_eq!(&abs(Var(2)).to_string(),     "λa.b");
+        assert_eq!(&abs(Var(3)).to_string(),     "λa.c");
+        assert_eq!(&abs!(2, Var(3)).to_string(), "λa.λb.c");
+        assert_eq!(&abs!(2, Var(4)).to_string(), "λa.λb.d");
     }
 
     #[test]
@@ -499,9 +499,9 @@ mod tests {
             abs(Var(1))
         ));
 
-        assert_eq!(&format!("{}", zero), "λa.λb.b");
-        assert_eq!(&format!("{}", succ), "λa.λb.λc.b (a b c)");
-        assert_eq!(&format!("{}", pred), "λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)");
+        assert_eq!(&zero.to_string(), "λa.λb.b");
+        assert_eq!(&succ.to_string(), "λa.λb.λc.b (a b c)");
+        assert_eq!(&pred.to_string(), "λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)");
 
         assert_eq!(&format!("{:?}", zero), "λλ1");
         assert_eq!(&format!("{:?}", succ), "λλλ2(321)");

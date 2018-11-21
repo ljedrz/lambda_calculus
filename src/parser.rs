@@ -297,7 +297,7 @@ mod tests {
     fn tokenization_success_classic() {
         let blc_dbr = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
             (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
-        let blc_cla = format!("{}", parse(&blc_dbr, DeBruijn).unwrap());
+        let blc_cla = parse(&blc_dbr, DeBruijn).unwrap().to_string();
 
         let tokens_cla = tokenize_cla(&blc_cla);
         let tokens_dbr = tokenize_dbr(&blc_dbr);
