@@ -2,13 +2,13 @@
 //!
 //! The supported `Encoding`s are `Church`, `Scott`, `Parigot` and `StumpFu`.
 
-use term::{Term, abs, app};
-use term::Term::*;
-use data::num::{church, scott, parigot, stumpfu};
-use data::num::convert::Encoding;
-use data::num::convert::Encoding::*;
-use data::pair::{fst, snd, pair, swap};
-use combinators::{I, Z};
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::data::num::{church, scott, parigot, stumpfu};
+use crate::data::num::convert::Encoding;
+use crate::data::num::convert::Encoding::*;
+use crate::data::pair::{fst, snd, pair, swap};
+use crate::combinators::{I, Z};
 
 /// Applied to a numeral with a specified encoding it produces a pair representing its signed
 /// equivalent.

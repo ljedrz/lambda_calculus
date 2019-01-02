@@ -3,7 +3,6 @@
 #![feature(test)]
 extern crate test;
 
-#[macro_use]
 extern crate lambda_calculus as lambda;
 
 use test::Bencher;

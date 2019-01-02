@@ -1,9 +1,9 @@
 //! [Church right fold list](https://ifl2014.github.io/submissions/ifl2014_submission_13.pdf)
 
-use term::{Term, abs, app, UD};
-use term::Term::*;
-use data::boolean::{tru, fls};
-use data::pair::{pair, fst, snd};
+use crate::term::{Term, abs, app, UD};
+use crate::term::Term::*;
+use crate::data::boolean::{tru, fls};
+use crate::data::pair::{pair, fst, snd};
 
 /// Produces a `nil`, the last link of a Church-encoded list; equivalent to `boolean::tru`.
 ///

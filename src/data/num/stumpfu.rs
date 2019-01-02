@@ -1,10 +1,10 @@
 //! [Stump-Fu numerals](http://homepage.cs.uiowa.edu/~astump/papers/stump-fu-jfp-2016.pdf)
 
-use term::{Term, abs, app};
-use term::Term::*;
-use data::num::convert::IntoChurchNum;
-use data::boolean::{tru, fls};
-use data::num::{church, scott, parigot};
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::data::num::convert::IntoChurchNum;
+use crate::data::boolean::{tru, fls};
+use crate::data::num::{church, scott, parigot};
 
 /// Produces a Stump-Fu-encoded number zero; equivalent to `boolean::fls`.
 ///

@@ -1,10 +1,10 @@
 //! [Mogensen's binary number encoding](http://repository.readscheme.org/ftp/papers/topps/D-456.pdf)
 
-use term::{Term, abs, app};
-use term::Term::*;
-use data::boolean::{tru, fls};
-use combinators::I;
-use data::pair::{pair, fst, snd};
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::data::boolean::{tru, fls};
+use crate::combinators::I;
+use crate::data::pair::{pair, fst, snd};
 
 /// A 0 bit; equivalent to `boolean::tru`.
 ///

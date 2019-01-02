@@ -1,9 +1,9 @@
 //! [Scott numerals](http://lucacardelli.name/Papers/Notes/scott2.pdf)
 
-use data::boolean::{tru, fls};
-use term::{Term, abs, app};
-use term::Term::*;
-use combinators::Z;
+use crate::data::boolean::{tru, fls};
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::combinators::Z;
 
 /// Produces a Scott-encoded number zero; equivalent to `boolean::tru`.
 ///

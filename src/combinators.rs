@@ -11,8 +11,8 @@
 
 #![allow(non_snake_case)]
 
-use term::{Term, abs, app};
-use term::Term::*;
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
 
 /// I - the identity combinator.
 ///

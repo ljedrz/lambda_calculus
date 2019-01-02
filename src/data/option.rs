@@ -1,9 +1,9 @@
 //! [Lambda-encoded option](https://en.wikipedia.org/wiki/Option_type)
 
-use term::{Term, abs, app};
-use term::Term::*;
-use data::boolean::{tru, fls};
-use combinators::I;
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::data::boolean::{tru, fls};
+use crate::combinators::I;
 
 /// Produces a lambda-encoded empty option; equivalent to `boolean::tru`.
 ///

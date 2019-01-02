@@ -9,6 +9,7 @@ license = "CC0-1.0"
 keywords = ["lambda", "calculus", "functional", "mathematics", "combinators"]
 authors = ["ljedrz <ljedrz@gmail.com>"]
 exclude = [".cargo/*", "target/*"]
+edition = "2018"
 
 [features]
 default = ["encoding"]

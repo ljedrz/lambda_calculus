@@ -1,10 +1,10 @@
 //! Lambda-encoded [result type](https://doc.rust-lang.org/std/result/enum.Result.html)
 
-use term::{Term, abs, app};
-use term::Term::*;
-use data::boolean::{tru, fls};
-use data::option::{none, some};
-use combinators::I;
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::data::boolean::{tru, fls};
+use crate::data::option::{none, some};
+use crate::combinators::I;
 
 /// Applied to an argument it consumes it and produces a lambda-encoded `Result::Ok` that contains
 /// it.

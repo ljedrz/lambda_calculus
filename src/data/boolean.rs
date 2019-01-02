@@ -1,7 +1,7 @@
 //! [Lambda-encoded booleans](https://en.wikipedia.org/wiki/Church_encoding#Church_Booleans)
 
-use term::{Term, abs, app};
-use term::Term::*;
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
 
 /// A lambda-encoded boolean `true`.
 ///

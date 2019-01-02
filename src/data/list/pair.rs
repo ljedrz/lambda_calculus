@@ -1,11 +1,11 @@
 //! [Single-pair list](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
 
-use term::{Term, abs, app};
-use term::Term::*;
-use data::boolean::{tru, fls};
-use data::pair::{pair, fst, snd};
-use combinators::{I, Z};
-use data::num::church::{zero, is_zero, succ, pred};
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::data::boolean::{tru, fls};
+use crate::data::pair::{pair, fst, snd};
+use crate::combinators::{I, Z};
+use crate::data::num::church::{zero, is_zero, succ, pred};
 
 /// Produces a `nil`, the last link of a pair-encoded list; equivalent to `boolean::fls`.
 ///

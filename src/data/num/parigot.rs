@@ -1,8 +1,8 @@
 //! [Parigot numerals](https://ir.uiowa.edu/cgi/viewcontent.cgi?article=5357&context=etd)
 
-use term::{Term, abs, app};
-use term::Term::*;
-use data::boolean::{tru, fls};
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::data::boolean::{tru, fls};
 
 /// Produces a Parigot-encoded number zero; equivalent to `boolean::fls`.
 ///

@@ -1,11 +1,11 @@
 //! [Church numerals](https://en.wikipedia.org/wiki/Church_encoding#Church_numerals)
 
-use term::{Term, abs, app};
-use term::Term::*;
-use data::boolean::{tru, fls, and, or, not};
-use data::num::{scott, parigot, stumpfu};
-use data::pair::pair;
-use combinators::{I, K, Z};
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::data::boolean::{tru, fls, and, or, not};
+use crate::data::num::{scott, parigot, stumpfu};
+use crate::data::pair::pair;
+use crate::combinators::{I, K, Z};
 
 /// Produces a Church-encoded number zero; equivalent to `boolean::fls`.
 ///

@@ -1,8 +1,8 @@
 //! [Lambda-encoded pair](https://en.wikipedia.org/wiki/Church_encoding#Church_pairs)
 
-use term::{Term, abs, app};
-use term::Term::*;
-use data::boolean::{tru, fls};
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::data::boolean::{tru, fls};
 
 /// Applied to two `Term`s it contains them in a lambda-encoded pair.
 ///

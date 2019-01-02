@@ -1,12 +1,12 @@
 //! A parser for lambda expressions
 
-use term::{Term, Notation, abs, app};
-use term::Term::*;
+use crate::term::{Term, Notation, abs, app};
+use crate::term::Term::*;
 use self::Token::*;
 use self::CToken::*;
 use self::ParseError::*;
 use self::Expression::*;
-pub use term::Notation::*;
+pub use crate::term::Notation::*;
 
 /// An error returned by `parse()` when a parsing issue is encountered.
 #[derive(Debug, PartialEq)]

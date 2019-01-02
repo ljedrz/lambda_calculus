@@ -2,9 +2,9 @@
 
 #![allow(missing_docs)]
 
-use term::{Term, abs, app};
-use term::Term::*;
-use data::num::convert::*;
+use crate::term::{Term, abs, app};
+use crate::term::Term::*;
+use crate::data::num::convert::*;
 
 macro_rules! make_trait {
     ($trait_name:ident, $function_name:ident) => (
