@@ -140,8 +140,7 @@ fn _convert_classic_tokens<'t, 's>(tokens: &'t [CToken], stack: &'s mut Vec<&'t 
             },
             CRparen => {
                 output.push(Rparen);
-                let l = stack.len(); // TODO: move when NLL hits stable
-                stack.truncate(l - inner_stack_count);
+                stack.truncate(stack.len() - inner_stack_count);
                 return output
             },
             CName(ref name) => {

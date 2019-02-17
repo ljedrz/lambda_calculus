@@ -82,17 +82,18 @@ impl Term {
     }
 
     fn _apply(&mut self, rhs: &Term, depth: usize) {
-        match *self {
-            Var(i) => if i == depth {
+        match self {
+            Var(i) => if *i == depth {
                 *self = rhs.to_owned(); // substitute a top-level variable from lhs with rhs
                 self.update_free_variables(depth - 1, 0); // update indices of free variables from rhs
-            } else if i > depth {
-                *self = Var(i - 1) // decrement a free variable's index
+            } else if *i > depth {
+                *self = Var(*i - 1) // decrement a free variable's index
             },
             Abs(ref mut abstracted) => {
                 abstracted._apply(rhs, depth + 1)
             },
-            App(ref mut lhs_lhs, ref mut lhs_rhs) => {
+            App(boxed) => {
+                let (ref mut lhs_lhs, ref mut lhs_rhs) = **boxed;
                 lhs_lhs._apply(rhs, depth);
                 lhs_rhs._apply(rhs, depth)
             }
@@ -100,14 +101,15 @@ impl Term {
     }
 
     fn update_free_variables(&mut self, added_depth: usize, own_depth: usize) {
-        match *self {
+        match self {
             Var(ref mut i) => if *i > own_depth {
                 *i += added_depth
             },
             Abs(ref mut abstracted) => {
                 abstracted.update_free_variables(added_depth, own_depth + 1)
             },
-            App(ref mut lhs, ref mut rhs) => {
+            App(boxed) => {
+                let (ref mut lhs, ref mut rhs) = **boxed;
                 lhs.update_free_variables(added_depth, own_depth);
                 rhs.update_free_variables(added_depth, own_depth)
             }
@@ -162,7 +164,7 @@ impl Term {
     fn beta_cbn(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
-        if let App(_, _) = *self {
+        if let App(_) = *self {
             self.lhs_mut().unwrap().beta_cbn(limit, count);
 
             if self.is_reducible(limit, *count) {
@@ -177,7 +179,7 @@ impl Term {
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_nor(limit, count),
-            App(_, _) => {
+            App(_) => {
                 self.lhs_mut().unwrap().beta_cbn(limit, count);
 
                 if self.is_reducible(limit, *count) {
@@ -195,7 +197,7 @@ impl Term {
     fn beta_cbv(&mut self, limit: usize, count: &mut usize) {
         if limit != 0 && *count == limit { return }
 
-        if let App(_, _) = *self {
+        if let App(_) = *self {
             self.lhs_mut().unwrap().beta_cbv(limit, count);
             self.rhs_mut().unwrap().beta_cbv(limit, count);
 
@@ -211,7 +213,7 @@ impl Term {
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_app(limit, count),
-            App(_, _) => {
+            App(_) => {
                 self.lhs_mut().unwrap().beta_app(limit, count);
                 self.rhs_mut().unwrap().beta_app(limit, count);
 
@@ -229,7 +231,7 @@ impl Term {
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hap(limit, count),
-            App(_, _) => {
+            App(_) => {
                 self.lhs_mut().unwrap().beta_cbv(limit, count);
                 self.rhs_mut().unwrap().beta_hap(limit, count);
 
@@ -249,7 +251,7 @@ impl Term {
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hsp(limit, count),
-            App(_, _) => {
+            App(_) => {
                 self.lhs_mut().unwrap().beta_hsp(limit, count);
 
                 if self.is_reducible(limit, *count) {
@@ -266,7 +268,7 @@ impl Term {
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hno(limit, count),
-            App(_, _) => {
+            App(_) => {
                 self.lhs_mut().unwrap().beta_hsp(limit, count);
 
                 if self.is_reducible(limit, *count) {
