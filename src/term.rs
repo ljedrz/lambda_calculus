@@ -47,7 +47,7 @@ pub enum Term {
     /// an abstraction
     Abs(Box<Term>),
     /// an application
-    App(Box<Term>, Box<Term>)
+    App(Box<(Term, Term)>)
 }
 
 /// An error that can be returned when an inapplicable function is applied to a `Term`.
@@ -164,7 +164,12 @@ impl Term {
     ///
     /// Returns a `TermError` if `self` is not an `App`lication.
     pub fn unapp(self) -> Result<(Term, Term), TermError> {
-        if let App(lhs, rhs) = self { Ok((*lhs, *rhs)) } else { Err(NotApp) }
+        if let App(boxed) = self {
+            let (lhs, rhs) = *boxed;
+            Ok((lhs, rhs))
+        } else {
+            Err(NotApp)
+        }
     }
 
     /// Returns a pair containing references to an application's underlying terms.
@@ -179,7 +184,12 @@ impl Term {
     ///
     /// Returns a `TermError` if `self` is not an `App`lication.
     pub fn unapp_ref(&self) -> Result<(&Term, &Term), TermError> {
-        if let App(ref lhs, ref rhs) = *self { Ok((lhs, rhs)) } else { Err(NotApp) }
+        if let App(boxed) = self {
+            let (ref lhs, ref rhs) = **boxed;
+            Ok((lhs, rhs))
+        } else {
+            Err(NotApp)
+        }
     }
 
     /// Returns a pair containing mutable references to an application's underlying terms.
@@ -194,7 +204,12 @@ impl Term {
     ///
     /// Returns a `TermError` if `self` is not an `App`lication.
     pub fn unapp_mut(&mut self) -> Result<(&mut Term, &mut Term), TermError> {
-        if let App(ref mut lhs, ref mut rhs) = *self { Ok((lhs, rhs)) } else { Err(NotApp) }
+        if let App(boxed) = self {
+            let (ref mut lhs, ref mut rhs) = **boxed;
+            Ok((lhs, rhs))
+        } else {
+            Err(NotApp)
+        }
     }
 
     /// Returns the left-hand side term of an application. Consumes `self`.
@@ -301,10 +316,11 @@ impl Term {
         let mut stack = vec![(0usize, self)];
 
         while let Some((depth, term)) = stack.pop() {
-            match *term {
-                Var(i) => if i > depth { return false },
+            match term {
+                Var(i) => if *i > depth { return false },
                 Abs(ref t) => stack.push((depth + 1, t)),
-                App(ref f, ref a) => {
+                App(boxed) => {
+                    let (ref f, ref a) = **boxed;
                     stack.push((depth, f));
                     stack.push((depth, a))
                 }
@@ -332,9 +348,9 @@ pub fn abs(term: Term) -> Term { Abs(Box::new(term)) }
 /// ```
 /// use lambda_calculus::*;
 ///
-/// assert_eq!(app(Var(1), Var(2)), App(Box::new(Var(1)), Box::new(Var(2))));
+/// assert_eq!(app(Var(1), Var(2)), App(Box::new((Var(1), Var(2)))));
 /// ```
-pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new(lhs), Box::new(rhs)) }
+pub fn app(lhs: Term, rhs: Term) -> Term { App(Box::new((lhs, rhs))) }
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -343,15 +359,15 @@ impl fmt::Display for Term {
 }
 
 fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> String {
-    match *term {
+    match term {
         Var(0) => {
             "undefined".to_owned()
         },
         Var(i) => {
-            if depth >= i as u32 {
-                from_u32(depth + 97 - i as u32).expect("error while printing term").to_string()
+            if depth >= *i as u32 {
+                from_u32(depth + 97 - *i as u32).expect("error while printing term").to_string()
             } else {
-                from_u32(96 + i as u32).expect("error while printing term").to_string()
+                from_u32(96 + *i as u32).expect("error while printing term").to_string()
             }
         },
         Abs(ref t) => {
@@ -364,7 +380,8 @@ fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> St
             };
             parenthesize_if(&ret, context_precedence > 1).into()
         },
-        App(ref t1, ref t2) => {
+        App(boxed) => {
+            let (ref t1, ref t2) = **boxed;
             let ret = format!("{} {}",
                 show_precedence_cla(t1, 2, depth),
                 show_precedence_cla(t2, 3, depth)
@@ -381,7 +398,7 @@ impl fmt::Debug for Term {
 }
 
 fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -> String {
-    match *term {
+    match term {
         Var(0) => {
             "undefined".to_owned()
         },
@@ -392,7 +409,8 @@ fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -> St
             let ret = format!("{}{:?}", LAMBDA, t);
             parenthesize_if(&ret, context_precedence > 1).into()
         },
-        App(ref t1, ref t2) => {
+        App(boxed) => {
+            let (ref t1, ref t2) = **boxed;
             let ret = format!("{}{}",
                 show_precedence_dbr(t1, 2, depth),
                 show_precedence_dbr(t2, 3, depth)
