@@ -23,7 +23,7 @@
 Include the library by adding the following to your Cargo.toml:
 ```
 [dependencies]
-lambda_calculus = "^2.0"
+lambda_calculus = "^3.0"
 ```
 
 And the following to your code:
@@ -39,7 +39,7 @@ Compilation features:
 Example feature setup in Cargo.toml:
 ```
 [dependencies.lambda_calculus]
-version = "^2.0"
+version = "^3.0"
 default-features = false # do not build the data encoding modules
 features = ["backslash_lambda"] # use a backslash lambda
 ```
