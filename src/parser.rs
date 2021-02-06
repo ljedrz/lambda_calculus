@@ -59,7 +59,7 @@ pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, ParseError> {
                 if let Some(n) = c.to_digit(16) {
                     tokens.push(Number(n as usize))
                 } else if c.is_whitespace() {
-                    ()
+                    // ignore
                 } else {
                     return Err(InvalidCharacter((i, c)))
                 }
@@ -94,7 +94,7 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
             ')' => { tokens.push(CRparen) },
              _  => {
                 if c.is_whitespace() {
-                    ()
+                    // ignore
                 } else if c.is_alphabetic() {
                     let mut name = c.to_string();
                     while let Some(&(_, c)) = chars.peek() {

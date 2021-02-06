@@ -1,6 +1,6 @@
 [package]
 name = "lambda_calculus"
-version = "3.0.0"
+version = "3.0.1"
 description = "A simple, zero-dependency implementation of pure lambda calculus in Safe Rust"
 repository = "https://github.com/ljedrz/lambda_calculus"
 documentation = "https://docs.rs/lambda_calculus"
@@ -8,8 +8,10 @@ readme = "README.md"
 license = "CC0-1.0"
 keywords = ["lambda", "calculus", "functional", "mathematics", "combinators"]
 authors = ["ljedrz <ljedrz@gmail.com>"]
-exclude = [".cargo/*", "target/*"]
 edition = "2018"
+
+[lib]
+crate-type = ["lib"]
 
 [features]
 default = ["encoding"]

@@ -52,9 +52,9 @@ fn option_and_then() {
     let return_none: Term = abs(none());
 
     assert_eq!(beta(app!(and_then(), none(), some_succ.clone()), NOR, 0), none());
-    assert_eq!(beta(app!(and_then(), Some(1).into_church(), return_none.clone()), NOR, 0), none());
+    assert_eq!(beta(app!(and_then(), Some(1).into_church(), return_none), NOR, 0), none());
     assert_eq!(beta(
-        app!(and_then(), Some(1).into_church(), some_succ.clone()), NOR, 0),
+        app!(and_then(), Some(1).into_church(), some_succ), NOR, 0),
         Some(2).into_church()
     );
 }
