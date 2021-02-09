@@ -76,7 +76,7 @@ impl Term {
         self._apply(rhs, 0);
 
         let ret = mem::replace(self, Var(0)); // replace self with a dummy
-        let _ = mem::replace(self, ret.unabs().unwrap()); // move unabstracted self back to its place
+        *self = ret.unabs().unwrap(); // move unabstracted self back to its place
 
         Ok(())
     }
@@ -120,7 +120,7 @@ impl Term {
         let to_apply = mem::replace(self, Var(0)); // replace self with a dummy
         let (mut lhs, rhs) = to_apply.unapp().unwrap(); // safe; only called in reduction sites
         lhs.apply(&rhs).unwrap(); // ditto
-        let _ = mem::replace(self, lhs); // move self back to its place
+        *self = lhs; // move self back to its place
 
         *count += 1;
     }
