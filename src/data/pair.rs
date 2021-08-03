@@ -122,8 +122,8 @@ pub fn swap() -> Term {
     ))
 }
 
-impl Into<Term> for (Term, Term) {
-    fn into(self) -> Term {
-        abs(app!(Var(1), self.0, self.1))
+impl From<(Term, Term)> for Term {
+    fn from((a, b): (Term, Term)) -> Term {
+        abs(app!(Var(1), a, b))
     }
 }

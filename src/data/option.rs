@@ -146,9 +146,9 @@ pub fn and_then() -> Term {
     abs!(2, app!(Var(2), none(), Var(1)))
 }
 
-impl Into<Term> for Option<Term> {
-    fn into(self) -> Term {
-        match self {
+impl From<Option<Term>> for Term {
+    fn from(option: Option<Term>) -> Term {
+        match option {
             None => none(),
             Some(value) => abs!(2, app(Var(1), value))
         }

@@ -225,9 +225,9 @@ pub fn and_then() -> Term {
     abs!(2, app!(Var(2), Var(1), err()))
 }
 
-impl Into<Term> for Result<Term, Term> {
-    fn into(self) -> Term {
-        match self {
+impl From<Result<Term, Term>> for Term {
+    fn from(result: Result<Term, Term>) -> Term {
+        match result {
             Ok(ok) => abs!(2, app(Var(2), ok)),
             Err(err) => abs!(2, app(Var(1), err))
         }

@@ -793,11 +793,11 @@ pub fn replicate() -> Term {
     )
 }
 
-impl Into<Term> for Vec<Term> {
-    fn into(self) -> Term {
+impl From<Vec<Term>> for Term {
+    fn from(vec: Vec<Term>) -> Term {
         let mut ret = nil();
 
-        for term in self.into_iter().rev() {
+        for term in vec.into_iter().rev() {
             ret = abs(app!(Var(1), term, ret))
         }
 

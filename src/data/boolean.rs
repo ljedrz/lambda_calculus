@@ -197,8 +197,8 @@ pub fn imply() -> Term {
     ))
 }
 
-impl Into<Term> for bool {
-    fn into(self) -> Term {
-        if self { tru() } else { fls() }
+impl From<bool> for Term {
+    fn from(b: bool) -> Term {
+        if b { tru() } else { fls() }
     }
 }

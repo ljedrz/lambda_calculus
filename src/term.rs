@@ -528,15 +528,15 @@ mod tests {
 
     #[test]
     fn is_supercombinator() {
-        assert_eq!(abs(Var(1)).is_supercombinator(), true);
-        assert_eq!(app(abs(Var(1)), abs(Var(1))).is_supercombinator(), true);
-        assert_eq!(abs!(10, Var(10)).is_supercombinator(), true);
-        assert_eq!(abs!(10, app(Var(10), Var(10))).is_supercombinator(), true);
+        assert!(abs(Var(1)).is_supercombinator());
+        assert!(app(abs(Var(1)), abs(Var(1))).is_supercombinator());
+        assert!(abs!(10, Var(10)).is_supercombinator());
+        assert!(abs!(10, app(Var(10), Var(10))).is_supercombinator());
 
-        assert_eq!(Var(1).is_supercombinator(), false);
-        assert_eq!(abs(Var(2)).is_supercombinator(), false);
-        assert_eq!(app(abs(Var(1)), Var(1)).is_supercombinator(), false);
-        assert_eq!(abs!(10, Var(11)).is_supercombinator(), false);
-        assert_eq!(abs!(10, app(Var(10), Var(11))).is_supercombinator(), false);
+        assert!(!Var(1).is_supercombinator());
+        assert!(!abs(Var(2)).is_supercombinator());
+        assert!(!app(abs(Var(1)), Var(1)).is_supercombinator());
+        assert!(!abs!(10, Var(11)).is_supercombinator());
+        assert!(!abs!(10, app(Var(10), Var(11))).is_supercombinator());
     }
 }

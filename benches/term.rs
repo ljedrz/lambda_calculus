@@ -18,5 +18,5 @@ fn term_is_supercombinator(b: &mut Bencher) {
         abs!(5000, app!(abs(Var(50)), abs(Var(50)), abs(Var(50)))),
         abs!(6000, app!(abs(Var(60)), abs(Var(60)), abs(Var(60))))
     ));
-    b.iter(|| { assert_eq!(big_term.is_supercombinator(), true) });
+    b.iter(|| { assert!(big_term.is_supercombinator()) });
 }

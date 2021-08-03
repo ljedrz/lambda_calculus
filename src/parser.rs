@@ -79,7 +79,7 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
         match c {
             '\\' | 'λ' => {
                 let mut name = String::new();
-                while let Some((i, c)) = chars.next() {
+                for (i, c) in &mut chars {
                     if c == '.' {
                         break
                     } else if c.is_alphabetic() {
@@ -277,14 +277,14 @@ mod tests {
 
     #[test]
     fn tokenization_error() {
-        assert_eq!(tokenize_dbr(&"λλx2"),    Err(InvalidCharacter((2, 'x'))));
-        assert_eq!(tokenize_cla(&"λa.λb a"), Err(InvalidCharacter((5, ' '))));
+        assert_eq!(tokenize_dbr("λλx2"),    Err(InvalidCharacter((2, 'x'))));
+        assert_eq!(tokenize_cla("λa.λb a"), Err(InvalidCharacter((5, ' '))));
     }
 
     #[test]
     fn tokenization_success() {
         let quine = "λ 1 ( (λ 1 1) (λ λ λ λ λ 1 4 (3 (5 5) 2) ) ) 1";
-        let tokens = tokenize_dbr(&quine);
+        let tokens = tokenize_dbr(quine);
 
         assert!(tokens.is_ok());
         assert_eq!(tokens.unwrap(), vec![Lambda, Number(1), Lparen, Lparen, Lambda, Number(1),
@@ -297,10 +297,10 @@ mod tests {
     fn tokenization_success_classic() {
         let blc_dbr = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
             (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
-        let blc_cla = parse(&blc_dbr, DeBruijn).unwrap().to_string();
+        let blc_cla = parse(blc_dbr, DeBruijn).unwrap().to_string();
 
         let tokens_cla = tokenize_cla(&blc_cla);
-        let tokens_dbr = tokenize_dbr(&blc_dbr);
+        let tokens_dbr = tokenize_dbr(blc_dbr);
 
         assert!(tokens_cla.is_ok());
         assert!(tokens_dbr.is_ok());
@@ -310,12 +310,12 @@ mod tests {
 
     #[test]
     fn alternative_lambda_parsing() {
-        assert_eq!(parse(&r#"\\\2(321)"#, DeBruijn), parse(&"λλλ2(321)", DeBruijn))
+        assert_eq!(parse(r#"\\\2(321)"#, DeBruijn), parse("λλλ2(321)", DeBruijn))
     }
 
     #[test]
     fn succ_ast() {
-        let tokens = tokenize_dbr(&"λλλ2(321)").unwrap();
+        let tokens = tokenize_dbr("λλλ2(321)").unwrap();
         let ast = get_ast(&tokens);
 
         assert_eq!(ast,
@@ -336,7 +336,7 @@ mod tests {
     #[test]
     fn parse_y() {
         let y = "λ(λ2(11))(λ2(11))";
-        assert_eq!(parse(&y, DeBruijn).unwrap(),
+        assert_eq!(parse(y, DeBruijn).unwrap(),
             abs(
                 app(
                     abs(app(Var(2), app(Var(1), Var(1)))),
@@ -349,7 +349,7 @@ mod tests {
     #[test]
     fn parse_quine() {
         let quine = "λ1((λ11)(λλλλλ14(3(55)2)))1";
-        assert_eq!(parse(&quine, DeBruijn).unwrap(),
+        assert_eq!(parse(quine, DeBruijn).unwrap(),
             abs(app(app(Var(1), app(abs(app(Var(1), Var(1))), abs!(5, app(app(Var(1),
             Var(4)), app(app(Var(3), app(Var(5), Var(5))), Var(2)))))), Var(1)))
         );
@@ -359,7 +359,7 @@ mod tests {
     fn parse_blc() {
         let blc = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
                    (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
-        assert_eq!(parse(&blc, DeBruijn).unwrap(),
+        assert_eq!(parse(blc, DeBruijn).unwrap(),
             app(app(abs(app(Var(1), Var(1))), abs!(3, app(app(app(Var(1),
             abs!(4, app(Var(3), abs(app(app(Var(5), app(Var(3), abs(app(app(Var(2),
             app(Var(3), abs!(2, app(Var(3), abs(app(app(Var(1), Var(2)), Var(3))))))), app(Var(4),

@@ -2,8 +2,7 @@
 
 use crate::term::{Term, TermError};
 use crate::term::Term::*;
-use std::fmt;
-use std::mem;
+use std::{cmp, fmt, mem};
 pub use self::Order::*;
 
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
@@ -83,11 +82,15 @@ impl Term {
 
     fn _apply(&mut self, rhs: &Term, depth: usize) {
         match self {
-            Var(i) => if *i == depth {
-                *self = rhs.to_owned(); // substitute a top-level variable from lhs with rhs
-                self.update_free_variables(depth - 1, 0); // update indices of free variables from rhs
-            } else if *i > depth {
-                *self = Var(*i - 1) // decrement a free variable's index
+            Var(i) => match (*i).cmp(&depth) {
+                cmp::Ordering::Equal => {
+                    *self = rhs.to_owned(); // substitute a top-level variable from lhs with rhs
+                    self.update_free_variables(depth - 1, 0); // update indices of free variables from rhs
+                }
+                cmp::Ordering::Greater => {
+                    *self = Var(*i - 1); // decrement a free variable's index
+                }
+                _ => {}
             },
             Abs(ref mut abstracted) => {
                 abstracted._apply(rhs, depth + 1)
