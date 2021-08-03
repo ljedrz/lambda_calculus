@@ -17,8 +17,3 @@ script:
 matrix:
   allow_failures:
     - rust: nightly
-
-after_success:
-- if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then
-  cargo bench;
-  fi
