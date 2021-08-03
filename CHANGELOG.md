@@ -1,3 +1,25 @@
+Version 3.0.2
+=============
+
+Changes
+-------
+- a pass with the current `clippy`
+- the removal of outdated benches
+
+Version 3.0.1
+=============
+
+Changes
+-------
+- a pass with the current `clippy`
+
+Version 3.0.0
+=============
+
+Changes
+-------
+- use only one `Box` in `Term::App`
+
 Version 2.2.0
 =============
 
