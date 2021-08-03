@@ -5,22 +5,22 @@
 
 #[macro_use]
 pub mod term;
+pub mod combinators;
 pub mod parser;
 pub mod reduction;
-pub mod combinators;
 
-pub use self::term::{Term, abs, app, UD};
-pub use self::term::Term::*;
-pub use self::term::Notation::*;
+pub use self::parser::parse;
 pub use self::reduction::beta;
 pub use self::reduction::Order::*;
-pub use self::parser::parse;
+pub use self::term::Notation::*;
+pub use self::term::Term::*;
+pub use self::term::{abs, app, Term, UD};
 
 #[cfg(feature = "encoding")]
 pub mod data;
 #[cfg(feature = "encoding")]
-pub use crate::data::num::convert::*;
+pub use crate::data::list::convert::*;
 #[cfg(feature = "encoding")]
 pub use crate::data::num::convert::Encoding::*;
 #[cfg(feature = "encoding")]
-pub use crate::data::list::convert::*;
+pub use crate::data::num::convert::*;

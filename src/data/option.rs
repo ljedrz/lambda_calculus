@@ -1,14 +1,16 @@
 //! [Lambda-encoded option](https://en.wikipedia.org/wiki/Option_type)
 
-use crate::term::{Term, abs, app};
-use crate::term::Term::*;
-use crate::data::boolean::{tru, fls};
 use crate::combinators::I;
+use crate::data::boolean::{fls, tru};
+use crate::term::Term::*;
+use crate::term::{abs, app, Term};
 
 /// Produces a lambda-encoded empty option; equivalent to `boolean::tru`.
 ///
 /// NONE ≡ λns.n ≡ λ λ 2 ≡ TRUE
-pub fn none() -> Term { tru() }
+pub fn none() -> Term {
+    tru()
+}
 
 /// Applied to an argument it consumes it and produces a lambda-encoded option that contains it.
 ///
@@ -76,11 +78,10 @@ pub fn is_some() -> Term {
 /// assert_eq!(beta(app!(map(), succ(), none()), NOR, 0), none());
 /// ```
 pub fn map() -> Term {
-    abs!(2, app!(
-        Var(1),
-        none(),
-        abs(app(some(), app(Var(3), Var(1))))
-    ))
+    abs!(
+        2,
+        app!(Var(1), none(), abs(app(some(), app(Var(3), Var(1)))))
+    )
 }
 
 /// Applied to two arguments and a lambda-encoded option it returns the second argument applied to
@@ -150,7 +151,7 @@ impl From<Option<Term>> for Term {
     fn from(option: Option<Term>) -> Term {
         match option {
             None => none(),
-            Some(value) => abs!(2, app(Var(1), value))
+            Some(value) => abs!(2, app(Var(1), value)),
         }
     }
 }

@@ -57,15 +57,13 @@ macro_rules! tuple {
 /// ```
 #[macro_export]
 macro_rules! pi {
-    ($i:expr, $n:expr) => {
-        {
-            let mut ret = Var($n + 1 - $i);
+    ($i:expr, $n:expr) => {{
+        let mut ret = Var($n + 1 - $i);
 
-            for _ in 0..$n {
-                ret = abs(ret);
-            }
-
-            abs(app(Var(1), ret))
+        for _ in 0..$n {
+            ret = abs(ret);
         }
-    };
+
+        abs(app(Var(1), ret))
+    }};
 }

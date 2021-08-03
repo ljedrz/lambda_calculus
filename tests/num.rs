@@ -2,8 +2,8 @@
 
 extern crate lambda_calculus as lambda;
 
+use lambda::data::num::{binary, church, parigot, scott, stumpfu};
 use lambda::*;
-use lambda::data::num::{church, scott, parigot, stumpfu, binary};
 
 macro_rules! test_num {
     ($encoding:ident, $name:ident, $conversion:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (

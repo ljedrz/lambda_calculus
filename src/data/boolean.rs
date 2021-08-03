@@ -1,17 +1,21 @@
 //! [Lambda-encoded booleans](https://en.wikipedia.org/wiki/Church_encoding#Church_Booleans)
 
-use crate::term::{Term, abs, app};
 use crate::term::Term::*;
+use crate::term::{abs, app, Term};
 
 /// A lambda-encoded boolean `true`.
 ///
 /// TRUE ≡ λab.a ≡ λ λ 2
-pub fn tru() -> Term { abs!(2, Var(2)) }
+pub fn tru() -> Term {
+    abs!(2, Var(2))
+}
 
 /// A lambda-encoded boolean `false`.
 ///
 /// FALSE ≡ λab.b ≡ λ λ 1
-pub fn fls() -> Term { abs!(2, Var(1)) }
+pub fn fls() -> Term {
+    abs!(2, Var(1))
+}
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded conjunction.
 ///
@@ -80,11 +84,7 @@ pub fn not() -> Term {
 /// assert_eq!(beta(app!(xor(), fls(), fls()), NOR, 0), fls());
 /// ```
 pub fn xor() -> Term {
-    abs!(2, app!(
-        Var(2),
-        app!(not(), Var(1)),
-        Var(1)
-    ))
+    abs!(2, app!(Var(2), app!(not(), Var(1)), Var(1)))
 }
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded joint denial.
@@ -102,13 +102,7 @@ pub fn xor() -> Term {
 /// assert_eq!(beta(app!(nor(), fls(), fls()), NOR, 0), tru());
 /// ```
 pub fn nor() -> Term {
-    abs!(2, app!(
-        Var(2),
-        Var(2),
-        Var(1),
-        fls(),
-        tru()
-    ))
+    abs!(2, app!(Var(2), Var(2), Var(1), fls(), tru()))
 }
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded exclusive joint denial
@@ -127,11 +121,7 @@ pub fn nor() -> Term {
 /// assert_eq!(beta(app!(xnor(), fls(), fls()), NOR, 0), tru());
 /// ```
 pub fn xnor() -> Term {
-    abs!(2, app!(
-        Var(2),
-        Var(1),
-        app(not(), Var(1))
-    ))
+    abs!(2, app!(Var(2), Var(1), app(not(), Var(1))))
 }
 
 /// Applied to two lambda-encoded booleans it returns their lambda-encoded alternative denial.
@@ -149,13 +139,7 @@ pub fn xnor() -> Term {
 /// assert_eq!(beta(app!(nand(), fls(), fls()), NOR, 0), tru());
 /// ```
 pub fn nand() -> Term {
-    abs!(2, app!(
-        Var(2),
-        Var(1),
-        Var(2),
-        fls(),
-        tru()
-    ))
+    abs!(2, app!(Var(2), Var(1), Var(2), fls(), tru()))
 }
 
 /// Applied to a lambda-encoded predicate and two terms it returns the first one if the predicate
@@ -190,15 +174,15 @@ pub fn if_else() -> Term {
 /// assert_eq!(beta(app!(imply(), fls(), fls()), NOR, 0), tru());
 /// ```
 pub fn imply() -> Term {
-    abs!(2, app!(
-        or(),
-        app(not(), Var(2)),
-        Var(1)
-    ))
+    abs!(2, app!(or(), app(not(), Var(2)), Var(1)))
 }
 
 impl From<bool> for Term {
     fn from(b: bool) -> Term {
-        if b { tru() } else { fls() }
+        if b {
+            tru()
+        } else {
+            fls()
+        }
     }
 }

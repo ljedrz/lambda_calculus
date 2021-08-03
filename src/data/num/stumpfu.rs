@@ -1,10 +1,10 @@
 //! [Stump-Fu numerals](http://homepage.cs.uiowa.edu/~astump/papers/stump-fu-jfp-2016.pdf)
 
-use crate::term::{Term, abs, app};
-use crate::term::Term::*;
+use crate::data::boolean::{fls, tru};
 use crate::data::num::convert::IntoChurchNum;
-use crate::data::boolean::{tru, fls};
-use crate::data::num::{church, scott, parigot};
+use crate::data::num::{church, parigot, scott};
+use crate::term::Term::*;
+use crate::term::{abs, app, Term};
 
 /// Produces a Stump-Fu-encoded number zero; equivalent to `boolean::fls`.
 ///
@@ -17,7 +17,9 @@ use crate::data::num::{church, scott, parigot};
 ///
 /// assert_eq!(zero(), 0.into_stumpfu());
 /// ```
-pub fn zero() -> Term { fls() }
+pub fn zero() -> Term {
+    fls()
+}
 
 /// Applied to a Stump-Fu-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
@@ -47,7 +49,9 @@ pub fn is_zero() -> Term {
 ///
 /// assert_eq!(one(), 1.into_stumpfu());
 /// ```
-pub fn one() -> Term { abs!(2, app!(Var(2), 1.into_church(), zero())) }
+pub fn one() -> Term {
+    abs!(2, app!(Var(2), 1.into_church(), zero()))
+}
 
 /// Applied to a Stump-Fu-encoded number it produces its successor.
 ///
@@ -98,11 +102,10 @@ pub fn pred() -> Term {
 /// assert_eq!(beta(app!(add(), 2.into_stumpfu(), 3.into_stumpfu()), NOR, 0), 5.into_stumpfu());
 /// ```
 pub fn add() -> Term {
-    abs!(2, app!(
-        Var(2),
-        abs!(2, app!(Var(2), succ(), Var(3))),
-        Var(1)
-    ))
+    abs!(
+        2,
+        app!(Var(2), abs!(2, app!(Var(2), succ(), Var(3))), Var(1))
+    )
 }
 
 /// Applied to two Stump-Fu-encoded numbers it produces their product.
@@ -118,15 +121,14 @@ pub fn add() -> Term {
 /// assert_eq!(beta(app!(mul(), 2.into_stumpfu(), 3.into_stumpfu()), NOR, 0), 6.into_stumpfu());
 /// ```
 pub fn mul() -> Term {
-    abs!(2, app!(
-        Var(2),
-        abs!(2, app!(
+    abs!(
+        2,
+        app!(
             Var(2),
-            abs(app!(add(), Var(4), Var(1))),
+            abs!(2, app!(Var(2), abs(app!(add(), Var(4), Var(1))), zero())),
             zero()
-        )),
-        zero()
-    ))
+        )
+    )
 }
 
 /// Applied to a Stump-Fu-encoded number it produces the equivalent Church-encoded number.
@@ -143,11 +145,7 @@ pub fn mul() -> Term {
 /// assert_eq!(beta(app(to_church(), 4.into_stumpfu()), NOR, 0), 4.into_church());
 /// ```
 pub fn to_church() -> Term {
-    abs(app!(
-        Var(1),
-        tru(),
-        Var(1)
-    ))
+    abs(app!(Var(1), tru(), Var(1)))
 }
 
 /// Applied to a Stump-Fu-encoded number it produces the equivalent Scott-encoded number.
@@ -166,16 +164,8 @@ pub fn to_church() -> Term {
 /// ```
 pub fn to_scott() -> Term {
     abs(app(
-        abs(app!(
-            Var(1),
-            scott::succ(),
-            scott::zero()
-        )),
-        app!(
-            Var(1),
-            tru(),
-            Var(1)
-        )
+        abs(app!(Var(1), scott::succ(), scott::zero())),
+        app!(Var(1), tru(), Var(1)),
     ))
 }
 
@@ -195,15 +185,7 @@ pub fn to_scott() -> Term {
 /// ```
 pub fn to_parigot() -> Term {
     abs(app(
-        abs(app!(
-            Var(1),
-            parigot::succ(),
-            parigot::zero()
-        )),
-        app!(
-            Var(1),
-            tru(),
-            Var(1)
-        )
+        abs(app!(Var(1), parigot::succ(), parigot::zero())),
+        app!(Var(1), tru(), Var(1)),
     ))
 }

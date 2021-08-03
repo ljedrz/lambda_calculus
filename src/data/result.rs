@@ -1,10 +1,10 @@
 //! Lambda-encoded [result type](https://doc.rust-lang.org/std/result/enum.Result.html)
 
-use crate::term::{Term, abs, app};
-use crate::term::Term::*;
-use crate::data::boolean::{tru, fls};
-use crate::data::option::{none, some};
 use crate::combinators::I;
+use crate::data::boolean::{fls, tru};
+use crate::data::option::{none, some};
+use crate::term::Term::*;
+use crate::term::{abs, app, Term};
 
 /// Applied to an argument it consumes it and produces a lambda-encoded `Result::Ok` that contains
 /// it.
@@ -160,11 +160,7 @@ pub fn unwrap_or() -> Term {
 /// assert_eq!(beta(app!(map(), succ(), err_two.into_church()), NOR, 0), err_two.into_church());
 /// ```
 pub fn map() -> Term {
-    abs!(2, app!(
-        Var(1),
-        abs(app(ok(), app(Var(3), Var(1)))),
-        err()
-    ))
+    abs!(2, app!(Var(1), abs(app(ok(), app(Var(3), Var(1)))), err()))
 }
 
 /// Applied to a function and a lambda-encoded `Result` it applies the function to the contents of
@@ -186,11 +182,7 @@ pub fn map() -> Term {
 /// assert_eq!(beta(app!(map_err(), succ(), err_two.into_church()), NOR, 0), err_three.into_church());
 /// ```
 pub fn map_err() -> Term {
-    abs!(2, app!(
-        Var(1),
-        ok(),
-        abs(app(err(), app(Var(3), Var(1))))
-    ))
+    abs!(2, app!(Var(1), ok(), abs(app(err(), app(Var(3), Var(1))))))
 }
 
 /// Applied to a lambda-encoded `Result` and a function that returns a lambda-encoded `Result`, it
@@ -229,7 +221,7 @@ impl From<Result<Term, Term>> for Term {
     fn from(result: Result<Term, Term>) -> Term {
         match result {
             Ok(ok) => abs!(2, app(Var(2), ok)),
-            Err(err) => abs!(2, app(Var(1), err))
+            Err(err) => abs!(2, app(Var(1), err)),
         }
     }
 }

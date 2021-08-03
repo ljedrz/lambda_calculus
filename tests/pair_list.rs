@@ -3,9 +3,9 @@
 
 extern crate lambda_calculus as lambda;
 
-use lambda::*;
 use lambda::data::list::pair::*;
 use lambda::data::num::church::is_zero;
+use lambda::*;
 
 macro_rules! vec_church {
     ( $( $e:expr ),* ) => {

@@ -2,8 +2,8 @@
 
 extern crate lambda_calculus as lambda;
 
+use lambda::data::list::{church, parigot, scott};
 use lambda::*;
-use lambda::data::list::{church, scott, parigot};
 
 macro_rules! test_list {
     ($name:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
@@ -27,7 +27,9 @@ macro_rules! test_list {
     );
 }
 
-fn nil() -> Vec<Term> { vec![] } // a nil workaround for macro purposes
+fn nil() -> Vec<Term> {
+    vec![]
+} // a nil workaround for macro purposes
 
 test_list!(list_head, head,
           vec![1] => 1,

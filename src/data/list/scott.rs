@@ -1,13 +1,15 @@
 //! [Scott list](https://ifl2014.github.io/submissions/ifl2014_submission_13.pdf)
 
-use crate::term::{Term, abs, app, UD};
+use crate::data::boolean::{fls, tru};
 use crate::term::Term::*;
-use crate::data::boolean::{tru, fls};
+use crate::term::{abs, app, Term, UD};
 
 /// Produces a `nil`, the last link of a Scott-encoded list; equivalent to `boolean::tru`.
 ///
 /// NIL ≡ λab.a ≡ λ λ 2 ≡ TRUE
-pub fn nil() -> Term { tru() }
+pub fn nil() -> Term {
+    tru()
+}
 
 /// Applied to a Scott-encoded list it determines if it is empty.
 ///

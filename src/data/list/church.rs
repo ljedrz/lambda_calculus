@@ -1,14 +1,16 @@
 //! [Church right fold list](https://ifl2014.github.io/submissions/ifl2014_submission_13.pdf)
 
-use crate::term::{Term, abs, app, UD};
+use crate::data::boolean::{fls, tru};
+use crate::data::pair::{fst, pair, snd};
 use crate::term::Term::*;
-use crate::data::boolean::{tru, fls};
-use crate::data::pair::{pair, fst, snd};
+use crate::term::{abs, app, Term, UD};
 
 /// Produces a `nil`, the last link of a Church-encoded list; equivalent to `boolean::tru`.
 ///
 /// NIL ≡ λab.a ≡ λ λ 2 ≡ TRUE
-pub fn nil() -> Term { tru() }
+pub fn nil() -> Term {
+    tru()
+}
 
 /// Applied to a Church-encoded list it determines if it is empty.
 ///
@@ -57,16 +59,10 @@ pub fn is_nil() -> Term {
 /// );
 /// ```
 pub fn cons() -> Term {
-    abs!(4, app!(
-        Var(1),
-        Var(4),
-        app!(
-            abs(Var(1)),
-            Var(3),
-            Var(2),
-            Var(1)
-        )
-    ))
+    abs!(
+        4,
+        app!(Var(1), Var(4), app!(abs(Var(1)), Var(3), Var(2), Var(1)))
+    )
 }
 
 /// Applied to a Church-encoded list it returns its first element.
@@ -112,15 +108,14 @@ pub fn tail() -> Term {
         app!(
             Var(1),
             app!(pair(), UD, nil()),
-            abs!(2, app!(
-                pair(),
-                app(snd(), Var(1)),
+            abs!(
+                2,
                 app!(
-                    cons(),
-                    Var(2),
-                    app(snd(), Var(1))
+                    pair(),
+                    app(snd(), Var(1)),
+                    app!(cons(), Var(2), app(snd(), Var(1)))
                 )
-            ))
+            )
         )
     ))
 }

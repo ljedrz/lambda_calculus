@@ -1,16 +1,18 @@
 //! [Single-pair list](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
 
-use crate::term::{Term, abs, app};
-use crate::term::Term::*;
-use crate::data::boolean::{tru, fls};
-use crate::data::pair::{pair, fst, snd};
 use crate::combinators::{I, Z};
-use crate::data::num::church::{zero, is_zero, succ, pred};
+use crate::data::boolean::{fls, tru};
+use crate::data::num::church::{is_zero, pred, succ, zero};
+use crate::data::pair::{fst, pair, snd};
+use crate::term::Term::*;
+use crate::term::{abs, app, Term};
 
 /// Produces a `nil`, the last link of a pair-encoded list; equivalent to `boolean::fls`.
 ///
 /// NIL ≡ λab.b ≡ λ λ 1 ≡ FALSE
-pub fn nil() -> Term { fls() }
+pub fn nil() -> Term {
+    fls()
+}
 
 /// Applied to a pair-encoded list it determines if it is empty.
 ///
@@ -56,7 +58,9 @@ pub fn is_nil() -> Term {
 ///
 /// assert_eq!(beta(list_consed, NOR, 0), list_from_vec);
 /// ```
-pub fn cons() -> Term { pair() }
+pub fn cons() -> Term {
+    pair()
+}
 
 /// Applied to a pair-encoded list it returns its first element; equivalent to `pair::fst`.
 ///
@@ -71,7 +75,9 @@ pub fn cons() -> Term { pair() }
 ///
 /// assert_eq!(beta(app(head(), list), NOR, 0), 1.into_church());
 /// ```
-pub fn head() -> Term { fst() }
+pub fn head() -> Term {
+    fst()
+}
 
 /// Applied to a pair-encoded list it returns a new list with all its elements but the first one;
 /// equivalent to `pair::snd`.
@@ -90,7 +96,9 @@ pub fn head() -> Term { fst() }
 ///     vec![2.into_church(), 3.into_church()].into_pair_list()
 /// );
 /// ```
-pub fn tail() -> Term { snd() }
+pub fn tail() -> Term {
+    snd()
+}
 
 /// Applied to a pair-encoded list it returns its Church-encoded length.
 ///
@@ -110,17 +118,16 @@ pub fn tail() -> Term { snd() }
 pub fn length() -> Term {
     app!(
         Z(),
-        abs!(3, app!(
-            is_nil(),
-            Var(1),
-            abs(Var(3)),
-            abs(app!(
-                Var(4),
-                app(succ(), Var(3)),
-                app(tail(), Var(2))
-            )),
-            I()
-        )),
+        abs!(
+            3,
+            app!(
+                is_nil(),
+                Var(1),
+                abs(Var(3)),
+                abs(app!(Var(4), app(succ(), Var(3)), app(tail(), Var(2)))),
+                I()
+            )
+        ),
         zero()
     )
 }
@@ -143,14 +150,7 @@ pub fn length() -> Term {
 /// );
 /// ```
 pub fn index() -> Term {
-    abs!(2, app(
-        head(),
-        app!(
-            Var(2),
-            tail(),
-            Var(1)
-        )
-    ))
+    abs!(2, app(head(), app!(Var(2), tail(), Var(1))))
 }
 
 /// Reverses a pair-encoded list.
@@ -173,21 +173,20 @@ pub fn index() -> Term {
 pub fn reverse() -> Term {
     app!(
         Z(),
-        abs!(3, app!(
-            is_nil(),
-            Var(1),
-            abs(Var(3)),
-            abs(app!(
-                Var(4),
-                app!(
-                    cons(),
-                    app(head(), Var(2)),
-                    Var(3)
-                ),
-                app(tail(), Var(2))
-            )),
-            I()
-        )),
+        abs!(
+            3,
+            app!(
+                is_nil(),
+                Var(1),
+                abs(Var(3)),
+                abs(app!(
+                    Var(4),
+                    app!(cons(), app(head(), Var(2)), Var(3)),
+                    app(tail(), Var(2))
+                )),
+                I()
+            )
+        ),
         nil()
     )
 }
@@ -237,21 +236,20 @@ pub fn list() -> Term {
 pub fn append() -> Term {
     app(
         Z(),
-        abs!(3, app!(
-            is_nil(),
-            Var(2),
-            abs(Var(2)),
-            abs(app!(
-                cons(),
-                app(head(), Var(3)),
-                app!(
-                    Var(4),
-                    app(tail(), Var(3)),
-                    Var(2)
-                )
-            )),
-            I()
-        ))
+        abs!(
+            3,
+            app!(
+                is_nil(),
+                Var(2),
+                abs(Var(2)),
+                abs(app!(
+                    cons(),
+                    app(head(), Var(3)),
+                    app!(Var(4), app(tail(), Var(3)), Var(2))
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -276,24 +274,20 @@ pub fn append() -> Term {
 pub fn map() -> Term {
     app(
         Z(),
-        abs!(3, app!(
-            is_nil(),
-            Var(1),
-            abs(nil()),
-            abs(app!(
-                cons(),
-                app(
-                    Var(3),
-                    app(head(), Var(2))
-                ),
-                app!(
-                    Var(4),
-                    Var(3),
-                    app(tail(), Var(2))
-                )
-            )),
-            I()
-        ))
+        abs!(
+            3,
+            app!(
+                is_nil(),
+                Var(1),
+                abs(nil()),
+                abs(app!(
+                    cons(),
+                    app(Var(3), app(head(), Var(2))),
+                    app!(Var(4), Var(3), app(tail(), Var(2)))
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -318,22 +312,21 @@ pub fn map() -> Term {
 pub fn foldl() -> Term {
     app(
         Z(),
-        abs!(4, app!(
-            is_nil(),
-            Var(1),
-            abs(Var(3)),
-            abs(app!(
-                Var(5),
-                Var(4),
-                app!(
+        abs!(
+            4,
+            app!(
+                is_nil(),
+                Var(1),
+                abs(Var(3)),
+                abs(app!(
+                    Var(5),
                     Var(4),
-                    Var(3),
-                    app(head(), Var(2))
-                ),
-                app(tail(), Var(2))
-            )),
-            I()
-        ))
+                    app!(Var(4), Var(3), app(head(), Var(2))),
+                    app(tail(), Var(2))
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -356,24 +349,27 @@ pub fn foldl() -> Term {
 /// assert_eq!(beta(app!(foldr(), sub(), 6.into_church(), list()), NOR, 0), 0.into_church());
 /// ```
 pub fn foldr() -> Term {
-    abs!(3, app!(
-        Z(),
-        abs!(2, app!(
-            is_nil(),
-            Var(1),
-            abs(Var(5)),
-            abs(app!(
-                Var(6),
-                app(head(), Var(2)),
+    abs!(
+        3,
+        app!(
+            Z(),
+            abs!(
+                2,
                 app!(
-                    Var(3),
-                    app(tail(), Var(2))
+                    is_nil(),
+                    Var(1),
+                    abs(Var(5)),
+                    abs(app!(
+                        Var(6),
+                        app(head(), Var(2)),
+                        app!(Var(3), app(tail(), Var(2)))
+                    )),
+                    I()
                 )
-            )),
-            I()
-        )),
-        Var(1)
-    ))
+            ),
+            Var(1)
+        )
+    )
 }
 
 /// Applied to a predicate and a pair-encoded list it filters the list based on the predicate.
@@ -403,19 +399,22 @@ pub fn foldr() -> Term {
 pub fn filter() -> Term {
     app(
         Z(),
-        abs!(3, app!(
-            is_nil(),
-            Var(1),
-            abs(nil()),
-            abs(app!(
-             Var(3),
-                app(head(), Var(2)),
-                app(cons(), app(head(), Var(2))),
-                I(),
-                app!(Var(4), Var(3), app(tail(), Var(2)))
-            )),
-            I()
-        ))
+        abs!(
+            3,
+            app!(
+                is_nil(),
+                Var(1),
+                abs(nil()),
+                abs(app!(
+                    Var(3),
+                    app(head(), Var(2)),
+                    app(cons(), app(head(), Var(2))),
+                    I(),
+                    app!(Var(4), Var(3), app(tail(), Var(2)))
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -436,21 +435,21 @@ pub fn filter() -> Term {
 pub fn last() -> Term {
     app(
         Z(),
-        abs!(2, app!(
-            is_nil(),
-            Var(1),
-            abs(nil()),
-            abs(app!(
+        abs!(
+            2,
+            app!(
                 is_nil(),
-                app(tail(), Var(2)),
-                app(head(), Var(2)),
-                app(
-                    Var(3),
-                    app(tail(), Var(2))
-                )
-            )),
-            I()
-        ))
+                Var(1),
+                abs(nil()),
+                abs(app!(
+                    is_nil(),
+                    app(tail(), Var(2)),
+                    app(head(), Var(2)),
+                    app(Var(3), app(tail(), Var(2)))
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -472,25 +471,25 @@ pub fn last() -> Term {
 pub fn init() -> Term {
     app(
         Z(),
-        abs!(2, app!(
-            is_nil(),
-            Var(1),
-            abs(nil()),
-            abs(app!(
+        abs!(
+            2,
+            app!(
                 is_nil(),
-                app(tail(), Var(2)),
-                nil(),
-                app!(
-                    cons(),
-                    app(head(), Var(2)),
-                    app(
-                        Var(3),
-                        app(tail(), Var(2))
+                Var(1),
+                abs(nil()),
+                abs(app!(
+                    is_nil(),
+                    app(tail(), Var(2)),
+                    nil(),
+                    app!(
+                        cons(),
+                        app(head(), Var(2)),
+                        app(Var(3), app(tail(), Var(2)))
                     )
-                )
-            )),
-            I()
-        ))
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -513,30 +512,25 @@ pub fn init() -> Term {
 pub fn zip() -> Term {
     app(
         Z(),
-        abs!(3, app!(
-            is_nil(),
-            Var(2),
-            abs(nil()),
-            abs(app!(
+        abs!(
+            3,
+            app!(
                 is_nil(),
                 Var(2),
-                nil(),
-                app!(
-                    cons(),
+                abs(nil()),
+                abs(app!(
+                    is_nil(),
+                    Var(2),
+                    nil(),
                     app!(
                         cons(),
-                        app(head(), Var(3)),
-                        app(head(), Var(2))
-                    ),
-                    app!(
-                        Var(4),
-                        app(tail(), Var(3)),
-                        app(tail(), Var(2))
+                        app!(cons(), app(head(), Var(3)), app(head(), Var(2))),
+                        app!(Var(4), app(tail(), Var(3)), app(tail(), Var(2)))
                     )
-                )
-            )),
-            I()
-        ))
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -561,31 +555,25 @@ pub fn zip() -> Term {
 pub fn zip_with() -> Term {
     app(
         Z(),
-        abs!(4, app!(
-            is_nil(),
-            Var(2),
-            abs(nil()),
-            abs(app!(
+        abs!(
+            4,
+            app!(
                 is_nil(),
                 Var(2),
-                nil(),
-                app!(
-                    cons(),
+                abs(nil()),
+                abs(app!(
+                    is_nil(),
+                    Var(2),
+                    nil(),
                     app!(
-                        Var(4),
-                        app(head(), Var(3)),
-                        app(head(), Var(2))
-                    ),
-                    app!(
-                        Var(5),
-                        Var(4),
-                        app(tail(), Var(3)),
-                        app(tail(), Var(2))
+                        cons(),
+                        app!(Var(4), app(head(), Var(3)), app(head(), Var(2))),
+                        app!(Var(5), Var(4), app(tail(), Var(3)), app(tail(), Var(2)))
                     )
-                )
-            )),
-            I()
-        ))
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -610,26 +598,25 @@ pub fn zip_with() -> Term {
 pub fn take() -> Term {
     app!(
         Z(),
-        abs!(3, app!(
-            is_nil(),
-            Var(1),
-            abs(nil()),
-            abs(app!(
-                is_zero(),
-                Var(3),
-                nil(),
-                app!(
-                    cons(),
-                    app(head(), Var(2)),
+        abs!(
+            3,
+            app!(
+                is_nil(),
+                Var(1),
+                abs(nil()),
+                abs(app!(
+                    is_zero(),
+                    Var(3),
+                    nil(),
                     app!(
-                        Var(4),
-                        app(pred(), Var(3)),
-                        app(tail(), Var(2))
+                        cons(),
+                        app(head(), Var(2)),
+                        app!(Var(4), app(pred(), Var(3)), app(tail(), Var(2)))
                     )
-                )
-            )),
-            I()
-        ))
+                )),
+                I()
+            )
+        )
     )
 }
 
@@ -653,26 +640,25 @@ pub fn take() -> Term {
 pub fn take_while() -> Term {
     app(
         Z(),
-        abs!(3, app!(
-            is_nil(),
-            Var(1),
-            abs(nil()),
-            abs(app!(
-                Var(3),
-                app(head(), Var(2)),
-                app!(
-                    cons(),
+        abs!(
+            3,
+            app!(
+                is_nil(),
+                Var(1),
+                abs(nil()),
+                abs(app!(
+                    Var(3),
                     app(head(), Var(2)),
                     app!(
-                        Var(4),
-                        Var(3),
-                        app(tail(), Var(2))
-                    )
-                ),
-                nil()
-            )),
-            I()
-        ))
+                        cons(),
+                        app(head(), Var(2)),
+                        app!(Var(4), Var(3), app(tail(), Var(2)))
+                    ),
+                    nil()
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -697,22 +683,21 @@ pub fn take_while() -> Term {
 pub fn drop() -> Term {
     app!(
         Z(),
-        abs!(3, app!(
-            is_nil(),
-            Var(1),
-            abs(nil()),
-            abs(app!(
-                is_zero(),
-                Var(3),
-                Var(2),
-                app!(
-                    Var(4),
-                    app(pred(), Var(3)),
-                    app(tail(), Var(2))
-                )
-            )),
-            I()
-        ))
+        abs!(
+            3,
+            app!(
+                is_nil(),
+                Var(1),
+                abs(nil()),
+                abs(app!(
+                    is_zero(),
+                    Var(3),
+                    Var(2),
+                    app!(Var(4), app(pred(), Var(3)), app(tail(), Var(2)))
+                )),
+                I()
+            )
+        )
     )
 }
 
@@ -736,22 +721,21 @@ pub fn drop() -> Term {
 pub fn drop_while() -> Term {
     app(
         Z(),
-        abs!(3, app!(
-            is_nil(),
-            Var(1),
-            abs(nil()),
-            abs(app!(
-                Var(3),
-                app(head(), Var(2)),
-                app!(
-                    Var(4),
+        abs!(
+            3,
+            app!(
+                is_nil(),
+                Var(1),
+                abs(nil()),
+                abs(app!(
                     Var(3),
-                    app(tail(), Var(2))
-                ),
-                Var(2)
-            )),
-            I()
-        ))
+                    app(head(), Var(2)),
+                    app!(Var(4), Var(3), app(tail(), Var(2))),
+                    Var(2)
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -775,21 +759,20 @@ pub fn drop_while() -> Term {
 pub fn replicate() -> Term {
     app(
         Z(),
-        abs!(3, app!(
-            is_zero(),
-            Var(2),
-            abs(nil()),
-            abs(app!(
-                pair(),
+        abs!(
+            3,
+            app!(
+                is_zero(),
                 Var(2),
-                app!(
-                    Var(4),
-                    app(pred(), Var(3)),
-                    Var(2)
-                )
-            )),
-            I()
-        ))
+                abs(nil()),
+                abs(app!(
+                    pair(),
+                    Var(2),
+                    app!(Var(4), app(pred(), Var(3)), Var(2))
+                )),
+                I()
+            )
+        ),
     )
 }
 

@@ -1,8 +1,8 @@
 //! [Lambda-encoded pair](https://en.wikipedia.org/wiki/Church_encoding#Church_pairs)
 
-use crate::term::{Term, abs, app};
+use crate::data::boolean::{fls, tru};
 use crate::term::Term::*;
-use crate::data::boolean::{tru, fls};
+use crate::term::{abs, app, Term};
 
 /// Applied to two `Term`s it contains them in a lambda-encoded pair.
 ///
@@ -36,7 +36,9 @@ pub fn pair() -> Term {
 ///     1.into_church()
 /// );
 /// ```
-pub fn fst() -> Term { abs(app(Var(1), tru())) }
+pub fn fst() -> Term {
+    abs(app(Var(1), tru()))
+}
 
 /// Applied to a lambda-encoded pair `(a, b)` it yields `b`.
 ///
@@ -52,7 +54,9 @@ pub fn fst() -> Term { abs(app(Var(1), tru())) }
 ///     2.into_church()
 /// );
 /// ```
-pub fn snd() -> Term { abs(app(Var(1), fls())) }
+pub fn snd() -> Term {
+    abs(app(Var(1), fls()))
+}
 
 /// Applied to a function and a lambda-encoded pair `(a, b)` it uncurries it
 /// and applies the function to `a` and then `b`.
@@ -71,11 +75,7 @@ pub fn snd() -> Term { abs(app(Var(1), fls())) }
 /// );
 /// ```
 pub fn uncurry() -> Term {
-    abs!(2, app!(
-        Var(2),
-        app(fst(), Var(1)),
-        app(snd(), Var(1))
-    ))
+    abs!(2, app!(Var(2), app(fst(), Var(1)), app(snd(), Var(1))))
 }
 
 /// Applied to a function and two arguments `a` and `b`, it applies the function to the
@@ -94,10 +94,7 @@ pub fn uncurry() -> Term {
 /// );
 /// ```
 pub fn curry() -> Term {
-    abs!(3, app(
-        Var(3),
-        app!(pair(), Var(2), Var(1))
-    ))
+    abs!(3, app(Var(3), app!(pair(), Var(2), Var(1))))
 }
 
 /// Applied to a lambda-encoded pair `(a, b)` it swaps its elements so that it becomes `(b, a)`.
@@ -115,11 +112,7 @@ pub fn curry() -> Term {
 /// );
 /// ```
 pub fn swap() -> Term {
-    abs(app!(
-        pair(),
-        app(snd(), Var(1)),
-        app(fst(), Var(1))
-    ))
+    abs(app!(pair(), app(snd(), Var(1)), app(fst(), Var(1))))
 }
 
 impl From<(Term, Term)> for Term {

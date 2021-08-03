@@ -1,8 +1,8 @@
 //! [Parigot numerals](https://ir.uiowa.edu/cgi/viewcontent.cgi?article=5357&context=etd)
 
-use crate::term::{Term, abs, app};
+use crate::data::boolean::{fls, tru};
 use crate::term::Term::*;
-use crate::data::boolean::{tru, fls};
+use crate::term::{abs, app, Term};
 
 /// Produces a Parigot-encoded number zero; equivalent to `boolean::fls`.
 ///
@@ -15,7 +15,9 @@ use crate::data::boolean::{tru, fls};
 ///
 /// assert_eq!(zero(), 0.into_parigot());
 /// ```
-pub fn zero() -> Term { fls() }
+pub fn zero() -> Term {
+    fls()
+}
 
 /// Applied to a Parigot-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
@@ -45,7 +47,9 @@ pub fn is_zero() -> Term {
 ///
 /// assert_eq!(one(), 1.into_parigot());
 /// ```
-pub fn one() -> Term { abs!(2, app!(Var(2), zero(), Var(1))) }
+pub fn one() -> Term {
+    abs!(2, app!(Var(2), zero(), Var(1)))
+}
 
 /// Applied to a Parigot-encoded number it produces its successor.
 ///

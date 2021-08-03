@@ -2,17 +2,17 @@
 
 #![allow(missing_docs)]
 
-use crate::term::{Term, abs, app};
-use crate::term::Term::*;
 use crate::data::num::convert::*;
+use crate::term::Term::*;
+use crate::term::{abs, app, Term};
 
 macro_rules! make_trait {
-    ($trait_name:ident, $function_name:ident) => (
+    ($trait_name:ident, $function_name:ident) => {
         pub trait $trait_name {
-            #[doc="Performs the conversion."]
+            #[doc = "Performs the conversion."]
             fn $function_name(self) -> Term;
         }
-    );
+    };
 }
 
 make_trait!(IntoPairList, into_pair_list);
@@ -46,7 +46,10 @@ impl IntoChurchList for Vec<Term> {
 
 impl<T: IntoChurchNum> IntoChurchList for Vec<T> {
     fn into_church(self) -> Term {
-        self.into_iter().map(|t| t.into_church()).collect::<Vec<Term>>().into_church()
+        self.into_iter()
+            .map(|t| t.into_church())
+            .collect::<Vec<Term>>()
+            .into_church()
     }
 }
 
@@ -64,16 +67,27 @@ impl IntoScottList for Vec<Term> {
 
 impl<T: IntoScottNum> IntoScottList for Vec<T> {
     fn into_scott(self) -> Term {
-        self.into_iter().map(|t| t.into_scott()).collect::<Vec<Term>>().into_scott()
+        self.into_iter()
+            .map(|t| t.into_scott())
+            .collect::<Vec<Term>>()
+            .into_scott()
     }
 }
 
 impl IntoParigotList for Vec<Term> {
     fn into_parigot(self) -> Term {
-        let mut ret  = abs!(2, Var(2));
+        let mut ret = abs!(2, Var(2));
 
         for t in self.into_iter().rev() {
-            ret = abs!(2, app!(Var(1), t, ret.clone(), ret.unabs().and_then(|r| r.unabs()).unwrap()));
+            ret = abs!(
+                2,
+                app!(
+                    Var(1),
+                    t,
+                    ret.clone(),
+                    ret.unabs().and_then(|r| r.unabs()).unwrap()
+                )
+            );
         }
 
         ret
@@ -82,6 +96,9 @@ impl IntoParigotList for Vec<Term> {
 
 impl<T: IntoParigotNum> IntoParigotList for Vec<T> {
     fn into_parigot(self) -> Term {
-        self.into_iter().map(|t| t.into_parigot()).collect::<Vec<Term>>().into_parigot()
+        self.into_iter()
+            .map(|t| t.into_parigot())
+            .collect::<Vec<Term>>()
+            .into_parigot()
     }
 }

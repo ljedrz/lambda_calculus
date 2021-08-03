@@ -2,13 +2,13 @@
 //!
 //! The supported `Encoding`s are `Church`, `Scott`, `Parigot` and `StumpFu`.
 
-use crate::term::{Term, abs, app};
-use crate::term::Term::*;
-use crate::data::num::{church, scott, parigot, stumpfu};
+use crate::combinators::{I, Z};
 use crate::data::num::convert::Encoding;
 use crate::data::num::convert::Encoding::*;
-use crate::data::pair::{fst, snd, pair, swap};
-use crate::combinators::{I, Z};
+use crate::data::num::{church, parigot, scott, stumpfu};
+use crate::data::pair::{fst, pair, snd, swap};
+use crate::term::Term::*;
+use crate::term::{abs, app, Term};
 
 /// Applied to a numeral with a specified encoding it produces a pair representing its signed
 /// equivalent.
@@ -24,11 +24,11 @@ use crate::combinators::{I, Z};
 /// ```
 pub fn to_signed(encoding: Encoding) -> Term {
     let zero = match encoding {
-        Church  =>  church::zero(),
-        Scott   =>   scott::zero(),
+        Church => church::zero(),
+        Scott => scott::zero(),
         Parigot => parigot::zero(),
         StumpFu => stumpfu::zero(),
-        Binary  => panic!("signed binary numbers are not supported")
+        Binary => panic!("signed binary numbers are not supported"),
     };
 
     abs(app!(pair(), Var(1), zero))
@@ -67,42 +67,45 @@ pub fn neg() -> Term {
 /// ```
 pub fn simplify(encoding: Encoding) -> Term {
     let is_zero = || match encoding {
-        Church  =>  church::is_zero(),
-        Scott   =>   scott::is_zero(),
+        Church => church::is_zero(),
+        Scott => scott::is_zero(),
         Parigot => parigot::is_zero(),
         StumpFu => stumpfu::is_zero(),
-        Binary  => panic!("signed binary numbers are not supported")
+        Binary => panic!("signed binary numbers are not supported"),
     };
 
     let pred = || match encoding {
-        Church  =>  church::pred(),
-        Scott   =>   scott::pred(),
+        Church => church::pred(),
+        Scott => scott::pred(),
         Parigot => parigot::pred(),
         StumpFu => stumpfu::pred(),
-        Binary  => panic!("signed binary numbers are not supported")
+        Binary => panic!("signed binary numbers are not supported"),
     };
 
     app(
         Z(),
-        abs!(2, app!(
-            is_zero(),
-            app(fst(), Var(1)),
-            abs(Var(2)),
-            abs(app!(
+        abs!(
+            2,
+            app!(
                 is_zero(),
-                app(snd(), Var(2)),
-                Var(2),
-                app(
-                    Var(3),
-                    app!(
-                        pair(),
-                        app(pred(), app(fst(), Var(2))),
-                        app(pred(), app(snd(), Var(2)))
+                app(fst(), Var(1)),
+                abs(Var(2)),
+                abs(app!(
+                    is_zero(),
+                    app(snd(), Var(2)),
+                    Var(2),
+                    app(
+                        Var(3),
+                        app!(
+                            pair(),
+                            app(pred(), app(fst(), Var(2))),
+                            app(pred(), app(snd(), Var(2)))
+                        )
                     )
-                )
-            )),
-            I()
-        ))
+                )),
+                I()
+            )
+        ),
     )
 }
 
@@ -121,11 +124,11 @@ pub fn simplify(encoding: Encoding) -> Term {
 /// ```
 pub fn modulus(encoding: Encoding) -> Term {
     let is_zero = match encoding {
-        Church  =>  church::is_zero(),
-        Scott   =>   scott::is_zero(),
+        Church => church::is_zero(),
+        Scott => scott::is_zero(),
         Parigot => parigot::is_zero(),
         StumpFu => stumpfu::is_zero(),
-        Binary  => panic!("signed binary numbers are not supported")
+        Binary => panic!("signed binary numbers are not supported"),
     };
 
     abs(app(
@@ -135,7 +138,7 @@ pub fn modulus(encoding: Encoding) -> Term {
             app(snd(), Var(1)),
             app(fst(), Var(1))
         )),
-        app(simplify(encoding), Var(1))
+        app(simplify(encoding), Var(1)),
     ))
 }
 
@@ -157,29 +160,24 @@ pub fn modulus(encoding: Encoding) -> Term {
 /// ```
 pub fn add(encoding: Encoding) -> Term {
     let add = || match encoding {
-        Church  =>  church::add(),
-        Scott   =>   scott::add(),
+        Church => church::add(),
+        Scott => scott::add(),
         Parigot => parigot::add(),
         StumpFu => stumpfu::add(),
-        Binary  => panic!("signed binary numbers are not supported")
+        Binary => panic!("signed binary numbers are not supported"),
     };
 
-    abs!(2, app(
-        simplify(encoding),
-        app!(
-            pair(),
+    abs!(
+        2,
+        app(
+            simplify(encoding),
             app!(
-                add(),
-                app(fst(), Var(2)),
-                app(fst(), Var(1))
-            ),
-            app!(
-                add(),
-                app(snd(), Var(2)),
-                app(snd(), Var(1))
+                pair(),
+                app!(add(), app(fst(), Var(2)), app(fst(), Var(1))),
+                app!(add(), app(snd(), Var(2)), app(snd(), Var(1)))
             )
         )
-    ))
+    )
 }
 
 /// Applied to two signed integers with a specified encoding it returns a signed integer equal to
@@ -200,29 +198,24 @@ pub fn add(encoding: Encoding) -> Term {
 /// ```
 pub fn sub(encoding: Encoding) -> Term {
     let add = || match encoding {
-        Church  =>  church::add(),
-        Scott   =>   scott::add(),
+        Church => church::add(),
+        Scott => scott::add(),
         Parigot => parigot::add(),
         StumpFu => stumpfu::add(),
-        Binary  => panic!("signed binary numbers are not supported")
+        Binary => panic!("signed binary numbers are not supported"),
     };
 
-    abs!(2, app(
-        simplify(encoding),
-        app!(
-            pair(),
+    abs!(
+        2,
+        app(
+            simplify(encoding),
             app!(
-                add(),
-                app(fst(), Var(2)),
-                app(snd(), Var(1))
-            ),
-            app!(
-                add(),
-                app(snd(), Var(2)),
-                app(fst(), Var(1))
+                pair(),
+                app!(add(), app(fst(), Var(2)), app(snd(), Var(1))),
+                app!(add(), app(snd(), Var(2)), app(fst(), Var(1)))
             )
         )
-    ))
+    )
 }
 
 /// Applied to two signed integers with a specified encoding it returns a signed integer equal to
@@ -245,11 +238,11 @@ pub fn sub(encoding: Encoding) -> Term {
 /// ```
 pub fn mul(encoding: Encoding) -> Term {
     let mul = || match encoding {
-        Church  => church::mul(),
-        Scott   => scott::mul(),
+        Church => church::mul(),
+        Scott => scott::mul(),
         Parigot => parigot::mul(),
         StumpFu => stumpfu::mul(),
-        Binary => panic!("signed binary numbers are not supported")
+        Binary => panic!("signed binary numbers are not supported"),
     };
 
     let add = || match encoding {
@@ -257,39 +250,26 @@ pub fn mul(encoding: Encoding) -> Term {
         Scott => scott::add(),
         Parigot => parigot::add(),
         StumpFu => stumpfu::add(),
-        Binary => panic!("signed binary numbers are not supported")
+        Binary => panic!("signed binary numbers are not supported"),
     };
 
-    abs!(2, app(
-        simplify(encoding),
-        app!(
-            pair(),
+    abs!(
+        2,
+        app(
+            simplify(encoding),
             app!(
-                add(),
+                pair(),
                 app!(
-                    mul(),
-                    app(fst(), Var(2)),
-                    app(fst(), Var(1))
+                    add(),
+                    app!(mul(), app(fst(), Var(2)), app(fst(), Var(1))),
+                    app!(mul(), app(snd(), Var(2)), app(snd(), Var(1)))
                 ),
                 app!(
-                    mul(),
-                    app(snd(), Var(2)),
-                    app(snd(), Var(1))
-                )
-            ),
-            app!(
-                add(),
-                app!(
-                    mul(),
-                    app(fst(), Var(2)),
-                    app(snd(), Var(1))
-                ),
-                app!(
-                    mul(),
-                    app(snd(), Var(2)),
-                    app(fst(), Var(1))
+                    add(),
+                    app!(mul(), app(fst(), Var(2)), app(snd(), Var(1))),
+                    app!(mul(), app(snd(), Var(2)), app(fst(), Var(1)))
                 )
             )
         )
-    ))
+    )
 }

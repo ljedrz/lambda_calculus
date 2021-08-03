@@ -1,9 +1,9 @@
 //! [Scott numerals](http://lucacardelli.name/Papers/Notes/scott2.pdf)
 
-use crate::data::boolean::{tru, fls};
-use crate::term::{Term, abs, app};
-use crate::term::Term::*;
 use crate::combinators::Z;
+use crate::data::boolean::{fls, tru};
+use crate::term::Term::*;
+use crate::term::{abs, app, Term};
 
 /// Produces a Scott-encoded number zero; equivalent to `boolean::tru`.
 ///
@@ -16,7 +16,9 @@ use crate::combinators::Z;
 ///
 /// assert_eq!(zero(), 0.into_scott());
 /// ```
-pub fn zero() -> Term { tru() }
+pub fn zero() -> Term {
+    tru()
+}
 
 /// Applied to a Scott-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
@@ -47,7 +49,9 @@ pub fn is_zero() -> Term {
 ///
 /// assert_eq!(one(), 1.into_scott());
 /// ```
-pub fn one() -> Term { abs!(2, app(Var(1), zero())) }
+pub fn one() -> Term {
+    abs!(2, app(Var(1), zero()))
+}
 
 /// Applied to a Scott-encoded number it produces its successor.
 ///
@@ -100,13 +104,14 @@ pub fn pred() -> Term {
 pub fn add() -> Term {
     app(
         Z(),
-        abs!(3, app!(
-            Var(2),
-            Var(1),
-            abs(app(
-                succ(), app!(Var(4), Var(1), Var(2))
-            ))
-        ))
+        abs!(
+            3,
+            app!(
+                Var(2),
+                Var(1),
+                abs(app(succ(), app!(Var(4), Var(1), Var(2))))
+            )
+        ),
     )
 }
 /*
@@ -146,15 +151,14 @@ pub fn sub() -> Term {
 pub fn mul() -> Term {
     app(
         Z(),
-        abs!(3, app!(
-            Var(2),
-            zero(),
-            abs(app!(
-                add(),
+        abs!(
+            3,
+            app!(
                 Var(2),
-                app!(Var(4), Var(1), Var(2))
-            ))
-        ))
+                zero(),
+                abs(app!(add(), Var(2), app!(Var(4), Var(1), Var(2))))
+            )
+        ),
     )
 }
 
@@ -177,15 +181,14 @@ pub fn mul() -> Term {
 pub fn pow() -> Term {
     app(
         Z(),
-        abs!(3, app!(
-            Var(1),
-            one(),
-            abs(app!(
-                mul(),
-                Var(3),
-                app!(Var(4), Var(3), Var(1))
-            ))
-        ))
+        abs!(
+            3,
+            app!(
+                Var(1),
+                one(),
+                abs(app!(mul(), Var(3), app!(Var(4), Var(3), Var(1))))
+            )
+        ),
     )
 }
 
@@ -208,18 +211,21 @@ pub fn pow() -> Term {
 /// This function will overflow the stack if used with an applicative-family (`APP` or `HAP`)
 /// reduction order.
 pub fn to_church() -> Term {
-    abs!(3, app!(
-        Z(),
-        abs!(4, app!(
-            Var(1),
+    abs!(
+        3,
+        app!(
+            Z(),
+            abs!(
+                4,
+                app!(
+                    Var(1),
+                    Var(2),
+                    abs(app(Var(4), app!(Var(5), Var(4), Var(3), Var(1))))
+                )
+            ),
             Var(2),
-            abs(app(
-                Var(4),
-                app!(Var(5), Var(4), Var(3), Var(1))
-            ))
-        )),
-        Var(2),
-        Var(1),
-        Var(3)
-    ))
+            Var(1),
+            Var(3)
+        )
+    )
 }

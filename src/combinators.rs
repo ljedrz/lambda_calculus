@@ -11,8 +11,8 @@
 
 #![allow(non_snake_case)]
 
-use crate::term::{Term, abs, app};
 use crate::term::Term::*;
+use crate::term::{abs, app, Term};
 
 /// I - the identity combinator.
 ///
@@ -26,7 +26,9 @@ use crate::term::Term::*;
 /// assert_eq!(beta(app(I(), Var(1)), NOR, 0), Var(1));
 /// assert_eq!(beta(app(I(), abs(Var(1))), NOR, 0), abs(Var(1)));
 /// ```
-pub fn I() -> Term { abs(Var(1)) }
+pub fn I() -> Term {
+    abs(Var(1))
+}
 
 /// K - the constant / discarding combinator; equivalent to `boolean::tru`.
 ///
@@ -40,7 +42,9 @@ pub fn I() -> Term { abs(Var(1)) }
 /// assert_eq!(beta(app!(K(), Var(1), Var(2)), NOR, 0), Var(1));
 /// assert_eq!(beta(app!(K(), Var(2), Var(1)), NOR, 0), Var(2));
 /// ```
-pub fn K() -> Term { abs!(2, Var(2)) }
+pub fn K() -> Term {
+    abs!(2, Var(2))
+}
 
 /// S - the substitution combinator.
 ///
@@ -73,7 +77,9 @@ pub fn S() -> Term {
 /// assert_eq!(beta(app(i(), app(i(), app(i(), i()))), NOR, 0), K());
 /// assert_eq!(beta(app(i(), app(i(), app(i(), app(i(), i())))), NOR, 0), S());
 /// ```
-pub fn i() -> Term { abs(app!(Var(1), S(), K())) }
+pub fn i() -> Term {
+    abs(app!(Var(1), S(), K()))
+}
 
 /// B - the composition combinator.
 ///
@@ -143,7 +149,9 @@ pub fn W() -> Term {
 ///     app(Var(1), Var(1))
 /// );
 /// ```
-pub fn o() -> Term { abs(app(Var(1), Var(1))) }
+pub fn o() -> Term {
+    abs(app(Var(1), Var(1)))
+}
 
 /// Ω - the divergent combinator.
 ///
@@ -156,7 +164,9 @@ pub fn o() -> Term { abs(app(Var(1), Var(1))) }
 ///
 /// assert_eq!(beta(O(), NOR, 3), O()); // 3 β-reductions do nothing
 /// ```
-pub fn O() -> Term { app(o(), o()) }
+pub fn O() -> Term {
+    app(o(), o())
+}
 
 /// Y - the lazy fixed-point combinator.
 ///
@@ -180,7 +190,7 @@ pub fn O() -> Term { app(o(), o()) }
 pub fn Y() -> Term {
     abs(app(
         abs(app(Var(2), app(Var(1), Var(1)))),
-        abs(app(Var(2), app(Var(1), Var(1))))
+        abs(app(Var(2), app(Var(1), Var(1)))),
     ))
 }
 
@@ -209,7 +219,7 @@ pub fn Y() -> Term {
 pub fn Z() -> Term {
     abs(app(
         abs(app(Var(2), abs(app!(Var(2), Var(2), Var(1))))),
-        abs(app(Var(2), abs(app!(Var(2), Var(2), Var(1)))))
+        abs(app(Var(2), abs(app!(Var(2), Var(2), Var(1))))),
     ))
 }
 
@@ -253,6 +263,6 @@ pub fn R() -> Term {
 pub fn T() -> Term {
     app(
         abs!(2, app(Var(1), app!(Var(2), Var(2), Var(1)))),
-        abs!(2, app(Var(1), app!(Var(2), Var(2), Var(1))))
+        abs!(2, app(Var(1), app!(Var(2), Var(2), Var(1)))),
     )
 }

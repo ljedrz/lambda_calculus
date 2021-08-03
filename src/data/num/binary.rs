@@ -1,20 +1,24 @@
 //! [Mogensen's binary number encoding](http://repository.readscheme.org/ftp/papers/topps/D-456.pdf)
 
-use crate::term::{Term, abs, app};
-use crate::term::Term::*;
-use crate::data::boolean::{tru, fls};
 use crate::combinators::I;
-use crate::data::pair::{pair, fst, snd};
+use crate::data::boolean::{fls, tru};
+use crate::data::pair::{fst, pair, snd};
+use crate::term::Term::*;
+use crate::term::{abs, app, Term};
 
 /// A 0 bit; equivalent to `boolean::tru`.
 ///
 /// B0 ≡ λab.a ≡ λ λ 2 ≡ TRUE
-pub fn b0() -> Term { tru() }
+pub fn b0() -> Term {
+    tru()
+}
 
 /// A 1 bit; equivalent to `boolean::fls`.
 ///
 /// B1 ≡ λab.b ≡ λ λ 1 ≡ FALSE
-pub fn b1() -> Term { fls() }
+pub fn b1() -> Term {
+    fls()
+}
 
 /// Produces a binary-encoded number zero.
 ///
@@ -27,7 +31,9 @@ pub fn b1() -> Term { fls() }
 ///
 /// assert_eq!(zero(), 0.into_binary());
 /// ```
-pub fn zero() -> Term { abs!(3, Var(3)) }
+pub fn zero() -> Term {
+    abs!(3, Var(3))
+}
 
 /// Applied to a binary-encoded number it produces a lambda-encoded boolean, indicating whether its
 /// argument is equal to zero.
@@ -84,8 +90,14 @@ pub fn one() -> Term {
 /// ```
 pub fn succ() -> Term {
     let z = app!(pair(), zero(), one());
-    let a = abs(app(Var(1), abs!(2, app!(pair(), app(shl0(), Var(2)), app(shl1(), Var(2))))));
-    let b = abs(app(Var(1), abs!(2, app!(pair(), app(shl1(), Var(2)), app(shl0(), Var(1))))));
+    let a = abs(app(
+        Var(1),
+        abs!(2, app!(pair(), app(shl0(), Var(2)), app(shl1(), Var(2)))),
+    ));
+    let b = abs(app(
+        Var(1),
+        abs!(2, app!(pair(), app(shl1(), Var(2)), app(shl0(), Var(1)))),
+    ));
 
     abs(app(snd(), app!(Var(1), z, a, b)))
 }
@@ -115,8 +127,14 @@ pub fn succ() -> Term {
 /// ```
 pub fn pred() -> Term {
     let z = app!(pair(), zero(), zero());
-    let a = abs(app(Var(1), abs!(2, app!(pair(), app(shl0(), Var(2)), app(shl1(), Var(1))))));
-    let b = abs(app(Var(1), abs!(2, app!(pair(), app(shl1(), Var(2)), app(shl0(), Var(2))))));
+    let a = abs(app(
+        Var(1),
+        abs!(2, app!(pair(), app(shl0(), Var(2)), app(shl1(), Var(1)))),
+    ));
+    let b = abs(app(
+        Var(1),
+        abs!(2, app!(pair(), app(shl1(), Var(2)), app(shl0(), Var(2)))),
+    ));
 
     abs(app(snd(), app!(Var(1), z, a, b)))
 }
@@ -198,9 +216,18 @@ pub fn shl1() -> Term {
 /// );
 /// ```
 pub fn strip() -> Term {
-    let z  = app!(pair(), zero(), tru());
-    let a  = abs(app(Var(1), abs!(2, app!(pair(), app!(Var(1), zero(), app(shl0(), Var(2))), Var(1)))));
-    let b  = abs(app(Var(1), abs!(2, app!(pair(), app(shl1(), Var(2)), fls()))));
+    let z = app!(pair(), zero(), tru());
+    let a = abs(app(
+        Var(1),
+        abs!(
+            2,
+            app!(pair(), app!(Var(1), zero(), app(shl0(), Var(2))), Var(1))
+        ),
+    ));
+    let b = abs(app(
+        Var(1),
+        abs!(2, app!(pair(), app(shl1(), Var(2)), fls())),
+    ));
 
     abs(app(fst(), app!(Var(1), z, a, b)))
 }

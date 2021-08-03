@@ -1,12 +1,12 @@
 //! A parser for lambda expressions
 
-use crate::term::{Term, Notation, abs, app};
-use crate::term::Term::*;
-use self::Token::*;
 use self::CToken::*;
-use self::ParseError::*;
 use self::Expression::*;
+use self::ParseError::*;
+use self::Token::*;
 pub use crate::term::Notation::*;
+use crate::term::Term::*;
+use crate::term::{abs, app, Notation, Term};
 
 /// An error returned by `parse()` when a parsing issue is encountered.
 #[derive(Debug, PartialEq)]
@@ -16,7 +16,7 @@ pub enum ParseError {
     /// syntax error; the expression is invalid
     InvalidExpression,
     /// syntax error; the expression is empty
-    EmptyExpression
+    EmptyExpression,
 }
 
 #[derive(Debug, PartialEq)]
@@ -29,7 +29,7 @@ pub enum Token {
     /// right parenthesis
     Rparen,
     /// a hex-encoded digit
-    Number(usize)
+    Number(usize),
 }
 
 #[derive(Debug, PartialEq)]
@@ -42,7 +42,7 @@ pub enum CToken {
     /// right parenthesis
     CRparen,
     /// a variable with an identifier
-    CName(String)
+    CName(String),
 }
 
 #[doc(hidden)]
@@ -52,16 +52,16 @@ pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, ParseError> {
 
     for (i, c) in chars {
         match c {
-     '\\' | 'λ' => { tokens.push(Lambda) },
-            '(' => { tokens.push(Lparen) },
-            ')' => { tokens.push(Rparen) },
-             _  => {
+            '\\' | 'λ' => tokens.push(Lambda),
+            '(' => tokens.push(Lparen),
+            ')' => tokens.push(Rparen),
+            _ => {
                 if let Some(n) = c.to_digit(16) {
                     tokens.push(Number(n as usize))
                 } else if c.is_whitespace() {
                     // ignore
                 } else {
-                    return Err(InvalidCharacter((i, c)))
+                    return Err(InvalidCharacter((i, c)));
                 }
             }
         }
@@ -81,25 +81,25 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
                 let mut name = String::new();
                 for (i, c) in &mut chars {
                     if c == '.' {
-                        break
+                        break;
                     } else if c.is_alphabetic() {
                         name.push(c)
                     } else {
-                        return Err(InvalidCharacter((i, c)))
+                        return Err(InvalidCharacter((i, c)));
                     }
                 }
                 tokens.push(CLambda(name))
-            },
-            '(' => { tokens.push(CLparen) },
-            ')' => { tokens.push(CRparen) },
-             _  => {
+            }
+            '(' => tokens.push(CLparen),
+            ')' => tokens.push(CRparen),
+            _ => {
                 if c.is_whitespace() {
                     // ignore
                 } else if c.is_alphabetic() {
                     let mut name = c.to_string();
                     while let Some(&(_, c)) = chars.peek() {
                         if c.is_whitespace() || c == '(' || c == ')' {
-                            break
+                            break;
                         } else {
                             name.push(c);
                             chars.next();
@@ -107,7 +107,7 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
                     }
                     tokens.push(CName(name))
                 } else {
-                    return Err(InvalidCharacter((i, c)))
+                    return Err(InvalidCharacter((i, c)));
                 }
             }
         }
@@ -121,8 +121,11 @@ pub fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
     _convert_classic_tokens(tokens, &mut Vec::with_capacity(tokens.len()), &mut 0)
 }
 
-fn _convert_classic_tokens<'t, 's>(tokens: &'t [CToken], stack: &'s mut Vec<&'t str>, pos: &mut usize) -> Vec<Token>
-{
+fn _convert_classic_tokens<'t, 's>(
+    tokens: &'t [CToken],
+    stack: &'s mut Vec<&'t str>,
+    pos: &mut usize,
+) -> Vec<Token> {
     let mut output = Vec::with_capacity(tokens.len() - *pos);
     let mut inner_stack_count = 0;
 
@@ -132,17 +135,17 @@ fn _convert_classic_tokens<'t, 's>(tokens: &'t [CToken], stack: &'s mut Vec<&'t 
                 output.push(Lambda);
                 stack.push(name);
                 inner_stack_count += 1;
-            },
+            }
             CLparen => {
                 output.push(Lparen);
                 *pos += 1;
                 output.append(&mut _convert_classic_tokens(tokens, stack, pos));
-            },
+            }
             CRparen => {
                 output.push(Rparen);
                 stack.truncate(stack.len() - inner_stack_count);
-                return output
-            },
+                return output;
+            }
             CName(ref name) => {
                 if let Some(index) = stack.iter().rev().position(|t| t == name) {
                     output.push(Number(index + 1))
@@ -165,7 +168,7 @@ pub enum Expression {
     /// a sequence of `Expression`s
     Sequence(Vec<Expression>),
     /// a variable with a De Bruijn index
-    Variable(usize)
+    Variable(usize),
 }
 
 #[doc(hidden)]
@@ -174,26 +177,22 @@ pub fn get_ast(tokens: &[Token]) -> Result<Expression, ParseError> {
 }
 
 fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError> {
-    if tokens.is_empty() { return Err(EmptyExpression) }
+    if tokens.is_empty() {
+        return Err(EmptyExpression);
+    }
 
     let mut expr = Vec::new();
 
     while let Some(token) = tokens.get(*pos) {
         match *token {
-            Lambda => {
-                expr.push(Abstraction)
-            },
-            Number(i) => {
-                expr.push(Variable(i))
-            },
+            Lambda => expr.push(Abstraction),
+            Number(i) => expr.push(Variable(i)),
             Lparen => {
                 *pos += 1;
                 let subtree = _get_ast(tokens, pos)?;
                 expr.push(subtree);
-            },
-            Rparen => {
-                return Ok(Sequence(expr))
             }
+            Rparen => return Ok(Sequence(expr)),
         }
         *pos += 1;
     }
@@ -244,14 +243,14 @@ pub fn parse(input: &str, notation: Notation) -> Result<Term, ParseError> {
 
 #[doc(hidden)]
 pub fn fold_exprs(exprs: &[Expression]) -> Result<Term, ParseError> {
-    let mut depth  = 0;
+    let mut depth = 0;
     let mut output = Vec::new();
 
     for expr in exprs.iter() {
         match *expr {
-            Abstraction         => depth += 1,
-            Variable(i)         => output.push(Var(i)),
-            Sequence(ref exprs) => output.push(fold_exprs(exprs)?)
+            Abstraction => depth += 1,
+            Variable(i) => output.push(Var(i)),
+            Sequence(ref exprs) => output.push(fold_exprs(exprs)?),
         }
     }
 
@@ -264,9 +263,9 @@ fn fold_terms(mut terms: Vec<Term>) -> Result<Term, ParseError> {
     } else {
         let fst = terms.remove(0);
         if terms.is_empty() {
-            Ok( fst )
+            Ok(fst)
         } else {
-            Ok( terms.into_iter().fold(fst, app) )
+            Ok(terms.into_iter().fold(fst, app))
         }
     }
 }
@@ -277,7 +276,7 @@ mod tests {
 
     #[test]
     fn tokenization_error() {
-        assert_eq!(tokenize_dbr("λλx2"),    Err(InvalidCharacter((2, 'x'))));
+        assert_eq!(tokenize_dbr("λλx2"), Err(InvalidCharacter((2, 'x'))));
         assert_eq!(tokenize_cla("λa.λb a"), Err(InvalidCharacter((5, ' '))));
     }
 
@@ -287,10 +286,38 @@ mod tests {
         let tokens = tokenize_dbr(quine);
 
         assert!(tokens.is_ok());
-        assert_eq!(tokens.unwrap(), vec![Lambda, Number(1), Lparen, Lparen, Lambda, Number(1),
-            Number(1), Rparen, Lparen, Lambda, Lambda, Lambda, Lambda, Lambda, Number(1),
-            Number(4), Lparen, Number(3), Lparen, Number(5), Number(5), Rparen, Number(2),
-            Rparen, Rparen, Rparen, Number(1)]);
+        assert_eq!(
+            tokens.unwrap(),
+            vec![
+                Lambda,
+                Number(1),
+                Lparen,
+                Lparen,
+                Lambda,
+                Number(1),
+                Number(1),
+                Rparen,
+                Lparen,
+                Lambda,
+                Lambda,
+                Lambda,
+                Lambda,
+                Lambda,
+                Number(1),
+                Number(4),
+                Lparen,
+                Number(3),
+                Lparen,
+                Number(5),
+                Number(5),
+                Rparen,
+                Number(2),
+                Rparen,
+                Rparen,
+                Rparen,
+                Number(1)
+            ]
+        );
     }
 
     #[test]
@@ -305,12 +332,18 @@ mod tests {
         assert!(tokens_cla.is_ok());
         assert!(tokens_dbr.is_ok());
 
-        assert_eq!(convert_classic_tokens(&tokens_cla.unwrap()), tokens_dbr.unwrap());
+        assert_eq!(
+            convert_classic_tokens(&tokens_cla.unwrap()),
+            tokens_dbr.unwrap()
+        );
     }
 
     #[test]
     fn alternative_lambda_parsing() {
-        assert_eq!(parse(r#"\\\2(321)"#, DeBruijn), parse("λλλ2(321)", DeBruijn))
+        assert_eq!(
+            parse(r#"\\\2(321)"#, DeBruijn),
+            parse("λλλ2(321)", DeBruijn)
+        )
     }
 
     #[test]
@@ -318,40 +351,51 @@ mod tests {
         let tokens = tokenize_dbr("λλλ2(321)").unwrap();
         let ast = get_ast(&tokens);
 
-        assert_eq!(ast,
+        assert_eq!(
+            ast,
             Ok(Sequence(vec![
                 Abstraction,
                 Abstraction,
                 Abstraction,
                 Variable(2),
-                Sequence(vec![
-                    Variable(3),
-                    Variable(2),
-                    Variable(1)
-                ])
-            ])
-        ));
+                Sequence(vec![Variable(3), Variable(2), Variable(1)])
+            ]))
+        );
     }
 
     #[test]
     fn parse_y() {
         let y = "λ(λ2(11))(λ2(11))";
-        assert_eq!(parse(y, DeBruijn).unwrap(),
-            abs(
-                app(
-                    abs(app(Var(2), app(Var(1), Var(1)))),
-                    abs(app(Var(2), app(Var(1), Var(1))))
-                )
-            )
+        assert_eq!(
+            parse(y, DeBruijn).unwrap(),
+            abs(app(
+                abs(app(Var(2), app(Var(1), Var(1)))),
+                abs(app(Var(2), app(Var(1), Var(1))))
+            ))
         );
     }
 
     #[test]
     fn parse_quine() {
         let quine = "λ1((λ11)(λλλλλ14(3(55)2)))1";
-        assert_eq!(parse(quine, DeBruijn).unwrap(),
-            abs(app(app(Var(1), app(abs(app(Var(1), Var(1))), abs!(5, app(app(Var(1),
-            Var(4)), app(app(Var(3), app(Var(5), Var(5))), Var(2)))))), Var(1)))
+        assert_eq!(
+            parse(quine, DeBruijn).unwrap(),
+            abs(app(
+                app(
+                    Var(1),
+                    app(
+                        abs(app(Var(1), Var(1))),
+                        abs!(
+                            5,
+                            app(
+                                app(Var(1), Var(4)),
+                                app(app(Var(3), app(Var(5), Var(5))), Var(2))
+                            )
+                        )
+                    )
+                ),
+                Var(1)
+            ))
         );
     }
 
@@ -359,15 +403,90 @@ mod tests {
     fn parse_blc() {
         let blc = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
                    (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
-        assert_eq!(parse(blc, DeBruijn).unwrap(),
-            app(app(abs(app(Var(1), Var(1))), abs!(3, app(app(app(Var(1),
-            abs!(4, app(Var(3), abs(app(app(Var(5), app(Var(3), abs(app(app(Var(2),
-            app(Var(3), abs!(2, app(Var(3), abs(app(app(Var(1), Var(2)), Var(3))))))), app(Var(4),
-            abs(app(Var(4), abs(app(app(Var(3), Var(1)), app(Var(2), Var(1))))))))))),
-            app(app(Var(1), app(Var(2), abs(app(Var(1), Var(2))))), abs(app(app(Var(4),
-            abs(app(Var(4), abs(app(Var(2), app(Var(1), Var(4))))))), Var(5))))))))),
-            app(Var(3), Var(3))), Var(2)))), abs(app(Var(1), app(abs(app(Var(1), Var(1))),
-            abs(app(Var(1), Var(1)))))))
+        assert_eq!(
+            parse(blc, DeBruijn).unwrap(),
+            app(
+                app(
+                    abs(app(Var(1), Var(1))),
+                    abs!(
+                        3,
+                        app(
+                            app(
+                                app(
+                                    Var(1),
+                                    abs!(
+                                        4,
+                                        app(
+                                            Var(3),
+                                            abs(app(
+                                                app(
+                                                    Var(5),
+                                                    app(
+                                                        Var(3),
+                                                        abs(app(
+                                                            app(
+                                                                Var(2),
+                                                                app(
+                                                                    Var(3),
+                                                                    abs!(
+                                                                        2,
+                                                                        app(
+                                                                            Var(3),
+                                                                            abs(app(
+                                                                                app(Var(1), Var(2)),
+                                                                                Var(3)
+                                                                            ))
+                                                                        )
+                                                                    )
+                                                                )
+                                                            ),
+                                                            app(
+                                                                Var(4),
+                                                                abs(app(
+                                                                    Var(4),
+                                                                    abs(app(
+                                                                        app(Var(3), Var(1)),
+                                                                        app(Var(2), Var(1))
+                                                                    ))
+                                                                ))
+                                                            )
+                                                        ))
+                                                    )
+                                                ),
+                                                app(
+                                                    app(
+                                                        Var(1),
+                                                        app(Var(2), abs(app(Var(1), Var(2))))
+                                                    ),
+                                                    abs(app(
+                                                        app(
+                                                            Var(4),
+                                                            abs(app(
+                                                                Var(4),
+                                                                abs(app(
+                                                                    Var(2),
+                                                                    app(Var(1), Var(4))
+                                                                ))
+                                                            ))
+                                                        ),
+                                                        Var(5)
+                                                    ))
+                                                )
+                                            ))
+                                        )
+                                    )
+                                ),
+                                app(Var(3), Var(3))
+                            ),
+                            Var(2)
+                        )
+                    )
+                ),
+                abs(app(
+                    Var(1),
+                    app(abs(app(Var(1), Var(1))), abs(app(Var(1), Var(1))))
+                ))
+            )
         );
     }
 }

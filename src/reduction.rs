@@ -1,9 +1,9 @@
 //! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form) for lambda `Term`s
 
-use crate::term::{Term, TermError};
-use crate::term::Term::*;
-use std::{cmp, fmt, mem};
 pub use self::Order::*;
+use crate::term::Term::*;
+use crate::term::{Term, TermError};
+use std::{cmp, fmt, mem};
 
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
 /// β-reductions.
@@ -30,7 +30,7 @@ pub enum Order {
     CBV,
     /// hybrid applicative - a mix between `CBV` (call-by-value) and `APP` (applicative) strategies;
     /// usually the fastest-reducing normalizing strategy
-    HAP
+    HAP,
 }
 
 /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit on
@@ -92,9 +92,7 @@ impl Term {
                 }
                 _ => {}
             },
-            Abs(ref mut abstracted) => {
-                abstracted._apply(rhs, depth + 1)
-            },
+            Abs(ref mut abstracted) => abstracted._apply(rhs, depth + 1),
             App(boxed) => {
                 let (ref mut lhs_lhs, ref mut lhs_rhs) = **boxed;
                 lhs_lhs._apply(rhs, depth);
@@ -105,12 +103,12 @@ impl Term {
 
     fn update_free_variables(&mut self, added_depth: usize, own_depth: usize) {
         match self {
-            Var(ref mut i) => if *i > own_depth {
-                *i += added_depth
-            },
-            Abs(ref mut abstracted) => {
-                abstracted.update_free_variables(added_depth, own_depth + 1)
-            },
+            Var(ref mut i) => {
+                if *i > own_depth {
+                    *i += added_depth
+                }
+            }
+            Abs(ref mut abstracted) => abstracted.update_free_variables(added_depth, own_depth + 1),
             App(boxed) => {
                 let (ref mut lhs, ref mut rhs) = **boxed;
                 lhs.update_free_variables(added_depth, own_depth);
@@ -129,7 +127,7 @@ impl Term {
     }
 
     fn is_reducible(&self, limit: usize, count: usize) -> bool {
-        self.lhs_ref().and_then(|t| t.unabs_ref()).is_ok() && (limit == 0 || count < limit )
+        self.lhs_ref().and_then(|t| t.unabs_ref()).is_ok() && (limit == 0 || count < limit)
     }
 
     /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit
@@ -158,14 +156,16 @@ impl Term {
             APP => self.beta_app(limit, &mut count),
             HSP => self.beta_hsp(limit, &mut count),
             HNO => self.beta_hno(limit, &mut count),
-            HAP => self.beta_hap(limit, &mut count)
+            HAP => self.beta_hap(limit, &mut count),
         }
 
         count
     }
 
     fn beta_cbn(&mut self, limit: usize, count: &mut usize) {
-        if limit != 0 && *count == limit { return }
+        if limit != 0 && *count == limit {
+            return;
+        }
 
         if let App(_) = *self {
             self.lhs_mut().unwrap().beta_cbn(limit, count);
@@ -178,7 +178,9 @@ impl Term {
     }
 
     fn beta_nor(&mut self, limit: usize, count: &mut usize) {
-        if limit != 0 && *count == limit { return }
+        if limit != 0 && *count == limit {
+            return;
+        }
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_nor(limit, count),
@@ -192,13 +194,15 @@ impl Term {
                     self.lhs_mut().unwrap().beta_nor(limit, count);
                     self.rhs_mut().unwrap().beta_nor(limit, count);
                 }
-            },
-            _ => ()
+            }
+            _ => (),
         }
     }
 
     fn beta_cbv(&mut self, limit: usize, count: &mut usize) {
-        if limit != 0 && *count == limit { return }
+        if limit != 0 && *count == limit {
+            return;
+        }
 
         if let App(_) = *self {
             self.lhs_mut().unwrap().beta_cbv(limit, count);
@@ -212,7 +216,9 @@ impl Term {
     }
 
     fn beta_app(&mut self, limit: usize, count: &mut usize) {
-        if limit != 0 && *count == limit { return }
+        if limit != 0 && *count == limit {
+            return;
+        }
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_app(limit, count),
@@ -224,13 +230,15 @@ impl Term {
                     self.eval(count);
                     self.beta_app(limit, count);
                 }
-            },
-            _ => ()
+            }
+            _ => (),
         }
     }
 
     fn beta_hap(&mut self, limit: usize, count: &mut usize) {
-        if limit != 0 && *count == limit { return }
+        if limit != 0 && *count == limit {
+            return;
+        }
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hap(limit, count),
@@ -244,13 +252,15 @@ impl Term {
                 } else {
                     self.lhs_mut().unwrap().beta_hap(limit, count);
                 }
-            },
-            _ => ()
+            }
+            _ => (),
         }
     }
 
     fn beta_hsp(&mut self, limit: usize, count: &mut usize) {
-        if limit != 0 && *count == limit { return }
+        if limit != 0 && *count == limit {
+            return;
+        }
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hsp(limit, count),
@@ -261,13 +271,15 @@ impl Term {
                     self.eval(count);
                     self.beta_hsp(limit, count)
                 }
-            },
-            _ => ()
+            }
+            _ => (),
         }
     }
 
     fn beta_hno(&mut self, limit: usize, count: &mut usize) {
-        if limit != 0 && *count == limit { return }
+        if limit != 0 && *count == limit {
+            return;
+        }
 
         match *self {
             Abs(ref mut abstracted) => abstracted.beta_hno(limit, count),
@@ -281,22 +293,26 @@ impl Term {
                     self.lhs_mut().unwrap().beta_hno(limit, count);
                     self.rhs_mut().unwrap().beta_hno(limit, count);
                 }
-            },
-            _ => ()
+            }
+            _ => (),
         }
     }
 }
 
 impl fmt::Display for Order {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", match *self {
-            NOR => "normal",
-            CBN => "call-by-name",
-            HSP => "head spine",
-            HNO => "hybrid normal",
-            APP => "applicative",
-            CBV => "call-by-value",
-            HAP => "hybrid applicative"
-        })
+        write!(
+            f,
+            "{}",
+            match *self {
+                NOR => "normal",
+                CBN => "call-by-name",
+                HSP => "head spine",
+                HNO => "hybrid normal",
+                APP => "applicative",
+                CBV => "call-by-value",
+                HAP => "hybrid applicative",
+            }
+        )
     }
 }
