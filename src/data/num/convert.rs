@@ -114,7 +114,7 @@ impl IntoBinaryNum for usize {
 
 impl IntoSignedNum for i32 {
     fn into_signed(self, encoding: Encoding) -> Term {
-        let modulus = self.abs() as usize;
+        let modulus = self.unsigned_abs() as usize;
 
         let numeral = match encoding {
             Church => modulus.into_church(),
