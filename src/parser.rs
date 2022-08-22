@@ -9,7 +9,7 @@ use crate::term::Term::*;
 use crate::term::{abs, app, Notation, Term};
 
 /// An error returned by `parse()` when a parsing issue is encountered.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum ParseError {
     /// lexical error; contains the invalid character and its index
     InvalidCharacter((usize, char)),
@@ -19,7 +19,7 @@ pub enum ParseError {
     EmptyExpression,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 #[doc(hidden)]
 pub enum Token {
     /// the lambda symbol ('λ' or '\')
@@ -32,7 +32,7 @@ pub enum Token {
     Number(usize),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 #[doc(hidden)]
 pub enum CToken {
     /// an abstraction with a bound variable

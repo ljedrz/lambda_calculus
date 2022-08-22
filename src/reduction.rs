@@ -14,7 +14,7 @@ use std::{cmp, fmt, mem};
 /// - the `CBN` order reduces to weak head normal form
 /// - the `CBV` order reduces to weak normal form
 /// - the `HSP` order reduces to head normal form
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Order {
     /// normal - leftmost outermost; the most popular reduction strategy
     NOR,

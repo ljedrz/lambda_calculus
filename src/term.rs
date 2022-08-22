@@ -30,7 +30,7 @@ pub const UD: Term = Var(0);
 /// assert_eq!(&format!(  "{}", S()), "λa.λb.λc.a c (b c)"); // Classic notation
 /// assert_eq!(&format!("{:?}", S()), "λλλ31(21)");          // DeBruijn index notation
 /// ```
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Notation {
     /// classic lambda calculus notation; used by `fmt::Display`
     Classic,
@@ -51,7 +51,7 @@ pub enum Term {
 }
 
 /// An error that can be returned when an inapplicable function is applied to a `Term`.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum TermError {
     /// the term is not a variable
     NotVar,
