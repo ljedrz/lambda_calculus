@@ -23,7 +23,7 @@
 Include the library by adding the following to your Cargo.toml:
 ```
 [dependencies]
-lambda_calculus = "^3.0"
+lambda_calculus = "3"
 ```
 
 And the following to your code:

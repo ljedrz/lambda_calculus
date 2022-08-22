@@ -1,3 +1,11 @@
+Version 3.1.0
+=============
+
+Changes
+-------
+- a pass with the current `clippy`
+- bumped Rust edition to 2021
+
 Version 3.0.2
 =============
 
