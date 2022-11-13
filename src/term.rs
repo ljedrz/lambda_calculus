@@ -452,11 +452,11 @@ fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> St
 
 impl fmt::Debug for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", show_precedence_dbr(self, 0, 0))
+        write!(f, "{}", show_precedence_dbr(self, 0))
     }
 }
 
-fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -> String {
+fn show_precedence_dbr(term: &Term, context_precedence: usize) -> String {
     match term {
         Var(0) => "undefined".to_owned(),
         Var(i) => {
@@ -470,8 +470,8 @@ fn show_precedence_dbr(term: &Term, context_precedence: usize, depth: u32) -> St
             let (ref t1, ref t2) = **boxed;
             let ret = format!(
                 "{}{}",
-                show_precedence_dbr(t1, 2, depth),
-                show_precedence_dbr(t2, 3, depth)
+                show_precedence_dbr(t1, 2),
+                show_precedence_dbr(t2, 3)
             );
             parenthesize_if(&ret, context_precedence == 3).into()
         }
