@@ -121,9 +121,9 @@ pub fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
     _convert_classic_tokens(tokens, &mut Vec::with_capacity(tokens.len()), &mut 0)
 }
 
-fn _convert_classic_tokens<'t, 's>(
+fn _convert_classic_tokens<'t>(
     tokens: &'t [CToken],
-    stack: &'s mut Vec<&'t str>,
+    stack: &mut Vec<&'t str>,
     pos: &mut usize,
 ) -> Vec<Token> {
     let mut output = Vec::with_capacity(tokens.len() - *pos);
