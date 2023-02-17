@@ -21,13 +21,13 @@
 ## Installation
 
 Include the library by adding the following to your Cargo.toml:
-```
+```toml
 [dependencies]
 lambda_calculus = "3"
 ```
 
 And the following to your code:
-```
+```rust
 #[macro_use]
 extern crate lambda_calculus;
 ```
@@ -37,7 +37,7 @@ Compilation features:
 - `encoding`: builds the data encoding modules; default feature
 
 Example feature setup in Cargo.toml:
-```
+```toml
 [dependencies.lambda_calculus]
 version = "^3.0"
 default-features = false # do not build the data encoding modules
@@ -49,7 +49,7 @@ features = ["backslash_lambda"] # use a backslash lambda
 ### Comparing classic and De Bruijn index notation
 
 code:
-```
+```rust
 use lambda_calculus::data::num::church::{succ, pred};
 
 fn main() {
@@ -66,7 +66,7 @@ PRED := λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d) = λλλ3(λλ1(24))(λ2
 ### Parsing lambda expressions
 
 code:
-```
+```rust
 use lambda_calculus::*;
 
 fn main() {
@@ -80,7 +80,7 @@ fn main() {
 ### Showing β-reduction steps
 
 code:
-```
+```rust
 use lambda_calculus::*;
 use lambda_calculus::data::num::church::pred;
 
@@ -111,7 +111,7 @@ normal order β-reduction steps for PRED 1 are:
 ### Comparing the number of steps for different reduction strategies
 
 code:
-```
+```rust
 use lambda_calculus::*;
 use lambda_calculus::data::num::church::fac;
 
@@ -136,7 +136,7 @@ hybrid applicative: 39
 ### Comparing different numeral encodings
 
 code:
-```
+```rust
 use lambda_calculus::*;
 
 fn main() {
