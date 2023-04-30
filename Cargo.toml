@@ -18,7 +18,3 @@ default = ["encoding"]
 backslash_lambda = []
 encoding = []
 
-[badges]
-travis-ci = { repository = "ljedrz/lambda_calculus", branch = "master" }
-maintenance = { status = "passively-maintained" }
-is-it-maintained-open-issues = { repository = "ljedrz/lambda_calculus" }
