@@ -25,12 +25,6 @@ Include the library by adding the following to your Cargo.toml:
 lambda_calculus = "3"
 ```
 
-And the following to your code:
-```rust
-#[macro_use]
-extern crate lambda_calculus;
-```
-
 Compilation features:
 - `backslash_lambda`: changes the display of lambdas from `λ` to `\`
 - `encoding`: builds the data encoding modules; default feature
