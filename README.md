@@ -1,11 +1,10 @@
 # lambda_calculus
 [![license](https://img.shields.io/badge/license-CC0-blue.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![current version](https://img.shields.io/crates/v/lambda_calculus.svg)](https://crates.io/crates/lambda_calculus)
-[![build status](https://api.travis-ci.org/ljedrz/lambda_calculus.svg?branch=master)](https://travis-ci.org/ljedrz/lambda_calculus)
+[![docs.rs](https://docs.rs/lambda_calculus/badge.svg)](https://docs.rs/lambda_calculus)
+[![actively maintained](https://img.shields.io/badge/Maintenance%20Level-Actively%20Maintained-green.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
 
 **lambda_calculus** is a simple, zero-dependency implementation of pure lambda calculus in Safe Rust.
-
-## [Documentation](https://docs.rs/lambda_calculus)
 
 ## Features
 
@@ -39,7 +38,7 @@ Compilation features:
 Example feature setup in Cargo.toml:
 ```toml
 [dependencies.lambda_calculus]
-version = "^3.0"
+version = "3"
 default-features = false # do not build the data encoding modules
 features = ["backslash_lambda"] # use a backslash lambda
 ```
