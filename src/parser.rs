@@ -7,6 +7,8 @@ use self::Token::*;
 pub use crate::term::Notation::*;
 use crate::term::Term::*;
 use crate::term::{abs, app, Notation, Term};
+use std::error::Error;
+use std::fmt;
 
 /// An error returned by `parse()` when a parsing issue is encountered.
 #[derive(Debug, PartialEq, Eq)]
@@ -17,6 +19,26 @@ pub enum ParseError {
     InvalidExpression,
     /// syntax error; the expression is empty
     EmptyExpression,
+}
+
+impl fmt::Display for ParseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            ParseError::InvalidCharacter((idx, char)) => write!(
+                f,
+                "lexical error; the invalid character '{}' at {}",
+                char, idx
+            ),
+            ParseError::InvalidExpression => write!(f, "syntax error; the expression is invalid"),
+            ParseError::EmptyExpression => write!(f, "syntax error; the expression is empty"),
+        }
+    }
+}
+
+impl Error for ParseError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        None
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
