@@ -7,8 +7,8 @@ Changes
 
 Thanks
 -------
-@Zicklag for adding languages to code-blocks in README
-@hiratara for implementing `Error` for `ParseError` and `TermError`
+- @Zicklag for adding languages to code-blocks in README
+- @hiratara for implementing `Error` for `ParseError` and `TermError`
 
 Version 3.1.0
 =============
