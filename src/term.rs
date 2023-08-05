@@ -5,6 +5,7 @@ pub use self::Term::*;
 use self::TermError::*;
 use std::borrow::Cow;
 use std::char::from_u32;
+use std::error::Error;
 use std::fmt;
 
 /// The character used to display lambda abstractions (a backslash).
@@ -59,6 +60,22 @@ pub enum TermError {
     NotAbs,
     /// the term is not an application
     NotApp,
+}
+
+impl fmt::Display for TermError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            TermError::NotVar => write!(f, "the term is not a variable",),
+            TermError::NotAbs => write!(f, "the term is not an abstraction"),
+            TermError::NotApp => write!(f, "the term is not an application"),
+        }
+    }
+}
+
+impl Error for TermError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        None
+    }
 }
 
 impl Term {
