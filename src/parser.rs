@@ -24,11 +24,9 @@ pub enum ParseError {
 impl fmt::Display for ParseError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            ParseError::InvalidCharacter((idx, char)) => write!(
-                f,
-                "lexical error; invalid character '{}' at {}",
-                char, idx
-            ),
+            ParseError::InvalidCharacter((idx, char)) => {
+                write!(f, "lexical error; invalid character '{}' at {}", char, idx)
+            }
             ParseError::InvalidExpression => write!(f, "syntax error; the expression is invalid"),
             ParseError::EmptyExpression => write!(f, "syntax error; the expression is empty"),
         }
