@@ -26,7 +26,7 @@ impl fmt::Display for ParseError {
         match *self {
             ParseError::InvalidCharacter((idx, char)) => write!(
                 f,
-                "lexical error; the invalid character '{}' at {}",
+                "lexical error; invalid character '{}' at {}",
                 char, idx
             ),
             ParseError::InvalidExpression => write!(f, "syntax error; the expression is invalid"),
