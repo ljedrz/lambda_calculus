@@ -1,3 +1,15 @@
+Version 3.2.0
+=============
+
+Changes
+-------
+- add support for crates like `anyhow` by implementing `Error` for errors
+
+Thanks
+-------
+@Zicklag for adding languages to code-blocks in README
+@hiratara for implementing `Error` for `ParseError` and `TermError`
+
 Version 3.1.0
 =============
 
