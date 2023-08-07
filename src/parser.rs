@@ -138,11 +138,17 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
 
 #[doc(hidden)]
 pub fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
-    _convert_classic_tokens(tokens, &mut Vec::with_capacity(tokens.len()), &mut 0)
+    _convert_classic_tokens(
+        tokens,
+        &mut Vec::with_capacity(tokens.len()),
+        &mut Vec::with_capacity(tokens.len()),
+        &mut 0,
+    )
 }
 
 fn _convert_classic_tokens<'t>(
     tokens: &'t [CToken],
+    free_vars: &mut Vec<&'t str>,
     stack: &mut Vec<&'t str>,
     pos: &mut usize,
 ) -> Vec<Token> {
@@ -159,7 +165,12 @@ fn _convert_classic_tokens<'t>(
             CLparen => {
                 output.push(Lparen);
                 *pos += 1;
-                output.append(&mut _convert_classic_tokens(tokens, stack, pos));
+                output.append(&mut _convert_classic_tokens(
+                    tokens,
+                    free_vars,
+                    stack,
+                    pos,
+                ));
             }
             CRparen => {
                 output.push(Rparen);
@@ -169,8 +180,11 @@ fn _convert_classic_tokens<'t>(
             CName(ref name) => {
                 if let Some(index) = stack.iter().rev().position(|t| t == name) {
                     output.push(Number(index + 1))
+                } else if let Some(index) = free_vars.iter().position(|t| t == name) {
+                    output.push(Number(stack.len() + index + 1))
                 } else {
-                    output.push(Number(stack.len() + 1))
+                    output.push(Number(stack.len() + free_vars.len() + 1));
+                    free_vars.push(name);
                 }
             }
         }
@@ -344,6 +358,23 @@ mod tests {
     fn tokenization_success_classic() {
         let blc_dbr = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
             (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
+        let blc_cla = parse(blc_dbr, DeBruijn).unwrap().to_string();
+
+        let tokens_cla = tokenize_cla(&blc_cla);
+        let tokens_dbr = tokenize_dbr(blc_dbr);
+
+        assert!(tokens_cla.is_ok());
+        assert!(tokens_dbr.is_ok());
+
+        assert_eq!(
+            convert_classic_tokens(&tokens_cla.unwrap()),
+            tokens_dbr.unwrap()
+        );
+    }
+
+    #[test]
+    fn tokenization_success_classic_with_free_variables() {
+        let blc_dbr = "12";
         let blc_cla = parse(blc_dbr, DeBruijn).unwrap().to_string();
 
         let tokens_cla = tokenize_cla(&blc_cla);
