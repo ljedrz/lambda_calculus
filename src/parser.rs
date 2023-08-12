@@ -138,17 +138,11 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
 
 #[doc(hidden)]
 pub fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
-    _convert_classic_tokens(
-        tokens,
-        &mut Vec::with_capacity(tokens.len()),
-        &mut Vec::with_capacity(tokens.len()),
-        &mut 0,
-    )
+    _convert_classic_tokens(tokens, &mut Vec::with_capacity(tokens.len()), &mut 0)
 }
 
 fn _convert_classic_tokens<'t>(
     tokens: &'t [CToken],
-    free_vars: &mut Vec<&'t str>,
     stack: &mut Vec<&'t str>,
     pos: &mut usize,
 ) -> Vec<Token> {
@@ -165,12 +159,7 @@ fn _convert_classic_tokens<'t>(
             CLparen => {
                 output.push(Lparen);
                 *pos += 1;
-                output.append(&mut _convert_classic_tokens(
-                    tokens,
-                    free_vars,
-                    stack,
-                    pos,
-                ));
+                output.append(&mut _convert_classic_tokens(tokens, stack, pos));
             }
             CRparen => {
                 output.push(Rparen);
@@ -180,11 +169,11 @@ fn _convert_classic_tokens<'t>(
             CName(ref name) => {
                 if let Some(index) = stack.iter().rev().position(|t| t == name) {
                     output.push(Number(index + 1))
-                } else if let Some(index) = free_vars.iter().position(|t| t == name) {
-                    output.push(Number(stack.len() + index + 1))
                 } else {
-                    output.push(Number(stack.len() + free_vars.len() + 1));
-                    free_vars.push(name);
+                    // a new free variable
+                    stack.insert(0, name);
+                    // index of the last element + 1
+                    output.push(Number(stack.len()))
                 }
             }
         }
