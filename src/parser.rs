@@ -7,6 +7,7 @@ use self::Token::*;
 pub use crate::term::Notation::*;
 use crate::term::Term::*;
 use crate::term::{abs, app, Notation, Term};
+use std::collections::VecDeque;
 use std::error::Error;
 use std::fmt;
 
@@ -138,12 +139,12 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
 
 #[doc(hidden)]
 pub fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
-    _convert_classic_tokens(tokens, &mut Vec::with_capacity(tokens.len()), &mut 0)
+    _convert_classic_tokens(tokens, &mut VecDeque::with_capacity(tokens.len()), &mut 0)
 }
 
 fn _convert_classic_tokens<'t>(
     tokens: &'t [CToken],
-    stack: &mut Vec<&'t str>,
+    stack: &mut VecDeque<&'t str>,
     pos: &mut usize,
 ) -> Vec<Token> {
     let mut output = Vec::with_capacity(tokens.len() - *pos);
@@ -153,7 +154,7 @@ fn _convert_classic_tokens<'t>(
         match *token {
             CLambda(ref name) => {
                 output.push(Lambda);
-                stack.push(name);
+                stack.push_back(name);
                 inner_stack_count += 1;
             }
             CLparen => {
@@ -170,7 +171,10 @@ fn _convert_classic_tokens<'t>(
                 if let Some(index) = stack.iter().rev().position(|t| t == name) {
                     output.push(Number(index + 1))
                 } else {
-                    output.push(Number(stack.len() + 1))
+                    // a new free variable
+                    stack.push_front(name);
+                    // index of the last element + 1
+                    output.push(Number(stack.len()))
                 }
             }
         }
@@ -344,6 +348,23 @@ mod tests {
     fn tokenization_success_classic() {
         let blc_dbr = "(λ11)(λλλ1(λλλλ3(λ5(3(λ2(3(λλ3(λ123)))(4(λ4(λ31(21))))))(1(2(λ12))\
             (λ4(λ4(λ2(14)))5))))(33)2)(λ1((λ11)(λ11)))";
+        let blc_cla = parse(blc_dbr, DeBruijn).unwrap().to_string();
+
+        let tokens_cla = tokenize_cla(&blc_cla);
+        let tokens_dbr = tokenize_dbr(blc_dbr);
+
+        assert!(tokens_cla.is_ok());
+        assert!(tokens_dbr.is_ok());
+
+        assert_eq!(
+            convert_classic_tokens(&tokens_cla.unwrap()),
+            tokens_dbr.unwrap()
+        );
+    }
+
+    #[test]
+    fn tokenization_success_classic_with_free_variables() {
+        let blc_dbr = "12";
         let blc_cla = parse(blc_dbr, DeBruijn).unwrap().to_string();
 
         let tokens_cla = tokenize_cla(&blc_cla);
