@@ -1,3 +1,14 @@
+Version 3.2.1
+=============
+
+Changes
+-------
+- fixed the parsing of free variables in classic notation
+
+Thanks
+-------
+- @hiratara for implementing the fix
+
 Version 3.2.0
 =============
 
