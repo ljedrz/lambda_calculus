@@ -397,6 +397,30 @@ impl Term {
         }
         true
     }
+
+    /// Returns the max number of depth of lambda abstractions
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::*;
+    ///
+    /// assert_eq!(abs(Var(1)).max_depth(), 1);
+    /// ```
+    pub fn max_depth(&self) -> u32 {
+        match self {
+            Var(_) => 0,
+            Abs(t) => t.max_depth() + 1,
+            App(boxed) => {
+                let d0 = boxed.0.max_depth();
+                let d1 = boxed.1.max_depth();
+                if d0 < d1 {
+                    d1
+                } else {
+                    d0
+                }
+            }
+        }
+    }
 }
 
 /// Wraps a `Term` in an `Abs`traction. Consumes its argument.
@@ -614,5 +638,16 @@ mod tests {
         assert!(!app(abs(Var(1)), Var(1)).is_supercombinator());
         assert!(!abs!(10, Var(11)).is_supercombinator());
         assert!(!abs!(10, app(Var(10), Var(11))).is_supercombinator());
+    }
+
+    #[test]
+    fn max_depth() {
+        assert_eq!(Var(1).max_depth(), 0);
+        assert_eq!(abs(Var(1)).max_depth(), 1);
+        assert_eq!(abs!(10, Var(5)).max_depth(), 10);
+        assert_eq!(
+            app!(abs!(5, Var(2)), abs!(9, Var(4)), abs!(7, Var(6))).max_depth(),
+            9
+        );
     }
 }
