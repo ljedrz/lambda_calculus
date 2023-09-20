@@ -1,3 +1,14 @@
+Version 3.2.2
+=============
+
+Changes
+-------
+- fixed the names of free variables when printing in classic notation
+
+Thanks
+-------
+- @hiratara for implementing the fix
+
 Version 3.2.1
 =============
 
