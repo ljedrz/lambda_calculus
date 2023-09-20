@@ -398,7 +398,8 @@ impl Term {
         true
     }
 
-    /// Returns the max number of depth of lambda abstractions
+    /// Returns the maximum depth of lambda abstractions
+    /// in the given `Term`.
     ///
     /// # Example
     /// ```
@@ -413,11 +414,7 @@ impl Term {
             App(boxed) => {
                 let d0 = boxed.0.max_depth();
                 let d1 = boxed.1.max_depth();
-                if d0 < d1 {
-                    d1
-                } else {
-                    d0
-                }
+                d0.max(d1)
             }
         }
     }
