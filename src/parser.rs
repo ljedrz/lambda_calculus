@@ -381,10 +381,7 @@ mod tests {
 
     #[test]
     fn alternative_lambda_parsing() {
-        assert_eq!(
-            parse(r#"\\\2(321)"#, DeBruijn),
-            parse("λλλ2(321)", DeBruijn)
-        )
+        assert_eq!(parse(r"\\\2(321)", DeBruijn), parse("λλλ2(321)", DeBruijn))
     }
 
     #[test]

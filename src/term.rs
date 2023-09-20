@@ -397,6 +397,27 @@ impl Term {
         }
         true
     }
+
+    /// Returns the maximum depth of lambda abstractions
+    /// in the given `Term`.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::*;
+    ///
+    /// assert_eq!(abs(Var(1)).max_depth(), 1);
+    /// ```
+    pub fn max_depth(&self) -> u32 {
+        match self {
+            Var(_) => 0,
+            Abs(t) => t.max_depth() + 1,
+            App(boxed) => {
+                let d0 = boxed.0.max_depth();
+                let d1 = boxed.1.max_depth();
+                d0.max(d1)
+            }
+        }
+    }
 }
 
 /// Wraps a `Term` in an `Abs`traction. Consumes its argument.
@@ -426,11 +447,16 @@ pub fn app(lhs: Term, rhs: Term) -> Term {
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", show_precedence_cla(self, 0, 0))
+        write!(f, "{}", show_precedence_cla(self, 0, self.max_depth(), 0))
     }
 }
 
-fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> String {
+fn show_precedence_cla(
+    term: &Term,
+    context_precedence: usize,
+    max_depth: u32,
+    depth: u32,
+) -> String {
     match term {
         Var(0) => "undefined".to_owned(),
         Var(i) => {
@@ -439,7 +465,8 @@ fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> St
                     .expect("error while printing term")
                     .to_string()
             } else {
-                from_u32(96 + *i as u32)
+                // use a different name than bound variables
+                from_u32(max_depth + 96 + *i as u32 - depth)
                     .expect("error while printing term")
                     .to_string()
             }
@@ -450,7 +477,7 @@ fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> St
                     "{}{}.{}",
                     LAMBDA,
                     from_u32(depth + 97).expect("error while printing term"),
-                    show_precedence_cla(t, 0, depth + 1)
+                    show_precedence_cla(t, 0, max_depth, depth + 1)
                 )
             };
             parenthesize_if(&ret, context_precedence > 1).into()
@@ -459,8 +486,8 @@ fn show_precedence_cla(term: &Term, context_precedence: usize, depth: u32) -> St
             let (ref t1, ref t2) = **boxed;
             let ret = format!(
                 "{} {}",
-                show_precedence_cla(t1, 2, depth),
-                show_precedence_cla(t2, 3, depth)
+                show_precedence_cla(t1, 2, max_depth, depth),
+                show_precedence_cla(t2, 3, max_depth, depth)
             );
             parenthesize_if(&ret, context_precedence == 3).into()
         }
@@ -574,6 +601,30 @@ mod tests {
         assert_eq!(&abs(Var(3)).to_string(), "λa.c");
         assert_eq!(&abs!(2, Var(3)).to_string(), "λa.λb.c");
         assert_eq!(&abs!(2, Var(4)).to_string(), "λa.λb.d");
+        assert_eq!(
+            app!(
+                Var(3),
+                Var(4),
+                abs(app(Var(4), Var(5))),
+                abs!(2, app(Var(5), Var(6)))
+            )
+            .to_string(),
+            "e f (λa.e f) (λa.λb.e f)"
+        );
+        assert_eq!(
+            app!(
+                abs!(2, app(Var(3), Var(4))),
+                Var(1),
+                Var(2),
+                abs(app(Var(2), Var(3)))
+            )
+            .to_string(),
+            "(λa.λb.c d) c d (λa.c d)"
+        );
+        assert_eq!(
+            &app(abs(Var(1)), app(abs(app(Var(10), Var(1))), Var(10))).to_string(),
+            "(λa.a) ((λa.j a) k)"
+        );
     }
 
     #[test]
@@ -614,5 +665,16 @@ mod tests {
         assert!(!app(abs(Var(1)), Var(1)).is_supercombinator());
         assert!(!abs!(10, Var(11)).is_supercombinator());
         assert!(!abs!(10, app(Var(10), Var(11))).is_supercombinator());
+    }
+
+    #[test]
+    fn max_depth() {
+        assert_eq!(Var(1).max_depth(), 0);
+        assert_eq!(abs(Var(1)).max_depth(), 1);
+        assert_eq!(abs!(10, Var(5)).max_depth(), 10);
+        assert_eq!(
+            app!(abs!(5, Var(2)), abs!(9, Var(4)), abs!(7, Var(6))).max_depth(),
+            9
+        );
     }
 }
