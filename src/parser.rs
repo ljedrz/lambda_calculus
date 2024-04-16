@@ -100,11 +100,16 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
         match c {
             '\\' | 'λ' => {
                 let mut name = String::new();
+                let mut first_char = true;
                 for (i, c) in &mut chars {
                     if c == '.' {
                         break;
-                    } else if c.is_alphabetic() {
-                        name.push(c)
+                    } else if first_char && c.is_alphabetic() {
+                        first_char = false;
+                        name.push(c);
+                    }
+                    else if !first_char && c.is_alphanumeric() {
+                        name.push(c);
                     } else {
                         return Err(InvalidCharacter((i, c)));
                     }
@@ -302,6 +307,7 @@ mod tests {
     fn tokenization_error() {
         assert_eq!(tokenize_dbr("λλx2"), Err(InvalidCharacter((2, 'x'))));
         assert_eq!(tokenize_cla("λa.λb a"), Err(InvalidCharacter((5, ' '))));
+        assert_eq!(tokenize_cla("λa1.λb a1"), Err(InvalidCharacter((6, ' '))));
     }
 
     #[test]
