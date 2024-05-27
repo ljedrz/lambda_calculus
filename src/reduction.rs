@@ -84,7 +84,7 @@ impl Term {
         match self {
             Var(i) => match (*i).cmp(&depth) {
                 cmp::Ordering::Equal => {
-                    *self = rhs.to_owned(); // substitute a top-level variable from lhs with rhs
+                    rhs.clone_into(self); // substitute a top-level variable from lhs with rhs
                     self.update_free_variables(depth - 1, 0); // update indices of free variables from rhs
                 }
                 cmp::Ordering::Greater => {
