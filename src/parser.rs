@@ -107,8 +107,7 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
                     } else if first_char && c.is_alphabetic() {
                         first_char = false;
                         name.push(c);
-                    }
-                    else if !first_char && c.is_alphanumeric() {
+                    } else if !first_char && c.is_alphanumeric() {
                         name.push(c);
                     } else {
                         return Err(InvalidCharacter((i, c)));
