@@ -418,6 +418,33 @@ impl Term {
             }
         }
     }
+
+    /// Returns `true` if `self` is structurally isomorphic to `other`.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::*;
+    ///
+    /// let term1 = abs(Var(1)); // λ 1
+    /// let term2 = abs(Var(2)); // λ 2
+    /// let term3 = abs(Var(1)); // λ 1
+    ///
+    /// assert_eq!(term1.is_isomorphic_to(&term2), false);
+    /// assert_eq!(term1.is_isomorphic_to(&term3), true);
+    ///
+    /// ```
+    pub fn is_isomorphic_to(&self, other: &Term) -> bool {
+        match (self, other) {
+            (Var(x), Var(y)) => x == y,
+            (Abs(p), Abs(q)) => p.is_isomorphic_to(q),
+            (App(p_boxed), App(q_boxed)) => {
+                let (ref fp, ref ap) = **p_boxed;
+                let (ref fq, ref aq) = **q_boxed;
+                fp.is_isomorphic_to(fq) && ap.is_isomorphic_to(aq)
+            }
+            _ => false,
+        }
+    }
 }
 
 /// Wraps a `Term` in an `Abs`traction. Consumes its argument.
@@ -676,5 +703,14 @@ mod tests {
             app!(abs!(5, Var(2)), abs!(9, Var(4)), abs!(7, Var(6))).max_depth(),
             9
         );
+    }
+
+    #[test]
+    fn is_isomorphic_to() {
+        assert!(abs(Var(1)).is_isomorphic_to(&abs(Var(1))));
+        assert!(!abs(Var(1)).is_isomorphic_to(&abs(Var(2))));
+        assert!(!app(abs(Var(1)), Var(1)).is_isomorphic_to(&app(abs(Var(1)), Var(2))));
+        assert!(app(abs(Var(1)), Var(1)).is_isomorphic_to(&app(abs(Var(1)), Var(1))));
+        assert!(!app(abs(Var(1)), Var(1)).is_isomorphic_to(&app(Var(2), abs(Var(1)))));
     }
 }
