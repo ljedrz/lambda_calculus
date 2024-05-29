@@ -434,30 +434,15 @@ impl Term {
     ///
     /// ```
     pub fn is_isomorphic_to(&self, other: &Term) -> bool {
-        match self {
-            Var(x) => {
-                if let Var(y) = other {
-                    x == y
-                } else {
-                    false
-                }
+        match (self, other) {
+            (Var(x), Var(y)) => x == y,
+            (Abs(p), Abs(q)) => p.is_isomorphic_to(q),
+            (App(p_boxed), App(q_boxed)) => {
+                let (ref fp, ref ap) = **p_boxed;
+                let (ref fq, ref aq) = **q_boxed;
+                fp.is_isomorphic_to(fq) && ap.is_isomorphic_to(aq)
             }
-            Abs(p) => {
-                if let Abs(q) = other {
-                    p.is_isomorphic_to(q)
-                } else {
-                    false
-                }
-            }
-            App(p_boxed) => {
-                if let App(q_boxed) = other {
-                    let (ref fp, ref ap) = **p_boxed;
-                    let (ref fq, ref aq) = **q_boxed;
-                    fp.is_isomorphic_to(fq) && ap.is_isomorphic_to(aq)
-                } else {
-                    false
-                }
-            }
+            _ => false,
         }
     }
 }
