@@ -467,7 +467,7 @@ impl Term {
             Abs(p) => p.has_free_variables_helper(depth + 1),
             App(p_boxed) => {
                 let (ref f, ref a) = **p_boxed;
-                f.has_free_variables_helper(depth) && a.has_free_variables_helper(depth)
+                f.has_free_variables_helper(depth) || a.has_free_variables_helper(depth)
             }
         }
     }
@@ -744,6 +744,15 @@ mod tests {
     fn has_free_variables() {
         assert!(!(abs(Var(1)).has_free_variables()));
         assert!(abs(Var(2)).has_free_variables());
+        assert!(app(abs(Var(2)), Var(1)).has_free_variables());
+        assert!(app(abs(Var(2)), abs(Var(1))).has_free_variables());
+        assert!(app(abs(Var(1)), abs(Var(2))).has_free_variables());
+        assert!(!app(abs(Var(1)), abs(Var(1))).has_free_variables());
+        assert!(!(abs(app(
+            abs(app(Var(2), app(Var(1), Var(1)))),
+            abs(app(Var(2), app(Var(1), Var(1)))),
+        )))
+        .has_free_variables());
         assert!((Var(0)).has_free_variables());
     }
 }
