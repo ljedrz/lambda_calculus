@@ -1,3 +1,15 @@
+Version 3.3.0
+=============
+
+Changes
+-------
+- variable names can now contain digits (but they must start with a letter)
+- added `Term::{has_free_variables, is_isomorphic_to}`
+
+Thanks
+-------
+- @AgentElement for all the changes in this release
+
 Version 3.2.2
 =============
 
