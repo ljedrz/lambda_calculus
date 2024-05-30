@@ -445,6 +445,32 @@ impl Term {
             _ => false,
         }
     }
+
+    /// Returns `true` if `self` has any free vairables.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::*;
+    ///
+    /// let with_freevar = abs(Var(2));     // λ 2
+    /// let without_freevar = abs(Var(1));  // λ 1
+    ///
+    /// assert!(with_freevar.has_free_variables());
+    /// assert!(!without_freevar.has_free_variables());
+    pub fn has_free_variables(&self) -> bool {
+        self.has_free_variables_helper(0)
+    }
+
+    fn has_free_variables_helper(&self, depth: usize) -> bool {
+        match self {
+            Var(x) => *x > depth || *x == 0,
+            Abs(p) => p.has_free_variables_helper(depth + 1),
+            App(p_boxed) => {
+                let (ref f, ref a) = **p_boxed;
+                f.has_free_variables_helper(depth) || a.has_free_variables_helper(depth)
+            }
+        }
+    }
 }
 
 /// Wraps a `Term` in an `Abs`traction. Consumes its argument.
@@ -712,5 +738,21 @@ mod tests {
         assert!(!app(abs(Var(1)), Var(1)).is_isomorphic_to(&app(abs(Var(1)), Var(2))));
         assert!(app(abs(Var(1)), Var(1)).is_isomorphic_to(&app(abs(Var(1)), Var(1))));
         assert!(!app(abs(Var(1)), Var(1)).is_isomorphic_to(&app(Var(2), abs(Var(1)))));
+    }
+
+    #[test]
+    fn has_free_variables() {
+        assert!(!(abs(Var(1)).has_free_variables()));
+        assert!(abs(Var(2)).has_free_variables());
+        assert!(app(abs(Var(2)), Var(1)).has_free_variables());
+        assert!(app(abs(Var(2)), abs(Var(1))).has_free_variables());
+        assert!(app(abs(Var(1)), abs(Var(2))).has_free_variables());
+        assert!(!app(abs(Var(1)), abs(Var(1))).has_free_variables());
+        assert!(!(abs(app(
+            abs(app(Var(2), app(Var(1), Var(1)))),
+            abs(app(Var(2), app(Var(1), Var(1)))),
+        )))
+        .has_free_variables());
+        assert!((Var(0)).has_free_variables());
     }
 }
