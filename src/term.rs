@@ -463,7 +463,7 @@ impl Term {
 
     fn has_free_variables_helper(&self, depth: usize) -> bool {
         match self {
-            Var(x) => x > &depth,
+            Var(x) => *x > depth || *x == 0,
             Abs(p) => p.has_free_variables_helper(depth + 1),
             App(p_boxed) => {
                 let (ref f, ref a) = **p_boxed;
@@ -744,5 +744,6 @@ mod tests {
     fn has_free_variables() {
         assert!(!(abs(Var(1)).has_free_variables()));
         assert!(abs(Var(2)).has_free_variables());
+        assert!((Var(0)).has_free_variables());
     }
 }
