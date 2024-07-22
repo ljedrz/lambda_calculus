@@ -504,18 +504,17 @@ impl fmt::Display for Term {
 }
 
 fn base26_encode(mut n: u32) -> String {
-    let mut buf = Vec::<u32>::new();
+    let mut buf = Vec::<u8>::new();
     n += 1;
     while n > 0 {
-        let m = n % 26;
-        buf.push(if m == 0 { 26 } else { m });
+        let m = (n % 26) as u8;
+        let m = if m == 0 { 26 } else { m };
+        let c = m + 'a' as u8 - 1;
+        buf.push(c);
         n = (n - 1) / 26
     }
-    println!("{:?}", buf);
-    buf.iter()
-        .map(|u| char::from_u32(u + 'a' as u32 - 1).expect("error while printing term"))
-        .rev()
-        .collect::<String>()
+    buf.reverse();
+    String::from_utf8(buf).expect("error while printing term")
 }
 
 fn show_precedence_cla(
