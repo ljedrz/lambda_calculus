@@ -528,7 +528,7 @@ fn show_precedence_cla(
         Var(i) => {
             let i = *i as u32;
             let ix = if i <= depth {
-                depth - i 
+                depth - i
             } else {
                 max_depth + i - depth - 1
             };
@@ -692,6 +692,10 @@ mod tests {
         assert_eq!(
             abs!(27, app!(Var(28), Var(29), Var(30), Var(50), Var(702), Var(703))).to_string(),
             "λa.λb.λc.λd.λe.λf.λg.λh.λi.λj.λk.λl.λm.λn.λo.λp.λq.λr.λs.λt.λu.λv.λw.λx.λy.λz.λaa.ab ac ad ax zz aaa"
+        );
+        assert_eq!(
+            abs!(3, app!(Var(2), Var(3), Var(4))).to_string(),
+            "λa.λb.λc.b a d"
         );
         assert_eq!(Var(26).to_string(), "z");
         assert_eq!(Var(27).to_string(), "aa");
