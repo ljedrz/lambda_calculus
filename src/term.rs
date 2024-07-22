@@ -526,11 +526,11 @@ fn show_precedence_cla(
     match term {
         Var(0) => "undefined".to_owned(),
         Var(i) => {
-            let cast = *i as u32;
-            let ix = if cast <= depth {
-                depth - cast
+            let i = *i as u32;
+            let ix = if i <= depth {
+                depth - i 
             } else {
-                max_depth + cast - depth - 1
+                max_depth + i - depth - 1
             };
             base26_encode(ix)
         }
