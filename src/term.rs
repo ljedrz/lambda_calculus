@@ -509,7 +509,7 @@ fn base26_encode(mut n: u32) -> String {
     while n > 0 {
         let m = (n % 26) as u8;
         let m = if m == 0 { 26 } else { m };
-        let c = m + 'a' as u8 - 1;
+        let c = m + b'a' - 1;
         buf.push(c);
         n = (n - 1) / 26
     }
