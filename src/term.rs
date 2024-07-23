@@ -4,7 +4,6 @@ pub use self::Notation::*;
 pub use self::Term::*;
 use self::TermError::*;
 use std::borrow::Cow;
-use std::char::from_u32;
 use std::error::Error;
 use std::fmt;
 
@@ -504,6 +503,20 @@ impl fmt::Display for Term {
     }
 }
 
+fn base26_encode(mut n: u32) -> String {
+    let mut buf = Vec::<u8>::new();
+    n += 1;
+    while n > 0 {
+        let m = (n % 26) as u8;
+        let m = if m == 0 { 26 } else { m };
+        let c = m + b'a' - 1;
+        buf.push(c);
+        n = (n - 1) / 26
+    }
+    buf.reverse();
+    String::from_utf8(buf).expect("error while printing term")
+}
+
 fn show_precedence_cla(
     term: &Term,
     context_precedence: usize,
@@ -513,23 +526,20 @@ fn show_precedence_cla(
     match term {
         Var(0) => "undefined".to_owned(),
         Var(i) => {
-            if depth >= *i as u32 {
-                from_u32(depth + 97 - *i as u32)
-                    .expect("error while printing term")
-                    .to_string()
+            let i = *i as u32;
+            let ix = if i <= depth {
+                depth - i
             } else {
-                // use a different name than bound variables
-                from_u32(max_depth + 96 + *i as u32 - depth)
-                    .expect("error while printing term")
-                    .to_string()
-            }
+                max_depth + i - depth - 1
+            };
+            base26_encode(ix)
         }
         Abs(ref t) => {
             let ret = {
                 format!(
                     "{}{}.{}",
                     LAMBDA,
-                    from_u32(depth + 97).expect("error while printing term"),
+                    base26_encode(depth),
                     show_precedence_cla(t, 0, max_depth, depth + 1)
                 )
             };
@@ -678,6 +688,17 @@ mod tests {
             &app(abs(Var(1)), app(abs(app(Var(10), Var(1))), Var(10))).to_string(),
             "(λa.a) ((λa.j a) k)"
         );
+
+        assert_eq!(
+            abs!(27, app!(Var(28), Var(29), Var(30), Var(50), Var(702), Var(703))).to_string(),
+            "λa.λb.λc.λd.λe.λf.λg.λh.λi.λj.λk.λl.λm.λn.λo.λp.λq.λr.λs.λt.λu.λv.λw.λx.λy.λz.λaa.ab ac ad ax zz aaa"
+        );
+        assert_eq!(
+            abs!(3, app!(Var(2), Var(3), Var(4))).to_string(),
+            "λa.λb.λc.b a d"
+        );
+        assert_eq!(Var(26).to_string(), "z");
+        assert_eq!(Var(27).to_string(), "aa");
     }
 
     #[test]
