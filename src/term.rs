@@ -406,7 +406,7 @@ impl Term {
     ///
     /// assert_eq!(abs(Var(1)).max_depth(), 1);
     /// ```
-    pub fn max_depth(&self) -> u32 {
+    pub fn max_depth(&self) -> usize {
         match self {
             Var(_) => 0,
             Abs(t) => t.max_depth() + 1,
@@ -503,7 +503,7 @@ impl fmt::Display for Term {
     }
 }
 
-fn base26_encode(mut n: u32) -> String {
+fn base26_encode(mut n: usize) -> String {
     let mut buf = Vec::<u8>::new();
     n += 1;
     while n > 0 {
@@ -520,19 +520,18 @@ fn base26_encode(mut n: u32) -> String {
 fn show_precedence_cla(
     term: &Term,
     context_precedence: usize,
-    max_depth: u32,
-    depth: u32,
+    max_depth: usize,
+    depth: usize,
 ) -> String {
     match term {
         Var(0) => "undefined".to_owned(),
         Var(i) => {
-            let i = *i as u32;
-            let ix = if i <= depth {
+            let idx = if *i <= depth {
                 depth - i
             } else {
                 max_depth + i - depth - 1
             };
-            base26_encode(ix)
+            base26_encode(idx)
         }
         Abs(ref t) => {
             let ret = {
