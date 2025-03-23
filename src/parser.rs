@@ -234,7 +234,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 /// Attempts to parse the input `&str` as a lambda `Term` encoded in the given `Notation`.
 ///
 /// - lambdas can be represented either with the greek letter (λ) or a backslash (\\ -
-/// less aesthetic, but only one byte in size)
+///     less aesthetic, but only one byte in size)
 /// - the identifiers in `Classic` notation are `String`s of alphabetic Unicode characters
 /// - `Classic` notation ignores whitespaces where unambiguous
 /// - the indices in the `DeBruijn` notation start with 1 and are hexadecimal digits
