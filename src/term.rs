@@ -3,9 +3,13 @@
 pub use self::Notation::*;
 pub use self::Term::*;
 use self::TermError::*;
-use std::borrow::Cow;
-use std::error::Error;
-use std::fmt;
+use alloc::borrow::Cow;
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::error::Error;
+use core::fmt;
 
 /// The character used to display lambda abstractions (a backslash).
 #[cfg(feature = "backslash_lambda")]
@@ -641,6 +645,8 @@ macro_rules! abs {
 
 #[cfg(test)]
 mod tests {
+    use alloc::string::ToString;
+
     use super::*;
 
     #[test]

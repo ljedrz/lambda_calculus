@@ -7,9 +7,12 @@ use self::Token::*;
 pub use crate::term::Notation::*;
 use crate::term::Term::*;
 use crate::term::{abs, app, Notation, Term};
-use std::collections::VecDeque;
-use std::error::Error;
-use std::fmt;
+use alloc::collections::VecDeque;
+use alloc::string::String;
+use alloc::string::ToString;
+use alloc::vec::Vec;
+use core::error::Error;
+use core::fmt;
 
 /// An error returned by `parse()` when a parsing issue is encountered.
 #[derive(Debug, PartialEq, Eq)]

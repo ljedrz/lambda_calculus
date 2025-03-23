@@ -1,5 +1,7 @@
 //! [Single-pair list](https://en.wikipedia.org/wiki/Church_encoding#One_pair_as_a_list_node)
 
+use alloc::vec::Vec;
+
 use crate::combinators::{I, Z};
 use crate::data::boolean::{fls, tru};
 use crate::data::num::church::{is_zero, pred, succ, zero};

@@ -2,6 +2,8 @@
 
 #![allow(missing_docs)]
 
+use alloc::vec::Vec;
+
 use crate::data::num::convert::*;
 use crate::term::Term::*;
 use crate::term::{abs, app, Term};
