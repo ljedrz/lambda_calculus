@@ -390,7 +390,7 @@ impl Term {
                         return false;
                     }
                 }
-                Abs(ref t) => stack.push((depth + 1, t)),
+                Abs(t) => stack.push((depth + 1, t)),
                 App(boxed) => {
                     let (ref f, ref a) = **boxed;
                     stack.push((depth, f));
@@ -538,7 +538,7 @@ fn show_precedence_cla(
             };
             base26_encode(ix)
         }
-        Abs(ref t) => {
+        Abs(t) => {
             let ret = {
                 format!(
                     "{}{}.{}",
@@ -573,7 +573,7 @@ fn show_precedence_dbr(term: &Term, context_precedence: usize) -> String {
         Var(i) => {
             format!("{:X}", i)
         }
-        Abs(ref t) => {
+        Abs(t) => {
             let ret = format!("{}{:?}", LAMBDA, t);
             parenthesize_if(&ret, context_precedence > 1).into()
         }
@@ -610,7 +610,7 @@ fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
 /// ```
 #[macro_export]
 macro_rules! app {
-    ($term1:expr, $($term2:expr),+) => {
+    ($term1:expr_2021, $($term2:expr_2021),+) => {
         {
             let mut term = $term1;
             $(term = app(term, $term2);)*
@@ -632,7 +632,7 @@ macro_rules! app {
 /// ```
 #[macro_export]
 macro_rules! abs {
-    ($n:expr, $term:expr) => {{
+    ($n:expr_2021, $term:expr_2021) => {{
         let mut term = $term;
 
         for _ in 0..$n {

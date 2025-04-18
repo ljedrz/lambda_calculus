@@ -8,7 +8,7 @@ use lambda::data::num::church::is_zero;
 use lambda::*;
 
 macro_rules! vec_church {
-    ( $( $e:expr ),* ) => {
+    ( $( $e:expr_2021 ),* ) => {
         {
             let mut vec = Vec::new();
             $( vec.push($e.into_church()); )*
@@ -18,7 +18,7 @@ macro_rules! vec_church {
 }
 
 macro_rules! test_pair_list {
-    ($name:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
+    ($name:ident, $function:ident, $($($n:expr_2021),+ => $result:expr_2021),+) => (
         #[test]
         fn $name() {
             $(assert_eq!(
@@ -30,7 +30,7 @@ macro_rules! test_pair_list {
 }
 
 macro_rules! test_pair_list_lists_to_num {
-    ($name:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
+    ($name:ident, $function:ident, $($($n:expr_2021),+ => $result:expr_2021),+) => (
         #[test]
         fn $name() {
             $(assert_eq!(
@@ -42,7 +42,7 @@ macro_rules! test_pair_list_lists_to_num {
 }
 
 macro_rules! test_pair_list_all_lists {
-    ($name:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
+    ($name:ident, $function:ident, $($($n:expr_2021),+ => $result:expr_2021),+) => (
         #[test]
         fn $name() {
             $(assert_eq!(

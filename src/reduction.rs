@@ -94,7 +94,7 @@ impl Term {
                 }
                 _ => {}
             },
-            Abs(ref mut abstracted) => abstracted._apply(rhs, depth + 1),
+            Abs(abstracted) => abstracted._apply(rhs, depth + 1),
             App(boxed) => {
                 let (ref mut lhs_lhs, ref mut lhs_rhs) = **boxed;
                 lhs_lhs._apply(rhs, depth);
@@ -105,12 +105,12 @@ impl Term {
 
     fn update_free_variables(&mut self, added_depth: usize, own_depth: usize) {
         match self {
-            Var(ref mut i) => {
+            Var(i) => {
                 if *i > own_depth {
                     *i += added_depth
                 }
             }
-            Abs(ref mut abstracted) => abstracted.update_free_variables(added_depth, own_depth + 1),
+            Abs(abstracted) => abstracted.update_free_variables(added_depth, own_depth + 1),
             App(boxed) => {
                 let (ref mut lhs, ref mut rhs) = **boxed;
                 lhs.update_free_variables(added_depth, own_depth);

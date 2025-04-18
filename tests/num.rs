@@ -6,7 +6,7 @@ use lambda::data::num::{binary, church, parigot, scott, stumpfu};
 use lambda::*;
 
 macro_rules! test_num {
-    ($encoding:ident, $name:ident, $conversion:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
+    ($encoding:ident, $name:ident, $conversion:ident, $function:ident, $($($n:expr_2021),+ => $result:expr_2021),+) => (
         #[test]
         fn $name() {
             $(assert_eq!(beta(app!($encoding::$function(), $($n.$conversion()),*), HNO, 0), $result.$conversion());)*
@@ -15,7 +15,7 @@ macro_rules! test_num {
 }
 
 macro_rules! test_num_all {
-    ($name:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
+    ($name:ident, $function:ident, $($($n:expr_2021),+ => $result:expr_2021),+) => (
         #[test]
         fn $name() {
             $(assert_eq!(beta(app!(church::$function(), $($n.into_church()),*), HNO, 0), $result.into_church());)*

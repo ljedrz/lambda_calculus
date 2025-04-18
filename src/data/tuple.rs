@@ -24,7 +24,7 @@
 /// ```
 #[macro_export]
 macro_rules! tuple {
-    ($first:expr, $($next:expr),+) => {
+    ($first:expr_2021, $($next:expr_2021),+) => {
         {
             let mut ret = app(Var(1), $first);
             $(ret = app(ret, $next);)*
@@ -57,7 +57,7 @@ macro_rules! tuple {
 /// ```
 #[macro_export]
 macro_rules! pi {
-    ($i:expr, $n:expr) => {{
+    ($i:expr_2021, $n:expr_2021) => {{
         let mut ret = Var($n + 1 - $i);
 
         for _ in 0..$n {
