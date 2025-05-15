@@ -6,7 +6,7 @@ use self::ParseError::*;
 use self::Token::*;
 pub use crate::term::Notation::*;
 use crate::term::Term::*;
-use crate::term::{abs, app, Notation, Term};
+use crate::term::{Notation, Term, abs, app};
 use alloc::collections::VecDeque;
 use alloc::string::String;
 use alloc::string::ToString;

@@ -696,7 +696,11 @@ mod tests {
         );
 
         assert_eq!(
-            abs!(27, app!(Var(28), Var(29), Var(30), Var(50), Var(702), Var(703))).to_string(),
+            abs!(
+                27,
+                app!(Var(28), Var(29), Var(30), Var(50), Var(702), Var(703))
+            )
+            .to_string(),
             "λa.λb.λc.λd.λe.λf.λg.λh.λi.λj.λk.λl.λm.λn.λo.λp.λq.λr.λs.λt.λu.λv.λw.λx.λy.λz.λaa.ab ac ad ax zz aaa"
         );
         assert_eq!(
@@ -775,11 +779,13 @@ mod tests {
         assert!(app(abs(Var(2)), abs(Var(1))).has_free_variables());
         assert!(app(abs(Var(1)), abs(Var(2))).has_free_variables());
         assert!(!app(abs(Var(1)), abs(Var(1))).has_free_variables());
-        assert!(!(abs(app(
-            abs(app(Var(2), app(Var(1), Var(1)))),
-            abs(app(Var(2), app(Var(1), Var(1)))),
-        )))
-        .has_free_variables());
+        assert!(
+            !(abs(app(
+                abs(app(Var(2), app(Var(1), Var(1)))),
+                abs(app(Var(2), app(Var(1), Var(1)))),
+            )))
+            .has_free_variables()
+        );
         assert!((Var(0)).has_free_variables());
     }
 }

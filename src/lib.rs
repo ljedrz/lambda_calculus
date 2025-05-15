@@ -11,11 +11,11 @@ pub mod parser;
 pub mod reduction;
 
 pub use self::parser::parse;
-pub use self::reduction::beta;
 pub use self::reduction::Order::*;
+pub use self::reduction::beta;
 pub use self::term::Notation::*;
 pub use self::term::Term::*;
-pub use self::term::{abs, app, Term, UD};
+pub use self::term::{Term, UD, abs, app};
 
 #[cfg(feature = "encoding")]
 pub mod data;

@@ -2,7 +2,7 @@
 
 use crate::data::boolean::{fls, tru};
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// Applied to two `Term`s it contains them in a lambda-encoded pair.
 ///

@@ -4,7 +4,7 @@
 
 use self::Encoding::*;
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// The type of numeric encoding.
 #[derive(Debug, Clone, Copy)]

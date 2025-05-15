@@ -3,7 +3,7 @@
 use crate::data::boolean::{fls, tru};
 use crate::data::pair::{fst, pair, snd};
 use crate::term::Term::*;
-use crate::term::{abs, app, Term, UD};
+use crate::term::{Term, UD, abs, app};
 
 /// Produces a `nil`, the last link of a Church-encoded list; equivalent to `boolean::tru`.
 ///
