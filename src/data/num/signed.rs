@@ -8,7 +8,7 @@ use crate::data::num::convert::Encoding::*;
 use crate::data::num::{church, parigot, scott, stumpfu};
 use crate::data::pair::{fst, pair, snd, swap};
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// Applied to a numeral with a specified encoding it produces a pair representing its signed
 /// equivalent.

@@ -4,7 +4,7 @@ use crate::combinators::I;
 use crate::data::boolean::{fls, tru};
 use crate::data::option::{none, some};
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// Applied to an argument it consumes it and produces a lambda-encoded `Result::Ok` that contains
 /// it.

@@ -1,16 +1,18 @@
 //! [β-reduction](https://en.wikipedia.org/wiki/Beta_normal_form) for lambda `Term`s
 
+use alloc::borrow::ToOwned;
+
 pub use self::Order::*;
 use crate::term::Term::*;
 use crate::term::{Term, TermError};
-use std::{cmp, fmt, mem};
+use core::{cmp, fmt, mem};
 
 /// The [evaluation order](http://www.cs.cornell.edu/courses/cs6110/2014sp/Handouts/Sestoft.pdf) of
 /// β-reductions.
 ///
 /// - the `NOR`, `HNO`, `APP` and `HAP` orders reduce expressions to their normal form
 /// - the `APP` order will fail to fully reduce expressions containing terms without a normal form,
-/// e.g. the `Y` combinator (they will expand forever)
+///   e.g. the `Y` combinator (they will expand forever)
 /// - the `CBN` order reduces to weak head normal form
 /// - the `CBV` order reduces to weak normal form
 /// - the `HSP` order reduces to head normal form
@@ -92,7 +94,7 @@ impl Term {
                 }
                 _ => {}
             },
-            Abs(ref mut abstracted) => abstracted._apply(rhs, depth + 1),
+            Abs(abstracted) => abstracted._apply(rhs, depth + 1),
             App(boxed) => {
                 let (ref mut lhs_lhs, ref mut lhs_rhs) = **boxed;
                 lhs_lhs._apply(rhs, depth);
@@ -103,12 +105,12 @@ impl Term {
 
     fn update_free_variables(&mut self, added_depth: usize, own_depth: usize) {
         match self {
-            Var(ref mut i) => {
+            Var(i) => {
                 if *i > own_depth {
                     *i += added_depth
                 }
             }
-            Abs(ref mut abstracted) => abstracted.update_free_variables(added_depth, own_depth + 1),
+            Abs(abstracted) => abstracted.update_free_variables(added_depth, own_depth + 1),
             App(boxed) => {
                 let (ref mut lhs, ref mut rhs) = **boxed;
                 lhs.update_free_variables(added_depth, own_depth);

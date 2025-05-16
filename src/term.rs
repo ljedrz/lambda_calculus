@@ -3,9 +3,13 @@
 pub use self::Notation::*;
 pub use self::Term::*;
 use self::TermError::*;
-use std::borrow::Cow;
-use std::error::Error;
-use std::fmt;
+use alloc::borrow::Cow;
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::error::Error;
+use core::fmt;
 
 /// The character used to display lambda abstractions (a backslash).
 #[cfg(feature = "backslash_lambda")]
@@ -386,7 +390,7 @@ impl Term {
                         return false;
                     }
                 }
-                Abs(ref t) => stack.push((depth + 1, t)),
+                Abs(t) => stack.push((depth + 1, t)),
                 App(boxed) => {
                     let (ref f, ref a) = **boxed;
                     stack.push((depth, f));
@@ -533,7 +537,7 @@ fn show_precedence_cla(
             };
             base26_encode(idx)
         }
-        Abs(ref t) => {
+        Abs(t) => {
             let ret = {
                 format!(
                     "{}{}.{}",
@@ -568,7 +572,7 @@ fn show_precedence_dbr(term: &Term, context_precedence: usize) -> String {
         Var(i) => {
             format!("{:X}", i)
         }
-        Abs(ref t) => {
+        Abs(t) => {
             let ret = format!("{}{:?}", LAMBDA, t);
             parenthesize_if(&ret, context_precedence > 1).into()
         }
@@ -605,7 +609,7 @@ fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
 /// ```
 #[macro_export]
 macro_rules! app {
-    ($term1:expr, $($term2:expr),+) => {
+    ($term1:expr_2021, $($term2:expr_2021),+) => {
         {
             let mut term = $term1;
             $(term = app(term, $term2);)*
@@ -627,7 +631,7 @@ macro_rules! app {
 /// ```
 #[macro_export]
 macro_rules! abs {
-    ($n:expr, $term:expr) => {{
+    ($n:expr_2021, $term:expr_2021) => {{
         let mut term = $term;
 
         for _ in 0..$n {
@@ -640,6 +644,8 @@ macro_rules! abs {
 
 #[cfg(test)]
 mod tests {
+    use alloc::string::ToString;
+
     use super::*;
 
     #[test]
@@ -689,7 +695,11 @@ mod tests {
         );
 
         assert_eq!(
-            abs!(27, app!(Var(28), Var(29), Var(30), Var(50), Var(702), Var(703))).to_string(),
+            abs!(
+                27,
+                app!(Var(28), Var(29), Var(30), Var(50), Var(702), Var(703))
+            )
+            .to_string(),
             "λa.λb.λc.λd.λe.λf.λg.λh.λi.λj.λk.λl.λm.λn.λo.λp.λq.λr.λs.λt.λu.λv.λw.λx.λy.λz.λaa.ab ac ad ax zz aaa"
         );
         assert_eq!(
@@ -768,11 +778,13 @@ mod tests {
         assert!(app(abs(Var(2)), abs(Var(1))).has_free_variables());
         assert!(app(abs(Var(1)), abs(Var(2))).has_free_variables());
         assert!(!app(abs(Var(1)), abs(Var(1))).has_free_variables());
-        assert!(!(abs(app(
-            abs(app(Var(2), app(Var(1), Var(1)))),
-            abs(app(Var(2), app(Var(1), Var(1)))),
-        )))
-        .has_free_variables());
+        assert!(
+            !(abs(app(
+                abs(app(Var(2), app(Var(1), Var(1)))),
+                abs(app(Var(2), app(Var(1), Var(1)))),
+            )))
+            .has_free_variables()
+        );
         assert!((Var(0)).has_free_variables());
     }
 }

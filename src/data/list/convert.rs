@@ -2,9 +2,11 @@
 
 #![allow(missing_docs)]
 
+use alloc::vec::Vec;
+
 use crate::data::num::convert::*;
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 macro_rules! make_trait {
     ($trait_name:ident, $function_name:ident) => {

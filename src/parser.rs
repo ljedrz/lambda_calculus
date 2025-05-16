@@ -6,10 +6,13 @@ use self::ParseError::*;
 use self::Token::*;
 pub use crate::term::Notation::*;
 use crate::term::Term::*;
-use crate::term::{abs, app, Notation, Term};
-use std::collections::VecDeque;
-use std::error::Error;
-use std::fmt;
+use crate::term::{Notation, Term, abs, app};
+use alloc::collections::VecDeque;
+use alloc::string::String;
+use alloc::string::ToString;
+use alloc::vec::Vec;
+use core::error::Error;
+use core::fmt;
 
 /// An error returned by `parse()` when a parsing issue is encountered.
 #[derive(Debug, PartialEq, Eq)]
@@ -231,7 +234,7 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 /// Attempts to parse the input `&str` as a lambda `Term` encoded in the given `Notation`.
 ///
 /// - lambdas can be represented either with the greek letter (λ) or a backslash (\\ -
-/// less aesthetic, but only one byte in size)
+///   less aesthetic, but only one byte in size)
 /// - the identifiers in `Classic` notation are `String`s of alphabetic Unicode characters
 /// - `Classic` notation ignores whitespaces where unambiguous
 /// - the indices in the `DeBruijn` notation start with 1 and are hexadecimal digits

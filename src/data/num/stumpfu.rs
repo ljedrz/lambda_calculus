@@ -4,7 +4,7 @@ use crate::data::boolean::{fls, tru};
 use crate::data::num::convert::IntoChurchNum;
 use crate::data::num::{church, parigot, scott};
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// Produces a Stump-Fu-encoded number zero; equivalent to `boolean::fls`.
 ///

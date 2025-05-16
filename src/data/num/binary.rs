@@ -4,7 +4,7 @@ use crate::combinators::I;
 use crate::data::boolean::{fls, tru};
 use crate::data::pair::{fst, pair, snd};
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// A 0 bit; equivalent to `boolean::tru`.
 ///

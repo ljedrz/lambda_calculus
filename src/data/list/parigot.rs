@@ -2,7 +2,7 @@
 
 use crate::data::boolean::{fls, tru};
 use crate::term::Term::*;
-use crate::term::{abs, app, Term, UD};
+use crate::term::{Term, UD, abs, app};
 
 /// Produces a `nil`, the last link of a Parigot-encoded list; equivalent to `boolean::tru`.
 ///

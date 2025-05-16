@@ -6,7 +6,7 @@ use lambda::data::list::{church, parigot, scott};
 use lambda::*;
 
 macro_rules! test_list {
-    ($name:ident, $function:ident, $($($n:expr),+ => $result:expr),+) => (
+    ($name:ident, $function:ident, $($($n:expr_2021),+ => $result:expr_2021),+) => (
         #[test]
         fn $name() {
             $(

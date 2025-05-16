@@ -5,7 +5,7 @@ use crate::data::boolean::{and, fls, not, or, tru};
 use crate::data::num::{parigot, scott, stumpfu};
 use crate::data::pair::pair;
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// Produces a Church-encoded number zero; equivalent to `boolean::fls`.
 ///

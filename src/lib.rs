@@ -1,8 +1,9 @@
 //! **lambda_calculus** is a simple implementation of the untyped lambda calculus in Rust.
-
+#![no_std]
 #![deny(missing_docs)]
 #![deny(unsafe_code)]
-
+#[macro_use]
+extern crate alloc;
 #[macro_use]
 pub mod term;
 pub mod combinators;
@@ -10,11 +11,11 @@ pub mod parser;
 pub mod reduction;
 
 pub use self::parser::parse;
-pub use self::reduction::beta;
 pub use self::reduction::Order::*;
+pub use self::reduction::beta;
 pub use self::term::Notation::*;
 pub use self::term::Term::*;
-pub use self::term::{abs, app, Term, UD};
+pub use self::term::{Term, UD, abs, app};
 
 #[cfg(feature = "encoding")]
 pub mod data;
