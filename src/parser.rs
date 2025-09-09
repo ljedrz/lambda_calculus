@@ -4,6 +4,7 @@ use self::CToken::*;
 use self::Expression::*;
 use self::ParseError::*;
 use self::Token::*;
+use crate::term::Context;
 pub use crate::term::Notation::*;
 use crate::term::Term::*;
 use crate::term::{abs, app, Notation, Term};
@@ -16,6 +17,8 @@ use std::fmt;
 pub enum ParseError {
     /// lexical error; contains the invalid character and its index
     InvalidCharacter((usize, char)),
+    /// lexical error; an undefined free variable was found (classic notation only)
+    UndefinedFreeVariable,
     /// syntax error; the expression is invalid
     InvalidExpression,
     /// syntax error; the expression is empty
@@ -27,6 +30,9 @@ impl fmt::Display for ParseError {
         match *self {
             ParseError::InvalidCharacter((idx, char)) => {
                 write!(f, "lexical error; invalid character '{}' at {}", char, idx)
+            }
+            ParseError::UndefinedFreeVariable => {
+                write!(f, "lexical error; an undefined free variable was used")
             }
             ParseError::InvalidExpression => write!(f, "syntax error; the expression is invalid"),
             ParseError::EmptyExpression => write!(f, "syntax error; the expression is empty"),
@@ -142,15 +148,17 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
 }
 
 #[doc(hidden)]
-pub fn convert_classic_tokens(tokens: &[CToken]) -> Vec<Token> {
-    _convert_classic_tokens(tokens, &mut VecDeque::with_capacity(tokens.len()), &mut 0)
+pub fn convert_classic_tokens(ctx: &Context, tokens: &[CToken]) -> Result<Vec<Token>, ParseError> {
+    let mut stack = VecDeque::with_capacity(tokens.len());
+    stack.extend(ctx.iter().rev());
+    _convert_classic_tokens(tokens, &mut stack, &mut 0)
 }
 
 fn _convert_classic_tokens<'t>(
     tokens: &'t [CToken],
     stack: &mut VecDeque<&'t str>,
     pos: &mut usize,
-) -> Vec<Token> {
+) -> Result<Vec<Token>, ParseError> {
     let mut output = Vec::with_capacity(tokens.len() - *pos);
     let mut inner_stack_count = 0;
 
@@ -164,28 +172,26 @@ fn _convert_classic_tokens<'t>(
             CLparen => {
                 output.push(Lparen);
                 *pos += 1;
-                output.append(&mut _convert_classic_tokens(tokens, stack, pos));
+                output.append(&mut _convert_classic_tokens(tokens, stack, pos)?);
             }
             CRparen => {
                 output.push(Rparen);
                 stack.truncate(stack.len() - inner_stack_count);
-                return output;
+                return Ok(output);
             }
             CName(ref name) => {
                 if let Some(index) = stack.iter().rev().position(|t| t == name) {
                     output.push(Number(index + 1))
                 } else {
-                    // a new free variable
-                    stack.push_front(name);
-                    // index of the last element + 1
-                    output.push(Number(stack.len()))
+                    // a free variable not defined in the `Context`
+                    return Err(UndefinedFreeVariable);
                 }
             }
         }
         *pos += 1;
     }
 
-    output
+    Ok(output)
 }
 
 #[derive(Debug, PartialEq)]
@@ -253,10 +259,42 @@ fn _get_ast(tokens: &[Token], pos: &mut usize) -> Result<Expression, ParseError>
 ///
 /// Returns a `ParseError` when a lexing or syntax error is encountered.
 pub fn parse(input: &str, notation: Notation) -> Result<Term, ParseError> {
+    parse_with_context(&Context::empty(), input, notation)
+}
+
+/// Attempts to parse the input `&str` using a provided context of free variables.
+///
+/// This function is identical to `parse()`, but it allows defining a set of named
+/// free variables that are considered valid during parsing in `Classic` notation.
+///
+/// # Examples
+/// ```
+/// use lambda_calculus::{*, term::Context};
+///
+/// let ctx = Context::new(&["x", "y"]);
+///
+/// // `z` is not in the context, so it will be an error.
+/// assert!(parse_with_context(&ctx, "z", Classic).is_err());
+///
+/// // `y` is in the context, so it's parsed as the outermost free variable (Var(2)).
+/// assert_eq!(parse_with_context(&ctx, "y", Classic), Ok(Var(2)));
+///
+/// // In `λa.y`, `y` is still the outermost free variable, but its index is now 3.
+/// assert_eq!(parse_with_context(&ctx, "λa.y", Classic), Ok(abs(Var(3))));
+/// ```
+///
+/// # Errors
+///
+/// Returns a `ParseError` when a lexing or syntax error is encountered.
+pub fn parse_with_context(
+    ctx: &Context,
+    input: &str,
+    notation: Notation,
+) -> Result<Term, ParseError> {
     let tokens = if notation == DeBruijn {
         tokenize_dbr(input)?
     } else {
-        convert_classic_tokens(&tokenize_cla(input)?)
+        convert_classic_tokens(ctx, &tokenize_cla(input)?)?
     };
     let ast = get_ast(&tokens)?;
 
@@ -362,15 +400,19 @@ mod tests {
         assert!(tokens_dbr.is_ok());
 
         assert_eq!(
-            convert_classic_tokens(&tokens_cla.unwrap()),
+            convert_classic_tokens(&Context::empty(), &tokens_cla.unwrap()).unwrap(),
             tokens_dbr.unwrap()
         );
     }
 
     #[test]
     fn tokenization_success_classic_with_free_variables() {
+        let ctx = Context::new(&["a", "b"]);
         let blc_dbr = "12";
-        let blc_cla = parse(blc_dbr, DeBruijn).unwrap().to_string();
+        let blc_cla = parse(blc_dbr, DeBruijn)
+            .unwrap()
+            .with_context(&ctx)
+            .to_string();
 
         let tokens_cla = tokenize_cla(&blc_cla);
         let tokens_dbr = tokenize_dbr(blc_dbr);
@@ -379,8 +421,8 @@ mod tests {
         assert!(tokens_dbr.is_ok());
 
         assert_eq!(
-            convert_classic_tokens(&tokens_cla.unwrap()),
-            tokens_dbr.unwrap()
+            tokens_cla.and_then(|tokens| convert_classic_tokens(&ctx, &tokens)),
+            tokens_dbr
         );
     }
 

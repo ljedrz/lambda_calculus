@@ -1,7 +1,8 @@
 extern crate lambda_calculus as lambda;
 
 use lambda::combinators::{I, O};
-use lambda::parser::ParseError;
+use lambda::parser::{parse_with_context, ParseError};
+use lambda::term::Context;
 use lambda::*;
 use std::thread;
 
@@ -51,7 +52,9 @@ fn reduction_cbv() {
 
 #[test]
 fn reduction_zero_plus_one() -> Result<(), ParseError> {
-    let mut expr = parse(
+    let ctx = Context::new(&["s", "z"]);
+    let mut expr = parse_with_context(
+        &ctx,
         "(λm.λn.λs.λz. m s (n s z)) (λs.λz. z) (λs.λz. s z) s z",
         Classic,
     )?;
@@ -59,7 +62,7 @@ fn reduction_zero_plus_one() -> Result<(), ParseError> {
     assert_eq!(expr, parse("(λλ(λλ1)2((λλ21)21))12", DeBruijn)?);
     expr.reduce(CBV, 6);
     assert_eq!(expr, parse("12", DeBruijn)?);
-    assert_eq!(expr.to_string(), "a b");
+    assert_eq!(expr.with_context(&ctx).to_string(), "s z");
     Ok(())
 }
 
