@@ -830,6 +830,40 @@ mod tests {
     }
 
     #[test]
+    fn context_methods() {
+        let ctx = Context::new(&["a", "b", "c"]);
+        let empty_ctx = Context::empty();
+
+        // len & is_empty
+        assert_eq!(ctx.len(), 3);
+        assert!(!ctx.is_empty());
+        assert_eq!(empty_ctx.len(), 0);
+        assert!(empty_ctx.is_empty());
+
+        // contains
+        assert!(ctx.contains("b"));
+        assert!(ctx.contains(&"c".to_string()));
+        assert!(!ctx.contains("d"));
+
+        // iter
+        let names: Vec<&str> = ctx.iter().collect();
+        assert_eq!(names, vec!["a", "b", "c"]);
+    }
+
+    #[test]
+    fn context_resolve_free_var() {
+        let ctx = Context::new(&["a", "b", "c"]);
+
+        // 1-based index, forward lookup
+        assert_eq!(ctx.resolve_free_var(1), Some("a"));
+        assert_eq!(ctx.resolve_free_var(3), Some("c"));
+
+        // Invalid cases
+        assert_eq!(ctx.resolve_free_var(0), None); // 0 is invalid
+        assert_eq!(ctx.resolve_free_var(4), None); // Out of bounds
+    }
+
+    #[test]
     fn abs_macro() {
         assert_eq!(abs!(4, Var(1)), abs(abs(abs(abs(Var(1))))));
 
@@ -903,6 +937,61 @@ mod tests {
         assert_eq!(&format!("{:?}", zero), "λλ1");
         assert_eq!(&format!("{:?}", succ), "λλλ2(321)");
         assert_eq!(&format!("{:?}", pred), "λλλ3(λλ1(24))(λ2)(λ1)");
+    }
+
+    #[test]
+    fn term_display_with_context() {
+        let ctx = Context::new(&["x", "y"]);
+
+        // Term with only free variables: Var(1) -> x, Var(2) -> y
+        let term1 = app(Var(1), Var(2));
+        assert_eq!(term1.with_context(&ctx).to_string(), "x y");
+
+        // Term with bound and free variables
+        // λa. a y  (y is Var(2) from context)
+        let term2 = abs(app(Var(1), Var(3)));
+        assert_eq!(term2.with_context(&ctx).to_string(), "λa.a y");
+
+        let term3 = abs(Var(2));
+        assert_eq!(term3.with_context(&ctx).to_string(), "λa.x");
+    }
+
+    #[test]
+    fn term_display_with_clashing_context() {
+        let ctx = Context::new(&["a", "c"]);
+
+        let term1 = app(Var(1), Var(2));
+        assert_eq!(term1.with_context(&ctx).to_string(), "a c");
+
+        let term2 = abs(app(Var(1), Var(3)));
+        assert_eq!(term2.with_context(&ctx).to_string(), "λb.b c");
+
+        let term3 = abs(Var(2));
+        assert_eq!(term3.with_context(&ctx).to_string(), "λb.a");
+    }
+
+    #[test]
+    fn term_display_without_context() {
+        let term1 = app(Var(1), Var(2));
+        assert_eq!(term1.to_string(), "a b");
+        assert_eq!(
+            term1.with_context(&Context::empty()).to_string(),
+            "<unknown1> <unknown2>"
+        );
+
+        let term2 = abs(app(Var(1), Var(3)));
+        assert_eq!(term2.to_string(), "λa.a c");
+        assert_eq!(
+            term2.with_context(&Context::empty()).to_string(),
+            "λa.a <unknown2>"
+        );
+
+        let term3 = abs(Var(2));
+        assert_eq!(term3.to_string(), "λa.b");
+        assert_eq!(
+            term3.with_context(&Context::empty()).to_string(),
+            "λa.<unknown1>"
+        );
     }
 
     #[test]

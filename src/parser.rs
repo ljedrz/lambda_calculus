@@ -427,6 +427,26 @@ mod tests {
     }
 
     #[test]
+    fn parse_classic_with_undefined_variable_error() {
+        let ctx_with_y = Context::new(&["y"]);
+
+        // "x" is not defined in the empty context
+        assert_eq!(
+            parse_with_context(&Context::empty(), "x", Classic),
+            Err(UndefinedFreeVariable)
+        );
+
+        // "x" is not defined in this context either
+        assert_eq!(
+            parse_with_context(&ctx_with_y, "λz.x", Classic),
+            Err(UndefinedFreeVariable)
+        );
+
+        // "y" is defined, so this should be OK
+        assert!(parse_with_context(&ctx_with_y, "y", Classic).is_ok());
+    }
+
+    #[test]
     fn alternative_lambda_parsing() {
         assert_eq!(parse(r"\\\2(321)", DeBruijn), parse("λλλ2(321)", DeBruijn))
     }
