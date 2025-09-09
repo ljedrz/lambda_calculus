@@ -8,7 +8,6 @@ use crate::term::Context;
 pub use crate::term::Notation::*;
 use crate::term::Term::*;
 use crate::term::{abs, app, Notation, Term};
-use std::collections::VecDeque;
 use std::error::Error;
 use std::fmt;
 
@@ -149,14 +148,14 @@ pub fn tokenize_cla(input: &str) -> Result<Vec<CToken>, ParseError> {
 
 #[doc(hidden)]
 pub fn convert_classic_tokens(ctx: &Context, tokens: &[CToken]) -> Result<Vec<Token>, ParseError> {
-    let mut stack = VecDeque::with_capacity(tokens.len());
+    let mut stack = Vec::with_capacity(tokens.len());
     stack.extend(ctx.iter().rev());
     _convert_classic_tokens(tokens, &mut stack, &mut 0)
 }
 
 fn _convert_classic_tokens<'t>(
     tokens: &'t [CToken],
-    stack: &mut VecDeque<&'t str>,
+    stack: &mut Vec<&'t str>,
     pos: &mut usize,
 ) -> Result<Vec<Token>, ParseError> {
     let mut output = Vec::with_capacity(tokens.len() - *pos);
@@ -166,7 +165,7 @@ fn _convert_classic_tokens<'t>(
         match *token {
             CLambda(ref name) => {
                 output.push(Lambda);
-                stack.push_back(name);
+                stack.push(name);
                 inner_stack_count += 1;
             }
             CLparen => {
