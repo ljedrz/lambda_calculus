@@ -690,7 +690,7 @@ fn base26_encode(mut n: u32) -> String {
 
 fn show_precedence_cla(
     ctx: &Context,
-    binder_names: &Vec<String>,
+    binder_names: &[String],
     term: &Term,
     context_precedence: usize,
     depth: u32,
