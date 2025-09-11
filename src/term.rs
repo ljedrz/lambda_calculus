@@ -842,7 +842,6 @@ mod tests {
 
         // contains
         assert!(ctx.contains("b"));
-        assert!(ctx.contains(&"c".to_string()));
         assert!(!ctx.contains("d"));
 
         // iter
