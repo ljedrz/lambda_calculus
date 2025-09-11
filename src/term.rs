@@ -763,7 +763,7 @@ fn show_precedence_dbr(term: &Term, context_precedence: usize) -> String {
     }
 }
 
-fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
+fn parenthesize_if(input: &str, condition: bool) -> Cow<'_, str> {
     if condition {
         format!("({})", input).into()
     } else {
