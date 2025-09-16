@@ -1,3 +1,15 @@
+Version 3.4.0
+=============
+
+Changes
+-------
+- the terms in the classic notation can now be parsed with a context of free variables
+- added `ParseError::UndefinedFreeVariable`, `parse_with_context`, `Context`, `Term::{max_free_index, with_context}`
+
+Thanks
+-------
+- @hiratara for all the changes in this release
+
 Version 3.3.0
 =============
 
