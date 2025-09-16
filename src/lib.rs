@@ -9,7 +9,7 @@ pub mod combinators;
 pub mod parser;
 pub mod reduction;
 
-pub use self::parser::parse;
+pub use self::parser::{parse, parse_with_context};
 pub use self::reduction::beta;
 pub use self::reduction::Order::*;
 pub use self::term::Notation::*;

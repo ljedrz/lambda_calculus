@@ -10,7 +10,7 @@ use std::{cmp, fmt, mem};
 ///
 /// - the `NOR`, `HNO`, `APP` and `HAP` orders reduce expressions to their normal form
 /// - the `APP` order will fail to fully reduce expressions containing terms without a normal form,
-/// e.g. the `Y` combinator (they will expand forever)
+///   e.g. the `Y` combinator (they will expand forever)
 /// - the `CBN` order reduces to weak head normal form
 /// - the `CBV` order reduces to weak normal form
 /// - the `HSP` order reduces to head normal form

@@ -38,6 +38,100 @@ pub enum Notation {
     DeBruijn,
 }
 
+/// A context holding a list of names for classic notation printing.
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct Context(Vec<String>);
+
+impl Context {
+    /// Creates a new `Context` from a slice of string-like items.
+    ///
+    /// This is the primary, most flexible constructor. It accepts anything
+    /// that can be borrowed as a string slice, like `&[&str]` or `&[String]`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use lambda_calculus::term::Context;
+    ///
+    /// // Create from an array of &str
+    /// let context1 = Context::new(&["a", "b", "c"]);
+    ///
+    /// // Create from a Vec<String>
+    /// let names = vec!["a".to_string(), "b".to_string(), "c".to_string()];
+    /// let context2 = Context::new(&names);
+    ///
+    /// assert_eq!(context1, context2);
+    /// ```
+    pub fn new<S: AsRef<str>>(namings: &[S]) -> Self {
+        let owned = namings.iter().map(|s| s.as_ref().to_string()).collect();
+        Context(owned)
+    }
+
+    /// Creates an empty context.
+    pub fn empty() -> Self {
+        vec![].into()
+    }
+
+    /// Returns an iterator over the names in the context, yielding `&str`.
+    pub fn iter(&self) -> impl DoubleEndedIterator<Item = &str> {
+        self.0.iter().map(|s| s.as_str())
+    }
+
+    /// Returns the number of names in the context.
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    /// Returns `true` if the context contains no names.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    /// Returns `true` if the context contains a name equivalent to the given value.
+    ///
+    /// This method is generic over `AsRef<str>`, so it can be called with
+    /// a string slice (`&str`), a `String`, or other string-like types.
+    pub fn contains<S: AsRef<str>>(&self, name: S) -> bool {
+        self.iter().any(|item| item == name.as_ref())
+    }
+
+    /// Resolves a 1-based index to a free variable name from the context.
+    ///
+    /// The index is 1-based, where `1` refers to the first name defined in the context.
+    /// Returns `None` if the index is 0 or out of bounds.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use lambda_calculus::term::Context;
+    /// let ctx = Context::new(&["a", "b", "c"]);
+    ///
+    /// assert_eq!(ctx.resolve_free_var(1), Some("a"));
+    /// assert_eq!(ctx.resolve_free_var(3), Some("c"));
+    /// assert_eq!(ctx.resolve_free_var(0), None);
+    /// assert_eq!(ctx.resolve_free_var(4), None);
+    /// ```
+    pub fn resolve_free_var(&self, idx: usize) -> Option<&str> {
+        if idx == 0 {
+            None
+        } else {
+            self.0.get(idx - 1).map(|s| s.as_str())
+        }
+    }
+}
+
+impl<S: AsRef<str>> From<&[S]> for Context {
+    fn from(namings: &[S]) -> Self {
+        Self::new(namings)
+    }
+}
+
+impl From<Vec<String>> for Context {
+    fn from(namings: Vec<String>) -> Self {
+        Context(namings)
+    }
+}
+
 /// A lambda term that is either a variable with a De Bruijn index, an abstraction over a term or
 /// an applicaction of one term to another.
 #[derive(PartialEq, Clone, Hash, Eq)]
@@ -470,6 +564,41 @@ impl Term {
             }
         }
     }
+
+    /// Calculates the maximum index of any free variable in the term.
+    ///
+    /// The result corresponds to the number of names `Context` must supply to bind them all.
+    pub fn max_free_index(&self) -> usize {
+        self.max_free_index_helper(0)
+    }
+
+    fn max_free_index_helper(&self, depth: usize) -> usize {
+        match self {
+            Var(x) => x.saturating_sub(depth),
+            Abs(p) => p.max_free_index_helper(depth + 1),
+            App(p_boxed) => {
+                let (ref f, ref a) = **p_boxed;
+                f.max_free_index_helper(depth)
+                    .max(a.max_free_index_helper(depth))
+            }
+        }
+    }
+
+    /// Returns a helper struct that allows displaying the term with a given context.
+    ///
+    /// # Example
+    /// ```
+    /// use lambda_calculus::{*, term::Context};
+    ///
+    /// let term = abs(Var(2)); // λa.b
+    /// let ctx = Context::new(&["x"]); // Predefine "x" as a free variable
+    ///
+    /// // The context defines `Var(2)` as "x" instead of the default "b"
+    /// assert_eq!(term.with_context(&ctx).to_string(), "λa.x");
+    /// ```
+    pub fn with_context<'a>(&'a self, ctx: &'a Context) -> impl fmt::Display + 'a {
+        DisplayWithContext { term: self, ctx }
+    }
 }
 
 /// Wraps a `Term` in an `Abs`traction. Consumes its argument.
@@ -499,8 +628,50 @@ pub fn app(lhs: Term, rhs: Term) -> Term {
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", show_precedence_cla(self, 0, self.max_depth(), 0))
+        let max_depth = self.max_depth();
+        let max_free_index = self.max_free_index();
+        let ctx = auto_generate_context(max_depth, max_free_index);
+        let binder_names = generate_binder_names(&ctx, self.max_depth());
+        write!(
+            f,
+            "{}",
+            show_precedence_cla(&ctx, &binder_names, self, 0, 0)
+        )
     }
+}
+
+/// A helper function to generate a default context for displaying a term.
+fn auto_generate_context(max_depth: u32, max_free_index: usize) -> Context {
+    let free_variables = (0..max_free_index)
+        .map(|i| base26_encode(max_depth + i as u32))
+        .collect::<Vec<_>>();
+    free_variables.into()
+}
+
+/// A helper struct for displaying a `Term` with an external `Context`.
+struct DisplayWithContext<'a> {
+    term: &'a Term,
+    ctx: &'a Context,
+}
+
+impl<'a> fmt::Display for DisplayWithContext<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let binder_names = generate_binder_names(self.ctx, self.term.max_depth());
+        write!(
+            f,
+            "{}",
+            show_precedence_cla(self.ctx, &binder_names, self.term, 0, 0)
+        )
+    }
+}
+
+/// Generates a list of fresh names for binders, avoiding clashes with the given context.
+fn generate_binder_names(ctx: &Context, number: u32) -> Vec<String> {
+    (0..)
+        .map(|i| base26_encode(i as u32))
+        .filter(|name| !ctx.contains(name))
+        .take(number as usize)
+        .collect()
 }
 
 fn base26_encode(mut n: u32) -> String {
@@ -518,29 +689,36 @@ fn base26_encode(mut n: u32) -> String {
 }
 
 fn show_precedence_cla(
+    ctx: &Context,
+    binder_names: &[String],
     term: &Term,
     context_precedence: usize,
-    max_depth: u32,
     depth: u32,
 ) -> String {
     match term {
         Var(0) => "undefined".to_owned(),
         Var(i) => {
             let i = *i as u32;
-            let ix = if i <= depth {
-                depth - i
+            if i <= depth {
+                binder_names
+                    .get((depth - i) as usize)
+                    .expect("[BUG] binder_names are insufficient")
+                    .to_owned()
             } else {
-                max_depth + i - depth - 1
-            };
-            base26_encode(ix)
+                let idx = (i - depth) as usize;
+                ctx.resolve_free_var(idx)
+                    .map_or(format!("<unknown{}>", idx), |s| s.to_owned())
+            }
         }
         Abs(ref t) => {
             let ret = {
                 format!(
                     "{}{}.{}",
                     LAMBDA,
-                    base26_encode(depth),
-                    show_precedence_cla(t, 0, max_depth, depth + 1)
+                    binder_names
+                        .get(depth as usize)
+                        .expect("[BUG] binder_names are insufficient"),
+                    show_precedence_cla(ctx, binder_names, t, 0, depth + 1)
                 )
             };
             parenthesize_if(&ret, context_precedence > 1).into()
@@ -549,8 +727,8 @@ fn show_precedence_cla(
             let (ref t1, ref t2) = **boxed;
             let ret = format!(
                 "{} {}",
-                show_precedence_cla(t1, 2, max_depth, depth),
-                show_precedence_cla(t2, 3, max_depth, depth)
+                show_precedence_cla(ctx, binder_names, t1, 2, depth),
+                show_precedence_cla(ctx, binder_names, t2, 3, depth)
             );
             parenthesize_if(&ret, context_precedence == 3).into()
         }
@@ -585,7 +763,7 @@ fn show_precedence_dbr(term: &Term, context_precedence: usize) -> String {
     }
 }
 
-fn parenthesize_if(input: &str, condition: bool) -> Cow<str> {
+fn parenthesize_if(input: &str, condition: bool) -> Cow<'_, str> {
     if condition {
         format!("({})", input).into()
     } else {
@@ -649,6 +827,39 @@ mod tests {
             app!(Var(4), app!(Var(1), Var(2), Var(3))),
             app(Var(4), app(app(Var(1), Var(2)), Var(3)))
         );
+    }
+
+    #[test]
+    fn context_methods() {
+        let ctx = Context::new(&["a", "b", "c"]);
+        let empty_ctx = Context::empty();
+
+        // len & is_empty
+        assert_eq!(ctx.len(), 3);
+        assert!(!ctx.is_empty());
+        assert_eq!(empty_ctx.len(), 0);
+        assert!(empty_ctx.is_empty());
+
+        // contains
+        assert!(ctx.contains("b"));
+        assert!(!ctx.contains("d"));
+
+        // iter
+        let names: Vec<&str> = ctx.iter().collect();
+        assert_eq!(names, vec!["a", "b", "c"]);
+    }
+
+    #[test]
+    fn context_resolve_free_var() {
+        let ctx = Context::new(&["a", "b", "c"]);
+
+        // 1-based index, forward lookup
+        assert_eq!(ctx.resolve_free_var(1), Some("a"));
+        assert_eq!(ctx.resolve_free_var(3), Some("c"));
+
+        // Invalid cases
+        assert_eq!(ctx.resolve_free_var(0), None); // 0 is invalid
+        assert_eq!(ctx.resolve_free_var(4), None); // Out of bounds
     }
 
     #[test]
@@ -725,6 +936,61 @@ mod tests {
         assert_eq!(&format!("{:?}", zero), "λλ1");
         assert_eq!(&format!("{:?}", succ), "λλλ2(321)");
         assert_eq!(&format!("{:?}", pred), "λλλ3(λλ1(24))(λ2)(λ1)");
+    }
+
+    #[test]
+    fn term_display_with_context() {
+        let ctx = Context::new(&["x", "y"]);
+
+        // Term with only free variables: Var(1) -> x, Var(2) -> y
+        let term1 = app(Var(1), Var(2));
+        assert_eq!(term1.with_context(&ctx).to_string(), "x y");
+
+        // Term with bound and free variables
+        // λa. a y  (y is Var(2) from context)
+        let term2 = abs(app(Var(1), Var(3)));
+        assert_eq!(term2.with_context(&ctx).to_string(), "λa.a y");
+
+        let term3 = abs(Var(2));
+        assert_eq!(term3.with_context(&ctx).to_string(), "λa.x");
+    }
+
+    #[test]
+    fn term_display_with_clashing_context() {
+        let ctx = Context::new(&["a", "c"]);
+
+        let term1 = app(Var(1), Var(2));
+        assert_eq!(term1.with_context(&ctx).to_string(), "a c");
+
+        let term2 = abs(app(Var(1), Var(3)));
+        assert_eq!(term2.with_context(&ctx).to_string(), "λb.b c");
+
+        let term3 = abs(Var(2));
+        assert_eq!(term3.with_context(&ctx).to_string(), "λb.a");
+    }
+
+    #[test]
+    fn term_display_without_context() {
+        let term1 = app(Var(1), Var(2));
+        assert_eq!(term1.to_string(), "a b");
+        assert_eq!(
+            term1.with_context(&Context::empty()).to_string(),
+            "<unknown1> <unknown2>"
+        );
+
+        let term2 = abs(app(Var(1), Var(3)));
+        assert_eq!(term2.to_string(), "λa.a c");
+        assert_eq!(
+            term2.with_context(&Context::empty()).to_string(),
+            "λa.a <unknown2>"
+        );
+
+        let term3 = abs(Var(2));
+        assert_eq!(term3.to_string(), "λa.b");
+        assert_eq!(
+            term3.with_context(&Context::empty()).to_string(),
+            "λa.<unknown1>"
+        );
     }
 
     #[test]
