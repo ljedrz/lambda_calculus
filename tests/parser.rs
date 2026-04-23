@@ -40,7 +40,7 @@ fn parse_debruijn_and_classic() -> Result<(), ParseError> {
 
 #[test]
 fn parse_issue_60() -> Result<(), ParseError> {
-    let term = parse(&"λλ((2 2) λλ1)", DeBruijn)?;
+    let term = parse("λλ((2 2) λλ1)", DeBruijn)?;
     assert_eq!(format!("{term:?}"), "λλ22(λλ1)");
 
     Ok(())
