@@ -476,7 +476,7 @@ impl Term {
         while let Some((depth, term)) = stack.pop() {
             match term {
                 Var(i) => {
-                    if *i > depth {
+                    if *i > depth || *i == 0 {
                         return false;
                     }
                 }
