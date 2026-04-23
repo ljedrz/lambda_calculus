@@ -1,3 +1,11 @@
+Version 3.4.1
+=============
+
+Changes
+-------
+- improved the parser, so that inline terms are resolved correctly (https://github.com/ljedrz/lambda_calculus/issues/60)
+- undefined terms can no longer be considered supercombinators
+
 Version 3.4.0
 =============
 
