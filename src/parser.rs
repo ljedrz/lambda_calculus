@@ -308,18 +308,29 @@ pub fn parse_with_context(
 
 #[doc(hidden)]
 pub fn fold_exprs(exprs: &[Expression]) -> Result<Term, ParseError> {
-    let mut depth = 0;
     let mut output = Vec::new();
+    let mut i = 0;
 
-    for expr in exprs.iter() {
-        match *expr {
-            Abstraction => depth += 1,
+    while i < exprs.len() {
+        match exprs[i] {
+            Abstraction => {
+                // the body of the lambda extends to the end of the current sequence;
+                // recursively fold the rest of the expressions to form the body
+                let body = fold_exprs(&exprs[i + 1..])?;
+                output.push(abs(body));
+
+                // since the rest of the slice was consumed by the abstraction's body,
+                // break out of the loop for this sequence scope
+                break;
+            }
             Variable(i) => output.push(Var(i)),
             Sequence(ref exprs) => output.push(fold_exprs(exprs)?),
         }
+        i += 1;
     }
 
-    Ok(abs!(depth, fold_terms(output)?))
+    // Fold the accumulated terms into a left-associated application
+    fold_terms(output)
 }
 
 fn fold_terms(mut terms: Vec<Term>) -> Result<Term, ParseError> {
