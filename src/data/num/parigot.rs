@@ -2,7 +2,7 @@
 
 use crate::data::boolean::{fls, tru};
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// Produces a Parigot-encoded number zero; equivalent to `boolean::fls`.
 ///

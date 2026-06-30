@@ -392,6 +392,9 @@ impl Term {
     ///
     /// assert_eq!(app(Var(1), Var(2)).lhs_mut(), Ok(&mut Var(1)));
     /// ```
+    /// # Errors
+    ///
+    /// Returns a `TermError` if `self` is not an `App`lication.
     pub fn lhs_mut(&mut self) -> Result<&mut Term, TermError> {
         if let Ok((lhs, _)) = self.unapp_mut() {
             Ok(lhs)
@@ -480,7 +483,7 @@ impl Term {
                         return false;
                     }
                 }
-                Abs(ref t) => stack.push((depth + 1, t)),
+                Abs(t) => stack.push((depth + 1, t)),
                 App(boxed) => {
                     let (ref f, ref a) = **boxed;
                     stack.push((depth, f));
@@ -530,11 +533,7 @@ impl Term {
         match (self, other) {
             (Var(x), Var(y)) => x == y,
             (Abs(p), Abs(q)) => p.is_isomorphic_to(q),
-            (App(p_boxed), App(q_boxed)) => {
-                let (ref fp, ref ap) = **p_boxed;
-                let (ref fq, ref aq) = **q_boxed;
-                fp.is_isomorphic_to(fq) && ap.is_isomorphic_to(aq)
-            }
+            (App(p), App(q)) => p.0.is_isomorphic_to(&q.0) && p.1.is_isomorphic_to(&q.1),
             _ => false,
         }
     }
@@ -558,10 +557,7 @@ impl Term {
         match self {
             Var(x) => *x > depth || *x == 0,
             Abs(p) => p.has_free_variables_helper(depth + 1),
-            App(p_boxed) => {
-                let (ref f, ref a) = **p_boxed;
-                f.has_free_variables_helper(depth) || a.has_free_variables_helper(depth)
-            }
+            App(p) => p.0.has_free_variables_helper(depth) || p.1.has_free_variables_helper(depth),
         }
     }
 
@@ -576,10 +572,9 @@ impl Term {
         match self {
             Var(x) => x.saturating_sub(depth),
             Abs(p) => p.max_free_index_helper(depth + 1),
-            App(p_boxed) => {
-                let (ref f, ref a) = **p_boxed;
-                f.max_free_index_helper(depth)
-                    .max(a.max_free_index_helper(depth))
+            App(p) => {
+                p.0.max_free_index_helper(depth)
+                    .max(p.1.max_free_index_helper(depth))
             }
         }
     }
@@ -710,7 +705,7 @@ fn show_precedence_cla(
                     .map_or(format!("<unknown{}>", idx), |s| s.to_owned())
             }
         }
-        Abs(ref t) => {
+        Abs(t) => {
             let ret = {
                 format!(
                     "{}{}.{}",
@@ -747,7 +742,7 @@ fn show_precedence_dbr(term: &Term, context_precedence: usize) -> String {
         Var(i) => {
             format!("{:X}", i)
         }
-        Abs(ref t) => {
+        Abs(t) => {
             let ret = format!("{}{:?}", LAMBDA, t);
             parenthesize_if(&ret, context_precedence > 1).into()
         }
@@ -901,7 +896,11 @@ mod tests {
         );
 
         assert_eq!(
-            abs!(27, app!(Var(28), Var(29), Var(30), Var(50), Var(702), Var(703))).to_string(),
+            abs!(
+                27,
+                app!(Var(28), Var(29), Var(30), Var(50), Var(702), Var(703))
+            )
+            .to_string(),
             "λa.λb.λc.λd.λe.λf.λg.λh.λi.λj.λk.λl.λm.λn.λo.λp.λq.λr.λs.λt.λu.λv.λw.λx.λy.λz.λaa.ab ac ad ax zz aaa"
         );
         assert_eq!(
@@ -1000,6 +999,7 @@ mod tests {
         assert!(abs!(10, Var(10)).is_supercombinator());
         assert!(abs!(10, app(Var(10), Var(10))).is_supercombinator());
 
+        assert!(!Var(0).is_supercombinator());
         assert!(!Var(1).is_supercombinator());
         assert!(!abs(Var(2)).is_supercombinator());
         assert!(!app(abs(Var(1)), Var(1)).is_supercombinator());
@@ -1035,11 +1035,13 @@ mod tests {
         assert!(app(abs(Var(2)), abs(Var(1))).has_free_variables());
         assert!(app(abs(Var(1)), abs(Var(2))).has_free_variables());
         assert!(!app(abs(Var(1)), abs(Var(1))).has_free_variables());
-        assert!(!(abs(app(
-            abs(app(Var(2), app(Var(1), Var(1)))),
-            abs(app(Var(2), app(Var(1), Var(1)))),
-        )))
-        .has_free_variables());
+        assert!(
+            !(abs(app(
+                abs(app(Var(2), app(Var(1), Var(1)))),
+                abs(app(Var(2), app(Var(1), Var(1)))),
+            )))
+            .has_free_variables()
+        );
         assert!((Var(0)).has_free_variables());
     }
 }

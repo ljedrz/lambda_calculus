@@ -92,27 +92,25 @@ impl Term {
                 }
                 _ => {}
             },
-            Abs(ref mut abstracted) => abstracted._apply(rhs, depth + 1),
+            Abs(t) => t._apply(rhs, depth + 1),
             App(boxed) => {
-                let (ref mut lhs_lhs, ref mut lhs_rhs) = **boxed;
-                lhs_lhs._apply(rhs, depth);
-                lhs_rhs._apply(rhs, depth)
+                boxed.0._apply(rhs, depth);
+                boxed.1._apply(rhs, depth);
             }
         }
     }
 
     fn update_free_variables(&mut self, added_depth: usize, own_depth: usize) {
         match self {
-            Var(ref mut i) => {
+            Var(i) => {
                 if *i > own_depth {
                     *i += added_depth
                 }
             }
-            Abs(ref mut abstracted) => abstracted.update_free_variables(added_depth, own_depth + 1),
+            Abs(t) => t.update_free_variables(added_depth, own_depth + 1),
             App(boxed) => {
-                let (ref mut lhs, ref mut rhs) = **boxed;
-                lhs.update_free_variables(added_depth, own_depth);
-                rhs.update_free_variables(added_depth, own_depth)
+                boxed.0.update_free_variables(added_depth, own_depth);
+                boxed.1.update_free_variables(added_depth, own_depth);
             }
         }
     }

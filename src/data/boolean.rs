@@ -1,7 +1,7 @@
 //! [Lambda-encoded booleans](https://en.wikipedia.org/wiki/Church_encoding#Church_Booleans)
 
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// A lambda-encoded boolean `true`.
 ///
@@ -179,10 +179,6 @@ pub fn imply() -> Term {
 
 impl From<bool> for Term {
     fn from(b: bool) -> Term {
-        if b {
-            tru()
-        } else {
-            fls()
-        }
+        if b { tru() } else { fls() }
     }
 }

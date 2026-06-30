@@ -12,7 +12,7 @@
 #![allow(non_snake_case)]
 
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// I - the identity combinator.
 ///

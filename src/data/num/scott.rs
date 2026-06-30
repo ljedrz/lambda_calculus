@@ -3,7 +3,7 @@
 use crate::combinators::Z;
 use crate::data::boolean::{fls, tru};
 use crate::term::Term::*;
-use crate::term::{abs, app, Term};
+use crate::term::{Term, abs, app};
 
 /// Produces a Scott-encoded number zero; equivalent to `boolean::tru`.
 ///

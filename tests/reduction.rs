@@ -1,7 +1,7 @@
 extern crate lambda_calculus as lambda;
 
 use lambda::combinators::{I, O};
-use lambda::parser::{parse_with_context, ParseError};
+use lambda::parser::{ParseError, parse_with_context};
 use lambda::term::Context;
 use lambda::*;
 use std::thread;

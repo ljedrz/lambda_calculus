@@ -1,6 +1,6 @@
 use lambda_calculus::{
     parse,
-    parser::{parse_with_context, ParseError},
+    parser::{ParseError, parse_with_context},
     term::{
         Context,
         Notation::{Classic, DeBruijn},

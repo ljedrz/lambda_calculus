@@ -7,7 +7,7 @@ use self::Token::*;
 use crate::term::Context;
 pub use crate::term::Notation::*;
 use crate::term::Term::*;
-use crate::term::{abs, app, Notation, Term};
+use crate::term::{Notation, Term, abs, app};
 use std::error::Error;
 use std::fmt;
 
@@ -297,13 +297,11 @@ pub fn parse_with_context(
     };
     let ast = get_ast(&tokens)?;
 
-    let exprs = if let Sequence(exprs) = ast {
-        Ok(exprs)
-    } else {
-        Err(InvalidExpression)
+    let Sequence(exprs) = ast else {
+        return Err(InvalidExpression);
     };
 
-    fold_exprs(&exprs?)
+    fold_exprs(&exprs)
 }
 
 #[doc(hidden)]
