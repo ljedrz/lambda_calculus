@@ -1,10 +1,11 @@
-Version 3.4.1
+Version 3.5.0
 =============
 
 Changes
 -------
 - improved the parser, so that inline terms are resolved correctly (https://github.com/ljedrz/lambda_calculus/issues/60)
 - undefined terms can no longer be considered supercombinators
+- update edition to 2024 and MSRV to 1.88
 
 Version 3.4.0
 =============
