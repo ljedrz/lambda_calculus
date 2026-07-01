@@ -1,8 +1,8 @@
 # lambda_calculus
+[![CI](https://github.com/ljedrz/lambda_calculus/actions/workflows/ci.yml/badge.svg)](https://github.com/ljedrz/lambda_calculus/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-CC0-blue.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![current version](https://img.shields.io/crates/v/lambda_calculus.svg)](https://crates.io/crates/lambda_calculus)
 [![docs.rs](https://docs.rs/lambda_calculus/badge.svg)](https://docs.rs/lambda_calculus)
-[![actively maintained](https://img.shields.io/badge/Maintenance%20Level-Actively%20Maintained-green.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
 
 **lambda_calculus** is a simple, zero-dependency implementation of pure lambda calculus in Safe Rust.
 

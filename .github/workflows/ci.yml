@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-test:
+    name: Quality Control
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout source code
+        uses: actions/checkout@v6
+
+      - name: install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: enable Rust caching
+        uses: Swatinem/rust-cache@v2
+
+      - name: rustfmt
+        run: cargo fmt --all -- --check
+
+      - name: clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: doc tests
+        run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+
+      - name: unit tests
+        run: cargo test
+
+      - name: benches
+        run: cargo bench
+
+  msrv:
+    name: MSRV
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout source code
+        uses: actions/checkout@v6
+
+      - name: install the MSRV
+        uses: dtolnay/rust-toolchain@1.88.0
+
+      - name: enable Rust caching
+        uses: Swatinem/rust-cache@v2
+
+      - name: check on MSRV
+        run: cargo check --all-targets

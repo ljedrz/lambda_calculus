@@ -7,12 +7,10 @@ documentation = "https://docs.rs/lambda_calculus"
 readme = "README.md"
 license = "CC0-1.0"
 keywords = ["lambda", "calculus", "functional", "mathematics", "combinators"]
+categories = ["data-structures", "mathematics", "parser-implementations"]
 authors = ["ljedrz <ljedrz@gmail.com>"]
 edition = "2024"
 rust-version = "1.88"
-
-[lib]
-crate-type = ["lib"]
 
 [features]
 default = ["encoding"]
