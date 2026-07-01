@@ -1,125 +1,96 @@
-Version 3.5.0
-=============
+# Changelog
 
-Changes
--------
+## 3.5.0
+
+### Changes
 - improved the parser, so that inline terms are resolved correctly (https://github.com/ljedrz/lambda_calculus/issues/60)
 - undefined terms can no longer be considered supercombinators
 - update edition to 2024 and MSRV to 1.88
 
-Version 3.4.0
-=============
+## 3.4.0
 
-Changes
--------
+### Changes
 - the terms in the classic notation can now be parsed with a context of free variables
 - added `ParseError::UndefinedFreeVariable`, `parse_with_context`, `Context`, `Term::{max_free_index, with_context}`
 
-Thanks
--------
+### Thanks
 - @hiratara for all the changes in this release
 
-Version 3.3.0
-=============
+## 3.3.0
 
-Changes
--------
+### Changes
 - variable names can now contain digits (but they must start with a letter)
 - added `Term::{has_free_variables, is_isomorphic_to}`
 
-Thanks
--------
+### Thanks
 - @AgentElement for all the changes in this release
 
-Version 3.2.2
-=============
+## 3.2.2
 
-Changes
--------
+### Changes
 - fixed the names of free variables when printing in classic notation
 
-Thanks
--------
+### Thanks
 - @hiratara for implementing the fix
 
-Version 3.2.1
-=============
+## 3.2.1
 
-Changes
--------
+### Changes
 - fixed the parsing of free variables in classic notation
 
-Thanks
--------
+### Thanks
 - @hiratara for implementing the fix
 
-Version 3.2.0
-=============
+## 3.2.0
 
-Changes
--------
+### Changes
 - add support for crates like `anyhow` by implementing `Error` for errors
 
-Thanks
--------
+### Thanks
 - @Zicklag for adding languages to code-blocks in README
 - @hiratara for implementing `Error` for `ParseError` and `TermError`
 
-Version 3.1.0
-=============
+## 3.1.0
 
-Changes
--------
+### Changes
 - a pass with the current `clippy`
 - bumped Rust edition to 2021
 
-Version 3.0.2
-=============
+## 3.0.2
 
-Changes
--------
+### Changes
 - a pass with the current `clippy`
 - the removal of outdated benches
 
-Version 3.0.1
-=============
+## 3.0.1
 
-Changes
--------
+### Changes
 - a pass with the current `clippy`
 
-Version 3.0.0
-=============
+## 3.0.0
 
-Changes
--------
+### Changes
 - use only one `Box` in `Term::App`
 
-Version 2.2.0
-=============
+## 2.2.0
 
-Thanks
--------
+### Thanks
 @billpmurphy for adding `list::pair::{drop, drop_while, replicate}` and a docfix
 
-Changes
--------
+### Changes
 - `parse` now accepts Unicode variables in `Classic` mode
 - improve parser code (~25% speedup in `Classic` mode)
 - add `list::pair::{drop, drop_while, replicate}`
 
-Version 2.1.0
-=============
+## 2.1.0
 
-Thanks
--------
+### Thanks
 @billpmurphy for creating `num::signed` and `data::result` and their applicable `Into` conversions,
 adding `signed::{add, modulus, neg, simplify, sub, to_signed, mul}`, `result::{ok, err, is_ok,
 is_err, option_ok, option_err, unwrap_or, map, map_err, and_then}` and `stumpfu::{mul, to_church,
 to_scott, to_parigot}`
 
-Changes
--------
+### Changes
 - add `boolean::{xnor, imply}`
 - add signed numbers
 - add result data type
@@ -129,19 +100,16 @@ Changes
 - add `num::convert::{Encoding, IntoSignedNum}`
 - impl `IntoSignedNum` for `i32`
 
-Version 2.0.0
-=============
+## 2.0.0
 
-Thanks
--------
+### Thanks
 @billpmurphy for the idea to make `reduction::beta` IO-free, splitting conversions (and
 thus allowing all encodings to be compiled together), adding `term::is_supercombinator`,
 `option::{map, unwrap_or, and_then}`, `church::{to_scott, to_parigot, to_stumpfu}`, `combinators::T`
 and `scott::{is_zero, to_church}`, improving conversions into terms and adding
 `impl<T> IntoChurch for Option<T> where T: IntoChurch`
 
-Breaking changes
--------
+### Breaking changes
 - restructure and rename modules
 - rework compilation features
 - remove `impl Term` from Church data types
@@ -164,8 +132,7 @@ Breaking changes
 - make `ParseError::InvalidCharacter` 0-indexed
 - split `Into<Term>` conversion into `IntoChurch`, `IntoScott` and `IntoParigot`
 
-Changes
--------
+### Changes
 - fix the empty case in `list::take_while`
 - refactor benchmarks using macros
 - refactor integration tests using macros
@@ -191,17 +158,14 @@ Changes
 - add `list::{church, scott, parigot}::{nil, is_nil, cons, head, tail}`
 - ensure all functions match their definition in documentation
 
-Version 1.4.0
-=============
+## 1.4.0
 
-Thanks
--------
+### Thanks
 @billpmurphy for creating `church::option`, adding `option::{none, some, is_none, is_some,
 map_or}`, adding `church::lists::{init, zip, zip_with, take, take_while}` and simplifying
 `church::lists::last`
 
-Changes
--------
+### Changes
 - add Scott encoding as a compilation feature
 - add a Scott numerals module
 - add `scott::{zero, succ, pred}`
@@ -216,15 +180,12 @@ Changes
 - more fine-grained parser benchmarks
 - add Church list benchmarks
 
-Version 1.3.0
-=============
+## 1.3.0
 
-Thanks
--------
+### Thanks
 @billpmurphy for adding `church::lists::last`
 
-Changes
--------
+### Changes
 - add `church::lists::last`
 - change all instances of `try!()` to `?`
 - replace 2 `clone()`s with `replace()`s (**big** performance wins)
@@ -235,35 +196,28 @@ Changes
 - some code readability improvements
 - more benchmarks
 
-Version 1.2.0
-=============
+## 1.2.0
 
-Thanks
--------
+### Thanks
 @billpmurphy for adding `church::numerals::{min, max, lshift, rshift, is_even, is_odd}` and
 `church::pairs::uncurry`
 
-Changes
--------
+### Changes
 - add `church::numerals::{min, max, lshift, rshift, is_even, is_odd}` for Church numerals
 - add `church::pairs::uncurry`
 - add `abs!()` macro for multiple abstraction and use it internally
 - simplify many `church::numerals` functions using `church::numerals::{one, pred}`
 - move integration tests to a [tests](https://github.com/ljedrz/lambda_calculus/tree/master/tests) folder
 
-Version 1.1.1
-=============
+## 1.1.1
 
-Changes
--------
+### Changes
 - remove one unnecessary mutability
 - add maintenance badges
 
-Version 1.1.0
-=============
+## 1.1.0
 
-Changes
--------
+### Changes
 - core tests no longer use Church-encoded data
 - adhere to [C-REEXPORT](https://github.com/brson/rust-api-guidelines#c-reexport)
 - improved parser performance
@@ -272,7 +226,6 @@ Changes
 - fixed two doc links
 - minor code improvements
 
-Version 1.0.0
-=============
+## 1.0.0
 
 First stable release.
