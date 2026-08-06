@@ -1,4 +1,7 @@
-# Changelog
+## 3.6.0
+
+### Changes
+- added η-reduction
 
 ## 3.5.0
 

@@ -12,6 +12,7 @@ pub mod reduction;
 pub use self::parser::{parse, parse_with_context};
 pub use self::reduction::Order::*;
 pub use self::reduction::beta;
+pub use self::reduction::eta;
 pub use self::term::Notation::*;
 pub use self::term::Term::*;
 pub use self::term::{Term, UD, abs, app};

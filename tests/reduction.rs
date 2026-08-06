@@ -67,6 +67,117 @@ fn reduction_zero_plus_one() -> Result<(), ParseError> {
 }
 
 #[test]
+fn eta_simple() {
+    // λa. b a → b
+    let mut expr = abs(app(Var(2), Var(1)));
+    expr.eta(0);
+    assert_eq!(expr, Var(1));
+
+    // λa. a b → not η-reducible (rhs is not the binder)
+    let mut expr = abs(app(Var(1), Var(2)));
+    expr.eta(0);
+    assert_eq!(expr, abs(app(Var(1), Var(2))));
+
+    // λa. a a → not η-reducible (lhs uses the binder)
+    let mut expr = abs(app(Var(1), Var(1)));
+    expr.eta(0);
+    assert_eq!(expr, abs(app(Var(1), Var(1))));
+}
+
+#[test]
+fn eta_nested() {
+    // λa. λb. a b → λa. a (inner η first, outer not η-reducible)
+    let mut expr = abs(abs(app(Var(2), Var(1))));
+    expr.eta(0);
+    assert_eq!(expr, abs(Var(1)));
+
+    // λa. λb. c a b → c (both levels η-reducible)
+    let mut expr = abs(abs(app(app(Var(3), Var(2)), Var(1))));
+    expr.eta(0);
+    assert_eq!(expr, Var(1));
+}
+
+#[test]
+fn eta_blocked() {
+    // λa. a a → not η-reducible (lhs uses the binder)
+    let mut expr = abs(app(Var(1), Var(1)));
+    expr.eta(0);
+    assert_eq!(expr, abs(app(Var(1), Var(1))));
+    assert_eq!(expr.eta(0), 0);
+
+    // λa. (λb. a b) a → inner λb. a b IS η-reducible (b not free in a)
+    // giving λa. a a; then outer η on λa. a a is blocked (lhs uses binder)
+    let mut expr = abs(app(abs(app(Var(2), Var(1))), Var(1)));
+    expr.eta(0);
+    assert_eq!(expr, abs(app(Var(1), Var(1))));
+}
+
+#[test]
+fn eta_double_outer_inner() {
+    // λa. (λb. c b) a → both inner (λb. c b → c) and outer (λa. c a → c) η reduce
+    let mut expr = abs(app(abs(app(Var(3), Var(1))), Var(1)));
+    expr.eta(0);
+    assert_eq!(expr, Var(1));
+    assert_eq!(expr.eta(0), 0);
+}
+
+#[test]
+fn eta_identity_application() {
+    // λa. (λb. b) a → λb. b
+    let mut expr = abs(app(abs(Var(1)), Var(1)));
+    expr.eta(0);
+    assert_eq!(expr, abs(Var(1)));
+}
+
+#[test]
+fn eta_free_function() {
+    let ctx = Context::new(&["f"]);
+
+    // λa. f a → f
+    let mut expr = parse_with_context(&ctx, "λa. f a", Classic).unwrap();
+    expr.eta(0);
+    assert_eq!(expr, Var(1));
+
+    // λa. λb. f a b → f
+    let mut expr = parse_with_context(&ctx, "λa. λb. f a b", Classic).unwrap();
+    expr.eta(0);
+    assert_eq!(expr, Var(1));
+}
+
+#[test]
+fn eta_with_limit() {
+    let mut expr = abs(abs(app(Var(1), Var(1)))); // λa.λb. b
+    let count = expr.eta(0);
+    assert_eq!(count, 0); // not η-reducible
+
+    // λa. λb. c a b → λa. λb. c a b with limit 0
+    let mut expr = abs(abs(app(app(Var(3), Var(2)), Var(1))));
+    let count = expr.eta(0);
+    assert_eq!(count, 2); // both levels η-reduced
+    assert_eq!(expr, Var(1));
+
+    // λa. λb. c a b with limit 1 → only 1 reduction
+    let mut expr = abs(abs(app(app(Var(3), Var(2)), Var(1))));
+    let count = expr.eta(1);
+    assert_eq!(count, 1); // inner η only
+    assert_eq!(expr, abs(app(Var(2), Var(1)))); // λa. c a
+}
+
+#[test]
+fn eta_free_function_beta() {
+    let ctx = Context::new(&["f"]);
+
+    // η-reduction via the free function
+    let expr = parse_with_context(&ctx, "λa. λb. f a b", Classic).unwrap();
+    let reduced = eta(expr, 0);
+    assert_eq!(reduced, Var(1));
+
+    // η-reduction with 0 limit but no reducible term
+    let expr = abs(Var(1));
+    let reduced = eta(expr, 0);
+    assert_eq!(reduced, abs(Var(1)));
+}
+
 #[ignore]
 fn reduction_huge() {
     let builder = thread::Builder::new()

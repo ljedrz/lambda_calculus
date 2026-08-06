@@ -33,6 +33,27 @@ pub enum Order {
     HAP,
 }
 
+/// Performs η-reduction on a `Term` with an optional limit on the number of reductions (`0` means
+/// no limit) and returns the reduced `Term`.
+///
+/// η-reduction removes a redundant abstraction wrapping an application of the bound variable:
+/// `λx. M x → M` when `x` is not free in `M`.
+///
+/// # Example
+///
+/// ```
+/// use lambda_calculus::*;
+///
+/// let expr    = parse(&"λa.λb. a b", Classic).unwrap();
+/// let reduced = parse(&"λa.a", Classic).unwrap();
+///
+/// assert_eq!(eta(expr, 0), reduced);
+/// ```
+pub fn eta(mut term: Term, limit: usize) -> Term {
+    term.eta(limit);
+    term
+}
+
 /// Performs β-reduction on a `Term` with the specified evaluation `Order` and an optional limit on
 /// the number of reductions (`0` means no limit) and returns the reduced `Term`.
 ///
@@ -293,6 +314,118 @@ impl Term {
                 }
             }
             _ => (),
+        }
+    }
+
+    /// Checks whether a term contains a free reference to the binder at a given depth.
+    ///
+    /// At depth `d`, the binder is index `d` (1-indexed De Bruijn).  Each inner abstraction
+    /// increments the depth, so the check correctly follows how the index shifts.
+    fn _refers_to_binder(&self, depth: usize) -> bool {
+        match self {
+            Var(0) => true,
+            Var(i) => *i == depth,
+            Abs(t) => t._refers_to_binder(depth + 1),
+            App(boxed) => {
+                boxed.0._refers_to_binder(depth) || boxed.1._refers_to_binder(depth)
+            }
+        }
+    }
+
+    /// Decrements all free variable indices that exceed `depth` by one, used after removing
+    /// one level of abstraction during η-reduction.
+    fn _shift_down_eta(&mut self, depth: usize) {
+        match self {
+            Var(0) => {}
+            Var(i) => {
+                if *i > depth {
+                    *i -= 1;
+                }
+            }
+            Abs(t) => t._shift_down_eta(depth + 1),
+            App(boxed) => {
+                boxed.0._shift_down_eta(depth);
+                boxed.1._shift_down_eta(depth);
+            }
+        }
+    }
+
+    /// Performs η-reduction on this term with an optional limit on reductions (`0` = no limit)
+    /// and returns the number of reductions performed.
+    ///
+    /// η-reduction removes `λx. M x → M` when `x` is not free in `M`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lambda_calculus::*;
+    ///
+    /// let mut expr = parse(&"λa.λb. a b", Classic).unwrap();
+    /// let reduced  = parse(&"λa.a", Classic).unwrap();
+    ///
+    /// expr.eta(0);
+    ///
+    /// assert_eq!(expr, reduced);
+    /// ```
+    pub fn eta(&mut self, limit: usize) -> usize {
+        let mut count = 0;
+        self._eta_impl(limit, &mut count);
+        count
+    }
+
+    /// Attempts one η-reduction at the current level. Returns `true` if a reduction occurred.
+    fn _eta_step(&mut self, limit: usize, count: &mut usize) -> bool {
+        if limit != 0 && *count == limit {
+            return false;
+        }
+
+        let can_eta = match self {
+            Abs(boxed) => match &**boxed {
+                App(inner) => match &inner.1 {
+                    Var(1) => !inner.0._refers_to_binder(1),
+                    _ => false,
+                },
+                _ => false,
+            },
+            _ => false,
+        };
+
+        if can_eta {
+            let body = mem::replace(self, Var(0)).unabs().unwrap();
+            let (mut lhs, _rhs) = body.unapp().unwrap();
+            lhs._shift_down_eta(1);
+            *self = lhs;
+            *count += 1;
+            true
+        } else {
+            false
+        }
+    }
+
+    fn _eta_impl(&mut self, limit: usize, count: &mut usize) {
+        // Reduce at this level as much as possible
+        loop {
+            if !self._eta_step(limit, count) {
+                break;
+            }
+        }
+
+        // Recurse into subterms; then re-check this level since the body may have changed
+        match self {
+            Abs(boxed) => {
+                boxed._eta_impl(limit, count);
+                // The body was modified; try this level again
+                loop {
+                    if !self._eta_step(limit, count) {
+                        break;
+                    }
+                }
+            }
+            App(boxed) => {
+                boxed.0._eta_impl(limit, count);
+                boxed.1._eta_impl(limit, count);
+            }
+            _ => {}
         }
     }
 }
