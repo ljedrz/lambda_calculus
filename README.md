@@ -56,6 +56,12 @@ SUCC := λa.λb.λc.b (a b c) = λλλ2(321)
 PRED := λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d) = λλλ3(λλ1(24))(λ2)(λ1)
 ```
 
+De Bruijn notation is concatenative — `21` is `Var(2)` applied to `Var(1)`, not the index 21 —
+so a single index is one hexadecimal digit, `1` to `F`. An index needing more than one digit
+is wrapped in brackets (`[10]` is 16), which keeps it distinguishable from an application and
+makes `{:?}` output always parse back to the term it came from. The brackets only delimit:
+the digits inside are hexadecimal too, so `[A]` and a bare `A` are the same index.
+
 ### Parsing lambda expressions
 
 code:

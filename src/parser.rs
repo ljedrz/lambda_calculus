@@ -73,14 +73,18 @@ pub enum CToken {
 
 #[doc(hidden)]
 pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, ParseError> {
-    let chars = input.chars().enumerate();
+    let mut chars = input.chars().enumerate();
     let mut tokens = Vec::with_capacity(input.len());
 
-    for (i, c) in chars {
+    while let Some((i, c)) = chars.next() {
         match c {
             '\\' | 'λ' => tokens.push(Lambda),
             '(' => tokens.push(Lparen),
             ')' => tokens.push(Rparen),
+            // Bare digits are one index each, so `10` is `1 0` rather than 16. Brackets
+            // delimit a single index of any width, which is how anything above `F` is
+            // written, and `fmt::Debug` emits exactly this form.
+            '[' => tokens.push(Number(tokenize_bracketed_index(&mut chars, i)?)),
             _ => {
                 if let Some(n) = c.to_digit(16) {
                     tokens.push(Number(n as usize))
@@ -94,6 +98,38 @@ pub fn tokenize_dbr(input: &str) -> Result<Vec<Token>, ParseError> {
     }
 
     Ok(tokens)
+}
+
+/// Reads the digits of a bracketed index, the opening `[` of which was at `open` and has
+/// already been consumed.
+///
+/// The digits are hexadecimal, exactly as they are outside the brackets: the brackets only
+/// delimit, so that an index needing more than one digit stays distinguishable from an
+/// application of several one-digit indices. `[A]` and a bare `A` are the same index.
+fn tokenize_bracketed_index<I>(chars: &mut I, open: usize) -> Result<usize, ParseError>
+where
+    I: Iterator<Item = (usize, char)>,
+{
+    let mut index: usize = 0;
+    let mut digits = 0;
+
+    for (i, c) in chars {
+        match c {
+            ']' if digits > 0 => return Ok(index),
+            _ => {
+                // An index too large to hold is a lexical error rather than a wrap. `[]`,
+                // `[G]` and a nested `[` land here too.
+                index = c
+                    .to_digit(16)
+                    .and_then(|d| index.checked_mul(16)?.checked_add(d as usize))
+                    .ok_or(InvalidCharacter((i, c)))?;
+                digits += 1;
+            }
+        }
+    }
+
+    // Ran out of input before the closing bracket.
+    Err(InvalidCharacter((open, '[')))
 }
 
 #[doc(hidden)]

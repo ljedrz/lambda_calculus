@@ -17,7 +17,10 @@ pub const LAMBDA: char = 'λ';
 
 /// An undefined term that can be used as a value returned by invalid/inapplicable operations, e.g.
 /// obtaining an element of an empty list. Since this implementation uses De Bruijn indices greater
-/// than zero, `Var(0)` will not occur naturally. It is displayed as `undefined`.
+/// than zero, `Var(0)` will not occur naturally.
+///
+/// `fmt::Display` shows it as `undefined`; `fmt::Debug` shows it as `[0]`, which is the form
+/// `parse` reads back, so a term holding it still round-trips.
 pub const UD: Term = Var(0);
 
 /// The notation used for parsing and displaying purposes.
@@ -32,6 +35,29 @@ pub const UD: Term = Var(0);
 /// assert_eq!(format!(  "{}", S()).replace(LAMBDA, "λ"), "λa.λb.λc.a c (b c)"); // Classic
 /// assert_eq!(format!("{:?}", S()).replace(LAMBDA, "λ"), "λλλ31(21)");          // DeBruijn
 /// ```
+///
+/// # De Bruijn indices above 15
+///
+/// De Bruijn notation is concatenative: adjacent indices are an application, so `21` is
+/// `App(Var(2), Var(1))` rather than the index 21. A single index is therefore one
+/// hexadecimal digit, `1` through `F`, and one that needs more than a digit is wrapped in
+/// brackets so it stays distinguishable:
+///
+/// ```
+/// use lambda_calculus::*;
+///
+/// assert_eq!(format!("{:?}", Var(15)), "F");
+/// assert_eq!(format!("{:?}", Var(16)), "[10]");
+///
+/// // `10` is two indices applied to each other, `[10]` is one index.
+/// assert_eq!(parse("10", DeBruijn).unwrap(), app(Var(1), Var(0)));
+/// assert_eq!(parse("[10]", DeBruijn).unwrap(), Var(16));
+/// ```
+///
+/// The brackets only delimit; the digits inside them are hexadecimal like all the others,
+/// so `[A]` and a bare `A` are the same index. They are accepted around any index,
+/// including one that would fit without them, and `fmt::Debug` output always parses back
+/// to the term it came from.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Notation {
     /// classic lambda calculus notation; used by `fmt::Display`
@@ -814,8 +840,13 @@ fn show_precedence_dbr(
     context_precedence: usize,
 ) -> fmt::Result {
     match term {
-        Var(0) => f.write_str("undefined"),
-        Var(i) => write!(f, "{i:X}"),
+        // Adjacent digits mean application, not a multi-digit number, so an index that
+        // does not fit in one digit has to be delimited or it reads back as something else
+        // entirely: bare `10` parses as `1 0`, not as 16. The brackets are purely a
+        // delimiter - the digits inside are hexadecimal like everywhere else - and this is
+        // the only form that round-trips at every index.
+        Var(i) if *i <= 0xF && *i != 0 => write!(f, "{i:X}"),
+        Var(i) => write!(f, "[{i:X}]"),
         Abs(t) => {
             let parenthesize = context_precedence > 1;
             if parenthesize {

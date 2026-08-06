@@ -17,6 +17,15 @@
   `Var(1 << 32)` panic and `Var((1 << 32) + 3)` render as though it were `Var(3)`
 - fixed the test suite under `backslash_lambda`, where 8 tests hardcoded `λ` in their
   expectations; CI now covers that feature and `--no-default-features` so it stays fixed
+- `fmt::Debug` and `parse(.., DeBruijn)` are now exact inverses. De Bruijn notation is
+  concatenative, so a De Bruijn index above `F` used to render as several characters and
+  read back as a different term - `Var(16)` printed `10` and reparsed as
+  `App(Var(1), Var(0))`, and `Var(17)` printed `11` and reparsed as `App(Var(1), Var(1))`,
+  whose rendering is also `11`, making the corruption silent. Such an index is now wrapped
+  in brackets, which delimit without switching base - the digits inside stay hexadecimal, so
+  `[10]` is 16 and `[A]` is the same index as a bare `A`. `Var(0)` renders as `[0]` rather
+  than the unparseable `undefined` (`Display` still spells it out). Every term expressible
+  before renders exactly as it did
 
 ## 3.5.0
 
