@@ -17,3 +17,5 @@ default = ["encoding"]
 backslash_lambda = []
 encoding = []
 
+[dev-dependencies]
+stackler = { version = "0.1", features = ["watermark"] }

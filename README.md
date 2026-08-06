@@ -150,3 +150,52 @@ comparing different encodings of number 3 (De Bruijn indices):
 Stump-Fu encoding: λλ2(λλ2(2(21)))(λλ2(λλ2(21))(λλ2(λλ21)(λλ1)))
   binary encoding: λλλ1(13)
 ```
+
+## Stack depth
+
+Reduction, and every other operation on a `Term`, walks a tree of boxes recursively, so
+stack use scales with how deeply nested the term is. Deep enough and the process dies on
+a guard page: a `SIGSEGV` with no unwinding, no panic message and no failing assertion.
+
+Two unrelated things cause that, and only one of them is cured by a bigger stack.
+
+**An unbounded reduction.** An applicative-family order (`APP`, `HAP`) applied to a term
+built on a recursion combinator never converges — it exhausts whatever stack it is given.
+Reducing `scott::add 1 2` under `HAP` costs ~192 bytes per step and never finishes; under
+`NOR` it finishes in 16 steps and 9 KiB. The remedy is the strategy, not `stack_size`.
+
+**A genuinely deep term.** Here the depth is bounded by the input, so a larger stack is
+the right answer — and worth measuring rather than guessing. [`stackler`] reports what a
+reduction actually touched, without instrumenting the code under measurement:
+
+```rust
+let (result, peak) = stackler::measure_peak(|| beta(expr, HAP, 0));
+println!("peak stack use: {} bytes", peak.unwrap().bytes());
+```
+
+Its default paint depth is 256 KiB, which is far short of a large reduction; raise
+`Stackler::paint_depth` past the expected peak or the reading comes back as
+`Peak::AtLeast`, a lower bound rather than a measurement. Measured on the `reduction_huge`
+test, which reduces a Church-encoded factorial of 10 under `HAP`:
+
+| profile | peak stack |
+| :--- | ---: |
+| `--release` | 221 MiB |
+| debug | 1.08 GiB |
+
+Note the 5x between profiles: a `stack_size` tuned against a release build will not
+survive `cargo test`. Per nesting level, for the individual operations:
+
+| operation | debug | release |
+| :--- | ---: | ---: |
+| `drop` | 208 B | 64 B |
+| `clone`, `PartialEq`, `beta`, `eta` | 545 B | 128 B |
+| `Display` | 1762 B | 481 B |
+| `Debug` | 1970 B | 593 B |
+
+`Debug` is the most expensive, and it is the path `assert_eq!` takes when it fails — so a
+test comparing terms deeper than ~1000 levels aborts while rendering the mismatch instead
+of reporting it. Note also that `libtest` gives each test a 2 MiB stack, not the 8 MiB of
+a main thread. `tests/stack_depth.rs` keeps all of these figures honest.
+
+[`stackler`]: https://crates.io/crates/stackler

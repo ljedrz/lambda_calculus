@@ -100,7 +100,8 @@ pub fn pred() -> Term {
 /// # Errors
 ///
 /// This function will overflow the stack if used with an applicative-family (`APP` or `HAP`)
-/// reduction order.
+/// reduction order: the recursion does not converge under eager evaluation, so it exhausts
+/// whatever stack it is given and no `stack_size` avoids it. Use a normal order instead.
 pub fn add() -> Term {
     app(
         Z(),
@@ -147,7 +148,8 @@ pub fn sub() -> Term {
 /// # Errors
 ///
 /// This function will overflow the stack if used with an applicative-family (`APP` or `HAP`)
-/// reduction order.
+/// reduction order: the recursion does not converge under eager evaluation, so it exhausts
+/// whatever stack it is given and no `stack_size` avoids it. Use a normal order instead.
 pub fn mul() -> Term {
     app(
         Z(),
@@ -177,7 +179,8 @@ pub fn mul() -> Term {
 /// # Errors
 ///
 /// This function will overflow the stack if used with an applicative-family (`APP` or `HAP`)
-/// reduction order.
+/// reduction order: the recursion does not converge under eager evaluation, so it exhausts
+/// whatever stack it is given and no `stack_size` avoids it. Use a normal order instead.
 pub fn pow() -> Term {
     app(
         Z(),
@@ -209,7 +212,8 @@ pub fn pow() -> Term {
 /// # Errors
 ///
 /// This function will overflow the stack if used with an applicative-family (`APP` or `HAP`)
-/// reduction order.
+/// reduction order: the recursion does not converge under eager evaluation, so it exhausts
+/// whatever stack it is given and no `stack_size` avoids it. Use a normal order instead.
 pub fn to_church() -> Term {
     abs!(
         3,

@@ -417,7 +417,9 @@ pub fn rem() -> Term {
 /// ```
 /// # Errors
 ///
-/// This function may overflow the stack if its argument is high enough.
+/// This function may overflow the stack if its argument is high enough. That depth is
+/// bounded by the argument rather than unbounded, so a larger `stack_size` is the right
+/// remedy — see the crate-level `Stack depth` section for how to measure what it needs.
 pub fn fac() -> Term {
     abs(app!(
         Var(1),

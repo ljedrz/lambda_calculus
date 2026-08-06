@@ -178,18 +178,61 @@ fn eta_free_function_beta() {
     assert_eq!(reduced, abs(Var(1)));
 }
 
-#[ignore]
+#[test]
+#[ignore = "reserves gigabytes of stack and paints most of it"]
 fn reduction_huge() {
+    const MIB: usize = 1024 * 1024;
+
+    // Measured peaks are ~221 MiB optimized and ~1.08 GiB unoptimized, so both knobs
+    // are profile-dependent: an optimized run has no reason to pay for what the debug
+    // build needs. The two are budgeted differently on purpose:
+    //
+    // - `stack_size` only reserves address space, and untouched pages stay free, so it
+    //   is generous. Undershooting it is a SIGSEGV with no message.
+    // - `paint_depth` memsets, so every painted byte becomes resident. It is the real
+    //   cost and is kept tight. Undershooting it only saturates the reading, which the
+    //   assertion below turns into a failure that says what to raise.
+    const STACK_SIZE: usize = if cfg!(debug_assertions) {
+        2048 * MIB
+    } else {
+        512 * MIB
+    };
+    const PAINT_DEPTH: usize = if cfg!(debug_assertions) {
+        1280 * MIB
+    } else {
+        320 * MIB
+    };
+
     let builder = thread::Builder::new()
         .name("reductor".into())
-        .stack_size(1024 * 1024 * 1024);
+        .stack_size(STACK_SIZE);
 
     let factorial = parse("λ1(λλλ3(λ3(21))(λλ2(321)))(λλ2)(λλ21)(λλ21)", DeBruijn).unwrap();
     let church_ten = parse("λλ2(2(2(2(2(2(2(2(2(21)))))))))", DeBruijn).unwrap();
 
     let handler = builder
         .spawn(|| {
-            beta(app!(factorial, church_ten), HAP, 0);
+            // Painting is per-thread and only the owner may do it, so this has to run
+            // on the reductor itself; the depth is process-wide configuration.
+            assert!(
+                stackler::Stackler::new().paint_depth(PAINT_DEPTH).install(),
+                "the reductor's stack bounds could not be determined"
+            );
+
+            let (_, peak) = stackler::measure_peak(|| beta(app!(factorial, church_ten), HAP, 0));
+            let peak = peak.expect("the reductor's stack could not be painted");
+
+            assert!(
+                !peak.is_saturated(),
+                "{} bytes is only a lower bound; raise PAINT_DEPTH past {PAINT_DEPTH}",
+                peak.bytes()
+            );
+
+            println!(
+                "peak stack use: {} bytes ({:.2} MiB)",
+                peak.bytes(),
+                peak.bytes() as f64 / (1024.0 * 1024.0)
+            );
         })
         .unwrap();
 

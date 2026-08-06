@@ -326,9 +326,7 @@ impl Term {
             Var(0) => true,
             Var(i) => *i == depth,
             Abs(t) => t._refers_to_binder(depth + 1),
-            App(boxed) => {
-                boxed.0._refers_to_binder(depth) || boxed.1._refers_to_binder(depth)
-            }
+            App(boxed) => boxed.0._refers_to_binder(depth) || boxed.1._refers_to_binder(depth),
         }
     }
 
