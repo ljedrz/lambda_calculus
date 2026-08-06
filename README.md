@@ -186,16 +186,25 @@ test, which reduces a Church-encoded factorial of 10 under `HAP`:
 Note the 5x between profiles: a `stack_size` tuned against a release build will not
 survive `cargo test`. Per nesting level, for the individual operations:
 
-| operation | debug | release |
-| :--- | ---: | ---: |
-| `drop` | 208 B | 64 B |
-| `clone`, `PartialEq`, `beta`, `eta` | 545 B | 128 B |
-| `Display` | 1762 B | 481 B |
-| `Debug` | 1970 B | 593 B |
+| operation | debug | release | max depth on 2 MiB (debug) |
+| :--- | ---: | ---: | ---: |
+| `drop` | 208 B | 64 B | ~10000 |
+| `Debug` | 513 B | 129 B | ~4000 |
+| `clone`, `PartialEq`, `beta`, `eta` | 545 B | 128 B | ~3800 |
+| `Display` | 802 B | 192 B | ~2600 |
 
-`Debug` is the most expensive, and it is the path `assert_eq!` takes when it fails — so a
-test comparing terms deeper than ~1000 levels aborts while rendering the mismatch instead
-of reporting it. Note also that `libtest` gives each test a 2 MiB stack, not the 8 MiB of
-a main thread. `tests/stack_depth.rs` keeps all of these figures honest.
+Note that `libtest` gives each test a 2 MiB stack, not the 8 MiB of a main thread, so the
+last column is the budget the test suite actually works against. `Display` is currently
+the deepest path, and `Debug` matters out of proportion to its cost because it is what
+`assert_eq!` invokes when it fails: past that depth a mismatch aborts while being rendered
+instead of being reported. `tests/stack_depth.rs` keeps all of these figures honest.
+
+Both formatting impls write directly into the `Formatter` rather than building a `String`
+per subterm. That is what keeps their frames small, and it also makes them linear: the
+older String-returning version copied each subtree's rendering into a fresh allocation at
+every level, which is quadratic for a linear chain — the shape a Church numeral has.
+Rendering a 32000-level chain went from 409 ms to 2.9 ms for `Display` and 107 ms to
+1.1 ms for `Debug`. The trade is that neither impl honours width or precision specifiers
+(`{:>20?}` no longer pads), which is the usual cost of streaming a recursive structure.
 
 [`stackler`]: https://crates.io/crates/stackler

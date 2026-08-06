@@ -3,9 +3,8 @@
 pub use self::Notation::*;
 pub use self::Term::*;
 use self::TermError::*;
-use std::borrow::Cow;
 use std::error::Error;
-use std::fmt;
+use std::fmt::{self, Write as _};
 
 /// The character used to display lambda abstractions (a backslash).
 #[cfg(feature = "backslash_lambda")]
@@ -626,12 +625,8 @@ impl fmt::Display for Term {
         let max_depth = self.max_depth();
         let max_free_index = self.max_free_index();
         let ctx = auto_generate_context(max_depth, max_free_index);
-        let binder_names = generate_binder_names(&ctx, self.max_depth());
-        write!(
-            f,
-            "{}",
-            show_precedence_cla(&ctx, &binder_names, self, 0, 0)
-        )
+        let binder_names = generate_binder_names(&ctx, max_depth);
+        show_precedence_cla(&ctx, &binder_names, self, f, 0, 0)
     }
 }
 
@@ -652,11 +647,7 @@ struct DisplayWithContext<'a> {
 impl<'a> fmt::Display for DisplayWithContext<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let binder_names = generate_binder_names(self.ctx, self.term.max_depth());
-        write!(
-            f,
-            "{}",
-            show_precedence_cla(self.ctx, &binder_names, self.term, 0, 0)
-        )
+        show_precedence_cla(self.ctx, &binder_names, self.term, f, 0, 0)
     }
 }
 
@@ -683,86 +674,118 @@ fn base26_encode(mut n: u32) -> String {
     String::from_utf8(buf).expect("error while printing term")
 }
 
+/// Writes the classic representation of `term` straight into `f`.
+///
+/// This recurses once per nesting level, so the frame is kept deliberately small.
+/// Returning a `String` per subterm instead - which is what this used to do - made
+/// the frame large enough to bound how deep a term could be printed at all, and made
+/// the whole traversal quadratic, since every level copied its subtree's rendering
+/// into a fresh allocation.
 fn show_precedence_cla(
     ctx: &Context,
     binder_names: &[String],
     term: &Term,
+    f: &mut fmt::Formatter,
     context_precedence: usize,
     depth: u32,
-) -> String {
+) -> fmt::Result {
     match term {
-        Var(0) => "undefined".to_owned(),
+        Var(0) => f.write_str("undefined"),
         Var(i) => {
             let i = *i as u32;
             if i <= depth {
-                binder_names
-                    .get((depth - i) as usize)
-                    .expect("[BUG] binder_names are insufficient")
-                    .to_owned()
+                f.write_str(
+                    binder_names
+                        .get((depth - i) as usize)
+                        .expect("[BUG] binder_names are insufficient"),
+                )
             } else {
                 let idx = (i - depth) as usize;
-                ctx.resolve_free_var(idx)
-                    .map_or(format!("<unknown{}>", idx), |s| s.to_owned())
+                match ctx.resolve_free_var(idx) {
+                    Some(name) => f.write_str(name),
+                    None => write!(f, "<unknown{idx}>"),
+                }
             }
         }
         Abs(t) => {
-            let ret = {
-                format!(
-                    "{}{}.{}",
-                    LAMBDA,
-                    binder_names
-                        .get(depth as usize)
-                        .expect("[BUG] binder_names are insufficient"),
-                    show_precedence_cla(ctx, binder_names, t, 0, depth + 1)
-                )
-            };
-            parenthesize_if(&ret, context_precedence > 1).into()
+            let parenthesize = context_precedence > 1;
+            if parenthesize {
+                f.write_char('(')?;
+            }
+            f.write_char(LAMBDA)?;
+            f.write_str(
+                binder_names
+                    .get(depth as usize)
+                    .expect("[BUG] binder_names are insufficient"),
+            )?;
+            f.write_char('.')?;
+            show_precedence_cla(ctx, binder_names, t, f, 0, depth + 1)?;
+            if parenthesize {
+                f.write_char(')')?;
+            }
+            Ok(())
         }
         App(boxed) => {
             let (ref t1, ref t2) = **boxed;
-            let ret = format!(
-                "{} {}",
-                show_precedence_cla(ctx, binder_names, t1, 2, depth),
-                show_precedence_cla(ctx, binder_names, t2, 3, depth)
-            );
-            parenthesize_if(&ret, context_precedence == 3).into()
+            let parenthesize = context_precedence == 3;
+            if parenthesize {
+                f.write_char('(')?;
+            }
+            show_precedence_cla(ctx, binder_names, t1, f, 2, depth)?;
+            f.write_char(' ')?;
+            show_precedence_cla(ctx, binder_names, t2, f, 3, depth)?;
+            if parenthesize {
+                f.write_char(')')?;
+            }
+            Ok(())
         }
     }
 }
 
 impl fmt::Debug for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", show_precedence_dbr(self, 0))
+        show_precedence_dbr(self, f, 0)
     }
 }
 
-fn show_precedence_dbr(term: &Term, context_precedence: usize) -> String {
+/// Writes the De Bruijn representation of `term` straight into `f`.
+///
+/// Small-frame for the same reason as [`show_precedence_cla`], and for one more: this
+/// is the path `assert_eq!` takes when it fails, so its depth limit decided how deep a
+/// term a test could compare without aborting instead of reporting the mismatch.
+fn show_precedence_dbr(
+    term: &Term,
+    f: &mut fmt::Formatter,
+    context_precedence: usize,
+) -> fmt::Result {
     match term {
-        Var(0) => "undefined".to_owned(),
-        Var(i) => {
-            format!("{:X}", i)
-        }
+        Var(0) => f.write_str("undefined"),
+        Var(i) => write!(f, "{i:X}"),
         Abs(t) => {
-            let ret = format!("{}{:?}", LAMBDA, t);
-            parenthesize_if(&ret, context_precedence > 1).into()
+            let parenthesize = context_precedence > 1;
+            if parenthesize {
+                f.write_char('(')?;
+            }
+            f.write_char(LAMBDA)?;
+            show_precedence_dbr(t, f, 0)?;
+            if parenthesize {
+                f.write_char(')')?;
+            }
+            Ok(())
         }
         App(boxed) => {
             let (ref t1, ref t2) = **boxed;
-            let ret = format!(
-                "{}{}",
-                show_precedence_dbr(t1, 2),
-                show_precedence_dbr(t2, 3)
-            );
-            parenthesize_if(&ret, context_precedence == 3).into()
+            let parenthesize = context_precedence == 3;
+            if parenthesize {
+                f.write_char('(')?;
+            }
+            show_precedence_dbr(t1, f, 2)?;
+            show_precedence_dbr(t2, f, 3)?;
+            if parenthesize {
+                f.write_char(')')?;
+            }
+            Ok(())
         }
-    }
-}
-
-fn parenthesize_if(input: &str, condition: bool) -> Cow<'_, str> {
-    if condition {
-        format!("({})", input).into()
-    } else {
-        input.into()
     }
 }
 

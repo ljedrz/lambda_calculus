@@ -2,6 +2,11 @@
 
 ### Changes
 - added η-reduction
+- `Display` and `Debug` for `Term` now write into the `Formatter` instead of building a
+  `String` per subterm: linear rather than quadratic for deeply nested terms (409ms -> 2.9ms
+  when rendering a 32000-level chain), and a ~3.5x smaller stack frame per nesting level.
+  Neither impl honours width or precision specifiers any more
+- documented the stack depth characteristics of recursive `Term` operations
 
 ## 3.5.0
 
