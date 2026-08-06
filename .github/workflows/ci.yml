@@ -37,6 +37,12 @@ jobs:
       - name: doc tests
         run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
 
+      - name: unit tests (no default features)
+        run: cargo test --no-default-features
+
+      - name: unit tests (backslash_lambda)
+        run: cargo test --features backslash_lambda
+
       - name: unit tests
         run: cargo test
 

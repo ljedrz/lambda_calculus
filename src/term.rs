@@ -25,9 +25,12 @@ pub const UD: Term = Var(0);
 /// # Examples
 /// ```
 /// use lambda_calculus::combinators::S;
+/// use lambda_calculus::term::LAMBDA;
 ///
-/// assert_eq!(&format!(  "{}", S()), "λa.λb.λc.a c (b c)"); // Classic notation
-/// assert_eq!(&format!("{:?}", S()), "λλλ31(21)");          // DeBruijn index notation
+/// // `LAMBDA` is `λ` by default, or `\` with the `backslash_lambda` feature; normalising
+/// // it keeps these expectations true either way.
+/// assert_eq!(format!(  "{}", S()).replace(LAMBDA, "λ"), "λa.λb.λc.a c (b c)"); // Classic
+/// assert_eq!(format!("{:?}", S()).replace(LAMBDA, "λ"), "λλλ31(21)");          // DeBruijn
 /// ```
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Notation {
@@ -582,13 +585,14 @@ impl Term {
     ///
     /// # Example
     /// ```
-    /// use lambda_calculus::{*, term::Context};
+    /// use lambda_calculus::{*, term::{Context, LAMBDA}};
     ///
     /// let term = abs(Var(2)); // λa.b
     /// let ctx = Context::new(&["x"]); // Predefine "x" as a free variable
     ///
     /// // The context defines `Var(2)` as "x" instead of the default "b"
-    /// assert_eq!(term.with_context(&ctx).to_string(), "λa.x");
+    /// // (`LAMBDA` is normalised so this holds under `backslash_lambda` too)
+    /// assert_eq!(term.with_context(&ctx).to_string().replace(LAMBDA, "λ"), "λa.x");
     /// ```
     pub fn with_context<'a>(&'a self, ctx: &'a Context) -> impl fmt::Display + 'a {
         DisplayWithContext { term: self, ctx }
@@ -890,6 +894,14 @@ macro_rules! abs {
 mod tests {
     use super::*;
 
+    /// Rewrites the `λ` in an expected rendering to whatever `LAMBDA` currently is.
+    ///
+    /// Lets the expectations below stay readable while still holding under the
+    /// `backslash_lambda` feature, which used to break every one of them.
+    fn lam(expected: &str) -> String {
+        expected.replace('λ', &LAMBDA.to_string())
+    }
+
     #[test]
     fn app_macro() {
         assert_eq!(
@@ -940,10 +952,10 @@ mod tests {
 
     #[test]
     fn open_term_display() {
-        assert_eq!(&abs(Var(2)).to_string(), "λa.b");
-        assert_eq!(&abs(Var(3)).to_string(), "λa.c");
-        assert_eq!(&abs!(2, Var(3)).to_string(), "λa.λb.c");
-        assert_eq!(&abs!(2, Var(4)).to_string(), "λa.λb.d");
+        assert_eq!(abs(Var(2)).to_string(), lam("λa.b"));
+        assert_eq!(abs(Var(3)).to_string(), lam("λa.c"));
+        assert_eq!(abs!(2, Var(3)).to_string(), lam("λa.λb.c"));
+        assert_eq!(abs!(2, Var(4)).to_string(), lam("λa.λb.d"));
         assert_eq!(
             app!(
                 Var(3),
@@ -952,7 +964,7 @@ mod tests {
                 abs!(2, app(Var(5), Var(6)))
             )
             .to_string(),
-            "e f (λa.e f) (λa.λb.e f)"
+            lam("e f (λa.e f) (λa.λb.e f)")
         );
         assert_eq!(
             app!(
@@ -962,11 +974,11 @@ mod tests {
                 abs(app(Var(2), Var(3)))
             )
             .to_string(),
-            "(λa.λb.c d) c d (λa.c d)"
+            lam("(λa.λb.c d) c d (λa.c d)")
         );
         assert_eq!(
-            &app(abs(Var(1)), app(abs(app(Var(10), Var(1))), Var(10))).to_string(),
-            "(λa.a) ((λa.j a) k)"
+            app(abs(Var(1)), app(abs(app(Var(10), Var(1))), Var(10))).to_string(),
+            lam("(λa.a) ((λa.j a) k)")
         );
 
         assert_eq!(
@@ -975,11 +987,13 @@ mod tests {
                 app!(Var(28), Var(29), Var(30), Var(50), Var(702), Var(703))
             )
             .to_string(),
-            "λa.λb.λc.λd.λe.λf.λg.λh.λi.λj.λk.λl.λm.λn.λo.λp.λq.λr.λs.λt.λu.λv.λw.λx.λy.λz.λaa.ab ac ad ax zz aaa"
+            lam(
+                "λa.λb.λc.λd.λe.λf.λg.λh.λi.λj.λk.λl.λm.λn.λo.λp.λq.λr.λs.λt.λu.λv.λw.λx.λy.λz.λaa.ab ac ad ax zz aaa"
+            )
         );
         assert_eq!(
             abs!(3, app!(Var(2), Var(3), Var(4))).to_string(),
-            "λa.λb.λc.b a d"
+            lam("λa.λb.λc.b a d")
         );
         assert_eq!(Var(26).to_string(), "z");
         assert_eq!(Var(27).to_string(), "aa");
@@ -999,16 +1013,16 @@ mod tests {
             )
         );
 
-        assert_eq!(&zero.to_string(), "λa.λb.b");
-        assert_eq!(&succ.to_string(), "λa.λb.λc.b (a b c)");
+        assert_eq!(zero.to_string(), lam("λa.λb.b"));
+        assert_eq!(succ.to_string(), lam("λa.λb.λc.b (a b c)"));
         assert_eq!(
-            &pred.to_string(),
-            "λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)"
+            pred.to_string(),
+            lam("λa.λb.λc.a (λd.λe.e (d b)) (λd.c) (λd.d)")
         );
 
-        assert_eq!(&format!("{:?}", zero), "λλ1");
-        assert_eq!(&format!("{:?}", succ), "λλλ2(321)");
-        assert_eq!(&format!("{:?}", pred), "λλλ3(λλ1(24))(λ2)(λ1)");
+        assert_eq!(format!("{:?}", zero), lam("λλ1"));
+        assert_eq!(format!("{:?}", succ), lam("λλλ2(321)"));
+        assert_eq!(format!("{:?}", pred), lam("λλλ3(λλ1(24))(λ2)(λ1)"));
     }
 
     #[test]
@@ -1022,10 +1036,10 @@ mod tests {
         // Term with bound and free variables
         // λa. a y  (y is Var(2) from context)
         let term2 = abs(app(Var(1), Var(3)));
-        assert_eq!(term2.with_context(&ctx).to_string(), "λa.a y");
+        assert_eq!(term2.with_context(&ctx).to_string(), lam("λa.a y"));
 
         let term3 = abs(Var(2));
-        assert_eq!(term3.with_context(&ctx).to_string(), "λa.x");
+        assert_eq!(term3.with_context(&ctx).to_string(), lam("λa.x"));
     }
 
     #[test]
@@ -1036,10 +1050,10 @@ mod tests {
         assert_eq!(term1.with_context(&ctx).to_string(), "a c");
 
         let term2 = abs(app(Var(1), Var(3)));
-        assert_eq!(term2.with_context(&ctx).to_string(), "λb.b c");
+        assert_eq!(term2.with_context(&ctx).to_string(), lam("λb.b c"));
 
         let term3 = abs(Var(2));
-        assert_eq!(term3.with_context(&ctx).to_string(), "λb.a");
+        assert_eq!(term3.with_context(&ctx).to_string(), lam("λb.a"));
     }
 
     #[test]
@@ -1052,17 +1066,17 @@ mod tests {
         );
 
         let term2 = abs(app(Var(1), Var(3)));
-        assert_eq!(term2.to_string(), "λa.a c");
+        assert_eq!(term2.to_string(), lam("λa.a c"));
         assert_eq!(
             term2.with_context(&Context::empty()).to_string(),
-            "λa.a <unknown2>"
+            lam("λa.a <unknown2>")
         );
 
         let term3 = abs(Var(2));
-        assert_eq!(term3.to_string(), "λa.b");
+        assert_eq!(term3.to_string(), lam("λa.b"));
         assert_eq!(
             term3.with_context(&Context::empty()).to_string(),
-            "λa.<unknown1>"
+            lam("λa.<unknown1>")
         );
     }
 

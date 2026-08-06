@@ -15,6 +15,8 @@
   constant-time, and `Var(usize::MAX)` no longer exhausts memory
 - fixed De Bruijn indices being narrowed to `u32` while being displayed, which made
   `Var(1 << 32)` panic and `Var((1 << 32) + 3)` render as though it were `Var(3)`
+- fixed the test suite under `backslash_lambda`, where 8 tests hardcoded `λ` in their
+  expectations; CI now covers that feature and `--no-default-features` so it stays fixed
 
 ## 3.5.0
 

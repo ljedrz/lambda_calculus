@@ -2,7 +2,7 @@ use lambda_calculus::{
     parse,
     parser::{ParseError, parse_with_context},
     term::{
-        Context,
+        Context, LAMBDA,
         Notation::{Classic, DeBruijn},
     },
 };
@@ -41,7 +41,9 @@ fn parse_debruijn_and_classic() -> Result<(), ParseError> {
 #[test]
 fn parse_issue_60() -> Result<(), ParseError> {
     let term = parse("λλ((2 2) λλ1)", DeBruijn)?;
-    assert_eq!(format!("{term:?}"), "λλ22(λλ1)");
+    // Normalised back to `λ` so the expectation reads naturally and still holds when
+    // `backslash_lambda` makes `LAMBDA` a backslash.
+    assert_eq!(format!("{term:?}").replace(LAMBDA, "λ"), "λλ22(λλ1)");
 
     Ok(())
 }
