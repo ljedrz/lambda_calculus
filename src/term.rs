@@ -622,20 +622,11 @@ pub fn app(lhs: Term, rhs: Term) -> Term {
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let max_depth = self.max_depth();
-        let max_free_index = self.max_free_index();
-        let ctx = auto_generate_context(max_depth, max_free_index);
-        let binder_names = generate_binder_names(&ctx, max_depth);
-        show_precedence_cla(&ctx, &binder_names, self, f, 0, 0)
+        let naming = Naming::Auto {
+            max_depth: self.max_depth() as usize,
+        };
+        show_precedence_cla(&naming, self, f, 0, 0)
     }
-}
-
-/// A helper function to generate a default context for displaying a term.
-fn auto_generate_context(max_depth: u32, max_free_index: usize) -> Context {
-    let free_variables = (0..max_free_index)
-        .map(|i| base26_encode(max_depth + i as u32))
-        .collect::<Vec<_>>();
-    free_variables.into()
 }
 
 /// A helper struct for displaying a `Term` with an external `Context`.
@@ -647,31 +638,108 @@ struct DisplayWithContext<'a> {
 impl<'a> fmt::Display for DisplayWithContext<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let binder_names = generate_binder_names(self.ctx, self.term.max_depth());
-        show_precedence_cla(self.ctx, &binder_names, self.term, f, 0, 0)
+        let naming = Naming::Provided {
+            ctx: self.ctx,
+            binder_names: &binder_names,
+        };
+        show_precedence_cla(&naming, self.term, f, 0, 0)
+    }
+}
+
+/// How a rendering pass names the variables it meets.
+enum Naming<'a> {
+    /// Names derived from the term itself: the binder at depth `d` takes the `d`th
+    /// generated name, and a free variable continues the same sequence past the last
+    /// binder.
+    ///
+    /// Nothing is precomputed. A name is produced only when a variable is actually
+    /// reached, so rendering costs what the output costs rather than what the largest
+    /// index happens to be - naming free variables up front made displaying the single
+    /// term `Var(4_000_000)` allocate four million strings to print five characters.
+    Auto { max_depth: usize },
+    /// Names from a caller-supplied context, with the binder names precomputed because
+    /// they have to be checked against it for clashes.
+    Provided {
+        ctx: &'a Context,
+        binder_names: &'a [String],
+    },
+}
+
+impl Naming<'_> {
+    /// Writes the name of the binder introduced at `depth`, counted from the outside in.
+    fn write_binder(&self, f: &mut fmt::Formatter, depth: usize) -> fmt::Result {
+        match self {
+            Self::Auto { .. } => {
+                let mut buf = [0; MAX_BASE26_LEN];
+                f.write_str(base26_into(depth, &mut buf))
+            }
+            Self::Provided { binder_names, .. } => f.write_str(
+                binder_names
+                    .get(depth)
+                    .expect("[BUG] binder_names are insufficient"),
+            ),
+        }
+    }
+
+    /// Writes the name of the free variable at 1-based `idx`.
+    fn write_free(&self, f: &mut fmt::Formatter, idx: usize) -> fmt::Result {
+        match self {
+            Self::Auto { max_depth } => {
+                // `idx` is at least 1, so the decrement cannot underflow; the saturating
+                // add keeps an absurd index from wrapping instead of naming itself.
+                let mut buf = [0; MAX_BASE26_LEN];
+                f.write_str(base26_into(max_depth.saturating_add(idx) - 1, &mut buf))
+            }
+            Self::Provided { ctx, .. } => match ctx.resolve_free_var(idx) {
+                Some(name) => f.write_str(name),
+                None => write!(f, "<unknown{idx}>"),
+            },
+        }
     }
 }
 
 /// Generates a list of fresh names for binders, avoiding clashes with the given context.
+///
+/// Only the context-supplied naming needs this: the clash check is what forces the names
+/// to be produced in order and up front, and `number` is a nesting depth, so the list is
+/// bounded by the size of the term being displayed.
 fn generate_binder_names(ctx: &Context, number: u32) -> Vec<String> {
     (0..)
-        .map(|i| base26_encode(i as u32))
+        .map(base26_encode)
         .filter(|name| !ctx.contains(name))
         .take(number as usize)
         .collect()
 }
 
-fn base26_encode(mut n: u32) -> String {
-    let mut buf = Vec::<u8>::new();
-    n += 1;
-    while n > 0 {
-        let m = (n % 26) as u8;
-        let m = if m == 0 { 26 } else { m };
-        let c = m + b'a' - 1;
-        buf.push(c);
-        n = (n - 1) / 26
+/// Enough room for the longest bijective base-26 name a `usize` can produce, which is
+/// 14 characters; the slack costs nothing on the stack and keeps the bound obvious.
+const MAX_BASE26_LEN: usize = 16;
+
+/// Encodes `n` as a bijective base-26 name - `a`, `b`, .., `z`, `aa`, `ab`, .. - into
+/// `buf`, returning the part of it that was written.
+///
+/// Taking the buffer from the caller lets the formatting paths name a variable without
+/// allocating. The digits are peeled off without the `n + 1` a more direct transcription
+/// would use, because that addition overflows for an index near `usize::MAX`.
+fn base26_into(mut n: usize, buf: &mut [u8; MAX_BASE26_LEN]) -> &str {
+    let mut len = 0;
+    loop {
+        buf[len] = b'a' + (n % 26) as u8;
+        len += 1;
+        if n < 26 {
+            break;
+        }
+        n = n / 26 - 1;
     }
-    buf.reverse();
-    String::from_utf8(buf).expect("error while printing term")
+    buf[..len].reverse();
+
+    // Every byte written above lies in `b'a'..=b'z'`.
+    std::str::from_utf8(&buf[..len]).expect("[BUG] base26 produced non-UTF-8")
+}
+
+fn base26_encode(n: usize) -> String {
+    let mut buf = [0; MAX_BASE26_LEN];
+    base26_into(n, &mut buf).to_owned()
 }
 
 /// Writes the classic representation of `term` straight into `f`.
@@ -682,44 +750,27 @@ fn base26_encode(mut n: u32) -> String {
 /// the whole traversal quadratic, since every level copied its subtree's rendering
 /// into a fresh allocation.
 fn show_precedence_cla(
-    ctx: &Context,
-    binder_names: &[String],
+    naming: &Naming,
     term: &Term,
     f: &mut fmt::Formatter,
     context_precedence: usize,
-    depth: u32,
+    depth: usize,
 ) -> fmt::Result {
     match term {
         Var(0) => f.write_str("undefined"),
-        Var(i) => {
-            let i = *i as u32;
-            if i <= depth {
-                f.write_str(
-                    binder_names
-                        .get((depth - i) as usize)
-                        .expect("[BUG] binder_names are insufficient"),
-                )
-            } else {
-                let idx = (i - depth) as usize;
-                match ctx.resolve_free_var(idx) {
-                    Some(name) => f.write_str(name),
-                    None => write!(f, "<unknown{idx}>"),
-                }
-            }
-        }
+        // Indices stay `usize` the whole way down. Narrowing them to `u32` used to make
+        // an index past `u32::MAX` name a different variable, or panic outright.
+        Var(i) if *i <= depth => naming.write_binder(f, depth - *i),
+        Var(i) => naming.write_free(f, *i - depth),
         Abs(t) => {
             let parenthesize = context_precedence > 1;
             if parenthesize {
                 f.write_char('(')?;
             }
             f.write_char(LAMBDA)?;
-            f.write_str(
-                binder_names
-                    .get(depth as usize)
-                    .expect("[BUG] binder_names are insufficient"),
-            )?;
+            naming.write_binder(f, depth)?;
             f.write_char('.')?;
-            show_precedence_cla(ctx, binder_names, t, f, 0, depth + 1)?;
+            show_precedence_cla(naming, t, f, 0, depth + 1)?;
             if parenthesize {
                 f.write_char(')')?;
             }
@@ -731,9 +782,9 @@ fn show_precedence_cla(
             if parenthesize {
                 f.write_char('(')?;
             }
-            show_precedence_cla(ctx, binder_names, t1, f, 2, depth)?;
+            show_precedence_cla(naming, t1, f, 2, depth)?;
             f.write_char(' ')?;
-            show_precedence_cla(ctx, binder_names, t2, f, 3, depth)?;
+            show_precedence_cla(naming, t2, f, 3, depth)?;
             if parenthesize {
                 f.write_char(')')?;
             }

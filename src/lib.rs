@@ -18,11 +18,11 @@
 //! worth measuring rather than guessing, and it can be measured without instrumenting
 //! anything — see the `Stack depth` section of the README for how, and for the figures
 //! this crate's own `tests/stack_depth.rs` pins down. The short version: nesting costs
-//! roughly half a kilobyte per level unoptimized for [`beta`], [`Term::clone`] and
-//! [`Debug`](std::fmt::Debug), and about 800 bytes for [`Display`], which makes ~2600
-//! levels the ceiling on the 2 MiB stack `libtest` gives each test. [`Debug`] is worth
-//! knowing about specifically because it is the path `assert_eq!` takes when it fails,
-//! so past its own limit a mismatch aborts while being rendered rather than reported.
+//! roughly half a kilobyte per level unoptimized for [`beta`], [`Term::clone`],
+//! [`Debug`](std::fmt::Debug) and [`Display`], which makes ~3600 levels the ceiling on
+//! the 2 MiB stack `libtest` gives each test. [`Debug`] is worth knowing about
+//! specifically because it is the path `assert_eq!` takes when it fails, so past its own
+//! limit a mismatch aborts while being rendered rather than reported.
 //!
 //! [`Debug`]: std::fmt::Debug
 //! [`Display`]: std::fmt::Display

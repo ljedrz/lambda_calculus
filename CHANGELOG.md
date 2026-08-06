@@ -8,6 +8,14 @@
   Neither impl honours width or precision specifiers any more
 - documented the stack depth characteristics of recursive `Term` operations
 
+### Fixes
+- `Display` for `Term` no longer generates every free variable name up front: printing a
+  term now costs what its output costs rather than what its largest index is. Displaying
+  the single term `Var(4_000_000)` took 178ms and four million allocations; it is now
+  constant-time, and `Var(usize::MAX)` no longer exhausts memory
+- fixed De Bruijn indices being narrowed to `u32` while being displayed, which made
+  `Var(1 << 32)` panic and `Var((1 << 32) + 3)` render as though it were `Var(3)`
+
 ## 3.5.0
 
 ### Changes

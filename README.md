@@ -191,13 +191,19 @@ survive `cargo test`. Per nesting level, for the individual operations:
 | `drop` | 208 B | 64 B | ~10000 |
 | `Debug` | 513 B | 129 B | ~4000 |
 | `clone`, `PartialEq`, `beta`, `eta` | 545 B | 128 B | ~3800 |
-| `Display` | 802 B | 192 B | ~2600 |
+| `Display` | 578 B | 160 B | ~3600 |
 
 Note that `libtest` gives each test a 2 MiB stack, not the 8 MiB of a main thread, so the
-last column is the budget the test suite actually works against. `Display` is currently
-the deepest path, and `Debug` matters out of proportion to its cost because it is what
-`assert_eq!` invokes when it fails: past that depth a mismatch aborts while being rendered
-instead of being reported. `tests/stack_depth.rs` keeps all of these figures honest.
+last column is the budget the test suite actually works against. The four operations are
+close enough now that no single one dominates; `Debug` matters out of proportion to its
+cost because it is what `assert_eq!` invokes when it fails, so past that depth a mismatch
+aborts while being rendered instead of being reported. `tests/stack_depth.rs` keeps all of
+these figures honest.
+
+Naming is done on demand rather than up front, so displaying a term costs what its output
+costs. Generating every free-variable name in advance — which is what this used to do —
+made `Var(4_000_000)`, a single node, allocate four million strings to print five
+characters. `tests/display.rs` covers that and the surrounding index handling.
 
 Both formatting impls write directly into the `Formatter` rather than building a `String`
 per subterm. That is what keeps their frames small, and it also makes them linear: the
