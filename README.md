@@ -189,34 +189,4 @@ test, which reduces a Church-encoded factorial of 10 under `HAP`:
 | `--release` | 221 MiB |
 | debug | 1.08 GiB |
 
-Note the 5x between profiles: a `stack_size` tuned against a release build will not
-survive `cargo test`. Per nesting level, for the individual operations:
-
-| operation | debug | release | max depth on 2 MiB (debug) |
-| :--- | ---: | ---: | ---: |
-| `drop` | 208 B | 64 B | ~10000 |
-| `Debug` | 513 B | 129 B | ~4000 |
-| `clone`, `PartialEq`, `beta`, `eta` | 545 B | 128 B | ~3800 |
-| `Display` | 578 B | 160 B | ~3600 |
-
-Note that `libtest` gives each test a 2 MiB stack, not the 8 MiB of a main thread, so the
-last column is the budget the test suite actually works against. The four operations are
-close enough now that no single one dominates; `Debug` matters out of proportion to its
-cost because it is what `assert_eq!` invokes when it fails, so past that depth a mismatch
-aborts while being rendered instead of being reported. `tests/stack_depth.rs` keeps all of
-these figures honest.
-
-Naming is done on demand rather than up front, so displaying a term costs what its output
-costs. Generating every free-variable name in advance — which is what this used to do —
-made `Var(4_000_000)`, a single node, allocate four million strings to print five
-characters. `tests/display.rs` covers that and the surrounding index handling.
-
-Both formatting impls write directly into the `Formatter` rather than building a `String`
-per subterm. That is what keeps their frames small, and it also makes them linear: the
-older String-returning version copied each subtree's rendering into a fresh allocation at
-every level, which is quadratic for a linear chain — the shape a Church numeral has.
-Rendering a 32000-level chain went from 409 ms to 2.9 ms for `Display` and 107 ms to
-1.1 ms for `Debug`. The trade is that neither impl honours width or precision specifiers
-(`{:>20?}` no longer pads), which is the usual cost of streaming a recursive structure.
-
 [`stackler`]: https://crates.io/crates/stackler
