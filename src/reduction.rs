@@ -122,6 +122,15 @@ impl Term {
     }
 
     fn update_free_variables(&mut self, added_depth: usize, own_depth: usize) {
+        // Every branch below amounts to `*i += added_depth`, so with nothing to
+        // add the traversal cannot change the term. Worth checking, because the
+        // common case reaches here with `added_depth == 0`: `apply` enters the
+        // abstraction body at depth 1, so substituting the variable that lambda
+        // binds passes `depth - 1 == 0` — and the walk would cover a subtree
+        // that was just deep-cloned.
+        if added_depth == 0 {
+            return;
+        }
         match self {
             Var(i) => {
                 if *i > own_depth {
@@ -139,10 +148,75 @@ impl Term {
     fn eval(&mut self, count: &mut usize) {
         let to_apply = mem::replace(self, Var(0)); // replace self with a dummy
         let (mut lhs, rhs) = to_apply.unapp().unwrap(); // safe; only called in reduction sites
-        lhs.apply(&rhs).unwrap(); // ditto
+        lhs.apply_owned(rhs); // ditto
         *self = lhs; // move self back to its place
 
         *count += 1;
+    }
+
+    /// `apply`, but consuming the argument.
+    ///
+    /// Substitution copies the argument into every occurrence of the bound
+    /// variable. When the argument is owned, the *last* of those occurrences can
+    /// take it rather than clone it — and since a variable used exactly once is
+    /// the common case, that usually removes the copy altogether. Reduction sites
+    /// always own the argument and drop it immediately afterwards, so cloning
+    /// there meant paying for a full deep copy *and* a full deep drop of the
+    /// same tree.
+    ///
+    /// Finding the last occurrence costs one allocation-free pass over the body,
+    /// which `_apply` was going to walk anyway.
+    fn apply_owned(&mut self, rhs: Term) {
+        debug_assert!(self.unabs_ref().is_ok());
+
+        let mut remaining = self.count_occurrences(0);
+        if remaining == 0 {
+            // The argument is discarded, but free variables in the body still
+            // need their indices decremented.
+            drop(rhs);
+            self._apply_owned(&mut None, 0, &mut 0);
+        } else {
+            self._apply_owned(&mut Some(rhs), 0, &mut remaining);
+        }
+
+        let ret = mem::replace(self, Var(0)); // replace self with a dummy
+        *self = ret.unabs().unwrap(); // move unabstracted self back to its place
+    }
+
+    /// How many times the variable bound at `depth` occurs, mirroring the
+    /// traversal `_apply_owned` performs.
+    fn count_occurrences(&self, depth: usize) -> usize {
+        match self {
+            Var(i) => (*i == depth) as usize,
+            Abs(t) => t.count_occurrences(depth + 1),
+            App(boxed) => boxed.0.count_occurrences(depth) + boxed.1.count_occurrences(depth),
+        }
+    }
+
+    fn _apply_owned(&mut self, rhs: &mut Option<Term>, depth: usize, remaining: &mut usize) {
+        match self {
+            Var(i) => match (*i).cmp(&depth) {
+                cmp::Ordering::Equal => {
+                    *remaining -= 1;
+                    if *remaining == 0 {
+                        // Last occurrence: hand the argument over instead of copying it.
+                        *self = rhs.take().expect("occurrence count is exact");
+                    } else {
+                        rhs.as_ref().expect("occurrences remain").clone_into(self);
+                    }
+                    self.update_free_variables(depth - 1, 0); // update indices of free variables from rhs
+                }
+                cmp::Ordering::Greater => {
+                    *self = Var(*i - 1); // decrement a free variable's index
+                }
+                _ => {}
+            },
+            Abs(t) => t._apply_owned(rhs, depth + 1, remaining),
+            App(boxed) => {
+                boxed.0._apply_owned(rhs, depth, remaining);
+                boxed.1._apply_owned(rhs, depth, remaining);
+            }
+        }
     }
 
     fn is_reducible(&self, limit: usize, count: usize) -> bool {

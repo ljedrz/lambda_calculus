@@ -1,3 +1,8 @@
+## 3.6.1
+
+### Changes
+- significantly sped up lazy beta-reduction strategies
+
 ## 3.6.0
 
 ### Changes
